@@ -1,10 +1,10 @@
-import { Resend } from "resend";
+import { sendMail, isSmtpConfigured } from "./mailer";
 
-const APP_NAME = process.env.APP_NAME ?? "J Ekklesia";
+const APP_NAME = process.env.APP_NAME ?? "Coccinelle";
 
 /**
  * Envoie (ou journalise) les identifiants temporaires après création de compte par un admin.
- * Configurez `RESEND_API_KEY` (+ optionnellement `RESEND_FROM` ou `RESEND_DOMAIN`) pour un envoi réel via Resend.
+ * Configurez `EMAIL_USER` et `EMAIL_PASS` pour l’envoi réel via SMTP.
  */
 export async function sendNewUserCredentialsEmail(input: {
   to: string;
@@ -13,7 +13,9 @@ export async function sendNewUserCredentialsEmail(input: {
   loginUrl?: string;
 }): Promise<void> {
   const { to, name, temporaryPassword } = input;
-  const loginUrl = input.loginUrl ?? `${process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "http://localhost:3000"}/auth/sign-in`;
+  const loginUrl =
+    input.loginUrl ??
+    `${process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "http://localhost:3000"}/auth/sign-in`;
 
   const subject = `${APP_NAME} — Votre compte a été créé`;
   const text = [
@@ -43,36 +45,31 @@ export async function sendNewUserCredentialsEmail(input: {
     <p>— ${escapeHtml(APP_NAME)}</p>
   `;
 
-  const apiKey = process.env.RESEND_API_KEY;
   const from =
-    process.env.RESEND_FROM ??
-    (process.env.RESEND_DOMAIN ? `noreply@${process.env.RESEND_DOMAIN}` : `${APP_NAME} <onboarding@resend.dev>`);
+    process.env.EMAIL_FROM ??
+    (process.env.EMAIL_USER ? `${APP_NAME} <${process.env.EMAIL_USER}>` : `no-reply@example.com`);
 
-  if (apiKey) {
-    const resend = new Resend(apiKey);
-    const { error } = await resend.emails.send({
-      from,
-      to,
-      subject,
-      text,
-      html,
-    });
-    if (error) {
-      throw new Error(`Resend (${error.name}): ${error.message}`);
+  if (isSmtpConfigured()) {
+    try {
+      await sendMail({ from, to, subject, text, html });
+      return;
+    } catch (err: any) {
+      throw new Error(`Nodemailer: ${err?.message ?? String(err)}`);
     }
-    return;
   }
 
   if (process.env.NODE_ENV === "development") {
     // Sans fournisseur d’email : trace locale pour le développement uniquement
     // eslint-disable-next-line no-console
-    console.info(`[sendNewUserCredentialsEmail] to=${to} (dev, pas de RESEND_API_KEY)`);
+    console.info(`[sendNewUserCredentialsEmail] to=${to} (dev, pas de SMTP configuré)`);
     // eslint-disable-next-line no-console
-    console.info(`[sendNewUserCredentialsEmail] mot de passe temporaire (dev uniquement) : ${temporaryPassword}`);
+    console.info(
+      `[sendNewUserCredentialsEmail] mot de passe temporaire (dev uniquement) : ${temporaryPassword}`
+    );
   } else {
     // eslint-disable-next-line no-console
     console.warn(
-      "[sendNewUserCredentialsEmail] RESEND_API_KEY manquant : email non envoyé (production).",
+      "[sendNewUserCredentialsEmail] SMTP non configuré : email non envoyé (production)."
     );
   }
 }

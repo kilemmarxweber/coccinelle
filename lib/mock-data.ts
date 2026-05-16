@@ -1,59 +1,60 @@
 export interface Child {
-  id: string
-  firstName: string
-  lastName: string
-  birthDate: string
-  age: number
-  classId: string
-  parentName: string
-  parentPhone: string
-  parentEmail: string
-  address: string
-  allergies: string
-  notes: string
-  photoUrl?: string
-  registrationDate: string
+  id: string;
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  age: number;
+  classId: string;
+  parentName: string;
+  parentPhone: string;
+  parentEmail: string;
+  address: string;
+  allergies: string;
+  notes: string;
+  photoUrl?: string;
+  registrationDate: string;
 }
 
 export interface Class {
-  id: string
-  name: string
-  description: string
-  ageRange: string
-  minAge: number
-  maxAge: number
-  teacher: string
-  assistants: string[]
-  room: string
-  capacity: number
-  childrenCount: number
+  id: string;
+  name: string;
+  description: string;
+  ageRange: string;
+  minAge: number;
+  maxAge: number;
+  teacher: string;
+  assistants: string[];
+  room: string;
+  capacity: number;
+  childrenCount: number;
 }
 
 export interface Course {
-  id: string
-  title: string
-  description: string
-  date: string
-  classIds: string[]
-  theme: string
-  bibleVerse: string
-  materials: string[]
-  objectives: string[]
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  classIds: string[];
+  theme: string;
+  bibleVerse: string;
+  materials: string[];
+  objectives: string[];
 }
 
 export interface AttendanceRecord {
-  id: string
-  childId: string
-  date: string
-  status: "present" | "absent" | "late" | "excused"
-  notes?: string
+  id: string;
+  childId: string;
+  date: string;
+  status: "present" | "absent" | "late" | "excused";
+  notes?: string;
 }
 
 export const classes: Class[] = [
   {
     id: "petits",
-    name: "Les Petits Anges",
-    description: "Classe pour les tout-petits, avec des activites ludiques et des histoires bibliques simples.",
+    name: "Boing 430",
+    description:
+      "Classe pour les tout-petits, avec des activites ludiques et des histoires bibliques simples.",
     ageRange: "3-5 ans",
     minAge: 3,
     maxAge: 5,
@@ -102,7 +103,7 @@ export const classes: Class[] = [
     capacity: 20,
     childrenCount: 10,
   },
-]
+];
 
 export const children: Child[] = [
   {
@@ -225,7 +226,7 @@ export const children: Child[] = [
     notes: "Vient de rejoindre la classe des Moyens.",
     registrationDate: "2024-04-15",
   },
-]
+];
 
 export const courses: Course[] = [
   {
@@ -288,7 +289,7 @@ export const courses: Course[] = [
       "Activite artistique",
     ],
   },
-]
+];
 
 export const attendanceRecords: AttendanceRecord[] = [
   { id: "1", childId: "1", date: "2024-05-05", status: "present" },
@@ -307,28 +308,28 @@ export const attendanceRecords: AttendanceRecord[] = [
   { id: "14", childId: "6", date: "2024-04-28", status: "present" },
   { id: "15", childId: "7", date: "2024-04-28", status: "present" },
   { id: "16", childId: "8", date: "2024-04-28", status: "present" },
-]
+];
 
 export function getChildrenByClass(classId: string): Child[] {
-  return children.filter((child) => child.classId === classId)
+  return children.filter((child) => child.classId === classId);
 }
 
 export function getChildById(id: string): Child | undefined {
-  return children.find((child) => child.id === id)
+  return children.find((child) => child.id === id);
 }
 
 export function getClassById(id: string): Class | undefined {
-  return classes.find((c) => c.id === id)
+  return classes.find((c) => c.id === id);
 }
 
 export function getAttendanceByChild(childId: string): AttendanceRecord[] {
-  return attendanceRecords.filter((record) => record.childId === childId)
+  return attendanceRecords.filter((record) => record.childId === childId);
 }
 
 export function getAttendanceByDate(date: string): AttendanceRecord[] {
-  return attendanceRecords.filter((record) => record.date === date)
+  return attendanceRecords.filter((record) => record.date === date);
 }
 
 export function getCoursesByClass(classId: string): Course[] {
-  return courses.filter((course) => course.classIds.includes(classId))
+  return courses.filter((course) => course.classIds.includes(classId));
 }

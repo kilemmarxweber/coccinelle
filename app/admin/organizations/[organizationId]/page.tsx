@@ -39,16 +39,16 @@ export default function AdminOrganizationHomePage() {
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Button
+            <Button
               render={<Link href={`${base}/ecodim`} />}
               variant="outline"
               className="h-auto min-h-22 w-full touch-manipulation justify-start gap-0 p-4 text-left sm:min-h-24"
             >
               <div className="flex min-w-0 flex-col gap-2 text-left">
                 <School className="size-7 shrink-0 text-primary sm:size-6" aria-hidden />
-                <span className="text-base font-semibold leading-snug">Ecodim</span>
+                <span className="text-base font-semibold leading-snug">Agences</span>
                 <span className="text-pretty text-sm font-normal leading-relaxed text-muted-foreground">
-                  Gérer l'ecole du dimanche.
+                  Gérer la reservation des clients.
                 </span>
               </div>
             </Button>
@@ -88,13 +88,12 @@ export default function AdminOrganizationHomePage() {
             >
               <div className="flex min-w-0 flex-col gap-2 text-left">
                 <CirclePile className="size-7 shrink-0 text-primary sm:size-6" aria-hidden />
-                <span className="text-base font-semibold leading-snug">Familles</span>
+                <span className="text-base font-semibold leading-snug">Partenaires</span>
                 <span className="text-pretty text-sm font-normal leading-relaxed text-muted-foreground">
-                  Gérer les familles de l'eglise.
+                  Gérer les partenaires.
                 </span>
               </div>
             </Button>
-
           </div>
 
           <Button

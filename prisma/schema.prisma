@@ -150,3 +150,210 @@ model Invitation {
   @@index([email])
   @@map("invitation")
 }
+
+//////////////////////////
+// 👤 CLIENTS
+//////////////////////////
+
+model Client {
+  id                String   @id @default(uuid())
+
+  nom               String
+  postnom           String
+  prenom            String
+  sexe              String
+  dateNaissance     DateTime
+
+  telephone         String   @unique
+  email             String?  @unique
+  numeroIdentite    String   @unique
+
+  adresse           String?
+  nationalite       String?
+  photo             String?
+
+  statut            String   @default("actif") // actif, bloqué
+  dateInscription   DateTime @default(now())
+
+  reservations      Reservation[]
+  colis             Colis[]
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([telephone])
+}
+
+//////////////////////////
+// ✈️ TRAJETS
+//////////////////////////
+
+model Trajet {
+  id                String   @id @default(uuid())
+
+  villeDepart       String
+  villeArrivee      String
+
+  kilosGratuits     Float
+  prixParKilo       Float
+  prixBase          Float
+
+  dureeEstimee      Int?
+
+  reservations      Reservation[]
+  colis             Colis[]
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([villeDepart, villeArrivee])
+}
+
+//////////////////////////
+// 📅 RÉSERVATIONS (QR CODE)
+//////////////////////////
+
+model Reservation {
+  id                  String   @id @default(uuid())
+
+  codeUnique          String   @unique // QR / code-barres
+
+  clientId            String
+  trajetId            String
+
+  client              Client   @relation(fields: [clientId], references: [id])
+  trajet              Trajet   @relation(fields: [trajetId], references: [id])
+
+  dateDepart          DateTime
+  heureDepart         String
+
+  statut              StatutReservation @default(CONFIRME)
+
+  nombreKilos         Float?
+  surplusKilos        Float?
+  montantSurplus      Float?
+
+  prixBillet          Float
+  prixTotal           Float
+
+  penalite            Float? @default(0)
+
+  peutReporter        Boolean @default(true)
+  dateLimiteReport    DateTime?
+
+  paiements           Paiement[]
+  penalites           Penalite[]
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([trajetId])
+  @@index([codeUnique])
+}
+
+//////////////////////////
+// 📦 COLIS (QR CODE)
+//////////////////////////
+
+model Colis {
+  id                String   @id @default(uuid())
+
+  codeUnique        String   @unique // QR / code-barres
+
+  clientId          String
+  trajetId          String
+
+  client            Client   @relation(fields: [clientId], references: [id])
+  trajet            Trajet   @relation(fields: [trajetId], references: [id])
+
+  poids             Float
+  kilosGratuits     Float
+  surplusKilos      Float
+  montantAPayer     Float
+
+  statut            StatutColis @default(EN_ATTENTE)
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([trajetId])
+  @@index([codeUnique])
+}
+
+//////////////////////////
+// 💰 PAIEMENTS
+//////////////////////////
+
+model Paiement {
+  id                String   @id @default(uuid())
+
+  codeUnique        String   @unique // QR paiement (optionnel mais pro)
+
+  reservationId     String
+  reservation       Reservation @relation(fields: [reservationId], references: [id])
+
+  montant           Float
+  methode           MethodePaiement
+  statut            StatutPaiement @default(EN_ATTENTE)
+
+  reference         String? // mobile money / banque
+
+  createdAt         DateTime @default(now())
+
+  @@index([reservationId])
+  @@index([codeUnique])
+}
+
+//////////////////////////
+// ⚠️ PÉNALITÉS
+//////////////////////////
+
+model Penalite {
+  id                String   @id @default(uuid())
+
+  codeUnique        String   @unique // QR pénalité
+
+  reservationId     String
+  reservation       Reservation @relation(fields: [reservationId], references: [id])
+
+  montant           Float
+  raison            String
+
+  payee             Boolean @default(false)
+
+  createdAt         DateTime @default(now())
+
+  @@index([reservationId])
+}
+
+//////////////////////////
+// ENUMS
+//////////////////////////
+
+enum StatutReservation {
+  CONFIRME
+  EMBARQUE
+  RATE
+  REPORTE
+  ANNULE
+}
+
+enum StatutPaiement {
+  EN_ATTENTE
+  PAYE
+  ECHOUE
+}
+
+enum MethodePaiement {
+  CASH
+  MOBILE_MONEY
+  CARTE
+}
+
+enum StatutColis {
+  EN_ATTENTE
+  EXPEDIE
+  LIVRE
+}

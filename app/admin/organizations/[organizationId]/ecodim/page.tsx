@@ -1,63 +1,50 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Users, BookOpen, ClipboardList, Calendar, ArrowRight } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { PageHeader } from "@/components/layout/page-header"
-import { StatCard, StatGrid } from "@/components/ui/stat-card"
-import { ListGroup, ListItem } from "@/components/ui/list-item"
-import { classes, children, courses, attendanceRecords, getClassById } from "@/lib/mock-data"
-import { useParams, useRouter } from "next/navigation"
-
+import Link from "next/link";
+import { Users, BookOpen, ClipboardList, Calendar, ArrowRight } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { PageHeader } from "@/components/layout/page-header";
+import { StatCard, StatGrid } from "@/components/ui/stat-card";
+import { ListGroup, ListItem } from "@/components/ui/list-item";
+import { classes, children, courses, attendanceRecords, getClassById } from "@/lib/mock-data";
+import { useParams, useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 export default function EcodimDashboard() {
-  const totalChildren = children.length
-  const totalClasses = classes.length
-
-  const lastAttendance = attendanceRecords.filter(r => r.date === "2024-05-05")
-  const presentCount = lastAttendance.filter(r => r.status === "present").length
-  const attendanceRate = Math.round((presentCount / lastAttendance.length) * 100)
-
   const params = useParams();
-  const router = useRouter();
+  const id = params.organizationId as string;
+  const base = `/admin/organizations/${id}/ecodim`;
+  const totalChildren = children.length;
+  const totalClasses = classes.length;
+  const lastAttendance = attendanceRecords.filter((r) => r.date === "2024-05-05");
+  const presentCount = lastAttendance.filter((r) => r.status === "present").length;
+  const attendanceRate = Math.round((presentCount / lastAttendance.length) * 100);
+
   const organizationId = params.organizationId as string;
 
-  const recentChildren = children.slice(0, 4)
-  const upcomingCourses = courses.slice(0, 3)
+  const recentChildren = children.slice(0, 4);
+  const upcomingCourses = courses.slice(0, 3);
 
   return (
     <div className="min-h-screen">
-      <PageHeader
-        title="Ecodim"
-        subtitle="Ecole du Dimanche"
-      />
+      <PageHeader title="Agence" subtitle="Reservation et vol" />
 
       <div className="px-4 py-5 space-y-6 max-w-2xl mx-auto md:max-w-4xl">
         {/* Stats */}
         <StatGrid>
+          <StatCard title="Clients" value={totalChildren} icon={Users} subtitle="Inscrits" />
+          <StatCard title="Vols" value={totalClasses} icon={BookOpen} variant="primary" />
           <StatCard
-            title="Enfants"
-            value={totalChildren}
-            icon={Users}
-            subtitle="Inscrits"
-          />
-          <StatCard
-            title="Classes"
-            value={totalClasses}
-            icon={BookOpen}
-            variant="primary"
-          />
-          <StatCard
-            title="Presence"
+            title="Reservation"
             value={`${attendanceRate}%`}
             icon={ClipboardList}
             trend={{ value: 5, isPositive: true }}
             variant="success"
           />
           <StatCard
-            title="Cours"
+            title="Colis"
             value={courses.length}
             icon={Calendar}
             subtitle="Ce mois"
@@ -68,11 +55,11 @@ export default function EcodimDashboard() {
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3">
           <Button
-            render={<Link href="/ecodim/inscription" />}
+            render={<Link href={`${base}/inscription`} />}
             className="h-auto flex-col gap-2 py-4"
           >
             <Users className="size-5" />
-            <span className="text-sm">Inscrire un enfant</span>
+            <span className="text-sm">Inscrire un client</span>
           </Button>
           <Button
             variant="outline"
@@ -80,14 +67,14 @@ export default function EcodimDashboard() {
             className="h-auto flex-col gap-2 py-4"
           >
             <ClipboardList className="size-5" />
-            <span className="text-sm">Prendre presence</span>
+            <span className="text-sm">Reservation</span>
           </Button>
         </div>
 
         {/* Classes Overview */}
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base font-semibold">Classes</h2>
+            <h2 className="text-base font-semibold">Vols</h2>
             <Button
               variant="ghost"
               size="sm"
@@ -136,7 +123,7 @@ export default function EcodimDashboard() {
           </div>
           <ListGroup>
             {recentChildren.map((child) => {
-              const childClass = getClassById(child.classId)
+              const childClass = getClassById(child.classId);
               return (
                 <ListItem
                   key={child.id}
@@ -145,13 +132,14 @@ export default function EcodimDashboard() {
                   leading={
                     <Avatar className="size-10">
                       <AvatarFallback className="bg-accent/20 text-accent text-sm">
-                        {child.firstName[0]}{child.lastName[0]}
+                        {child.firstName[0]}
+                        {child.lastName[0]}
                       </AvatarFallback>
                     </Avatar>
                   }
                   href={`/ecodim/enfants/${child.id}`}
                 />
-              )
+              );
             })}
           </ListGroup>
         </section>
@@ -189,12 +177,12 @@ export default function EcodimDashboard() {
                           })}
                         </Badge>
                         {course.classIds.slice(0, 2).map((classId) => {
-                          const cls = getClassById(classId)
+                          const cls = getClassById(classId);
                           return (
                             <Badge key={classId} variant="secondary" className="text-xs">
                               {cls?.ageRange}
                             </Badge>
-                          )
+                          );
                         })}
                       </div>
                     </div>
@@ -216,27 +204,35 @@ export default function EcodimDashboard() {
               <div className="grid grid-cols-4 gap-2 text-center">
                 <div className="p-3 rounded-xl bg-success/10">
                   <p className="text-lg font-bold text-success">
-                    {lastAttendance.filter(r => r.status === "present").length}
+                    {lastAttendance.filter((r) => r.status === "present").length}
                   </p>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Presents</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                    Presents
+                  </p>
                 </div>
                 <div className="p-3 rounded-xl bg-destructive/10">
                   <p className="text-lg font-bold text-destructive">
-                    {lastAttendance.filter(r => r.status === "absent").length}
+                    {lastAttendance.filter((r) => r.status === "absent").length}
                   </p>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Absents</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                    Absents
+                  </p>
                 </div>
                 <div className="p-3 rounded-xl bg-warning/10">
                   <p className="text-lg font-bold text-warning-foreground">
-                    {lastAttendance.filter(r => r.status === "late").length}
+                    {lastAttendance.filter((r) => r.status === "late").length}
                   </p>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Retard</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                    Retard
+                  </p>
                 </div>
                 <div className="p-3 rounded-xl bg-muted">
                   <p className="text-lg font-bold">
-                    {lastAttendance.filter(r => r.status === "excused").length}
+                    {lastAttendance.filter((r) => r.status === "excused").length}
                   </p>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Excuses</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                    Excuses
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -250,7 +246,6 @@ export default function EcodimDashboard() {
           ← Accueil organisation
         </Button>
       </div>
-
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import { Resend } from "resend";
+import { sendMail, isSmtpConfigured } from "./mailer";
 
 const APP_NAME = process.env.APP_NAME ?? "J Ekklesia";
 
@@ -26,26 +26,17 @@ export async function sendVerificationEmail(input: {
     <p>— ${escapeHtml(APP_NAME)}</p>
   `;
 
-  const apiKey = process.env.RESEND_API_KEY;
   const from =
-    process.env.RESEND_FROM ??
-    (process.env.RESEND_DOMAIN
-      ? `noreply@${process.env.RESEND_DOMAIN}`
-      : `${APP_NAME} <onboarding@resend.dev>`);
+    process.env.EMAIL_FROM ??
+    (process.env.EMAIL_USER ? `${APP_NAME} <${process.env.EMAIL_USER}>` : `no-reply@example.com`);
 
-  if (apiKey) {
-    const resend = new Resend(apiKey);
-    const { error } = await resend.emails.send({
-      from,
-      to: input.to,
-      subject,
-      text,
-      html,
-    });
-    if (error) {
-      throw new Error(`Resend (${error.name}): ${error.message}`);
+  if (isSmtpConfigured()) {
+    try {
+      await sendMail({ from, to: input.to, subject, text, html });
+      return;
+    } catch (err: any) {
+      throw new Error(`Nodemailer: ${err?.message ?? String(err)}`);
     }
-    return;
   }
 
   if (process.env.NODE_ENV === "development") {
@@ -55,7 +46,7 @@ export async function sendVerificationEmail(input: {
   }
 
   // eslint-disable-next-line no-console
-  console.warn("[sendVerificationEmail] RESEND_API_KEY manquant : email non envoyé.");
+  console.warn("[sendVerificationEmail] SMTP non configuré : email non envoyé.");
 }
 
 function escapeHtml(s: string): string {
