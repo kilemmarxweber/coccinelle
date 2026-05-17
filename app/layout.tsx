@@ -7,13 +7,11 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
-  title: "Smart Church — EgliseManager",
+  title: "Coccinelle flying",
   description: "Application de gestion pour l’École du Dimanche et l’Église évangélique.",
 };
 
-export default async function RootLayout({
-  children,
-}: Readonly<{ children: ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html
       lang="fr"

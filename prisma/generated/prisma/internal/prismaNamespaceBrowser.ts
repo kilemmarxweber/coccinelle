@@ -58,7 +58,14 @@ export const ModelName = {
   Organization: 'Organization',
   OrganizationRole: 'OrganizationRole',
   Member: 'Member',
-  Invitation: 'Invitation'
+  Invitation: 'Invitation',
+  Client: 'Client',
+  Trajet: 'Trajet',
+  Passager: 'Passager',
+  Reservation: 'Reservation',
+  Colis: 'Colis',
+  Paiement: 'Paiement',
+  Penalite: 'Penalite'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -188,6 +195,120 @@ export const InvitationScalarFieldEnum = {
 } as const
 
 export type InvitationScalarFieldEnum = (typeof InvitationScalarFieldEnum)[keyof typeof InvitationScalarFieldEnum]
+
+
+export const ClientScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  dateInscription: 'dateInscription',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ClientScalarFieldEnum = (typeof ClientScalarFieldEnum)[keyof typeof ClientScalarFieldEnum]
+
+
+export const TrajetScalarFieldEnum = {
+  id: 'id',
+  villeDepart: 'villeDepart',
+  villeArrivee: 'villeArrivee',
+  kilosGratuits: 'kilosGratuits',
+  prixParKilo: 'prixParKilo',
+  prixBase: 'prixBase',
+  dureeEstimee: 'dureeEstimee',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TrajetScalarFieldEnum = (typeof TrajetScalarFieldEnum)[keyof typeof TrajetScalarFieldEnum]
+
+
+export const PassagerScalarFieldEnum = {
+  id: 'id',
+  reservationId: 'reservationId',
+  codeUnique: 'codeUnique',
+  clientId: 'clientId',
+  nom: 'nom',
+  prenom: 'prenom',
+  dateNaissance: 'dateNaissance',
+  categorie: 'categorie',
+  prix: 'prix',
+  type: 'type',
+  statut: 'statut',
+  ordre: 'ordre',
+  occupePlace: 'occupePlace',
+  createdAt: 'createdAt'
+} as const
+
+export type PassagerScalarFieldEnum = (typeof PassagerScalarFieldEnum)[keyof typeof PassagerScalarFieldEnum]
+
+
+export const ReservationScalarFieldEnum = {
+  id: 'id',
+  codeUnique: 'codeUnique',
+  clientId: 'clientId',
+  trajetId: 'trajetId',
+  dateDepart: 'dateDepart',
+  heureDepart: 'heureDepart',
+  statut: 'statut',
+  nombreKilos: 'nombreKilos',
+  surplusKilos: 'surplusKilos',
+  montantSurplus: 'montantSurplus',
+  prixBillet: 'prixBillet',
+  prixTotal: 'prixTotal',
+  penalite: 'penalite',
+  peutReporter: 'peutReporter',
+  dateLimiteReport: 'dateLimiteReport',
+  nombrePlaces: 'nombrePlaces',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReservationScalarFieldEnum = (typeof ReservationScalarFieldEnum)[keyof typeof ReservationScalarFieldEnum]
+
+
+export const ColisScalarFieldEnum = {
+  id: 'id',
+  codeUnique: 'codeUnique',
+  clientId: 'clientId',
+  trajetId: 'trajetId',
+  poids: 'poids',
+  kilosGratuits: 'kilosGratuits',
+  surplusKilos: 'surplusKilos',
+  montantAPayer: 'montantAPayer',
+  statut: 'statut',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ColisScalarFieldEnum = (typeof ColisScalarFieldEnum)[keyof typeof ColisScalarFieldEnum]
+
+
+export const PaiementScalarFieldEnum = {
+  id: 'id',
+  codeUnique: 'codeUnique',
+  reservationId: 'reservationId',
+  montant: 'montant',
+  methode: 'methode',
+  statut: 'statut',
+  reference: 'reference',
+  createdAt: 'createdAt'
+} as const
+
+export type PaiementScalarFieldEnum = (typeof PaiementScalarFieldEnum)[keyof typeof PaiementScalarFieldEnum]
+
+
+export const PenaliteScalarFieldEnum = {
+  id: 'id',
+  codeUnique: 'codeUnique',
+  reservationId: 'reservationId',
+  montant: 'montant',
+  raison: 'raison',
+  payee: 'payee',
+  createdAt: 'createdAt'
+} as const
+
+export type PenaliteScalarFieldEnum = (typeof PenaliteScalarFieldEnum)[keyof typeof PenaliteScalarFieldEnum]
 
 
 export const SortOrder = {

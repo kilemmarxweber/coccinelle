@@ -57,3 +57,39 @@ export type Member = Prisma.MemberModel
  * 
  */
 export type Invitation = Prisma.InvitationModel
+/**
+ * Model Client
+ * 
+ */
+export type Client = Prisma.ClientModel
+/**
+ * Model Trajet
+ * 
+ */
+export type Trajet = Prisma.TrajetModel
+/**
+ * Model Passager
+ * ///////////////////////
+ * ///////////////////////
+ */
+export type Passager = Prisma.PassagerModel
+/**
+ * Model Reservation
+ * 
+ */
+export type Reservation = Prisma.ReservationModel
+/**
+ * Model Colis
+ * 
+ */
+export type Colis = Prisma.ColisModel
+/**
+ * Model Paiement
+ * 
+ */
+export type Paiement = Prisma.PaiementModel
+/**
+ * Model Penalite
+ * 
+ */
+export type Penalite = Prisma.PenaliteModel

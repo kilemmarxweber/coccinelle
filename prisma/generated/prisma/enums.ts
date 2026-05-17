@@ -16,3 +16,58 @@ export const RoleFamille = {
 } as const
 
 export type RoleFamille = (typeof RoleFamille)[keyof typeof RoleFamille]
+
+
+export const StatutReservation = {
+  CONFIRME: 'CONFIRME',
+  EMBARQUE: 'EMBARQUE',
+  RATE: 'RATE',
+  REPORTE: 'REPORTE',
+  ANNULE: 'ANNULE'
+} as const
+
+export type StatutReservation = (typeof StatutReservation)[keyof typeof StatutReservation]
+
+
+export const StatutPaiement = {
+  EN_ATTENTE: 'EN_ATTENTE',
+  PAYE: 'PAYE',
+  ECHOUE: 'ECHOUE'
+} as const
+
+export type StatutPaiement = (typeof StatutPaiement)[keyof typeof StatutPaiement]
+
+
+export const MethodePaiement = {
+  CASH: 'CASH',
+  MOBILE_MONEY: 'MOBILE_MONEY',
+  CARTE: 'CARTE'
+} as const
+
+export type MethodePaiement = (typeof MethodePaiement)[keyof typeof MethodePaiement]
+
+
+export const StatutColis = {
+  EN_ATTENTE: 'EN_ATTENTE',
+  EXPEDIE: 'EXPEDIE',
+  LIVRE: 'LIVRE'
+} as const
+
+export type StatutColis = (typeof StatutColis)[keyof typeof StatutColis]
+
+
+export const TypePassager = {
+  CLIENT: 'CLIENT',
+  EXTERNE: 'EXTERNE'
+} as const
+
+export type TypePassager = (typeof TypePassager)[keyof typeof TypePassager]
+
+
+export const CategoriePassager = {
+  ADULTE: 'ADULTE',
+  ENFANT: 'ENFANT',
+  BEBE: 'BEBE'
+} as const
+
+export type CategoriePassager = (typeof CategoriePassager)[keyof typeof CategoriePassager]

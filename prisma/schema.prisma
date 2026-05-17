@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../prisma/generated/prisma"
@@ -12,18 +7,10 @@ datasource db {
   provider = "postgresql"
 }
 
-// ENUMS
-
-enum RoleFamille {
-  CHEF
-  CONJOINT
-  ENFANT
-}
-
 model User {
   id            String       @id
   name          String
-  email         String
+  email         String       @unique
   emailVerified Boolean      @default(false)
   image         String?
   createdAt     DateTime     @default(now())
@@ -32,29 +19,28 @@ model User {
   banned        Boolean?     @default(false)
   banReason     String?
   banExpires    DateTime?
-  sessions      Session[]
+  client        Client?
   accounts      Account[]
-  members       Member[]
   invitations   Invitation[]
+  members       Member[]
+  sessions      Session[]
 
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
   id                   String   @id
   expiresAt            DateTime
-  token                String
+  token                String   @unique
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
   ipAddress            String?
   userAgent            String?
   userId               String
-  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   impersonatedBy       String?
   activeOrganizationId String?
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@index([userId])
   @@map("session")
 }
@@ -64,7 +50,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -74,6 +59,7 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")
@@ -94,26 +80,25 @@ model Verification {
 model Organization {
   id                String             @id
   name              String
-  slug              String
+  slug              String             @unique
   logo              String?
   createdAt         DateTime
   metadata          String?
-  organizationroles OrganizationRole[]
-  members           Member[]
   invitations       Invitation[]
+  members           Member[]
+  organizationroles OrganizationRole[]
 
-  @@unique([slug])
   @@map("organization")
 }
 
 model OrganizationRole {
   id             String       @id
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   role           String
   permission     String
   createdAt      DateTime     @default(now())
   updatedAt      DateTime?    @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
   @@index([role])
@@ -123,11 +108,11 @@ model OrganizationRole {
 model Member {
   id             String       @id
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   userId         String
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   role           String       @default("member")
   createdAt      DateTime
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
   @@index([userId])
@@ -137,7 +122,6 @@ model Member {
 model Invitation {
   id             String       @id
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   email          String
   role           String?
   status         String       @default("pending")
@@ -145,192 +129,149 @@ model Invitation {
   createdAt      DateTime     @default(now())
   inviterId      String
   user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
   @@index([email])
   @@map("invitation")
 }
 
-//////////////////////////
-// 👤 CLIENTS
-//////////////////////////
-
 model Client {
-  id                String   @id @default(uuid())
-
-  nom               String
-  postnom           String
-  prenom            String
-  sexe              String
-  dateNaissance     DateTime
-
-  telephone         String   @unique
-  email             String?  @unique
-  numeroIdentite    String   @unique
-
-  adresse           String?
-  nationalite       String?
-  photo             String?
-
-  statut            String   @default("actif") // actif, bloqué
-  dateInscription   DateTime @default(now())
-
-  reservations      Reservation[]
-  colis             Colis[]
-
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  @@index([telephone])
+  id              String        @id @default(uuid())
+  userId          String        @unique
+  dateInscription DateTime      @default(now())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  colis           Colis[]
+  passagers       Passager[]
+  reservations    Reservation[]
 }
 
-//////////////////////////
-// ✈️ TRAJETS
-//////////////////////////
-
 model Trajet {
-  id                String   @id @default(uuid())
-
-  villeDepart       String
-  villeArrivee      String
-
-  kilosGratuits     Float
-  prixParKilo       Float
-  prixBase          Float
-
-  dureeEstimee      Int?
-
-  reservations      Reservation[]
-  colis             Colis[]
-
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id            String        @id @default(uuid())
+  villeDepart   String
+  villeArrivee  String
+  kilosGratuits Float
+  prixParKilo   Float
+  prixBase      Float
+  dureeEstimee  Int?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  colis         Colis[]
+  reservations  Reservation[]
 
   @@index([villeDepart, villeArrivee])
 }
 
-//////////////////////////
-// 📅 RÉSERVATIONS (QR CODE)
-//////////////////////////
+/// ///////////////////////
+/// ///////////////////////
+model Passager {
+  id            String            @id @default(uuid())
+  reservationId String
+  codeUnique    String            @unique
+  clientId      String?
+  nom           String
+  prenom        String
+  dateNaissance DateTime?
+  categorie     CategoriePassager
+  prix          Float
+  type          TypePassager
+  statut        TypePassager
+  ordre         Int
+  occupePlace   Boolean           @default(true)
+  createdAt     DateTime          @default(now())
+  client        Client?           @relation(fields: [clientId], references: [id])
+  reservation   Reservation       @relation(fields: [reservationId], references: [id])
+
+  @@index([type])
+  @@index([reservationId])
+  @@index([clientId])
+}
 
 model Reservation {
-  id                  String   @id @default(uuid())
-
-  codeUnique          String   @unique // QR / code-barres
-
-  clientId            String
-  trajetId            String
-
-  client              Client   @relation(fields: [clientId], references: [id])
-  trajet              Trajet   @relation(fields: [trajetId], references: [id])
-
-  dateDepart          DateTime
-  heureDepart         String
-
-  statut              StatutReservation @default(CONFIRME)
-
-  nombreKilos         Float?
-  surplusKilos        Float?
-  montantSurplus      Float?
-
-  prixBillet          Float
-  prixTotal           Float
-
-  penalite            Float? @default(0)
-
-  peutReporter        Boolean @default(true)
-  dateLimiteReport    DateTime?
-
-  paiements           Paiement[]
-  penalites           Penalite[]
-
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id               String            @id @default(uuid())
+  codeUnique       String            @unique
+  clientId         String
+  trajetId         String
+  dateDepart       DateTime
+  heureDepart      String
+  statut           StatutReservation @default(CONFIRME)
+  nombreKilos      Float?
+  surplusKilos     Float?
+  montantSurplus   Float?
+  prixBillet       Float
+  prixTotal        Float
+  penalite         Float?            @default(0)
+  peutReporter     Boolean           @default(true)
+  dateLimiteReport DateTime?
+  nombrePlaces     Int
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  paiements        Paiement[]
+  passagers        Passager[]
+  penalites        Penalite[]
+  client           Client            @relation(fields: [clientId], references: [id])
+  trajet           Trajet            @relation(fields: [trajetId], references: [id])
 
   @@index([clientId])
   @@index([trajetId])
   @@index([codeUnique])
 }
-
-//////////////////////////
-// 📦 COLIS (QR CODE)
-//////////////////////////
 
 model Colis {
-  id                String   @id @default(uuid())
-
-  codeUnique        String   @unique // QR / code-barres
-
-  clientId          String
-  trajetId          String
-
-  client            Client   @relation(fields: [clientId], references: [id])
-  trajet            Trajet   @relation(fields: [trajetId], references: [id])
-
-  poids             Float
-  kilosGratuits     Float
-  surplusKilos      Float
-  montantAPayer     Float
-
-  statut            StatutColis @default(EN_ATTENTE)
-
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id            String      @id @default(uuid())
+  codeUnique    String      @unique
+  clientId      String
+  trajetId      String
+  poids         Float
+  kilosGratuits Float
+  surplusKilos  Float
+  montantAPayer Float
+  statut        StatutColis @default(EN_ATTENTE)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  client        Client      @relation(fields: [clientId], references: [id])
+  trajet        Trajet      @relation(fields: [trajetId], references: [id])
 
   @@index([clientId])
   @@index([trajetId])
   @@index([codeUnique])
 }
 
-//////////////////////////
-// 💰 PAIEMENTS
-//////////////////////////
-
 model Paiement {
-  id                String   @id @default(uuid())
-
-  codeUnique        String   @unique // QR paiement (optionnel mais pro)
-
-  reservationId     String
-  reservation       Reservation @relation(fields: [reservationId], references: [id])
-
-  montant           Float
-  methode           MethodePaiement
-  statut            StatutPaiement @default(EN_ATTENTE)
-
-  reference         String? // mobile money / banque
-
-  createdAt         DateTime @default(now())
+  id            String          @id @default(uuid())
+  codeUnique    String          @unique
+  reservationId String
+  montant       Float
+  methode       MethodePaiement
+  statut        StatutPaiement  @default(EN_ATTENTE)
+  reference     String?
+  createdAt     DateTime        @default(now())
+  reservation   Reservation     @relation(fields: [reservationId], references: [id])
 
   @@index([reservationId])
   @@index([codeUnique])
 }
 
-//////////////////////////
-// ⚠️ PÉNALITÉS
-//////////////////////////
-
 model Penalite {
-  id                String   @id @default(uuid())
-
-  codeUnique        String   @unique // QR pénalité
-
-  reservationId     String
-  reservation       Reservation @relation(fields: [reservationId], references: [id])
-
-  montant           Float
-  raison            String
-
-  payee             Boolean @default(false)
-
-  createdAt         DateTime @default(now())
+  id            String      @id @default(uuid())
+  codeUnique    String      @unique
+  reservationId String
+  montant       Float
+  raison        String
+  payee         Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
 
   @@index([reservationId])
 }
 
-//////////////////////////
-// ENUMS
-//////////////////////////
+enum RoleFamille {
+  CHEF
+  CONJOINT
+  ENFANT
+}
 
 enum StatutReservation {
   CONFIRME
@@ -356,4 +297,15 @@ enum StatutColis {
   EN_ATTENTE
   EXPEDIE
   LIVRE
+}
+
+enum TypePassager {
+  CLIENT
+  EXTERNE
+}
+
+enum CategoriePassager {
+  ADULTE
+  ENFANT
+  BEBE
 }
