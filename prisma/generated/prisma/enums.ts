@@ -71,3 +71,32 @@ export const CategoriePassager = {
 } as const
 
 export type CategoriePassager = (typeof CategoriePassager)[keyof typeof CategoriePassager]
+
+
+export const TypeColis = {
+  ORDINAIRE: 'ORDINAIRE',
+  SPECIAL: 'SPECIAL'
+} as const
+
+export type TypeColis = (typeof TypeColis)[keyof typeof TypeColis]
+
+
+export const TypeSexe = {
+  M: 'M',
+  F: 'F'
+} as const
+
+export type TypeSexe = (typeof TypeSexe)[keyof typeof TypeSexe]
+
+
+export const JourSemaine = {
+  LUNDI: 'LUNDI',
+  MARDI: 'MARDI',
+  MERCREDI: 'MERCREDI',
+  JEUDI: 'JEUDI',
+  VENDREDI: 'VENDREDI',
+  SAMEDI: 'SAMEDI',
+  DIMANCHE: 'DIMANCHE'
+} as const
+
+export type JourSemaine = (typeof JourSemaine)[keyof typeof JourSemaine]

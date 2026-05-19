@@ -260,8 +260,8 @@ export type TrajetWhereInput = {
   dureeEstimee?: Prisma.IntNullableFilter<"Trajet"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Trajet"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Trajet"> | Date | string
-  colis?: Prisma.ColisListRelationFilter
-  reservations?: Prisma.ReservationListRelationFilter
+  trajetProgramme?: Prisma.TrajetProgrammeListRelationFilter
+  trajetDepart?: Prisma.TrajetDepartListRelationFilter
 }
 
 export type TrajetOrderByWithRelationInput = {
@@ -274,8 +274,8 @@ export type TrajetOrderByWithRelationInput = {
   dureeEstimee?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  colis?: Prisma.ColisOrderByRelationAggregateInput
-  reservations?: Prisma.ReservationOrderByRelationAggregateInput
+  trajetProgramme?: Prisma.TrajetProgrammeOrderByRelationAggregateInput
+  trajetDepart?: Prisma.TrajetDepartOrderByRelationAggregateInput
 }
 
 export type TrajetWhereUniqueInput = Prisma.AtLeast<{
@@ -291,8 +291,8 @@ export type TrajetWhereUniqueInput = Prisma.AtLeast<{
   dureeEstimee?: Prisma.IntNullableFilter<"Trajet"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Trajet"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Trajet"> | Date | string
-  colis?: Prisma.ColisListRelationFilter
-  reservations?: Prisma.ReservationListRelationFilter
+  trajetProgramme?: Prisma.TrajetProgrammeListRelationFilter
+  trajetDepart?: Prisma.TrajetDepartListRelationFilter
 }, "id">
 
 export type TrajetOrderByWithAggregationInput = {
@@ -337,8 +337,8 @@ export type TrajetCreateInput = {
   dureeEstimee?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  colis?: Prisma.ColisCreateNestedManyWithoutTrajetInput
-  reservations?: Prisma.ReservationCreateNestedManyWithoutTrajetInput
+  trajetProgramme?: Prisma.TrajetProgrammeCreateNestedManyWithoutTrajetInput
+  trajetDepart?: Prisma.TrajetDepartCreateNestedManyWithoutTrajetInput
 }
 
 export type TrajetUncheckedCreateInput = {
@@ -351,8 +351,8 @@ export type TrajetUncheckedCreateInput = {
   dureeEstimee?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  colis?: Prisma.ColisUncheckedCreateNestedManyWithoutTrajetInput
-  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutTrajetInput
+  trajetProgramme?: Prisma.TrajetProgrammeUncheckedCreateNestedManyWithoutTrajetInput
+  trajetDepart?: Prisma.TrajetDepartUncheckedCreateNestedManyWithoutTrajetInput
 }
 
 export type TrajetUpdateInput = {
@@ -365,8 +365,8 @@ export type TrajetUpdateInput = {
   dureeEstimee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  colis?: Prisma.ColisUpdateManyWithoutTrajetNestedInput
-  reservations?: Prisma.ReservationUpdateManyWithoutTrajetNestedInput
+  trajetProgramme?: Prisma.TrajetProgrammeUpdateManyWithoutTrajetNestedInput
+  trajetDepart?: Prisma.TrajetDepartUpdateManyWithoutTrajetNestedInput
 }
 
 export type TrajetUncheckedUpdateInput = {
@@ -379,8 +379,8 @@ export type TrajetUncheckedUpdateInput = {
   dureeEstimee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  colis?: Prisma.ColisUncheckedUpdateManyWithoutTrajetNestedInput
-  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutTrajetNestedInput
+  trajetProgramme?: Prisma.TrajetProgrammeUncheckedUpdateManyWithoutTrajetNestedInput
+  trajetDepart?: Prisma.TrajetDepartUncheckedUpdateManyWithoutTrajetNestedInput
 }
 
 export type TrajetCreateManyInput = {
@@ -490,35 +490,35 @@ export type NullableIntFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type TrajetCreateNestedOneWithoutReservationsInput = {
-  create?: Prisma.XOR<Prisma.TrajetCreateWithoutReservationsInput, Prisma.TrajetUncheckedCreateWithoutReservationsInput>
-  connectOrCreate?: Prisma.TrajetCreateOrConnectWithoutReservationsInput
+export type TrajetCreateNestedOneWithoutTrajetProgrammeInput = {
+  create?: Prisma.XOR<Prisma.TrajetCreateWithoutTrajetProgrammeInput, Prisma.TrajetUncheckedCreateWithoutTrajetProgrammeInput>
+  connectOrCreate?: Prisma.TrajetCreateOrConnectWithoutTrajetProgrammeInput
   connect?: Prisma.TrajetWhereUniqueInput
 }
 
-export type TrajetUpdateOneRequiredWithoutReservationsNestedInput = {
-  create?: Prisma.XOR<Prisma.TrajetCreateWithoutReservationsInput, Prisma.TrajetUncheckedCreateWithoutReservationsInput>
-  connectOrCreate?: Prisma.TrajetCreateOrConnectWithoutReservationsInput
-  upsert?: Prisma.TrajetUpsertWithoutReservationsInput
+export type TrajetUpdateOneRequiredWithoutTrajetProgrammeNestedInput = {
+  create?: Prisma.XOR<Prisma.TrajetCreateWithoutTrajetProgrammeInput, Prisma.TrajetUncheckedCreateWithoutTrajetProgrammeInput>
+  connectOrCreate?: Prisma.TrajetCreateOrConnectWithoutTrajetProgrammeInput
+  upsert?: Prisma.TrajetUpsertWithoutTrajetProgrammeInput
   connect?: Prisma.TrajetWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.TrajetUpdateToOneWithWhereWithoutReservationsInput, Prisma.TrajetUpdateWithoutReservationsInput>, Prisma.TrajetUncheckedUpdateWithoutReservationsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TrajetUpdateToOneWithWhereWithoutTrajetProgrammeInput, Prisma.TrajetUpdateWithoutTrajetProgrammeInput>, Prisma.TrajetUncheckedUpdateWithoutTrajetProgrammeInput>
 }
 
-export type TrajetCreateNestedOneWithoutColisInput = {
-  create?: Prisma.XOR<Prisma.TrajetCreateWithoutColisInput, Prisma.TrajetUncheckedCreateWithoutColisInput>
-  connectOrCreate?: Prisma.TrajetCreateOrConnectWithoutColisInput
+export type TrajetCreateNestedOneWithoutTrajetDepartInput = {
+  create?: Prisma.XOR<Prisma.TrajetCreateWithoutTrajetDepartInput, Prisma.TrajetUncheckedCreateWithoutTrajetDepartInput>
+  connectOrCreate?: Prisma.TrajetCreateOrConnectWithoutTrajetDepartInput
   connect?: Prisma.TrajetWhereUniqueInput
 }
 
-export type TrajetUpdateOneRequiredWithoutColisNestedInput = {
-  create?: Prisma.XOR<Prisma.TrajetCreateWithoutColisInput, Prisma.TrajetUncheckedCreateWithoutColisInput>
-  connectOrCreate?: Prisma.TrajetCreateOrConnectWithoutColisInput
-  upsert?: Prisma.TrajetUpsertWithoutColisInput
+export type TrajetUpdateOneRequiredWithoutTrajetDepartNestedInput = {
+  create?: Prisma.XOR<Prisma.TrajetCreateWithoutTrajetDepartInput, Prisma.TrajetUncheckedCreateWithoutTrajetDepartInput>
+  connectOrCreate?: Prisma.TrajetCreateOrConnectWithoutTrajetDepartInput
+  upsert?: Prisma.TrajetUpsertWithoutTrajetDepartInput
   connect?: Prisma.TrajetWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.TrajetUpdateToOneWithWhereWithoutColisInput, Prisma.TrajetUpdateWithoutColisInput>, Prisma.TrajetUncheckedUpdateWithoutColisInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TrajetUpdateToOneWithWhereWithoutTrajetDepartInput, Prisma.TrajetUpdateWithoutTrajetDepartInput>, Prisma.TrajetUncheckedUpdateWithoutTrajetDepartInput>
 }
 
-export type TrajetCreateWithoutReservationsInput = {
+export type TrajetCreateWithoutTrajetProgrammeInput = {
   id?: string
   villeDepart: string
   villeArrivee: string
@@ -528,10 +528,10 @@ export type TrajetCreateWithoutReservationsInput = {
   dureeEstimee?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  colis?: Prisma.ColisCreateNestedManyWithoutTrajetInput
+  trajetDepart?: Prisma.TrajetDepartCreateNestedManyWithoutTrajetInput
 }
 
-export type TrajetUncheckedCreateWithoutReservationsInput = {
+export type TrajetUncheckedCreateWithoutTrajetProgrammeInput = {
   id?: string
   villeDepart: string
   villeArrivee: string
@@ -541,26 +541,26 @@ export type TrajetUncheckedCreateWithoutReservationsInput = {
   dureeEstimee?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  colis?: Prisma.ColisUncheckedCreateNestedManyWithoutTrajetInput
+  trajetDepart?: Prisma.TrajetDepartUncheckedCreateNestedManyWithoutTrajetInput
 }
 
-export type TrajetCreateOrConnectWithoutReservationsInput = {
+export type TrajetCreateOrConnectWithoutTrajetProgrammeInput = {
   where: Prisma.TrajetWhereUniqueInput
-  create: Prisma.XOR<Prisma.TrajetCreateWithoutReservationsInput, Prisma.TrajetUncheckedCreateWithoutReservationsInput>
+  create: Prisma.XOR<Prisma.TrajetCreateWithoutTrajetProgrammeInput, Prisma.TrajetUncheckedCreateWithoutTrajetProgrammeInput>
 }
 
-export type TrajetUpsertWithoutReservationsInput = {
-  update: Prisma.XOR<Prisma.TrajetUpdateWithoutReservationsInput, Prisma.TrajetUncheckedUpdateWithoutReservationsInput>
-  create: Prisma.XOR<Prisma.TrajetCreateWithoutReservationsInput, Prisma.TrajetUncheckedCreateWithoutReservationsInput>
+export type TrajetUpsertWithoutTrajetProgrammeInput = {
+  update: Prisma.XOR<Prisma.TrajetUpdateWithoutTrajetProgrammeInput, Prisma.TrajetUncheckedUpdateWithoutTrajetProgrammeInput>
+  create: Prisma.XOR<Prisma.TrajetCreateWithoutTrajetProgrammeInput, Prisma.TrajetUncheckedCreateWithoutTrajetProgrammeInput>
   where?: Prisma.TrajetWhereInput
 }
 
-export type TrajetUpdateToOneWithWhereWithoutReservationsInput = {
+export type TrajetUpdateToOneWithWhereWithoutTrajetProgrammeInput = {
   where?: Prisma.TrajetWhereInput
-  data: Prisma.XOR<Prisma.TrajetUpdateWithoutReservationsInput, Prisma.TrajetUncheckedUpdateWithoutReservationsInput>
+  data: Prisma.XOR<Prisma.TrajetUpdateWithoutTrajetProgrammeInput, Prisma.TrajetUncheckedUpdateWithoutTrajetProgrammeInput>
 }
 
-export type TrajetUpdateWithoutReservationsInput = {
+export type TrajetUpdateWithoutTrajetProgrammeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
@@ -570,10 +570,10 @@ export type TrajetUpdateWithoutReservationsInput = {
   dureeEstimee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  colis?: Prisma.ColisUpdateManyWithoutTrajetNestedInput
+  trajetDepart?: Prisma.TrajetDepartUpdateManyWithoutTrajetNestedInput
 }
 
-export type TrajetUncheckedUpdateWithoutReservationsInput = {
+export type TrajetUncheckedUpdateWithoutTrajetProgrammeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
@@ -583,10 +583,10 @@ export type TrajetUncheckedUpdateWithoutReservationsInput = {
   dureeEstimee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  colis?: Prisma.ColisUncheckedUpdateManyWithoutTrajetNestedInput
+  trajetDepart?: Prisma.TrajetDepartUncheckedUpdateManyWithoutTrajetNestedInput
 }
 
-export type TrajetCreateWithoutColisInput = {
+export type TrajetCreateWithoutTrajetDepartInput = {
   id?: string
   villeDepart: string
   villeArrivee: string
@@ -596,10 +596,10 @@ export type TrajetCreateWithoutColisInput = {
   dureeEstimee?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  reservations?: Prisma.ReservationCreateNestedManyWithoutTrajetInput
+  trajetProgramme?: Prisma.TrajetProgrammeCreateNestedManyWithoutTrajetInput
 }
 
-export type TrajetUncheckedCreateWithoutColisInput = {
+export type TrajetUncheckedCreateWithoutTrajetDepartInput = {
   id?: string
   villeDepart: string
   villeArrivee: string
@@ -609,26 +609,26 @@ export type TrajetUncheckedCreateWithoutColisInput = {
   dureeEstimee?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutTrajetInput
+  trajetProgramme?: Prisma.TrajetProgrammeUncheckedCreateNestedManyWithoutTrajetInput
 }
 
-export type TrajetCreateOrConnectWithoutColisInput = {
+export type TrajetCreateOrConnectWithoutTrajetDepartInput = {
   where: Prisma.TrajetWhereUniqueInput
-  create: Prisma.XOR<Prisma.TrajetCreateWithoutColisInput, Prisma.TrajetUncheckedCreateWithoutColisInput>
+  create: Prisma.XOR<Prisma.TrajetCreateWithoutTrajetDepartInput, Prisma.TrajetUncheckedCreateWithoutTrajetDepartInput>
 }
 
-export type TrajetUpsertWithoutColisInput = {
-  update: Prisma.XOR<Prisma.TrajetUpdateWithoutColisInput, Prisma.TrajetUncheckedUpdateWithoutColisInput>
-  create: Prisma.XOR<Prisma.TrajetCreateWithoutColisInput, Prisma.TrajetUncheckedCreateWithoutColisInput>
+export type TrajetUpsertWithoutTrajetDepartInput = {
+  update: Prisma.XOR<Prisma.TrajetUpdateWithoutTrajetDepartInput, Prisma.TrajetUncheckedUpdateWithoutTrajetDepartInput>
+  create: Prisma.XOR<Prisma.TrajetCreateWithoutTrajetDepartInput, Prisma.TrajetUncheckedCreateWithoutTrajetDepartInput>
   where?: Prisma.TrajetWhereInput
 }
 
-export type TrajetUpdateToOneWithWhereWithoutColisInput = {
+export type TrajetUpdateToOneWithWhereWithoutTrajetDepartInput = {
   where?: Prisma.TrajetWhereInput
-  data: Prisma.XOR<Prisma.TrajetUpdateWithoutColisInput, Prisma.TrajetUncheckedUpdateWithoutColisInput>
+  data: Prisma.XOR<Prisma.TrajetUpdateWithoutTrajetDepartInput, Prisma.TrajetUncheckedUpdateWithoutTrajetDepartInput>
 }
 
-export type TrajetUpdateWithoutColisInput = {
+export type TrajetUpdateWithoutTrajetDepartInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
@@ -638,10 +638,10 @@ export type TrajetUpdateWithoutColisInput = {
   dureeEstimee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  reservations?: Prisma.ReservationUpdateManyWithoutTrajetNestedInput
+  trajetProgramme?: Prisma.TrajetProgrammeUpdateManyWithoutTrajetNestedInput
 }
 
-export type TrajetUncheckedUpdateWithoutColisInput = {
+export type TrajetUncheckedUpdateWithoutTrajetDepartInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
@@ -651,7 +651,7 @@ export type TrajetUncheckedUpdateWithoutColisInput = {
   dureeEstimee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutTrajetNestedInput
+  trajetProgramme?: Prisma.TrajetProgrammeUncheckedUpdateManyWithoutTrajetNestedInput
 }
 
 
@@ -660,13 +660,13 @@ export type TrajetUncheckedUpdateWithoutColisInput = {
  */
 
 export type TrajetCountOutputType = {
-  colis: number
-  reservations: number
+  trajetProgramme: number
+  trajetDepart: number
 }
 
 export type TrajetCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  colis?: boolean | TrajetCountOutputTypeCountColisArgs
-  reservations?: boolean | TrajetCountOutputTypeCountReservationsArgs
+  trajetProgramme?: boolean | TrajetCountOutputTypeCountTrajetProgrammeArgs
+  trajetDepart?: boolean | TrajetCountOutputTypeCountTrajetDepartArgs
 }
 
 /**
@@ -682,15 +682,15 @@ export type TrajetCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exten
 /**
  * TrajetCountOutputType without action
  */
-export type TrajetCountOutputTypeCountColisArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ColisWhereInput
+export type TrajetCountOutputTypeCountTrajetProgrammeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TrajetProgrammeWhereInput
 }
 
 /**
  * TrajetCountOutputType without action
  */
-export type TrajetCountOutputTypeCountReservationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ReservationWhereInput
+export type TrajetCountOutputTypeCountTrajetDepartArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TrajetDepartWhereInput
 }
 
 
@@ -704,8 +704,8 @@ export type TrajetSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   dureeEstimee?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  colis?: boolean | Prisma.Trajet$colisArgs<ExtArgs>
-  reservations?: boolean | Prisma.Trajet$reservationsArgs<ExtArgs>
+  trajetProgramme?: boolean | Prisma.Trajet$trajetProgrammeArgs<ExtArgs>
+  trajetDepart?: boolean | Prisma.Trajet$trajetDepartArgs<ExtArgs>
   _count?: boolean | Prisma.TrajetCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["trajet"]>
 
@@ -747,8 +747,8 @@ export type TrajetSelectScalar = {
 
 export type TrajetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "villeDepart" | "villeArrivee" | "kilosGratuits" | "prixParKilo" | "prixBase" | "dureeEstimee" | "createdAt" | "updatedAt", ExtArgs["result"]["trajet"]>
 export type TrajetInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  colis?: boolean | Prisma.Trajet$colisArgs<ExtArgs>
-  reservations?: boolean | Prisma.Trajet$reservationsArgs<ExtArgs>
+  trajetProgramme?: boolean | Prisma.Trajet$trajetProgrammeArgs<ExtArgs>
+  trajetDepart?: boolean | Prisma.Trajet$trajetDepartArgs<ExtArgs>
   _count?: boolean | Prisma.TrajetCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TrajetIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -757,8 +757,8 @@ export type TrajetIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type $TrajetPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Trajet"
   objects: {
-    colis: Prisma.$ColisPayload<ExtArgs>[]
-    reservations: Prisma.$ReservationPayload<ExtArgs>[]
+    trajetProgramme: Prisma.$TrajetProgrammePayload<ExtArgs>[]
+    trajetDepart: Prisma.$TrajetDepartPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1164,8 +1164,8 @@ readonly fields: TrajetFieldRefs;
  */
 export interface Prisma__TrajetClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  colis<T extends Prisma.Trajet$colisArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Trajet$colisArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ColisPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  reservations<T extends Prisma.Trajet$reservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Trajet$reservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  trajetProgramme<T extends Prisma.Trajet$trajetProgrammeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Trajet$trajetProgrammeArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrajetProgrammePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  trajetDepart<T extends Prisma.Trajet$trajetDepartArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Trajet$trajetDepartArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrajetDepartPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1597,51 +1597,51 @@ export type TrajetDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
 }
 
 /**
- * Trajet.colis
+ * Trajet.trajetProgramme
  */
-export type Trajet$colisArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Trajet$trajetProgrammeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Colis
+   * Select specific fields to fetch from the TrajetProgramme
    */
-  select?: Prisma.ColisSelect<ExtArgs> | null
+  select?: Prisma.TrajetProgrammeSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Colis
+   * Omit specific fields from the TrajetProgramme
    */
-  omit?: Prisma.ColisOmit<ExtArgs> | null
+  omit?: Prisma.TrajetProgrammeOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ColisInclude<ExtArgs> | null
-  where?: Prisma.ColisWhereInput
-  orderBy?: Prisma.ColisOrderByWithRelationInput | Prisma.ColisOrderByWithRelationInput[]
-  cursor?: Prisma.ColisWhereUniqueInput
+  include?: Prisma.TrajetProgrammeInclude<ExtArgs> | null
+  where?: Prisma.TrajetProgrammeWhereInput
+  orderBy?: Prisma.TrajetProgrammeOrderByWithRelationInput | Prisma.TrajetProgrammeOrderByWithRelationInput[]
+  cursor?: Prisma.TrajetProgrammeWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.ColisScalarFieldEnum | Prisma.ColisScalarFieldEnum[]
+  distinct?: Prisma.TrajetProgrammeScalarFieldEnum | Prisma.TrajetProgrammeScalarFieldEnum[]
 }
 
 /**
- * Trajet.reservations
+ * Trajet.trajetDepart
  */
-export type Trajet$reservationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Trajet$trajetDepartArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Reservation
+   * Select specific fields to fetch from the TrajetDepart
    */
-  select?: Prisma.ReservationSelect<ExtArgs> | null
+  select?: Prisma.TrajetDepartSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Reservation
+   * Omit specific fields from the TrajetDepart
    */
-  omit?: Prisma.ReservationOmit<ExtArgs> | null
+  omit?: Prisma.TrajetDepartOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ReservationInclude<ExtArgs> | null
-  where?: Prisma.ReservationWhereInput
-  orderBy?: Prisma.ReservationOrderByWithRelationInput | Prisma.ReservationOrderByWithRelationInput[]
-  cursor?: Prisma.ReservationWhereUniqueInput
+  include?: Prisma.TrajetDepartInclude<ExtArgs> | null
+  where?: Prisma.TrajetDepartWhereInput
+  orderBy?: Prisma.TrajetDepartOrderByWithRelationInput | Prisma.TrajetDepartOrderByWithRelationInput[]
+  cursor?: Prisma.TrajetDepartWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.ReservationScalarFieldEnum | Prisma.ReservationScalarFieldEnum[]
+  distinct?: Prisma.TrajetDepartScalarFieldEnum | Prisma.TrajetDepartScalarFieldEnum[]
 }
 
 /**

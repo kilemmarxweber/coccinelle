@@ -8,7 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "Coccinelle flying",
-  description: "Application de gestion pour l’École du Dimanche et l’Église évangélique.",
+  description: "Application de gestion de voyages.",
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

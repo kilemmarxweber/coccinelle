@@ -1,9 +1,21 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-
+@import "react-phone-number-input/style.css";
 @custom-variant dark (&:is(.dark *));
 
+.PhoneInputCountry {
+  transform: scale(0.75);
+  margin-right: 6px;
+}
+
+.PhoneInputCountrySelectArrow {
+  display: none;
+}
+.rdp-day_available:hover {
+  background-color: #22c55e !important;
+  color: white;
+}
 @theme inline {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-heading: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -57,8 +69,8 @@
   --card-foreground: oklch(0.2 0.02 45);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.2 0.02 45);
-  --primary: oklch(0.55 0.15 45);
-  --primary-foreground: oklch(0.99 0 0);
+  --primary: oklch(0.62 0.18 255);
+  --primary-foreground: oklch(0.98 0 0);
   --secondary: oklch(0.95 0.02 80);
   --secondary-foreground: oklch(0.3 0.02 45);
   --muted: oklch(0.95 0.01 80);
@@ -69,7 +81,7 @@
   --destructive-foreground: oklch(0.99 0 0);
   --border: oklch(0.9 0.01 80);
   --input: oklch(0.92 0.01 80);
-  --ring: oklch(0.55 0.15 45);
+  --ring: oklch(0.62 0.18 255);
   --chart-1: oklch(0.55 0.15 45);
   --chart-2: oklch(0.65 0.12 160);
   --chart-3: oklch(0.7 0.15 85);

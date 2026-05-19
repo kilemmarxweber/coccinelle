@@ -1,41 +1,50 @@
 "use server";
-
 import "dotenv/config";
 import prisma from "@/lib/prisma";
 
 export async function seedClients() {
-  console.log("👤 Seeding clients...");
-
-  const clientsData = [
-    { name: "Jean Kabasele", email: "jean@test.com" },
-    { name: "Amina Mbuyi", email: "amina@test.com" },
+  const users = [
+    { id: "user-1", name: "Jean Kabasele", email: "jean@test.com" },
+    { id: "user-2", name: "Amina Mbuyi", email: "amina@test.com" },
   ];
 
-  for (const c of clientsData) {
+  for (const u of users) {
     const user = await prisma.user.upsert({
-      where: { email: c.email },
+      where: { email: u.email },
       update: {},
       create: {
-        id: crypto.randomUUID(),
-        name: c.name,
-        email: c.email,
+        id: u.id,
+        name: u.name,
+        email: u.email,
         role: "client",
       },
     });
 
-    const existing = await prisma.client.findFirst({
-      where: { userId: user.id },
+    // 🔗 MEMBER (organization)
+    await prisma.member.upsert({
+      where: {
+        id: `${u.id}-member`,
+      },
+      update: {},
+      create: {
+        id: `${u.id}-member`,
+        userId: user.id,
+        organizationId: "org-1",
+        role: "member",
+        createdAt: new Date(),
+      },
     });
 
-    if (!existing) {
-      await prisma.client.create({
-        data: {
-          id: crypto.randomUUID(),
-          userId: user.id,
-        },
-      });
-    }
+    // 👤 CLIENT
+    await prisma.client.upsert({
+      where: { userId: user.id },
+      update: {},
+      create: {
+        id: `client-${u.id}`,
+        userId: user.id,
+        telephone: "+243900000000",
+        societe: "Test Company",
+      },
+    });
   }
-
-  console.log("✅ Clients OK");
 }

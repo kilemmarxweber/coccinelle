@@ -3,25 +3,24 @@ import "dotenv/config";
 import prisma from "@/lib/prisma";
 
 export async function seedColis() {
-  console.log("📦 Seeding colis...");
-
   const clients = await prisma.client.findMany();
   const trajets = await prisma.trajet.findMany();
 
-  for (let i = 0; i < 5; i++) {
-    await prisma.colis.create({
-      data: {
-        id: crypto.randomUUID(),
-        codeUnique: `COL-${Date.now()}-${i}`,
-        clientId: clients[i % clients.length].id,
-        trajetId: trajets[i % trajets.length].id,
+  for (let i = 0; i < 2; i++) {
+    await prisma.colis.upsert({
+      where: { codeUnique: `COL-${i}` },
+      update: {},
+      create: {
+        id: `colis-${i}`,
+        codeUnique: `COL-${i}`,
+        clientId: clients[i].id,
+        trajetId: trajets[i].id,
         poids: 35,
         kilosGratuits: 30,
         surplusKilos: 5,
         montantAPayer: 40,
+        type: "ORDINAIRE",
       },
     });
   }
-
-  console.log("✅ Colis OK");
 }

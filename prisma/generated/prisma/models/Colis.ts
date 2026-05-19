@@ -31,6 +31,7 @@ export type ColisAvgAggregateOutputType = {
   kilosGratuits: number | null
   surplusKilos: number | null
   montantAPayer: number | null
+  montantFixe: number | null
 }
 
 export type ColisSumAggregateOutputType = {
@@ -38,6 +39,7 @@ export type ColisSumAggregateOutputType = {
   kilosGratuits: number | null
   surplusKilos: number | null
   montantAPayer: number | null
+  montantFixe: number | null
 }
 
 export type ColisMinAggregateOutputType = {
@@ -49,9 +51,14 @@ export type ColisMinAggregateOutputType = {
   kilosGratuits: number | null
   surplusKilos: number | null
   montantAPayer: number | null
+  passagerId: string | null
+  type: $Enums.TypeColis | null
+  montantFixe: number | null
+  commentaire: string | null
   statut: $Enums.StatutColis | null
   createdAt: Date | null
   updatedAt: Date | null
+  trajetDepartId: string | null
 }
 
 export type ColisMaxAggregateOutputType = {
@@ -63,9 +70,14 @@ export type ColisMaxAggregateOutputType = {
   kilosGratuits: number | null
   surplusKilos: number | null
   montantAPayer: number | null
+  passagerId: string | null
+  type: $Enums.TypeColis | null
+  montantFixe: number | null
+  commentaire: string | null
   statut: $Enums.StatutColis | null
   createdAt: Date | null
   updatedAt: Date | null
+  trajetDepartId: string | null
 }
 
 export type ColisCountAggregateOutputType = {
@@ -77,9 +89,14 @@ export type ColisCountAggregateOutputType = {
   kilosGratuits: number
   surplusKilos: number
   montantAPayer: number
+  passagerId: number
+  type: number
+  montantFixe: number
+  commentaire: number
   statut: number
   createdAt: number
   updatedAt: number
+  trajetDepartId: number
   _all: number
 }
 
@@ -89,6 +106,7 @@ export type ColisAvgAggregateInputType = {
   kilosGratuits?: true
   surplusKilos?: true
   montantAPayer?: true
+  montantFixe?: true
 }
 
 export type ColisSumAggregateInputType = {
@@ -96,6 +114,7 @@ export type ColisSumAggregateInputType = {
   kilosGratuits?: true
   surplusKilos?: true
   montantAPayer?: true
+  montantFixe?: true
 }
 
 export type ColisMinAggregateInputType = {
@@ -107,9 +126,14 @@ export type ColisMinAggregateInputType = {
   kilosGratuits?: true
   surplusKilos?: true
   montantAPayer?: true
+  passagerId?: true
+  type?: true
+  montantFixe?: true
+  commentaire?: true
   statut?: true
   createdAt?: true
   updatedAt?: true
+  trajetDepartId?: true
 }
 
 export type ColisMaxAggregateInputType = {
@@ -121,9 +145,14 @@ export type ColisMaxAggregateInputType = {
   kilosGratuits?: true
   surplusKilos?: true
   montantAPayer?: true
+  passagerId?: true
+  type?: true
+  montantFixe?: true
+  commentaire?: true
   statut?: true
   createdAt?: true
   updatedAt?: true
+  trajetDepartId?: true
 }
 
 export type ColisCountAggregateInputType = {
@@ -135,9 +164,14 @@ export type ColisCountAggregateInputType = {
   kilosGratuits?: true
   surplusKilos?: true
   montantAPayer?: true
+  passagerId?: true
+  type?: true
+  montantFixe?: true
+  commentaire?: true
   statut?: true
   createdAt?: true
   updatedAt?: true
+  trajetDepartId?: true
   _all?: true
 }
 
@@ -236,9 +270,14 @@ export type ColisGroupByOutputType = {
   kilosGratuits: number
   surplusKilos: number
   montantAPayer: number
+  passagerId: string | null
+  type: $Enums.TypeColis
+  montantFixe: number | null
+  commentaire: string | null
   statut: $Enums.StatutColis
   createdAt: Date
   updatedAt: Date
+  trajetDepartId: string | null
   _count: ColisCountAggregateOutputType | null
   _avg: ColisAvgAggregateOutputType | null
   _sum: ColisSumAggregateOutputType | null
@@ -273,11 +312,17 @@ export type ColisWhereInput = {
   kilosGratuits?: Prisma.FloatFilter<"Colis"> | number
   surplusKilos?: Prisma.FloatFilter<"Colis"> | number
   montantAPayer?: Prisma.FloatFilter<"Colis"> | number
+  passagerId?: Prisma.StringNullableFilter<"Colis"> | string | null
+  type?: Prisma.EnumTypeColisFilter<"Colis"> | $Enums.TypeColis
+  montantFixe?: Prisma.FloatNullableFilter<"Colis"> | number | null
+  commentaire?: Prisma.StringNullableFilter<"Colis"> | string | null
   statut?: Prisma.EnumStatutColisFilter<"Colis"> | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFilter<"Colis"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Colis"> | Date | string
+  trajetDepartId?: Prisma.StringNullableFilter<"Colis"> | string | null
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
-  trajet?: Prisma.XOR<Prisma.TrajetScalarRelationFilter, Prisma.TrajetWhereInput>
+  trajetDepart?: Prisma.XOR<Prisma.TrajetDepartNullableScalarRelationFilter, Prisma.TrajetDepartWhereInput> | null
+  passager?: Prisma.XOR<Prisma.PassagerNullableScalarRelationFilter, Prisma.PassagerWhereInput> | null
 }
 
 export type ColisOrderByWithRelationInput = {
@@ -289,11 +334,17 @@ export type ColisOrderByWithRelationInput = {
   kilosGratuits?: Prisma.SortOrder
   surplusKilos?: Prisma.SortOrder
   montantAPayer?: Prisma.SortOrder
+  passagerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  type?: Prisma.SortOrder
+  montantFixe?: Prisma.SortOrderInput | Prisma.SortOrder
+  commentaire?: Prisma.SortOrderInput | Prisma.SortOrder
   statut?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  trajetDepartId?: Prisma.SortOrderInput | Prisma.SortOrder
   client?: Prisma.ClientOrderByWithRelationInput
-  trajet?: Prisma.TrajetOrderByWithRelationInput
+  trajetDepart?: Prisma.TrajetDepartOrderByWithRelationInput
+  passager?: Prisma.PassagerOrderByWithRelationInput
 }
 
 export type ColisWhereUniqueInput = Prisma.AtLeast<{
@@ -308,11 +359,17 @@ export type ColisWhereUniqueInput = Prisma.AtLeast<{
   kilosGratuits?: Prisma.FloatFilter<"Colis"> | number
   surplusKilos?: Prisma.FloatFilter<"Colis"> | number
   montantAPayer?: Prisma.FloatFilter<"Colis"> | number
+  passagerId?: Prisma.StringNullableFilter<"Colis"> | string | null
+  type?: Prisma.EnumTypeColisFilter<"Colis"> | $Enums.TypeColis
+  montantFixe?: Prisma.FloatNullableFilter<"Colis"> | number | null
+  commentaire?: Prisma.StringNullableFilter<"Colis"> | string | null
   statut?: Prisma.EnumStatutColisFilter<"Colis"> | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFilter<"Colis"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Colis"> | Date | string
+  trajetDepartId?: Prisma.StringNullableFilter<"Colis"> | string | null
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
-  trajet?: Prisma.XOR<Prisma.TrajetScalarRelationFilter, Prisma.TrajetWhereInput>
+  trajetDepart?: Prisma.XOR<Prisma.TrajetDepartNullableScalarRelationFilter, Prisma.TrajetDepartWhereInput> | null
+  passager?: Prisma.XOR<Prisma.PassagerNullableScalarRelationFilter, Prisma.PassagerWhereInput> | null
 }, "id" | "codeUnique">
 
 export type ColisOrderByWithAggregationInput = {
@@ -324,9 +381,14 @@ export type ColisOrderByWithAggregationInput = {
   kilosGratuits?: Prisma.SortOrder
   surplusKilos?: Prisma.SortOrder
   montantAPayer?: Prisma.SortOrder
+  passagerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  type?: Prisma.SortOrder
+  montantFixe?: Prisma.SortOrderInput | Prisma.SortOrder
+  commentaire?: Prisma.SortOrderInput | Prisma.SortOrder
   statut?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  trajetDepartId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ColisCountOrderByAggregateInput
   _avg?: Prisma.ColisAvgOrderByAggregateInput
   _max?: Prisma.ColisMaxOrderByAggregateInput
@@ -346,23 +408,33 @@ export type ColisScalarWhereWithAggregatesInput = {
   kilosGratuits?: Prisma.FloatWithAggregatesFilter<"Colis"> | number
   surplusKilos?: Prisma.FloatWithAggregatesFilter<"Colis"> | number
   montantAPayer?: Prisma.FloatWithAggregatesFilter<"Colis"> | number
+  passagerId?: Prisma.StringNullableWithAggregatesFilter<"Colis"> | string | null
+  type?: Prisma.EnumTypeColisWithAggregatesFilter<"Colis"> | $Enums.TypeColis
+  montantFixe?: Prisma.FloatNullableWithAggregatesFilter<"Colis"> | number | null
+  commentaire?: Prisma.StringNullableWithAggregatesFilter<"Colis"> | string | null
   statut?: Prisma.EnumStatutColisWithAggregatesFilter<"Colis"> | $Enums.StatutColis
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Colis"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Colis"> | Date | string
+  trajetDepartId?: Prisma.StringNullableWithAggregatesFilter<"Colis"> | string | null
 }
 
 export type ColisCreateInput = {
   id?: string
   codeUnique: string
+  trajetId: string
   poids: number
   kilosGratuits: number
   surplusKilos: number
   montantAPayer: number
+  type: $Enums.TypeColis
+  montantFixe?: number | null
+  commentaire?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
   client: Prisma.ClientCreateNestedOneWithoutColisInput
-  trajet: Prisma.TrajetCreateNestedOneWithoutColisInput
+  trajetDepart?: Prisma.TrajetDepartCreateNestedOneWithoutColisInput
+  passager?: Prisma.PassagerCreateNestedOneWithoutColisInput
 }
 
 export type ColisUncheckedCreateInput = {
@@ -374,23 +446,33 @@ export type ColisUncheckedCreateInput = {
   kilosGratuits: number
   surplusKilos: number
   montantAPayer: number
+  passagerId?: string | null
+  type: $Enums.TypeColis
+  montantFixe?: number | null
+  commentaire?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
+  trajetDepartId?: string | null
 }
 
 export type ColisUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   poids?: Prisma.FloatFieldUpdateOperationsInput | number
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   surplusKilos?: Prisma.FloatFieldUpdateOperationsInput | number
   montantAPayer?: Prisma.FloatFieldUpdateOperationsInput | number
+  type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
+  montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ClientUpdateOneRequiredWithoutColisNestedInput
-  trajet?: Prisma.TrajetUpdateOneRequiredWithoutColisNestedInput
+  trajetDepart?: Prisma.TrajetDepartUpdateOneWithoutColisNestedInput
+  passager?: Prisma.PassagerUpdateOneWithoutColisNestedInput
 }
 
 export type ColisUncheckedUpdateInput = {
@@ -402,9 +484,14 @@ export type ColisUncheckedUpdateInput = {
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   surplusKilos?: Prisma.FloatFieldUpdateOperationsInput | number
   montantAPayer?: Prisma.FloatFieldUpdateOperationsInput | number
+  passagerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
+  montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trajetDepartId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ColisCreateManyInput = {
@@ -416,18 +503,27 @@ export type ColisCreateManyInput = {
   kilosGratuits: number
   surplusKilos: number
   montantAPayer: number
+  passagerId?: string | null
+  type: $Enums.TypeColis
+  montantFixe?: number | null
+  commentaire?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
+  trajetDepartId?: string | null
 }
 
 export type ColisUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   poids?: Prisma.FloatFieldUpdateOperationsInput | number
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   surplusKilos?: Prisma.FloatFieldUpdateOperationsInput | number
   montantAPayer?: Prisma.FloatFieldUpdateOperationsInput | number
+  type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
+  montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -442,9 +538,14 @@ export type ColisUncheckedUpdateManyInput = {
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   surplusKilos?: Prisma.FloatFieldUpdateOperationsInput | number
   montantAPayer?: Prisma.FloatFieldUpdateOperationsInput | number
+  passagerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
+  montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trajetDepartId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ColisListRelationFilter = {
@@ -466,9 +567,14 @@ export type ColisCountOrderByAggregateInput = {
   kilosGratuits?: Prisma.SortOrder
   surplusKilos?: Prisma.SortOrder
   montantAPayer?: Prisma.SortOrder
+  passagerId?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  montantFixe?: Prisma.SortOrder
+  commentaire?: Prisma.SortOrder
   statut?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  trajetDepartId?: Prisma.SortOrder
 }
 
 export type ColisAvgOrderByAggregateInput = {
@@ -476,6 +582,7 @@ export type ColisAvgOrderByAggregateInput = {
   kilosGratuits?: Prisma.SortOrder
   surplusKilos?: Prisma.SortOrder
   montantAPayer?: Prisma.SortOrder
+  montantFixe?: Prisma.SortOrder
 }
 
 export type ColisMaxOrderByAggregateInput = {
@@ -487,9 +594,14 @@ export type ColisMaxOrderByAggregateInput = {
   kilosGratuits?: Prisma.SortOrder
   surplusKilos?: Prisma.SortOrder
   montantAPayer?: Prisma.SortOrder
+  passagerId?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  montantFixe?: Prisma.SortOrder
+  commentaire?: Prisma.SortOrder
   statut?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  trajetDepartId?: Prisma.SortOrder
 }
 
 export type ColisMinOrderByAggregateInput = {
@@ -501,9 +613,14 @@ export type ColisMinOrderByAggregateInput = {
   kilosGratuits?: Prisma.SortOrder
   surplusKilos?: Prisma.SortOrder
   montantAPayer?: Prisma.SortOrder
+  passagerId?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  montantFixe?: Prisma.SortOrder
+  commentaire?: Prisma.SortOrder
   statut?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  trajetDepartId?: Prisma.SortOrder
 }
 
 export type ColisSumOrderByAggregateInput = {
@@ -511,6 +628,7 @@ export type ColisSumOrderByAggregateInput = {
   kilosGratuits?: Prisma.SortOrder
   surplusKilos?: Prisma.SortOrder
   montantAPayer?: Prisma.SortOrder
+  montantFixe?: Prisma.SortOrder
 }
 
 export type ColisCreateNestedManyWithoutClientInput = {
@@ -555,46 +673,92 @@ export type ColisUncheckedUpdateManyWithoutClientNestedInput = {
   deleteMany?: Prisma.ColisScalarWhereInput | Prisma.ColisScalarWhereInput[]
 }
 
-export type ColisCreateNestedManyWithoutTrajetInput = {
-  create?: Prisma.XOR<Prisma.ColisCreateWithoutTrajetInput, Prisma.ColisUncheckedCreateWithoutTrajetInput> | Prisma.ColisCreateWithoutTrajetInput[] | Prisma.ColisUncheckedCreateWithoutTrajetInput[]
-  connectOrCreate?: Prisma.ColisCreateOrConnectWithoutTrajetInput | Prisma.ColisCreateOrConnectWithoutTrajetInput[]
-  createMany?: Prisma.ColisCreateManyTrajetInputEnvelope
+export type ColisCreateNestedManyWithoutTrajetDepartInput = {
+  create?: Prisma.XOR<Prisma.ColisCreateWithoutTrajetDepartInput, Prisma.ColisUncheckedCreateWithoutTrajetDepartInput> | Prisma.ColisCreateWithoutTrajetDepartInput[] | Prisma.ColisUncheckedCreateWithoutTrajetDepartInput[]
+  connectOrCreate?: Prisma.ColisCreateOrConnectWithoutTrajetDepartInput | Prisma.ColisCreateOrConnectWithoutTrajetDepartInput[]
+  createMany?: Prisma.ColisCreateManyTrajetDepartInputEnvelope
   connect?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
 }
 
-export type ColisUncheckedCreateNestedManyWithoutTrajetInput = {
-  create?: Prisma.XOR<Prisma.ColisCreateWithoutTrajetInput, Prisma.ColisUncheckedCreateWithoutTrajetInput> | Prisma.ColisCreateWithoutTrajetInput[] | Prisma.ColisUncheckedCreateWithoutTrajetInput[]
-  connectOrCreate?: Prisma.ColisCreateOrConnectWithoutTrajetInput | Prisma.ColisCreateOrConnectWithoutTrajetInput[]
-  createMany?: Prisma.ColisCreateManyTrajetInputEnvelope
+export type ColisUncheckedCreateNestedManyWithoutTrajetDepartInput = {
+  create?: Prisma.XOR<Prisma.ColisCreateWithoutTrajetDepartInput, Prisma.ColisUncheckedCreateWithoutTrajetDepartInput> | Prisma.ColisCreateWithoutTrajetDepartInput[] | Prisma.ColisUncheckedCreateWithoutTrajetDepartInput[]
+  connectOrCreate?: Prisma.ColisCreateOrConnectWithoutTrajetDepartInput | Prisma.ColisCreateOrConnectWithoutTrajetDepartInput[]
+  createMany?: Prisma.ColisCreateManyTrajetDepartInputEnvelope
   connect?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
 }
 
-export type ColisUpdateManyWithoutTrajetNestedInput = {
-  create?: Prisma.XOR<Prisma.ColisCreateWithoutTrajetInput, Prisma.ColisUncheckedCreateWithoutTrajetInput> | Prisma.ColisCreateWithoutTrajetInput[] | Prisma.ColisUncheckedCreateWithoutTrajetInput[]
-  connectOrCreate?: Prisma.ColisCreateOrConnectWithoutTrajetInput | Prisma.ColisCreateOrConnectWithoutTrajetInput[]
-  upsert?: Prisma.ColisUpsertWithWhereUniqueWithoutTrajetInput | Prisma.ColisUpsertWithWhereUniqueWithoutTrajetInput[]
-  createMany?: Prisma.ColisCreateManyTrajetInputEnvelope
+export type ColisUpdateManyWithoutTrajetDepartNestedInput = {
+  create?: Prisma.XOR<Prisma.ColisCreateWithoutTrajetDepartInput, Prisma.ColisUncheckedCreateWithoutTrajetDepartInput> | Prisma.ColisCreateWithoutTrajetDepartInput[] | Prisma.ColisUncheckedCreateWithoutTrajetDepartInput[]
+  connectOrCreate?: Prisma.ColisCreateOrConnectWithoutTrajetDepartInput | Prisma.ColisCreateOrConnectWithoutTrajetDepartInput[]
+  upsert?: Prisma.ColisUpsertWithWhereUniqueWithoutTrajetDepartInput | Prisma.ColisUpsertWithWhereUniqueWithoutTrajetDepartInput[]
+  createMany?: Prisma.ColisCreateManyTrajetDepartInputEnvelope
   set?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
   disconnect?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
   delete?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
   connect?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
-  update?: Prisma.ColisUpdateWithWhereUniqueWithoutTrajetInput | Prisma.ColisUpdateWithWhereUniqueWithoutTrajetInput[]
-  updateMany?: Prisma.ColisUpdateManyWithWhereWithoutTrajetInput | Prisma.ColisUpdateManyWithWhereWithoutTrajetInput[]
+  update?: Prisma.ColisUpdateWithWhereUniqueWithoutTrajetDepartInput | Prisma.ColisUpdateWithWhereUniqueWithoutTrajetDepartInput[]
+  updateMany?: Prisma.ColisUpdateManyWithWhereWithoutTrajetDepartInput | Prisma.ColisUpdateManyWithWhereWithoutTrajetDepartInput[]
   deleteMany?: Prisma.ColisScalarWhereInput | Prisma.ColisScalarWhereInput[]
 }
 
-export type ColisUncheckedUpdateManyWithoutTrajetNestedInput = {
-  create?: Prisma.XOR<Prisma.ColisCreateWithoutTrajetInput, Prisma.ColisUncheckedCreateWithoutTrajetInput> | Prisma.ColisCreateWithoutTrajetInput[] | Prisma.ColisUncheckedCreateWithoutTrajetInput[]
-  connectOrCreate?: Prisma.ColisCreateOrConnectWithoutTrajetInput | Prisma.ColisCreateOrConnectWithoutTrajetInput[]
-  upsert?: Prisma.ColisUpsertWithWhereUniqueWithoutTrajetInput | Prisma.ColisUpsertWithWhereUniqueWithoutTrajetInput[]
-  createMany?: Prisma.ColisCreateManyTrajetInputEnvelope
+export type ColisUncheckedUpdateManyWithoutTrajetDepartNestedInput = {
+  create?: Prisma.XOR<Prisma.ColisCreateWithoutTrajetDepartInput, Prisma.ColisUncheckedCreateWithoutTrajetDepartInput> | Prisma.ColisCreateWithoutTrajetDepartInput[] | Prisma.ColisUncheckedCreateWithoutTrajetDepartInput[]
+  connectOrCreate?: Prisma.ColisCreateOrConnectWithoutTrajetDepartInput | Prisma.ColisCreateOrConnectWithoutTrajetDepartInput[]
+  upsert?: Prisma.ColisUpsertWithWhereUniqueWithoutTrajetDepartInput | Prisma.ColisUpsertWithWhereUniqueWithoutTrajetDepartInput[]
+  createMany?: Prisma.ColisCreateManyTrajetDepartInputEnvelope
   set?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
   disconnect?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
   delete?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
   connect?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
-  update?: Prisma.ColisUpdateWithWhereUniqueWithoutTrajetInput | Prisma.ColisUpdateWithWhereUniqueWithoutTrajetInput[]
-  updateMany?: Prisma.ColisUpdateManyWithWhereWithoutTrajetInput | Prisma.ColisUpdateManyWithWhereWithoutTrajetInput[]
+  update?: Prisma.ColisUpdateWithWhereUniqueWithoutTrajetDepartInput | Prisma.ColisUpdateWithWhereUniqueWithoutTrajetDepartInput[]
+  updateMany?: Prisma.ColisUpdateManyWithWhereWithoutTrajetDepartInput | Prisma.ColisUpdateManyWithWhereWithoutTrajetDepartInput[]
   deleteMany?: Prisma.ColisScalarWhereInput | Prisma.ColisScalarWhereInput[]
+}
+
+export type ColisCreateNestedManyWithoutPassagerInput = {
+  create?: Prisma.XOR<Prisma.ColisCreateWithoutPassagerInput, Prisma.ColisUncheckedCreateWithoutPassagerInput> | Prisma.ColisCreateWithoutPassagerInput[] | Prisma.ColisUncheckedCreateWithoutPassagerInput[]
+  connectOrCreate?: Prisma.ColisCreateOrConnectWithoutPassagerInput | Prisma.ColisCreateOrConnectWithoutPassagerInput[]
+  createMany?: Prisma.ColisCreateManyPassagerInputEnvelope
+  connect?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
+}
+
+export type ColisUncheckedCreateNestedManyWithoutPassagerInput = {
+  create?: Prisma.XOR<Prisma.ColisCreateWithoutPassagerInput, Prisma.ColisUncheckedCreateWithoutPassagerInput> | Prisma.ColisCreateWithoutPassagerInput[] | Prisma.ColisUncheckedCreateWithoutPassagerInput[]
+  connectOrCreate?: Prisma.ColisCreateOrConnectWithoutPassagerInput | Prisma.ColisCreateOrConnectWithoutPassagerInput[]
+  createMany?: Prisma.ColisCreateManyPassagerInputEnvelope
+  connect?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
+}
+
+export type ColisUpdateManyWithoutPassagerNestedInput = {
+  create?: Prisma.XOR<Prisma.ColisCreateWithoutPassagerInput, Prisma.ColisUncheckedCreateWithoutPassagerInput> | Prisma.ColisCreateWithoutPassagerInput[] | Prisma.ColisUncheckedCreateWithoutPassagerInput[]
+  connectOrCreate?: Prisma.ColisCreateOrConnectWithoutPassagerInput | Prisma.ColisCreateOrConnectWithoutPassagerInput[]
+  upsert?: Prisma.ColisUpsertWithWhereUniqueWithoutPassagerInput | Prisma.ColisUpsertWithWhereUniqueWithoutPassagerInput[]
+  createMany?: Prisma.ColisCreateManyPassagerInputEnvelope
+  set?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
+  disconnect?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
+  delete?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
+  connect?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
+  update?: Prisma.ColisUpdateWithWhereUniqueWithoutPassagerInput | Prisma.ColisUpdateWithWhereUniqueWithoutPassagerInput[]
+  updateMany?: Prisma.ColisUpdateManyWithWhereWithoutPassagerInput | Prisma.ColisUpdateManyWithWhereWithoutPassagerInput[]
+  deleteMany?: Prisma.ColisScalarWhereInput | Prisma.ColisScalarWhereInput[]
+}
+
+export type ColisUncheckedUpdateManyWithoutPassagerNestedInput = {
+  create?: Prisma.XOR<Prisma.ColisCreateWithoutPassagerInput, Prisma.ColisUncheckedCreateWithoutPassagerInput> | Prisma.ColisCreateWithoutPassagerInput[] | Prisma.ColisUncheckedCreateWithoutPassagerInput[]
+  connectOrCreate?: Prisma.ColisCreateOrConnectWithoutPassagerInput | Prisma.ColisCreateOrConnectWithoutPassagerInput[]
+  upsert?: Prisma.ColisUpsertWithWhereUniqueWithoutPassagerInput | Prisma.ColisUpsertWithWhereUniqueWithoutPassagerInput[]
+  createMany?: Prisma.ColisCreateManyPassagerInputEnvelope
+  set?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
+  disconnect?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
+  delete?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
+  connect?: Prisma.ColisWhereUniqueInput | Prisma.ColisWhereUniqueInput[]
+  update?: Prisma.ColisUpdateWithWhereUniqueWithoutPassagerInput | Prisma.ColisUpdateWithWhereUniqueWithoutPassagerInput[]
+  updateMany?: Prisma.ColisUpdateManyWithWhereWithoutPassagerInput | Prisma.ColisUpdateManyWithWhereWithoutPassagerInput[]
+  deleteMany?: Prisma.ColisScalarWhereInput | Prisma.ColisScalarWhereInput[]
+}
+
+export type EnumTypeColisFieldUpdateOperationsInput = {
+  set?: $Enums.TypeColis
 }
 
 export type EnumStatutColisFieldUpdateOperationsInput = {
@@ -604,14 +768,19 @@ export type EnumStatutColisFieldUpdateOperationsInput = {
 export type ColisCreateWithoutClientInput = {
   id?: string
   codeUnique: string
+  trajetId: string
   poids: number
   kilosGratuits: number
   surplusKilos: number
   montantAPayer: number
+  type: $Enums.TypeColis
+  montantFixe?: number | null
+  commentaire?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
-  trajet: Prisma.TrajetCreateNestedOneWithoutColisInput
+  trajetDepart?: Prisma.TrajetDepartCreateNestedOneWithoutColisInput
+  passager?: Prisma.PassagerCreateNestedOneWithoutColisInput
 }
 
 export type ColisUncheckedCreateWithoutClientInput = {
@@ -622,9 +791,14 @@ export type ColisUncheckedCreateWithoutClientInput = {
   kilosGratuits: number
   surplusKilos: number
   montantAPayer: number
+  passagerId?: string | null
+  type: $Enums.TypeColis
+  montantFixe?: number | null
+  commentaire?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
+  trajetDepartId?: string | null
 }
 
 export type ColisCreateOrConnectWithoutClientInput = {
@@ -665,61 +839,138 @@ export type ColisScalarWhereInput = {
   kilosGratuits?: Prisma.FloatFilter<"Colis"> | number
   surplusKilos?: Prisma.FloatFilter<"Colis"> | number
   montantAPayer?: Prisma.FloatFilter<"Colis"> | number
+  passagerId?: Prisma.StringNullableFilter<"Colis"> | string | null
+  type?: Prisma.EnumTypeColisFilter<"Colis"> | $Enums.TypeColis
+  montantFixe?: Prisma.FloatNullableFilter<"Colis"> | number | null
+  commentaire?: Prisma.StringNullableFilter<"Colis"> | string | null
   statut?: Prisma.EnumStatutColisFilter<"Colis"> | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFilter<"Colis"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Colis"> | Date | string
+  trajetDepartId?: Prisma.StringNullableFilter<"Colis"> | string | null
 }
 
-export type ColisCreateWithoutTrajetInput = {
+export type ColisCreateWithoutTrajetDepartInput = {
   id?: string
   codeUnique: string
+  trajetId: string
   poids: number
   kilosGratuits: number
   surplusKilos: number
   montantAPayer: number
+  type: $Enums.TypeColis
+  montantFixe?: number | null
+  commentaire?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
   client: Prisma.ClientCreateNestedOneWithoutColisInput
+  passager?: Prisma.PassagerCreateNestedOneWithoutColisInput
 }
 
-export type ColisUncheckedCreateWithoutTrajetInput = {
+export type ColisUncheckedCreateWithoutTrajetDepartInput = {
   id?: string
   codeUnique: string
   clientId: string
+  trajetId: string
   poids: number
   kilosGratuits: number
   surplusKilos: number
   montantAPayer: number
+  passagerId?: string | null
+  type: $Enums.TypeColis
+  montantFixe?: number | null
+  commentaire?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
-export type ColisCreateOrConnectWithoutTrajetInput = {
+export type ColisCreateOrConnectWithoutTrajetDepartInput = {
   where: Prisma.ColisWhereUniqueInput
-  create: Prisma.XOR<Prisma.ColisCreateWithoutTrajetInput, Prisma.ColisUncheckedCreateWithoutTrajetInput>
+  create: Prisma.XOR<Prisma.ColisCreateWithoutTrajetDepartInput, Prisma.ColisUncheckedCreateWithoutTrajetDepartInput>
 }
 
-export type ColisCreateManyTrajetInputEnvelope = {
-  data: Prisma.ColisCreateManyTrajetInput | Prisma.ColisCreateManyTrajetInput[]
+export type ColisCreateManyTrajetDepartInputEnvelope = {
+  data: Prisma.ColisCreateManyTrajetDepartInput | Prisma.ColisCreateManyTrajetDepartInput[]
   skipDuplicates?: boolean
 }
 
-export type ColisUpsertWithWhereUniqueWithoutTrajetInput = {
+export type ColisUpsertWithWhereUniqueWithoutTrajetDepartInput = {
   where: Prisma.ColisWhereUniqueInput
-  update: Prisma.XOR<Prisma.ColisUpdateWithoutTrajetInput, Prisma.ColisUncheckedUpdateWithoutTrajetInput>
-  create: Prisma.XOR<Prisma.ColisCreateWithoutTrajetInput, Prisma.ColisUncheckedCreateWithoutTrajetInput>
+  update: Prisma.XOR<Prisma.ColisUpdateWithoutTrajetDepartInput, Prisma.ColisUncheckedUpdateWithoutTrajetDepartInput>
+  create: Prisma.XOR<Prisma.ColisCreateWithoutTrajetDepartInput, Prisma.ColisUncheckedCreateWithoutTrajetDepartInput>
 }
 
-export type ColisUpdateWithWhereUniqueWithoutTrajetInput = {
+export type ColisUpdateWithWhereUniqueWithoutTrajetDepartInput = {
   where: Prisma.ColisWhereUniqueInput
-  data: Prisma.XOR<Prisma.ColisUpdateWithoutTrajetInput, Prisma.ColisUncheckedUpdateWithoutTrajetInput>
+  data: Prisma.XOR<Prisma.ColisUpdateWithoutTrajetDepartInput, Prisma.ColisUncheckedUpdateWithoutTrajetDepartInput>
 }
 
-export type ColisUpdateManyWithWhereWithoutTrajetInput = {
+export type ColisUpdateManyWithWhereWithoutTrajetDepartInput = {
   where: Prisma.ColisScalarWhereInput
-  data: Prisma.XOR<Prisma.ColisUpdateManyMutationInput, Prisma.ColisUncheckedUpdateManyWithoutTrajetInput>
+  data: Prisma.XOR<Prisma.ColisUpdateManyMutationInput, Prisma.ColisUncheckedUpdateManyWithoutTrajetDepartInput>
+}
+
+export type ColisCreateWithoutPassagerInput = {
+  id?: string
+  codeUnique: string
+  trajetId: string
+  poids: number
+  kilosGratuits: number
+  surplusKilos: number
+  montantAPayer: number
+  type: $Enums.TypeColis
+  montantFixe?: number | null
+  commentaire?: string | null
+  statut?: $Enums.StatutColis
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  client: Prisma.ClientCreateNestedOneWithoutColisInput
+  trajetDepart?: Prisma.TrajetDepartCreateNestedOneWithoutColisInput
+}
+
+export type ColisUncheckedCreateWithoutPassagerInput = {
+  id?: string
+  codeUnique: string
+  clientId: string
+  trajetId: string
+  poids: number
+  kilosGratuits: number
+  surplusKilos: number
+  montantAPayer: number
+  type: $Enums.TypeColis
+  montantFixe?: number | null
+  commentaire?: string | null
+  statut?: $Enums.StatutColis
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  trajetDepartId?: string | null
+}
+
+export type ColisCreateOrConnectWithoutPassagerInput = {
+  where: Prisma.ColisWhereUniqueInput
+  create: Prisma.XOR<Prisma.ColisCreateWithoutPassagerInput, Prisma.ColisUncheckedCreateWithoutPassagerInput>
+}
+
+export type ColisCreateManyPassagerInputEnvelope = {
+  data: Prisma.ColisCreateManyPassagerInput | Prisma.ColisCreateManyPassagerInput[]
+  skipDuplicates?: boolean
+}
+
+export type ColisUpsertWithWhereUniqueWithoutPassagerInput = {
+  where: Prisma.ColisWhereUniqueInput
+  update: Prisma.XOR<Prisma.ColisUpdateWithoutPassagerInput, Prisma.ColisUncheckedUpdateWithoutPassagerInput>
+  create: Prisma.XOR<Prisma.ColisCreateWithoutPassagerInput, Prisma.ColisUncheckedCreateWithoutPassagerInput>
+}
+
+export type ColisUpdateWithWhereUniqueWithoutPassagerInput = {
+  where: Prisma.ColisWhereUniqueInput
+  data: Prisma.XOR<Prisma.ColisUpdateWithoutPassagerInput, Prisma.ColisUncheckedUpdateWithoutPassagerInput>
+}
+
+export type ColisUpdateManyWithWhereWithoutPassagerInput = {
+  where: Prisma.ColisScalarWhereInput
+  data: Prisma.XOR<Prisma.ColisUpdateManyMutationInput, Prisma.ColisUncheckedUpdateManyWithoutPassagerInput>
 }
 
 export type ColisCreateManyClientInput = {
@@ -730,22 +981,32 @@ export type ColisCreateManyClientInput = {
   kilosGratuits: number
   surplusKilos: number
   montantAPayer: number
+  passagerId?: string | null
+  type: $Enums.TypeColis
+  montantFixe?: number | null
+  commentaire?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
+  trajetDepartId?: string | null
 }
 
 export type ColisUpdateWithoutClientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   poids?: Prisma.FloatFieldUpdateOperationsInput | number
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   surplusKilos?: Prisma.FloatFieldUpdateOperationsInput | number
   montantAPayer?: Prisma.FloatFieldUpdateOperationsInput | number
+  type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
+  montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  trajet?: Prisma.TrajetUpdateOneRequiredWithoutColisNestedInput
+  trajetDepart?: Prisma.TrajetDepartUpdateOneWithoutColisNestedInput
+  passager?: Prisma.PassagerUpdateOneWithoutColisNestedInput
 }
 
 export type ColisUncheckedUpdateWithoutClientInput = {
@@ -756,9 +1017,14 @@ export type ColisUncheckedUpdateWithoutClientInput = {
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   surplusKilos?: Prisma.FloatFieldUpdateOperationsInput | number
   montantAPayer?: Prisma.FloatFieldUpdateOperationsInput | number
+  passagerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
+  montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trajetDepartId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ColisUncheckedUpdateManyWithoutClientInput = {
@@ -769,61 +1035,158 @@ export type ColisUncheckedUpdateManyWithoutClientInput = {
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   surplusKilos?: Prisma.FloatFieldUpdateOperationsInput | number
   montantAPayer?: Prisma.FloatFieldUpdateOperationsInput | number
+  passagerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
+  montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trajetDepartId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
-export type ColisCreateManyTrajetInput = {
+export type ColisCreateManyTrajetDepartInput = {
   id?: string
   codeUnique: string
   clientId: string
+  trajetId: string
   poids: number
   kilosGratuits: number
   surplusKilos: number
   montantAPayer: number
+  passagerId?: string | null
+  type: $Enums.TypeColis
+  montantFixe?: number | null
+  commentaire?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
-export type ColisUpdateWithoutTrajetInput = {
+export type ColisUpdateWithoutTrajetDepartInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   poids?: Prisma.FloatFieldUpdateOperationsInput | number
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   surplusKilos?: Prisma.FloatFieldUpdateOperationsInput | number
   montantAPayer?: Prisma.FloatFieldUpdateOperationsInput | number
+  type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
+  montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ClientUpdateOneRequiredWithoutColisNestedInput
+  passager?: Prisma.PassagerUpdateOneWithoutColisNestedInput
 }
 
-export type ColisUncheckedUpdateWithoutTrajetInput = {
+export type ColisUncheckedUpdateWithoutTrajetDepartInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   poids?: Prisma.FloatFieldUpdateOperationsInput | number
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   surplusKilos?: Prisma.FloatFieldUpdateOperationsInput | number
   montantAPayer?: Prisma.FloatFieldUpdateOperationsInput | number
+  passagerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
+  montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type ColisUncheckedUpdateManyWithoutTrajetInput = {
+export type ColisUncheckedUpdateManyWithoutTrajetDepartInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   poids?: Prisma.FloatFieldUpdateOperationsInput | number
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   surplusKilos?: Prisma.FloatFieldUpdateOperationsInput | number
   montantAPayer?: Prisma.FloatFieldUpdateOperationsInput | number
+  passagerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
+  montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ColisCreateManyPassagerInput = {
+  id?: string
+  codeUnique: string
+  clientId: string
+  trajetId: string
+  poids: number
+  kilosGratuits: number
+  surplusKilos: number
+  montantAPayer: number
+  type: $Enums.TypeColis
+  montantFixe?: number | null
+  commentaire?: string | null
+  statut?: $Enums.StatutColis
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  trajetDepartId?: string | null
+}
+
+export type ColisUpdateWithoutPassagerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
+  poids?: Prisma.FloatFieldUpdateOperationsInput | number
+  kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
+  surplusKilos?: Prisma.FloatFieldUpdateOperationsInput | number
+  montantAPayer?: Prisma.FloatFieldUpdateOperationsInput | number
+  type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
+  montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  client?: Prisma.ClientUpdateOneRequiredWithoutColisNestedInput
+  trajetDepart?: Prisma.TrajetDepartUpdateOneWithoutColisNestedInput
+}
+
+export type ColisUncheckedUpdateWithoutPassagerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
+  poids?: Prisma.FloatFieldUpdateOperationsInput | number
+  kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
+  surplusKilos?: Prisma.FloatFieldUpdateOperationsInput | number
+  montantAPayer?: Prisma.FloatFieldUpdateOperationsInput | number
+  type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
+  montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trajetDepartId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type ColisUncheckedUpdateManyWithoutPassagerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
+  poids?: Prisma.FloatFieldUpdateOperationsInput | number
+  kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
+  surplusKilos?: Prisma.FloatFieldUpdateOperationsInput | number
+  montantAPayer?: Prisma.FloatFieldUpdateOperationsInput | number
+  type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
+  montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trajetDepartId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -837,11 +1200,17 @@ export type ColisSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   kilosGratuits?: boolean
   surplusKilos?: boolean
   montantAPayer?: boolean
+  passagerId?: boolean
+  type?: boolean
+  montantFixe?: boolean
+  commentaire?: boolean
   statut?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  trajetDepartId?: boolean
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
-  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
+  trajetDepart?: boolean | Prisma.Colis$trajetDepartArgs<ExtArgs>
+  passager?: boolean | Prisma.Colis$passagerArgs<ExtArgs>
 }, ExtArgs["result"]["colis"]>
 
 export type ColisSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -853,11 +1222,17 @@ export type ColisSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   kilosGratuits?: boolean
   surplusKilos?: boolean
   montantAPayer?: boolean
+  passagerId?: boolean
+  type?: boolean
+  montantFixe?: boolean
+  commentaire?: boolean
   statut?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  trajetDepartId?: boolean
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
-  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
+  trajetDepart?: boolean | Prisma.Colis$trajetDepartArgs<ExtArgs>
+  passager?: boolean | Prisma.Colis$passagerArgs<ExtArgs>
 }, ExtArgs["result"]["colis"]>
 
 export type ColisSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -869,11 +1244,17 @@ export type ColisSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   kilosGratuits?: boolean
   surplusKilos?: boolean
   montantAPayer?: boolean
+  passagerId?: boolean
+  type?: boolean
+  montantFixe?: boolean
+  commentaire?: boolean
   statut?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  trajetDepartId?: boolean
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
-  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
+  trajetDepart?: boolean | Prisma.Colis$trajetDepartArgs<ExtArgs>
+  passager?: boolean | Prisma.Colis$passagerArgs<ExtArgs>
 }, ExtArgs["result"]["colis"]>
 
 export type ColisSelectScalar = {
@@ -885,30 +1266,39 @@ export type ColisSelectScalar = {
   kilosGratuits?: boolean
   surplusKilos?: boolean
   montantAPayer?: boolean
+  passagerId?: boolean
+  type?: boolean
+  montantFixe?: boolean
+  commentaire?: boolean
   statut?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  trajetDepartId?: boolean
 }
 
-export type ColisOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "codeUnique" | "clientId" | "trajetId" | "poids" | "kilosGratuits" | "surplusKilos" | "montantAPayer" | "statut" | "createdAt" | "updatedAt", ExtArgs["result"]["colis"]>
+export type ColisOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "codeUnique" | "clientId" | "trajetId" | "poids" | "kilosGratuits" | "surplusKilos" | "montantAPayer" | "passagerId" | "type" | "montantFixe" | "commentaire" | "statut" | "createdAt" | "updatedAt" | "trajetDepartId", ExtArgs["result"]["colis"]>
 export type ColisInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
-  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
+  trajetDepart?: boolean | Prisma.Colis$trajetDepartArgs<ExtArgs>
+  passager?: boolean | Prisma.Colis$passagerArgs<ExtArgs>
 }
 export type ColisIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
-  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
+  trajetDepart?: boolean | Prisma.Colis$trajetDepartArgs<ExtArgs>
+  passager?: boolean | Prisma.Colis$passagerArgs<ExtArgs>
 }
 export type ColisIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
-  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
+  trajetDepart?: boolean | Prisma.Colis$trajetDepartArgs<ExtArgs>
+  passager?: boolean | Prisma.Colis$passagerArgs<ExtArgs>
 }
 
 export type $ColisPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Colis"
   objects: {
     client: Prisma.$ClientPayload<ExtArgs>
-    trajet: Prisma.$TrajetPayload<ExtArgs>
+    trajetDepart: Prisma.$TrajetDepartPayload<ExtArgs> | null
+    passager: Prisma.$PassagerPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -919,9 +1309,14 @@ export type $ColisPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     kilosGratuits: number
     surplusKilos: number
     montantAPayer: number
+    passagerId: string | null
+    type: $Enums.TypeColis
+    montantFixe: number | null
+    commentaire: string | null
     statut: $Enums.StatutColis
     createdAt: Date
     updatedAt: Date
+    trajetDepartId: string | null
   }, ExtArgs["result"]["colis"]>
   composites: {}
 }
@@ -1317,7 +1712,8 @@ readonly fields: ColisFieldRefs;
 export interface Prisma__ColisClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   client<T extends Prisma.ClientDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClientDefaultArgs<ExtArgs>>): Prisma.Prisma__ClientClient<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  trajet<T extends Prisma.TrajetDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TrajetDefaultArgs<ExtArgs>>): Prisma.Prisma__TrajetClient<runtime.Types.Result.GetResult<Prisma.$TrajetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  trajetDepart<T extends Prisma.Colis$trajetDepartArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Colis$trajetDepartArgs<ExtArgs>>): Prisma.Prisma__TrajetDepartClient<runtime.Types.Result.GetResult<Prisma.$TrajetDepartPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  passager<T extends Prisma.Colis$passagerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Colis$passagerArgs<ExtArgs>>): Prisma.Prisma__PassagerClient<runtime.Types.Result.GetResult<Prisma.$PassagerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1355,9 +1751,14 @@ export interface ColisFieldRefs {
   readonly kilosGratuits: Prisma.FieldRef<"Colis", 'Float'>
   readonly surplusKilos: Prisma.FieldRef<"Colis", 'Float'>
   readonly montantAPayer: Prisma.FieldRef<"Colis", 'Float'>
+  readonly passagerId: Prisma.FieldRef<"Colis", 'String'>
+  readonly type: Prisma.FieldRef<"Colis", 'TypeColis'>
+  readonly montantFixe: Prisma.FieldRef<"Colis", 'Float'>
+  readonly commentaire: Prisma.FieldRef<"Colis", 'String'>
   readonly statut: Prisma.FieldRef<"Colis", 'StatutColis'>
   readonly createdAt: Prisma.FieldRef<"Colis", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Colis", 'DateTime'>
+  readonly trajetDepartId: Prisma.FieldRef<"Colis", 'String'>
 }
     
 
@@ -1756,6 +2157,44 @@ export type ColisDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many Colis to delete.
    */
   limit?: number
+}
+
+/**
+ * Colis.trajetDepart
+ */
+export type Colis$trajetDepartArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TrajetDepart
+   */
+  select?: Prisma.TrajetDepartSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TrajetDepart
+   */
+  omit?: Prisma.TrajetDepartOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TrajetDepartInclude<ExtArgs> | null
+  where?: Prisma.TrajetDepartWhereInput
+}
+
+/**
+ * Colis.passager
+ */
+export type Colis$passagerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Passager
+   */
+  select?: Prisma.PassagerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Passager
+   */
+  omit?: Prisma.PassagerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PassagerInclude<ExtArgs> | null
+  where?: Prisma.PassagerWhereInput
 }
 
 /**

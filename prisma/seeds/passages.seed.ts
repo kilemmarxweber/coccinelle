@@ -3,19 +3,20 @@ import "dotenv/config";
 import prisma from "@/lib/prisma";
 
 export async function seedPassagers() {
-  console.log("🧍 Seeding passagers...");
-
   const reservations = await prisma.reservation.findMany();
 
   for (const res of reservations) {
     for (let i = 0; i < res.nombrePlaces; i++) {
-      await prisma.passager.create({
-        data: {
-          id: crypto.randomUUID(),
+      await prisma.passager.upsert({
+        where: { codeUnique: `PASS-${res.id}-${i}` },
+        update: {},
+        create: {
+          id: `pass-${res.id}-${i}`,
           reservationId: res.id,
-          codeUnique: `PASS-${Date.now()}-${i}`,
+          codeUnique: `PASS-${res.id}-${i}`,
           nom: "Doe",
           prenom: `Passenger-${i}`,
+          sexe: "M",
           categorie: "ADULTE",
           prix: 200,
           type: "CLIENT",
@@ -25,6 +26,4 @@ export async function seedPassagers() {
       });
     }
   }
-
-  console.log("✅ Passagers OK");
 }

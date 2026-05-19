@@ -65,6 +65,7 @@ export type ReservationMinAggregateOutputType = {
   nombrePlaces: number | null
   createdAt: Date | null
   updatedAt: Date | null
+  trajetDepartId: string | null
 }
 
 export type ReservationMaxAggregateOutputType = {
@@ -86,6 +87,7 @@ export type ReservationMaxAggregateOutputType = {
   nombrePlaces: number | null
   createdAt: Date | null
   updatedAt: Date | null
+  trajetDepartId: string | null
 }
 
 export type ReservationCountAggregateOutputType = {
@@ -107,6 +109,7 @@ export type ReservationCountAggregateOutputType = {
   nombrePlaces: number
   createdAt: number
   updatedAt: number
+  trajetDepartId: number
   _all: number
 }
 
@@ -150,6 +153,7 @@ export type ReservationMinAggregateInputType = {
   nombrePlaces?: true
   createdAt?: true
   updatedAt?: true
+  trajetDepartId?: true
 }
 
 export type ReservationMaxAggregateInputType = {
@@ -171,6 +175,7 @@ export type ReservationMaxAggregateInputType = {
   nombrePlaces?: true
   createdAt?: true
   updatedAt?: true
+  trajetDepartId?: true
 }
 
 export type ReservationCountAggregateInputType = {
@@ -192,6 +197,7 @@ export type ReservationCountAggregateInputType = {
   nombrePlaces?: true
   createdAt?: true
   updatedAt?: true
+  trajetDepartId?: true
   _all?: true
 }
 
@@ -300,6 +306,7 @@ export type ReservationGroupByOutputType = {
   nombrePlaces: number
   createdAt: Date
   updatedAt: Date
+  trajetDepartId: string
   _count: ReservationCountAggregateOutputType | null
   _avg: ReservationAvgAggregateOutputType | null
   _sum: ReservationSumAggregateOutputType | null
@@ -344,11 +351,12 @@ export type ReservationWhereInput = {
   nombrePlaces?: Prisma.IntFilter<"Reservation"> | number
   createdAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
+  trajetDepartId?: Prisma.StringFilter<"Reservation"> | string
   paiements?: Prisma.PaiementListRelationFilter
   passagers?: Prisma.PassagerListRelationFilter
   penalites?: Prisma.PenaliteListRelationFilter
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
-  trajet?: Prisma.XOR<Prisma.TrajetScalarRelationFilter, Prisma.TrajetWhereInput>
+  trajetDepart?: Prisma.XOR<Prisma.TrajetDepartScalarRelationFilter, Prisma.TrajetDepartWhereInput>
 }
 
 export type ReservationOrderByWithRelationInput = {
@@ -370,11 +378,12 @@ export type ReservationOrderByWithRelationInput = {
   nombrePlaces?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  trajetDepartId?: Prisma.SortOrder
   paiements?: Prisma.PaiementOrderByRelationAggregateInput
   passagers?: Prisma.PassagerOrderByRelationAggregateInput
   penalites?: Prisma.PenaliteOrderByRelationAggregateInput
   client?: Prisma.ClientOrderByWithRelationInput
-  trajet?: Prisma.TrajetOrderByWithRelationInput
+  trajetDepart?: Prisma.TrajetDepartOrderByWithRelationInput
 }
 
 export type ReservationWhereUniqueInput = Prisma.AtLeast<{
@@ -399,11 +408,12 @@ export type ReservationWhereUniqueInput = Prisma.AtLeast<{
   nombrePlaces?: Prisma.IntFilter<"Reservation"> | number
   createdAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
+  trajetDepartId?: Prisma.StringFilter<"Reservation"> | string
   paiements?: Prisma.PaiementListRelationFilter
   passagers?: Prisma.PassagerListRelationFilter
   penalites?: Prisma.PenaliteListRelationFilter
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
-  trajet?: Prisma.XOR<Prisma.TrajetScalarRelationFilter, Prisma.TrajetWhereInput>
+  trajetDepart?: Prisma.XOR<Prisma.TrajetDepartScalarRelationFilter, Prisma.TrajetDepartWhereInput>
 }, "id" | "codeUnique">
 
 export type ReservationOrderByWithAggregationInput = {
@@ -425,6 +435,7 @@ export type ReservationOrderByWithAggregationInput = {
   nombrePlaces?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  trajetDepartId?: Prisma.SortOrder
   _count?: Prisma.ReservationCountOrderByAggregateInput
   _avg?: Prisma.ReservationAvgOrderByAggregateInput
   _max?: Prisma.ReservationMaxOrderByAggregateInput
@@ -454,11 +465,13 @@ export type ReservationScalarWhereWithAggregatesInput = {
   nombrePlaces?: Prisma.IntWithAggregatesFilter<"Reservation"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Reservation"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Reservation"> | Date | string
+  trajetDepartId?: Prisma.StringWithAggregatesFilter<"Reservation"> | string
 }
 
 export type ReservationCreateInput = {
   id?: string
   codeUnique: string
+  trajetId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
@@ -477,7 +490,7 @@ export type ReservationCreateInput = {
   passagers?: Prisma.PassagerCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteCreateNestedManyWithoutReservationInput
   client: Prisma.ClientCreateNestedOneWithoutReservationsInput
-  trajet: Prisma.TrajetCreateNestedOneWithoutReservationsInput
+  trajetDepart: Prisma.TrajetDepartCreateNestedOneWithoutReservationsInput
 }
 
 export type ReservationUncheckedCreateInput = {
@@ -499,6 +512,7 @@ export type ReservationUncheckedCreateInput = {
   nombrePlaces: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  trajetDepartId: string
   paiements?: Prisma.PaiementUncheckedCreateNestedManyWithoutReservationInput
   passagers?: Prisma.PassagerUncheckedCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteUncheckedCreateNestedManyWithoutReservationInput
@@ -507,6 +521,7 @@ export type ReservationUncheckedCreateInput = {
 export type ReservationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
@@ -525,7 +540,7 @@ export type ReservationUpdateInput = {
   passagers?: Prisma.PassagerUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUpdateManyWithoutReservationNestedInput
   client?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
-  trajet?: Prisma.TrajetUpdateOneRequiredWithoutReservationsNestedInput
+  trajetDepart?: Prisma.TrajetDepartUpdateOneRequiredWithoutReservationsNestedInput
 }
 
 export type ReservationUncheckedUpdateInput = {
@@ -547,6 +562,7 @@ export type ReservationUncheckedUpdateInput = {
   nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   paiements?: Prisma.PaiementUncheckedUpdateManyWithoutReservationNestedInput
   passagers?: Prisma.PassagerUncheckedUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUncheckedUpdateManyWithoutReservationNestedInput
@@ -571,11 +587,13 @@ export type ReservationCreateManyInput = {
   nombrePlaces: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  trajetDepartId: string
 }
 
 export type ReservationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
@@ -611,6 +629,7 @@ export type ReservationUncheckedUpdateManyInput = {
   nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ReservationListRelationFilter = {
@@ -647,6 +666,7 @@ export type ReservationCountOrderByAggregateInput = {
   nombrePlaces?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  trajetDepartId?: Prisma.SortOrder
 }
 
 export type ReservationAvgOrderByAggregateInput = {
@@ -678,6 +698,7 @@ export type ReservationMaxOrderByAggregateInput = {
   nombrePlaces?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  trajetDepartId?: Prisma.SortOrder
 }
 
 export type ReservationMinOrderByAggregateInput = {
@@ -699,6 +720,7 @@ export type ReservationMinOrderByAggregateInput = {
   nombrePlaces?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  trajetDepartId?: Prisma.SortOrder
 }
 
 export type ReservationSumOrderByAggregateInput = {
@@ -753,45 +775,45 @@ export type ReservationUncheckedUpdateManyWithoutClientNestedInput = {
   deleteMany?: Prisma.ReservationScalarWhereInput | Prisma.ReservationScalarWhereInput[]
 }
 
-export type ReservationCreateNestedManyWithoutTrajetInput = {
-  create?: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetInput, Prisma.ReservationUncheckedCreateWithoutTrajetInput> | Prisma.ReservationCreateWithoutTrajetInput[] | Prisma.ReservationUncheckedCreateWithoutTrajetInput[]
-  connectOrCreate?: Prisma.ReservationCreateOrConnectWithoutTrajetInput | Prisma.ReservationCreateOrConnectWithoutTrajetInput[]
-  createMany?: Prisma.ReservationCreateManyTrajetInputEnvelope
+export type ReservationCreateNestedManyWithoutTrajetDepartInput = {
+  create?: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetDepartInput, Prisma.ReservationUncheckedCreateWithoutTrajetDepartInput> | Prisma.ReservationCreateWithoutTrajetDepartInput[] | Prisma.ReservationUncheckedCreateWithoutTrajetDepartInput[]
+  connectOrCreate?: Prisma.ReservationCreateOrConnectWithoutTrajetDepartInput | Prisma.ReservationCreateOrConnectWithoutTrajetDepartInput[]
+  createMany?: Prisma.ReservationCreateManyTrajetDepartInputEnvelope
   connect?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
 }
 
-export type ReservationUncheckedCreateNestedManyWithoutTrajetInput = {
-  create?: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetInput, Prisma.ReservationUncheckedCreateWithoutTrajetInput> | Prisma.ReservationCreateWithoutTrajetInput[] | Prisma.ReservationUncheckedCreateWithoutTrajetInput[]
-  connectOrCreate?: Prisma.ReservationCreateOrConnectWithoutTrajetInput | Prisma.ReservationCreateOrConnectWithoutTrajetInput[]
-  createMany?: Prisma.ReservationCreateManyTrajetInputEnvelope
+export type ReservationUncheckedCreateNestedManyWithoutTrajetDepartInput = {
+  create?: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetDepartInput, Prisma.ReservationUncheckedCreateWithoutTrajetDepartInput> | Prisma.ReservationCreateWithoutTrajetDepartInput[] | Prisma.ReservationUncheckedCreateWithoutTrajetDepartInput[]
+  connectOrCreate?: Prisma.ReservationCreateOrConnectWithoutTrajetDepartInput | Prisma.ReservationCreateOrConnectWithoutTrajetDepartInput[]
+  createMany?: Prisma.ReservationCreateManyTrajetDepartInputEnvelope
   connect?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
 }
 
-export type ReservationUpdateManyWithoutTrajetNestedInput = {
-  create?: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetInput, Prisma.ReservationUncheckedCreateWithoutTrajetInput> | Prisma.ReservationCreateWithoutTrajetInput[] | Prisma.ReservationUncheckedCreateWithoutTrajetInput[]
-  connectOrCreate?: Prisma.ReservationCreateOrConnectWithoutTrajetInput | Prisma.ReservationCreateOrConnectWithoutTrajetInput[]
-  upsert?: Prisma.ReservationUpsertWithWhereUniqueWithoutTrajetInput | Prisma.ReservationUpsertWithWhereUniqueWithoutTrajetInput[]
-  createMany?: Prisma.ReservationCreateManyTrajetInputEnvelope
+export type ReservationUpdateManyWithoutTrajetDepartNestedInput = {
+  create?: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetDepartInput, Prisma.ReservationUncheckedCreateWithoutTrajetDepartInput> | Prisma.ReservationCreateWithoutTrajetDepartInput[] | Prisma.ReservationUncheckedCreateWithoutTrajetDepartInput[]
+  connectOrCreate?: Prisma.ReservationCreateOrConnectWithoutTrajetDepartInput | Prisma.ReservationCreateOrConnectWithoutTrajetDepartInput[]
+  upsert?: Prisma.ReservationUpsertWithWhereUniqueWithoutTrajetDepartInput | Prisma.ReservationUpsertWithWhereUniqueWithoutTrajetDepartInput[]
+  createMany?: Prisma.ReservationCreateManyTrajetDepartInputEnvelope
   set?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
   disconnect?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
   delete?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
   connect?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
-  update?: Prisma.ReservationUpdateWithWhereUniqueWithoutTrajetInput | Prisma.ReservationUpdateWithWhereUniqueWithoutTrajetInput[]
-  updateMany?: Prisma.ReservationUpdateManyWithWhereWithoutTrajetInput | Prisma.ReservationUpdateManyWithWhereWithoutTrajetInput[]
+  update?: Prisma.ReservationUpdateWithWhereUniqueWithoutTrajetDepartInput | Prisma.ReservationUpdateWithWhereUniqueWithoutTrajetDepartInput[]
+  updateMany?: Prisma.ReservationUpdateManyWithWhereWithoutTrajetDepartInput | Prisma.ReservationUpdateManyWithWhereWithoutTrajetDepartInput[]
   deleteMany?: Prisma.ReservationScalarWhereInput | Prisma.ReservationScalarWhereInput[]
 }
 
-export type ReservationUncheckedUpdateManyWithoutTrajetNestedInput = {
-  create?: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetInput, Prisma.ReservationUncheckedCreateWithoutTrajetInput> | Prisma.ReservationCreateWithoutTrajetInput[] | Prisma.ReservationUncheckedCreateWithoutTrajetInput[]
-  connectOrCreate?: Prisma.ReservationCreateOrConnectWithoutTrajetInput | Prisma.ReservationCreateOrConnectWithoutTrajetInput[]
-  upsert?: Prisma.ReservationUpsertWithWhereUniqueWithoutTrajetInput | Prisma.ReservationUpsertWithWhereUniqueWithoutTrajetInput[]
-  createMany?: Prisma.ReservationCreateManyTrajetInputEnvelope
+export type ReservationUncheckedUpdateManyWithoutTrajetDepartNestedInput = {
+  create?: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetDepartInput, Prisma.ReservationUncheckedCreateWithoutTrajetDepartInput> | Prisma.ReservationCreateWithoutTrajetDepartInput[] | Prisma.ReservationUncheckedCreateWithoutTrajetDepartInput[]
+  connectOrCreate?: Prisma.ReservationCreateOrConnectWithoutTrajetDepartInput | Prisma.ReservationCreateOrConnectWithoutTrajetDepartInput[]
+  upsert?: Prisma.ReservationUpsertWithWhereUniqueWithoutTrajetDepartInput | Prisma.ReservationUpsertWithWhereUniqueWithoutTrajetDepartInput[]
+  createMany?: Prisma.ReservationCreateManyTrajetDepartInputEnvelope
   set?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
   disconnect?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
   delete?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
   connect?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
-  update?: Prisma.ReservationUpdateWithWhereUniqueWithoutTrajetInput | Prisma.ReservationUpdateWithWhereUniqueWithoutTrajetInput[]
-  updateMany?: Prisma.ReservationUpdateManyWithWhereWithoutTrajetInput | Prisma.ReservationUpdateManyWithWhereWithoutTrajetInput[]
+  update?: Prisma.ReservationUpdateWithWhereUniqueWithoutTrajetDepartInput | Prisma.ReservationUpdateWithWhereUniqueWithoutTrajetDepartInput[]
+  updateMany?: Prisma.ReservationUpdateManyWithWhereWithoutTrajetDepartInput | Prisma.ReservationUpdateManyWithWhereWithoutTrajetDepartInput[]
   deleteMany?: Prisma.ReservationScalarWhereInput | Prisma.ReservationScalarWhereInput[]
 }
 
@@ -852,6 +874,7 @@ export type ReservationUpdateOneRequiredWithoutPenalitesNestedInput = {
 export type ReservationCreateWithoutClientInput = {
   id?: string
   codeUnique: string
+  trajetId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
@@ -869,7 +892,7 @@ export type ReservationCreateWithoutClientInput = {
   paiements?: Prisma.PaiementCreateNestedManyWithoutReservationInput
   passagers?: Prisma.PassagerCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteCreateNestedManyWithoutReservationInput
-  trajet: Prisma.TrajetCreateNestedOneWithoutReservationsInput
+  trajetDepart: Prisma.TrajetDepartCreateNestedOneWithoutReservationsInput
 }
 
 export type ReservationUncheckedCreateWithoutClientInput = {
@@ -890,6 +913,7 @@ export type ReservationUncheckedCreateWithoutClientInput = {
   nombrePlaces: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  trajetDepartId: string
   paiements?: Prisma.PaiementUncheckedCreateNestedManyWithoutReservationInput
   passagers?: Prisma.PassagerUncheckedCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteUncheckedCreateNestedManyWithoutReservationInput
@@ -943,11 +967,13 @@ export type ReservationScalarWhereInput = {
   nombrePlaces?: Prisma.IntFilter<"Reservation"> | number
   createdAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
+  trajetDepartId?: Prisma.StringFilter<"Reservation"> | string
 }
 
-export type ReservationCreateWithoutTrajetInput = {
+export type ReservationCreateWithoutTrajetDepartInput = {
   id?: string
   codeUnique: string
+  trajetId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
@@ -968,10 +994,11 @@ export type ReservationCreateWithoutTrajetInput = {
   client: Prisma.ClientCreateNestedOneWithoutReservationsInput
 }
 
-export type ReservationUncheckedCreateWithoutTrajetInput = {
+export type ReservationUncheckedCreateWithoutTrajetDepartInput = {
   id?: string
   codeUnique: string
   clientId: string
+  trajetId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
@@ -991,35 +1018,36 @@ export type ReservationUncheckedCreateWithoutTrajetInput = {
   penalites?: Prisma.PenaliteUncheckedCreateNestedManyWithoutReservationInput
 }
 
-export type ReservationCreateOrConnectWithoutTrajetInput = {
+export type ReservationCreateOrConnectWithoutTrajetDepartInput = {
   where: Prisma.ReservationWhereUniqueInput
-  create: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetInput, Prisma.ReservationUncheckedCreateWithoutTrajetInput>
+  create: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetDepartInput, Prisma.ReservationUncheckedCreateWithoutTrajetDepartInput>
 }
 
-export type ReservationCreateManyTrajetInputEnvelope = {
-  data: Prisma.ReservationCreateManyTrajetInput | Prisma.ReservationCreateManyTrajetInput[]
+export type ReservationCreateManyTrajetDepartInputEnvelope = {
+  data: Prisma.ReservationCreateManyTrajetDepartInput | Prisma.ReservationCreateManyTrajetDepartInput[]
   skipDuplicates?: boolean
 }
 
-export type ReservationUpsertWithWhereUniqueWithoutTrajetInput = {
+export type ReservationUpsertWithWhereUniqueWithoutTrajetDepartInput = {
   where: Prisma.ReservationWhereUniqueInput
-  update: Prisma.XOR<Prisma.ReservationUpdateWithoutTrajetInput, Prisma.ReservationUncheckedUpdateWithoutTrajetInput>
-  create: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetInput, Prisma.ReservationUncheckedCreateWithoutTrajetInput>
+  update: Prisma.XOR<Prisma.ReservationUpdateWithoutTrajetDepartInput, Prisma.ReservationUncheckedUpdateWithoutTrajetDepartInput>
+  create: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetDepartInput, Prisma.ReservationUncheckedCreateWithoutTrajetDepartInput>
 }
 
-export type ReservationUpdateWithWhereUniqueWithoutTrajetInput = {
+export type ReservationUpdateWithWhereUniqueWithoutTrajetDepartInput = {
   where: Prisma.ReservationWhereUniqueInput
-  data: Prisma.XOR<Prisma.ReservationUpdateWithoutTrajetInput, Prisma.ReservationUncheckedUpdateWithoutTrajetInput>
+  data: Prisma.XOR<Prisma.ReservationUpdateWithoutTrajetDepartInput, Prisma.ReservationUncheckedUpdateWithoutTrajetDepartInput>
 }
 
-export type ReservationUpdateManyWithWhereWithoutTrajetInput = {
+export type ReservationUpdateManyWithWhereWithoutTrajetDepartInput = {
   where: Prisma.ReservationScalarWhereInput
-  data: Prisma.XOR<Prisma.ReservationUpdateManyMutationInput, Prisma.ReservationUncheckedUpdateManyWithoutTrajetInput>
+  data: Prisma.XOR<Prisma.ReservationUpdateManyMutationInput, Prisma.ReservationUncheckedUpdateManyWithoutTrajetDepartInput>
 }
 
 export type ReservationCreateWithoutPassagersInput = {
   id?: string
   codeUnique: string
+  trajetId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
@@ -1037,7 +1065,7 @@ export type ReservationCreateWithoutPassagersInput = {
   paiements?: Prisma.PaiementCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteCreateNestedManyWithoutReservationInput
   client: Prisma.ClientCreateNestedOneWithoutReservationsInput
-  trajet: Prisma.TrajetCreateNestedOneWithoutReservationsInput
+  trajetDepart: Prisma.TrajetDepartCreateNestedOneWithoutReservationsInput
 }
 
 export type ReservationUncheckedCreateWithoutPassagersInput = {
@@ -1059,6 +1087,7 @@ export type ReservationUncheckedCreateWithoutPassagersInput = {
   nombrePlaces: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  trajetDepartId: string
   paiements?: Prisma.PaiementUncheckedCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteUncheckedCreateNestedManyWithoutReservationInput
 }
@@ -1082,6 +1111,7 @@ export type ReservationUpdateToOneWithWhereWithoutPassagersInput = {
 export type ReservationUpdateWithoutPassagersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
@@ -1099,7 +1129,7 @@ export type ReservationUpdateWithoutPassagersInput = {
   paiements?: Prisma.PaiementUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUpdateManyWithoutReservationNestedInput
   client?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
-  trajet?: Prisma.TrajetUpdateOneRequiredWithoutReservationsNestedInput
+  trajetDepart?: Prisma.TrajetDepartUpdateOneRequiredWithoutReservationsNestedInput
 }
 
 export type ReservationUncheckedUpdateWithoutPassagersInput = {
@@ -1121,6 +1151,7 @@ export type ReservationUncheckedUpdateWithoutPassagersInput = {
   nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   paiements?: Prisma.PaiementUncheckedUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUncheckedUpdateManyWithoutReservationNestedInput
 }
@@ -1128,6 +1159,7 @@ export type ReservationUncheckedUpdateWithoutPassagersInput = {
 export type ReservationCreateWithoutPaiementsInput = {
   id?: string
   codeUnique: string
+  trajetId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
@@ -1145,7 +1177,7 @@ export type ReservationCreateWithoutPaiementsInput = {
   passagers?: Prisma.PassagerCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteCreateNestedManyWithoutReservationInput
   client: Prisma.ClientCreateNestedOneWithoutReservationsInput
-  trajet: Prisma.TrajetCreateNestedOneWithoutReservationsInput
+  trajetDepart: Prisma.TrajetDepartCreateNestedOneWithoutReservationsInput
 }
 
 export type ReservationUncheckedCreateWithoutPaiementsInput = {
@@ -1167,6 +1199,7 @@ export type ReservationUncheckedCreateWithoutPaiementsInput = {
   nombrePlaces: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  trajetDepartId: string
   passagers?: Prisma.PassagerUncheckedCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteUncheckedCreateNestedManyWithoutReservationInput
 }
@@ -1190,6 +1223,7 @@ export type ReservationUpdateToOneWithWhereWithoutPaiementsInput = {
 export type ReservationUpdateWithoutPaiementsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
@@ -1207,7 +1241,7 @@ export type ReservationUpdateWithoutPaiementsInput = {
   passagers?: Prisma.PassagerUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUpdateManyWithoutReservationNestedInput
   client?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
-  trajet?: Prisma.TrajetUpdateOneRequiredWithoutReservationsNestedInput
+  trajetDepart?: Prisma.TrajetDepartUpdateOneRequiredWithoutReservationsNestedInput
 }
 
 export type ReservationUncheckedUpdateWithoutPaiementsInput = {
@@ -1229,6 +1263,7 @@ export type ReservationUncheckedUpdateWithoutPaiementsInput = {
   nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   passagers?: Prisma.PassagerUncheckedUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUncheckedUpdateManyWithoutReservationNestedInput
 }
@@ -1236,6 +1271,7 @@ export type ReservationUncheckedUpdateWithoutPaiementsInput = {
 export type ReservationCreateWithoutPenalitesInput = {
   id?: string
   codeUnique: string
+  trajetId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
@@ -1253,7 +1289,7 @@ export type ReservationCreateWithoutPenalitesInput = {
   paiements?: Prisma.PaiementCreateNestedManyWithoutReservationInput
   passagers?: Prisma.PassagerCreateNestedManyWithoutReservationInput
   client: Prisma.ClientCreateNestedOneWithoutReservationsInput
-  trajet: Prisma.TrajetCreateNestedOneWithoutReservationsInput
+  trajetDepart: Prisma.TrajetDepartCreateNestedOneWithoutReservationsInput
 }
 
 export type ReservationUncheckedCreateWithoutPenalitesInput = {
@@ -1275,6 +1311,7 @@ export type ReservationUncheckedCreateWithoutPenalitesInput = {
   nombrePlaces: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  trajetDepartId: string
   paiements?: Prisma.PaiementUncheckedCreateNestedManyWithoutReservationInput
   passagers?: Prisma.PassagerUncheckedCreateNestedManyWithoutReservationInput
 }
@@ -1298,6 +1335,7 @@ export type ReservationUpdateToOneWithWhereWithoutPenalitesInput = {
 export type ReservationUpdateWithoutPenalitesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
@@ -1315,7 +1353,7 @@ export type ReservationUpdateWithoutPenalitesInput = {
   paiements?: Prisma.PaiementUpdateManyWithoutReservationNestedInput
   passagers?: Prisma.PassagerUpdateManyWithoutReservationNestedInput
   client?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
-  trajet?: Prisma.TrajetUpdateOneRequiredWithoutReservationsNestedInput
+  trajetDepart?: Prisma.TrajetDepartUpdateOneRequiredWithoutReservationsNestedInput
 }
 
 export type ReservationUncheckedUpdateWithoutPenalitesInput = {
@@ -1337,6 +1375,7 @@ export type ReservationUncheckedUpdateWithoutPenalitesInput = {
   nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   paiements?: Prisma.PaiementUncheckedUpdateManyWithoutReservationNestedInput
   passagers?: Prisma.PassagerUncheckedUpdateManyWithoutReservationNestedInput
 }
@@ -1359,11 +1398,13 @@ export type ReservationCreateManyClientInput = {
   nombrePlaces: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  trajetDepartId: string
 }
 
 export type ReservationUpdateWithoutClientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
@@ -1381,7 +1422,7 @@ export type ReservationUpdateWithoutClientInput = {
   paiements?: Prisma.PaiementUpdateManyWithoutReservationNestedInput
   passagers?: Prisma.PassagerUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUpdateManyWithoutReservationNestedInput
-  trajet?: Prisma.TrajetUpdateOneRequiredWithoutReservationsNestedInput
+  trajetDepart?: Prisma.TrajetDepartUpdateOneRequiredWithoutReservationsNestedInput
 }
 
 export type ReservationUncheckedUpdateWithoutClientInput = {
@@ -1402,6 +1443,7 @@ export type ReservationUncheckedUpdateWithoutClientInput = {
   nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   paiements?: Prisma.PaiementUncheckedUpdateManyWithoutReservationNestedInput
   passagers?: Prisma.PassagerUncheckedUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUncheckedUpdateManyWithoutReservationNestedInput
@@ -1425,12 +1467,14 @@ export type ReservationUncheckedUpdateManyWithoutClientInput = {
   nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
-export type ReservationCreateManyTrajetInput = {
+export type ReservationCreateManyTrajetDepartInput = {
   id?: string
   codeUnique: string
   clientId: string
+  trajetId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
@@ -1447,9 +1491,10 @@ export type ReservationCreateManyTrajetInput = {
   updatedAt?: Date | string
 }
 
-export type ReservationUpdateWithoutTrajetInput = {
+export type ReservationUpdateWithoutTrajetDepartInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
@@ -1470,10 +1515,11 @@ export type ReservationUpdateWithoutTrajetInput = {
   client?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
 }
 
-export type ReservationUncheckedUpdateWithoutTrajetInput = {
+export type ReservationUncheckedUpdateWithoutTrajetDepartInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
@@ -1493,10 +1539,11 @@ export type ReservationUncheckedUpdateWithoutTrajetInput = {
   penalites?: Prisma.PenaliteUncheckedUpdateManyWithoutReservationNestedInput
 }
 
-export type ReservationUncheckedUpdateManyWithoutTrajetInput = {
+export type ReservationUncheckedUpdateManyWithoutTrajetDepartInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
@@ -1581,11 +1628,12 @@ export type ReservationSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   nombrePlaces?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  trajetDepartId?: boolean
   paiements?: boolean | Prisma.Reservation$paiementsArgs<ExtArgs>
   passagers?: boolean | Prisma.Reservation$passagersArgs<ExtArgs>
   penalites?: boolean | Prisma.Reservation$penalitesArgs<ExtArgs>
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
-  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
+  trajetDepart?: boolean | Prisma.TrajetDepartDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ReservationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reservation"]>
 
@@ -1608,8 +1656,9 @@ export type ReservationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   nombrePlaces?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  trajetDepartId?: boolean
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
-  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
+  trajetDepart?: boolean | Prisma.TrajetDepartDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reservation"]>
 
 export type ReservationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1631,8 +1680,9 @@ export type ReservationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   nombrePlaces?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  trajetDepartId?: boolean
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
-  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
+  trajetDepart?: boolean | Prisma.TrajetDepartDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reservation"]>
 
 export type ReservationSelectScalar = {
@@ -1654,24 +1704,25 @@ export type ReservationSelectScalar = {
   nombrePlaces?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  trajetDepartId?: boolean
 }
 
-export type ReservationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "codeUnique" | "clientId" | "trajetId" | "dateDepart" | "heureDepart" | "statut" | "nombreKilos" | "surplusKilos" | "montantSurplus" | "prixBillet" | "prixTotal" | "penalite" | "peutReporter" | "dateLimiteReport" | "nombrePlaces" | "createdAt" | "updatedAt", ExtArgs["result"]["reservation"]>
+export type ReservationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "codeUnique" | "clientId" | "trajetId" | "dateDepart" | "heureDepart" | "statut" | "nombreKilos" | "surplusKilos" | "montantSurplus" | "prixBillet" | "prixTotal" | "penalite" | "peutReporter" | "dateLimiteReport" | "nombrePlaces" | "createdAt" | "updatedAt" | "trajetDepartId", ExtArgs["result"]["reservation"]>
 export type ReservationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   paiements?: boolean | Prisma.Reservation$paiementsArgs<ExtArgs>
   passagers?: boolean | Prisma.Reservation$passagersArgs<ExtArgs>
   penalites?: boolean | Prisma.Reservation$penalitesArgs<ExtArgs>
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
-  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
+  trajetDepart?: boolean | Prisma.TrajetDepartDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ReservationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ReservationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
-  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
+  trajetDepart?: boolean | Prisma.TrajetDepartDefaultArgs<ExtArgs>
 }
 export type ReservationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
-  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
+  trajetDepart?: boolean | Prisma.TrajetDepartDefaultArgs<ExtArgs>
 }
 
 export type $ReservationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1681,7 +1732,7 @@ export type $ReservationPayload<ExtArgs extends runtime.Types.Extensions.Interna
     passagers: Prisma.$PassagerPayload<ExtArgs>[]
     penalites: Prisma.$PenalitePayload<ExtArgs>[]
     client: Prisma.$ClientPayload<ExtArgs>
-    trajet: Prisma.$TrajetPayload<ExtArgs>
+    trajetDepart: Prisma.$TrajetDepartPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1702,6 +1753,7 @@ export type $ReservationPayload<ExtArgs extends runtime.Types.Extensions.Interna
     nombrePlaces: number
     createdAt: Date
     updatedAt: Date
+    trajetDepartId: string
   }, ExtArgs["result"]["reservation"]>
   composites: {}
 }
@@ -2100,7 +2152,7 @@ export interface Prisma__ReservationClient<T, Null = never, ExtArgs extends runt
   passagers<T extends Prisma.Reservation$passagersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Reservation$passagersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PassagerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   penalites<T extends Prisma.Reservation$penalitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Reservation$penalitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PenalitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   client<T extends Prisma.ClientDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClientDefaultArgs<ExtArgs>>): Prisma.Prisma__ClientClient<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  trajet<T extends Prisma.TrajetDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TrajetDefaultArgs<ExtArgs>>): Prisma.Prisma__TrajetClient<runtime.Types.Result.GetResult<Prisma.$TrajetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  trajetDepart<T extends Prisma.TrajetDepartDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TrajetDepartDefaultArgs<ExtArgs>>): Prisma.Prisma__TrajetDepartClient<runtime.Types.Result.GetResult<Prisma.$TrajetDepartPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2148,6 +2200,7 @@ export interface ReservationFieldRefs {
   readonly nombrePlaces: Prisma.FieldRef<"Reservation", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Reservation", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Reservation", 'DateTime'>
+  readonly trajetDepartId: Prisma.FieldRef<"Reservation", 'String'>
 }
     
 

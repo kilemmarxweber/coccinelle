@@ -68,6 +68,16 @@ export type Client = Prisma.ClientModel
  */
 export type Trajet = Prisma.TrajetModel
 /**
+ * Model TrajetProgramme
+ * 
+ */
+export type TrajetProgramme = Prisma.TrajetProgrammeModel
+/**
+ * Model TrajetDepart
+ * 
+ */
+export type TrajetDepart = Prisma.TrajetDepartModel
+/**
  * Model Passager
  * ///////////////////////
  * ///////////////////////

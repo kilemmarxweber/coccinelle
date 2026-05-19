@@ -215,6 +215,30 @@ export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedIntNullableFilter<$PrismaModel>
 }
 
+export type EnumJourSemaineFilter<$PrismaModel = never> = {
+  equals?: $Enums.JourSemaine | Prisma.EnumJourSemaineFieldRefInput<$PrismaModel>
+  in?: $Enums.JourSemaine[] | Prisma.ListEnumJourSemaineFieldRefInput<$PrismaModel>
+  notIn?: $Enums.JourSemaine[] | Prisma.ListEnumJourSemaineFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumJourSemaineFilter<$PrismaModel> | $Enums.JourSemaine
+}
+
+export type EnumJourSemaineWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.JourSemaine | Prisma.EnumJourSemaineFieldRefInput<$PrismaModel>
+  in?: $Enums.JourSemaine[] | Prisma.ListEnumJourSemaineFieldRefInput<$PrismaModel>
+  notIn?: $Enums.JourSemaine[] | Prisma.ListEnumJourSemaineFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumJourSemaineWithAggregatesFilter<$PrismaModel> | $Enums.JourSemaine
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumJourSemaineFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumJourSemaineFilter<$PrismaModel>
+}
+
+export type EnumTypeSexeFilter<$PrismaModel = never> = {
+  equals?: $Enums.TypeSexe | Prisma.EnumTypeSexeFieldRefInput<$PrismaModel>
+  in?: $Enums.TypeSexe[] | Prisma.ListEnumTypeSexeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TypeSexe[] | Prisma.ListEnumTypeSexeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTypeSexeFilter<$PrismaModel> | $Enums.TypeSexe
+}
+
 export type EnumCategoriePassagerFilter<$PrismaModel = never> = {
   equals?: $Enums.CategoriePassager | Prisma.EnumCategoriePassagerFieldRefInput<$PrismaModel>
   in?: $Enums.CategoriePassager[] | Prisma.ListEnumCategoriePassagerFieldRefInput<$PrismaModel>
@@ -238,6 +262,16 @@ export type IntFilter<$PrismaModel = never> = {
   gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
   gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
   not?: Prisma.NestedIntFilter<$PrismaModel> | number
+}
+
+export type EnumTypeSexeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TypeSexe | Prisma.EnumTypeSexeFieldRefInput<$PrismaModel>
+  in?: $Enums.TypeSexe[] | Prisma.ListEnumTypeSexeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TypeSexe[] | Prisma.ListEnumTypeSexeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTypeSexeWithAggregatesFilter<$PrismaModel> | $Enums.TypeSexe
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTypeSexeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTypeSexeFilter<$PrismaModel>
 }
 
 export type EnumCategoriePassagerWithAggregatesFilter<$PrismaModel = never> = {
@@ -320,11 +354,28 @@ export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedFloatNullableFilter<$PrismaModel>
 }
 
+export type EnumTypeColisFilter<$PrismaModel = never> = {
+  equals?: $Enums.TypeColis | Prisma.EnumTypeColisFieldRefInput<$PrismaModel>
+  in?: $Enums.TypeColis[] | Prisma.ListEnumTypeColisFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TypeColis[] | Prisma.ListEnumTypeColisFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTypeColisFilter<$PrismaModel> | $Enums.TypeColis
+}
+
 export type EnumStatutColisFilter<$PrismaModel = never> = {
   equals?: $Enums.StatutColis | Prisma.EnumStatutColisFieldRefInput<$PrismaModel>
   in?: $Enums.StatutColis[] | Prisma.ListEnumStatutColisFieldRefInput<$PrismaModel>
   notIn?: $Enums.StatutColis[] | Prisma.ListEnumStatutColisFieldRefInput<$PrismaModel>
   not?: Prisma.NestedEnumStatutColisFilter<$PrismaModel> | $Enums.StatutColis
+}
+
+export type EnumTypeColisWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TypeColis | Prisma.EnumTypeColisFieldRefInput<$PrismaModel>
+  in?: $Enums.TypeColis[] | Prisma.ListEnumTypeColisFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TypeColis[] | Prisma.ListEnumTypeColisFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTypeColisWithAggregatesFilter<$PrismaModel> | $Enums.TypeColis
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTypeColisFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTypeColisFilter<$PrismaModel>
 }
 
 export type EnumStatutColisWithAggregatesFilter<$PrismaModel = never> = {
@@ -585,6 +636,30 @@ export type NestedFloatNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedFloatNullableFilter<$PrismaModel> | number | null
 }
 
+export type NestedEnumJourSemaineFilter<$PrismaModel = never> = {
+  equals?: $Enums.JourSemaine | Prisma.EnumJourSemaineFieldRefInput<$PrismaModel>
+  in?: $Enums.JourSemaine[] | Prisma.ListEnumJourSemaineFieldRefInput<$PrismaModel>
+  notIn?: $Enums.JourSemaine[] | Prisma.ListEnumJourSemaineFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumJourSemaineFilter<$PrismaModel> | $Enums.JourSemaine
+}
+
+export type NestedEnumJourSemaineWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.JourSemaine | Prisma.EnumJourSemaineFieldRefInput<$PrismaModel>
+  in?: $Enums.JourSemaine[] | Prisma.ListEnumJourSemaineFieldRefInput<$PrismaModel>
+  notIn?: $Enums.JourSemaine[] | Prisma.ListEnumJourSemaineFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumJourSemaineWithAggregatesFilter<$PrismaModel> | $Enums.JourSemaine
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumJourSemaineFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumJourSemaineFilter<$PrismaModel>
+}
+
+export type NestedEnumTypeSexeFilter<$PrismaModel = never> = {
+  equals?: $Enums.TypeSexe | Prisma.EnumTypeSexeFieldRefInput<$PrismaModel>
+  in?: $Enums.TypeSexe[] | Prisma.ListEnumTypeSexeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TypeSexe[] | Prisma.ListEnumTypeSexeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTypeSexeFilter<$PrismaModel> | $Enums.TypeSexe
+}
+
 export type NestedEnumCategoriePassagerFilter<$PrismaModel = never> = {
   equals?: $Enums.CategoriePassager | Prisma.EnumCategoriePassagerFieldRefInput<$PrismaModel>
   in?: $Enums.CategoriePassager[] | Prisma.ListEnumCategoriePassagerFieldRefInput<$PrismaModel>
@@ -597,6 +672,16 @@ export type NestedEnumTypePassagerFilter<$PrismaModel = never> = {
   in?: $Enums.TypePassager[] | Prisma.ListEnumTypePassagerFieldRefInput<$PrismaModel>
   notIn?: $Enums.TypePassager[] | Prisma.ListEnumTypePassagerFieldRefInput<$PrismaModel>
   not?: Prisma.NestedEnumTypePassagerFilter<$PrismaModel> | $Enums.TypePassager
+}
+
+export type NestedEnumTypeSexeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TypeSexe | Prisma.EnumTypeSexeFieldRefInput<$PrismaModel>
+  in?: $Enums.TypeSexe[] | Prisma.ListEnumTypeSexeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TypeSexe[] | Prisma.ListEnumTypeSexeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTypeSexeWithAggregatesFilter<$PrismaModel> | $Enums.TypeSexe
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTypeSexeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTypeSexeFilter<$PrismaModel>
 }
 
 export type NestedEnumCategoriePassagerWithAggregatesFilter<$PrismaModel = never> = {
@@ -668,11 +753,28 @@ export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedFloatNullableFilter<$PrismaModel>
 }
 
+export type NestedEnumTypeColisFilter<$PrismaModel = never> = {
+  equals?: $Enums.TypeColis | Prisma.EnumTypeColisFieldRefInput<$PrismaModel>
+  in?: $Enums.TypeColis[] | Prisma.ListEnumTypeColisFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TypeColis[] | Prisma.ListEnumTypeColisFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTypeColisFilter<$PrismaModel> | $Enums.TypeColis
+}
+
 export type NestedEnumStatutColisFilter<$PrismaModel = never> = {
   equals?: $Enums.StatutColis | Prisma.EnumStatutColisFieldRefInput<$PrismaModel>
   in?: $Enums.StatutColis[] | Prisma.ListEnumStatutColisFieldRefInput<$PrismaModel>
   notIn?: $Enums.StatutColis[] | Prisma.ListEnumStatutColisFieldRefInput<$PrismaModel>
   not?: Prisma.NestedEnumStatutColisFilter<$PrismaModel> | $Enums.StatutColis
+}
+
+export type NestedEnumTypeColisWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TypeColis | Prisma.EnumTypeColisFieldRefInput<$PrismaModel>
+  in?: $Enums.TypeColis[] | Prisma.ListEnumTypeColisFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TypeColis[] | Prisma.ListEnumTypeColisFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTypeColisWithAggregatesFilter<$PrismaModel> | $Enums.TypeColis
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTypeColisFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTypeColisFilter<$PrismaModel>
 }
 
 export type NestedEnumStatutColisWithAggregatesFilter<$PrismaModel = never> = {

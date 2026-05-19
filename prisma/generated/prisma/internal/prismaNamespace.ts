@@ -394,6 +394,8 @@ export const ModelName = {
   Invitation: 'Invitation',
   Client: 'Client',
   Trajet: 'Trajet',
+  TrajetProgramme: 'TrajetProgramme',
+  TrajetDepart: 'TrajetDepart',
   Passager: 'Passager',
   Reservation: 'Reservation',
   Colis: 'Colis',
@@ -414,7 +416,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationRole" | "member" | "invitation" | "client" | "trajet" | "passager" | "reservation" | "colis" | "paiement" | "penalite"
+    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationRole" | "member" | "invitation" | "client" | "trajet" | "trajetProgramme" | "trajetDepart" | "passager" | "reservation" | "colis" | "paiement" | "penalite"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1158,6 +1160,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    TrajetProgramme: {
+      payload: Prisma.$TrajetProgrammePayload<ExtArgs>
+      fields: Prisma.TrajetProgrammeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TrajetProgrammeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetProgrammePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TrajetProgrammeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetProgrammePayload>
+        }
+        findFirst: {
+          args: Prisma.TrajetProgrammeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetProgrammePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TrajetProgrammeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetProgrammePayload>
+        }
+        findMany: {
+          args: Prisma.TrajetProgrammeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetProgrammePayload>[]
+        }
+        create: {
+          args: Prisma.TrajetProgrammeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetProgrammePayload>
+        }
+        createMany: {
+          args: Prisma.TrajetProgrammeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TrajetProgrammeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetProgrammePayload>[]
+        }
+        delete: {
+          args: Prisma.TrajetProgrammeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetProgrammePayload>
+        }
+        update: {
+          args: Prisma.TrajetProgrammeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetProgrammePayload>
+        }
+        deleteMany: {
+          args: Prisma.TrajetProgrammeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TrajetProgrammeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TrajetProgrammeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetProgrammePayload>[]
+        }
+        upsert: {
+          args: Prisma.TrajetProgrammeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetProgrammePayload>
+        }
+        aggregate: {
+          args: Prisma.TrajetProgrammeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTrajetProgramme>
+        }
+        groupBy: {
+          args: Prisma.TrajetProgrammeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TrajetProgrammeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TrajetProgrammeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TrajetProgrammeCountAggregateOutputType> | number
+        }
+      }
+    }
+    TrajetDepart: {
+      payload: Prisma.$TrajetDepartPayload<ExtArgs>
+      fields: Prisma.TrajetDepartFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TrajetDepartFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetDepartPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TrajetDepartFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetDepartPayload>
+        }
+        findFirst: {
+          args: Prisma.TrajetDepartFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetDepartPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TrajetDepartFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetDepartPayload>
+        }
+        findMany: {
+          args: Prisma.TrajetDepartFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetDepartPayload>[]
+        }
+        create: {
+          args: Prisma.TrajetDepartCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetDepartPayload>
+        }
+        createMany: {
+          args: Prisma.TrajetDepartCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TrajetDepartCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetDepartPayload>[]
+        }
+        delete: {
+          args: Prisma.TrajetDepartDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetDepartPayload>
+        }
+        update: {
+          args: Prisma.TrajetDepartUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetDepartPayload>
+        }
+        deleteMany: {
+          args: Prisma.TrajetDepartDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TrajetDepartUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TrajetDepartUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetDepartPayload>[]
+        }
+        upsert: {
+          args: Prisma.TrajetDepartUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrajetDepartPayload>
+        }
+        aggregate: {
+          args: Prisma.TrajetDepartAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTrajetDepart>
+        }
+        groupBy: {
+          args: Prisma.TrajetDepartGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TrajetDepartGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TrajetDepartCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TrajetDepartCountAggregateOutputType> | number
+        }
+      }
+    }
     Passager: {
       payload: Prisma.$PassagerPayload<ExtArgs>
       fields: Prisma.PassagerFieldRefs
@@ -1684,6 +1834,11 @@ export const ClientScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   dateInscription: 'dateInscription',
+  telephone: 'telephone',
+  societe: 'societe',
+  adresse: 'adresse',
+  prenom: 'prenom',
+  postnom: 'postnom',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1706,6 +1861,28 @@ export const TrajetScalarFieldEnum = {
 export type TrajetScalarFieldEnum = (typeof TrajetScalarFieldEnum)[keyof typeof TrajetScalarFieldEnum]
 
 
+export const TrajetProgrammeScalarFieldEnum = {
+  id: 'id',
+  trajetId: 'trajetId',
+  jourSemaine: 'jourSemaine',
+  heureDepart: 'heureDepart',
+  actif: 'actif'
+} as const
+
+export type TrajetProgrammeScalarFieldEnum = (typeof TrajetProgrammeScalarFieldEnum)[keyof typeof TrajetProgrammeScalarFieldEnum]
+
+
+export const TrajetDepartScalarFieldEnum = {
+  id: 'id',
+  trajetId: 'trajetId',
+  dateDepart: 'dateDepart',
+  heureDepart: 'heureDepart',
+  statut: 'statut'
+} as const
+
+export type TrajetDepartScalarFieldEnum = (typeof TrajetDepartScalarFieldEnum)[keyof typeof TrajetDepartScalarFieldEnum]
+
+
 export const PassagerScalarFieldEnum = {
   id: 'id',
   reservationId: 'reservationId',
@@ -1713,6 +1890,7 @@ export const PassagerScalarFieldEnum = {
   clientId: 'clientId',
   nom: 'nom',
   prenom: 'prenom',
+  sexe: 'sexe',
   dateNaissance: 'dateNaissance',
   categorie: 'categorie',
   prix: 'prix',
@@ -1744,7 +1922,8 @@ export const ReservationScalarFieldEnum = {
   dateLimiteReport: 'dateLimiteReport',
   nombrePlaces: 'nombrePlaces',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  trajetDepartId: 'trajetDepartId'
 } as const
 
 export type ReservationScalarFieldEnum = (typeof ReservationScalarFieldEnum)[keyof typeof ReservationScalarFieldEnum]
@@ -1759,9 +1938,14 @@ export const ColisScalarFieldEnum = {
   kilosGratuits: 'kilosGratuits',
   surplusKilos: 'surplusKilos',
   montantAPayer: 'montantAPayer',
+  passagerId: 'passagerId',
+  type: 'type',
+  montantFixe: 'montantFixe',
+  commentaire: 'commentaire',
   statut: 'statut',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  trajetDepartId: 'trajetDepartId'
 } as const
 
 export type ColisScalarFieldEnum = (typeof ColisScalarFieldEnum)[keyof typeof ColisScalarFieldEnum]
@@ -1888,6 +2072,34 @@ export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'JourSemaine'
+ */
+export type EnumJourSemaineFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'JourSemaine'>
+    
+
+
+/**
+ * Reference to a field of type 'JourSemaine[]'
+ */
+export type ListEnumJourSemaineFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'JourSemaine[]'>
+    
+
+
+/**
+ * Reference to a field of type 'TypeSexe'
+ */
+export type EnumTypeSexeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TypeSexe'>
+    
+
+
+/**
+ * Reference to a field of type 'TypeSexe[]'
+ */
+export type ListEnumTypeSexeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TypeSexe[]'>
+    
+
+
+/**
  * Reference to a field of type 'CategoriePassager'
  */
 export type EnumCategoriePassagerFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CategoriePassager'>
@@ -1926,6 +2138,20 @@ export type EnumStatutReservationFieldRefInput<$PrismaModel> = FieldRefInputType
  * Reference to a field of type 'StatutReservation[]'
  */
 export type ListEnumStatutReservationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatutReservation[]'>
+    
+
+
+/**
+ * Reference to a field of type 'TypeColis'
+ */
+export type EnumTypeColisFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TypeColis'>
+    
+
+
+/**
+ * Reference to a field of type 'TypeColis[]'
+ */
+export type ListEnumTypeColisFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TypeColis[]'>
     
 
 
@@ -2090,6 +2316,8 @@ export type GlobalOmitConfig = {
   invitation?: Prisma.InvitationOmit
   client?: Prisma.ClientOmit
   trajet?: Prisma.TrajetOmit
+  trajetProgramme?: Prisma.TrajetProgrammeOmit
+  trajetDepart?: Prisma.TrajetDepartOmit
   passager?: Prisma.PassagerOmit
   reservation?: Prisma.ReservationOmit
   colis?: Prisma.ColisOmit

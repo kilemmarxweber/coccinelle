@@ -3,15 +3,24 @@ import "dotenv/config";
 import prisma from "@/lib/prisma";
 
 export async function seedPenalites() {
-  console.log("⚠️ Seeding penalites...");
-
   const reservations = await prisma.reservation.findMany();
 
-  for (const res of reservations.slice(0, 2)) {
-    await prisma.penalite.create({
-      data: {
-        id: crypto.randomUUID(),
-        codeUnique: `PEN-${Date.now()}`,
+  if (!reservations.length) {
+    console.log("⚠️ No reservations found, skipping penalites seed");
+    return;
+  }
+
+  for (let i = 0; i < reservations.length; i++) {
+    const res = reservations[i];
+
+    if (!res) continue; // safety
+
+    await prisma.penalite.upsert({
+      where: { codeUnique: `PEN-${res.id}` },
+      update: {},
+      create: {
+        id: `pen-${res.id}`,
+        codeUnique: `PEN-${res.id}`,
         reservationId: res.id,
         montant: 50,
         raison: "Annulation tardive",
@@ -19,5 +28,5 @@ export async function seedPenalites() {
     });
   }
 
-  console.log("✅ Penalites OK");
+  console.log("✅ Penalites seeded");
 }

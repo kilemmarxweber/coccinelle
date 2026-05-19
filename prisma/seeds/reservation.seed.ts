@@ -3,33 +3,34 @@ import "dotenv/config";
 import prisma from "@/lib/prisma";
 
 export async function seedReservations() {
-  console.log("📦 Seeding reservations...");
-
   const clients = await prisma.client.findMany();
-  const trajets = await prisma.trajet.findMany();
+  const trajetsDepart = await prisma.trajetDepart.findMany();
 
-  if (!clients.length || !trajets.length) {
-    throw new Error("Clients or Trajets missing");
-  }
+  for (let i = 0; i < 2; i++) {
+    const client = clients[i];
+    const depart = trajetsDepart[i];
 
-  for (let i = 0; i < 5; i++) {
-    const client = clients[i % clients.length];
-    const trajet = trajets[i % trajets.length];
+    if (!client || !depart) continue;
 
-    await prisma.reservation.create({
-      data: {
-        id: crypto.randomUUID(),
-        codeUnique: `RES-${Date.now()}-${i}`,
+    await prisma.reservation.upsert({
+      where: { codeUnique: `RES-${i}` },
+      update: {},
+      create: {
+        id: `reservation-${i}`,
+        codeUnique: `RES-${i}`,
+
         clientId: client.id,
-        trajetId: trajet.id,
-        dateDepart: new Date(),
-        heureDepart: "10:00",
+        trajetId: depart.trajetId,
+        trajetDepartId: depart.id,
+
+        dateDepart: depart.dateDepart,
+        heureDepart: depart.heureDepart,
+
         nombrePlaces: 2,
         prixBillet: 200,
         prixTotal: 400,
+        statut: "CONFIRME",
       },
     });
   }
-
-  console.log("✅ Reservations OK");
 }

@@ -44,6 +44,7 @@ export type PassagerMinAggregateOutputType = {
   clientId: string | null
   nom: string | null
   prenom: string | null
+  sexe: $Enums.TypeSexe | null
   dateNaissance: Date | null
   categorie: $Enums.CategoriePassager | null
   prix: number | null
@@ -61,6 +62,7 @@ export type PassagerMaxAggregateOutputType = {
   clientId: string | null
   nom: string | null
   prenom: string | null
+  sexe: $Enums.TypeSexe | null
   dateNaissance: Date | null
   categorie: $Enums.CategoriePassager | null
   prix: number | null
@@ -78,6 +80,7 @@ export type PassagerCountAggregateOutputType = {
   clientId: number
   nom: number
   prenom: number
+  sexe: number
   dateNaissance: number
   categorie: number
   prix: number
@@ -107,6 +110,7 @@ export type PassagerMinAggregateInputType = {
   clientId?: true
   nom?: true
   prenom?: true
+  sexe?: true
   dateNaissance?: true
   categorie?: true
   prix?: true
@@ -124,6 +128,7 @@ export type PassagerMaxAggregateInputType = {
   clientId?: true
   nom?: true
   prenom?: true
+  sexe?: true
   dateNaissance?: true
   categorie?: true
   prix?: true
@@ -141,6 +146,7 @@ export type PassagerCountAggregateInputType = {
   clientId?: true
   nom?: true
   prenom?: true
+  sexe?: true
   dateNaissance?: true
   categorie?: true
   prix?: true
@@ -245,6 +251,7 @@ export type PassagerGroupByOutputType = {
   clientId: string | null
   nom: string
   prenom: string
+  sexe: $Enums.TypeSexe
   dateNaissance: Date | null
   categorie: $Enums.CategoriePassager
   prix: number
@@ -285,6 +292,7 @@ export type PassagerWhereInput = {
   clientId?: Prisma.StringNullableFilter<"Passager"> | string | null
   nom?: Prisma.StringFilter<"Passager"> | string
   prenom?: Prisma.StringFilter<"Passager"> | string
+  sexe?: Prisma.EnumTypeSexeFilter<"Passager"> | $Enums.TypeSexe
   dateNaissance?: Prisma.DateTimeNullableFilter<"Passager"> | Date | string | null
   categorie?: Prisma.EnumCategoriePassagerFilter<"Passager"> | $Enums.CategoriePassager
   prix?: Prisma.FloatFilter<"Passager"> | number
@@ -293,6 +301,7 @@ export type PassagerWhereInput = {
   ordre?: Prisma.IntFilter<"Passager"> | number
   occupePlace?: Prisma.BoolFilter<"Passager"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Passager"> | Date | string
+  colis?: Prisma.ColisListRelationFilter
   client?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
   reservation?: Prisma.XOR<Prisma.ReservationScalarRelationFilter, Prisma.ReservationWhereInput>
 }
@@ -304,6 +313,7 @@ export type PassagerOrderByWithRelationInput = {
   clientId?: Prisma.SortOrderInput | Prisma.SortOrder
   nom?: Prisma.SortOrder
   prenom?: Prisma.SortOrder
+  sexe?: Prisma.SortOrder
   dateNaissance?: Prisma.SortOrderInput | Prisma.SortOrder
   categorie?: Prisma.SortOrder
   prix?: Prisma.SortOrder
@@ -312,6 +322,7 @@ export type PassagerOrderByWithRelationInput = {
   ordre?: Prisma.SortOrder
   occupePlace?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  colis?: Prisma.ColisOrderByRelationAggregateInput
   client?: Prisma.ClientOrderByWithRelationInput
   reservation?: Prisma.ReservationOrderByWithRelationInput
 }
@@ -326,6 +337,7 @@ export type PassagerWhereUniqueInput = Prisma.AtLeast<{
   clientId?: Prisma.StringNullableFilter<"Passager"> | string | null
   nom?: Prisma.StringFilter<"Passager"> | string
   prenom?: Prisma.StringFilter<"Passager"> | string
+  sexe?: Prisma.EnumTypeSexeFilter<"Passager"> | $Enums.TypeSexe
   dateNaissance?: Prisma.DateTimeNullableFilter<"Passager"> | Date | string | null
   categorie?: Prisma.EnumCategoriePassagerFilter<"Passager"> | $Enums.CategoriePassager
   prix?: Prisma.FloatFilter<"Passager"> | number
@@ -334,6 +346,7 @@ export type PassagerWhereUniqueInput = Prisma.AtLeast<{
   ordre?: Prisma.IntFilter<"Passager"> | number
   occupePlace?: Prisma.BoolFilter<"Passager"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Passager"> | Date | string
+  colis?: Prisma.ColisListRelationFilter
   client?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
   reservation?: Prisma.XOR<Prisma.ReservationScalarRelationFilter, Prisma.ReservationWhereInput>
 }, "id" | "codeUnique">
@@ -345,6 +358,7 @@ export type PassagerOrderByWithAggregationInput = {
   clientId?: Prisma.SortOrderInput | Prisma.SortOrder
   nom?: Prisma.SortOrder
   prenom?: Prisma.SortOrder
+  sexe?: Prisma.SortOrder
   dateNaissance?: Prisma.SortOrderInput | Prisma.SortOrder
   categorie?: Prisma.SortOrder
   prix?: Prisma.SortOrder
@@ -370,6 +384,7 @@ export type PassagerScalarWhereWithAggregatesInput = {
   clientId?: Prisma.StringNullableWithAggregatesFilter<"Passager"> | string | null
   nom?: Prisma.StringWithAggregatesFilter<"Passager"> | string
   prenom?: Prisma.StringWithAggregatesFilter<"Passager"> | string
+  sexe?: Prisma.EnumTypeSexeWithAggregatesFilter<"Passager"> | $Enums.TypeSexe
   dateNaissance?: Prisma.DateTimeNullableWithAggregatesFilter<"Passager"> | Date | string | null
   categorie?: Prisma.EnumCategoriePassagerWithAggregatesFilter<"Passager"> | $Enums.CategoriePassager
   prix?: Prisma.FloatWithAggregatesFilter<"Passager"> | number
@@ -385,6 +400,7 @@ export type PassagerCreateInput = {
   codeUnique: string
   nom: string
   prenom: string
+  sexe: $Enums.TypeSexe
   dateNaissance?: Date | string | null
   categorie: $Enums.CategoriePassager
   prix: number
@@ -393,6 +409,7 @@ export type PassagerCreateInput = {
   ordre: number
   occupePlace?: boolean
   createdAt?: Date | string
+  colis?: Prisma.ColisCreateNestedManyWithoutPassagerInput
   client?: Prisma.ClientCreateNestedOneWithoutPassagersInput
   reservation: Prisma.ReservationCreateNestedOneWithoutPassagersInput
 }
@@ -404,6 +421,7 @@ export type PassagerUncheckedCreateInput = {
   clientId?: string | null
   nom: string
   prenom: string
+  sexe: $Enums.TypeSexe
   dateNaissance?: Date | string | null
   categorie: $Enums.CategoriePassager
   prix: number
@@ -412,6 +430,7 @@ export type PassagerUncheckedCreateInput = {
   ordre: number
   occupePlace?: boolean
   createdAt?: Date | string
+  colis?: Prisma.ColisUncheckedCreateNestedManyWithoutPassagerInput
 }
 
 export type PassagerUpdateInput = {
@@ -419,6 +438,7 @@ export type PassagerUpdateInput = {
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   nom?: Prisma.StringFieldUpdateOperationsInput | string
   prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  sexe?: Prisma.EnumTypeSexeFieldUpdateOperationsInput | $Enums.TypeSexe
   dateNaissance?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   categorie?: Prisma.EnumCategoriePassagerFieldUpdateOperationsInput | $Enums.CategoriePassager
   prix?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -427,6 +447,7 @@ export type PassagerUpdateInput = {
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  colis?: Prisma.ColisUpdateManyWithoutPassagerNestedInput
   client?: Prisma.ClientUpdateOneWithoutPassagersNestedInput
   reservation?: Prisma.ReservationUpdateOneRequiredWithoutPassagersNestedInput
 }
@@ -438,6 +459,7 @@ export type PassagerUncheckedUpdateInput = {
   clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nom?: Prisma.StringFieldUpdateOperationsInput | string
   prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  sexe?: Prisma.EnumTypeSexeFieldUpdateOperationsInput | $Enums.TypeSexe
   dateNaissance?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   categorie?: Prisma.EnumCategoriePassagerFieldUpdateOperationsInput | $Enums.CategoriePassager
   prix?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -446,6 +468,7 @@ export type PassagerUncheckedUpdateInput = {
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  colis?: Prisma.ColisUncheckedUpdateManyWithoutPassagerNestedInput
 }
 
 export type PassagerCreateManyInput = {
@@ -455,6 +478,7 @@ export type PassagerCreateManyInput = {
   clientId?: string | null
   nom: string
   prenom: string
+  sexe: $Enums.TypeSexe
   dateNaissance?: Date | string | null
   categorie: $Enums.CategoriePassager
   prix: number
@@ -470,6 +494,7 @@ export type PassagerUpdateManyMutationInput = {
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   nom?: Prisma.StringFieldUpdateOperationsInput | string
   prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  sexe?: Prisma.EnumTypeSexeFieldUpdateOperationsInput | $Enums.TypeSexe
   dateNaissance?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   categorie?: Prisma.EnumCategoriePassagerFieldUpdateOperationsInput | $Enums.CategoriePassager
   prix?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -487,6 +512,7 @@ export type PassagerUncheckedUpdateManyInput = {
   clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nom?: Prisma.StringFieldUpdateOperationsInput | string
   prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  sexe?: Prisma.EnumTypeSexeFieldUpdateOperationsInput | $Enums.TypeSexe
   dateNaissance?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   categorie?: Prisma.EnumCategoriePassagerFieldUpdateOperationsInput | $Enums.CategoriePassager
   prix?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -514,6 +540,7 @@ export type PassagerCountOrderByAggregateInput = {
   clientId?: Prisma.SortOrder
   nom?: Prisma.SortOrder
   prenom?: Prisma.SortOrder
+  sexe?: Prisma.SortOrder
   dateNaissance?: Prisma.SortOrder
   categorie?: Prisma.SortOrder
   prix?: Prisma.SortOrder
@@ -536,6 +563,7 @@ export type PassagerMaxOrderByAggregateInput = {
   clientId?: Prisma.SortOrder
   nom?: Prisma.SortOrder
   prenom?: Prisma.SortOrder
+  sexe?: Prisma.SortOrder
   dateNaissance?: Prisma.SortOrder
   categorie?: Prisma.SortOrder
   prix?: Prisma.SortOrder
@@ -553,6 +581,7 @@ export type PassagerMinOrderByAggregateInput = {
   clientId?: Prisma.SortOrder
   nom?: Prisma.SortOrder
   prenom?: Prisma.SortOrder
+  sexe?: Prisma.SortOrder
   dateNaissance?: Prisma.SortOrder
   categorie?: Prisma.SortOrder
   prix?: Prisma.SortOrder
@@ -566,6 +595,11 @@ export type PassagerMinOrderByAggregateInput = {
 export type PassagerSumOrderByAggregateInput = {
   prix?: Prisma.SortOrder
   ordre?: Prisma.SortOrder
+}
+
+export type PassagerNullableScalarRelationFilter = {
+  is?: Prisma.PassagerWhereInput | null
+  isNot?: Prisma.PassagerWhereInput | null
 }
 
 export type PassagerCreateNestedManyWithoutClientInput = {
@@ -608,6 +642,10 @@ export type PassagerUncheckedUpdateManyWithoutClientNestedInput = {
   update?: Prisma.PassagerUpdateWithWhereUniqueWithoutClientInput | Prisma.PassagerUpdateWithWhereUniqueWithoutClientInput[]
   updateMany?: Prisma.PassagerUpdateManyWithWhereWithoutClientInput | Prisma.PassagerUpdateManyWithWhereWithoutClientInput[]
   deleteMany?: Prisma.PassagerScalarWhereInput | Prisma.PassagerScalarWhereInput[]
+}
+
+export type EnumTypeSexeFieldUpdateOperationsInput = {
+  set?: $Enums.TypeSexe
 }
 
 export type EnumCategoriePassagerFieldUpdateOperationsInput = {
@@ -668,11 +706,28 @@ export type PassagerUncheckedUpdateManyWithoutReservationNestedInput = {
   deleteMany?: Prisma.PassagerScalarWhereInput | Prisma.PassagerScalarWhereInput[]
 }
 
+export type PassagerCreateNestedOneWithoutColisInput = {
+  create?: Prisma.XOR<Prisma.PassagerCreateWithoutColisInput, Prisma.PassagerUncheckedCreateWithoutColisInput>
+  connectOrCreate?: Prisma.PassagerCreateOrConnectWithoutColisInput
+  connect?: Prisma.PassagerWhereUniqueInput
+}
+
+export type PassagerUpdateOneWithoutColisNestedInput = {
+  create?: Prisma.XOR<Prisma.PassagerCreateWithoutColisInput, Prisma.PassagerUncheckedCreateWithoutColisInput>
+  connectOrCreate?: Prisma.PassagerCreateOrConnectWithoutColisInput
+  upsert?: Prisma.PassagerUpsertWithoutColisInput
+  disconnect?: Prisma.PassagerWhereInput | boolean
+  delete?: Prisma.PassagerWhereInput | boolean
+  connect?: Prisma.PassagerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PassagerUpdateToOneWithWhereWithoutColisInput, Prisma.PassagerUpdateWithoutColisInput>, Prisma.PassagerUncheckedUpdateWithoutColisInput>
+}
+
 export type PassagerCreateWithoutClientInput = {
   id?: string
   codeUnique: string
   nom: string
   prenom: string
+  sexe: $Enums.TypeSexe
   dateNaissance?: Date | string | null
   categorie: $Enums.CategoriePassager
   prix: number
@@ -681,6 +736,7 @@ export type PassagerCreateWithoutClientInput = {
   ordre: number
   occupePlace?: boolean
   createdAt?: Date | string
+  colis?: Prisma.ColisCreateNestedManyWithoutPassagerInput
   reservation: Prisma.ReservationCreateNestedOneWithoutPassagersInput
 }
 
@@ -690,6 +746,7 @@ export type PassagerUncheckedCreateWithoutClientInput = {
   codeUnique: string
   nom: string
   prenom: string
+  sexe: $Enums.TypeSexe
   dateNaissance?: Date | string | null
   categorie: $Enums.CategoriePassager
   prix: number
@@ -698,6 +755,7 @@ export type PassagerUncheckedCreateWithoutClientInput = {
   ordre: number
   occupePlace?: boolean
   createdAt?: Date | string
+  colis?: Prisma.ColisUncheckedCreateNestedManyWithoutPassagerInput
 }
 
 export type PassagerCreateOrConnectWithoutClientInput = {
@@ -736,6 +794,7 @@ export type PassagerScalarWhereInput = {
   clientId?: Prisma.StringNullableFilter<"Passager"> | string | null
   nom?: Prisma.StringFilter<"Passager"> | string
   prenom?: Prisma.StringFilter<"Passager"> | string
+  sexe?: Prisma.EnumTypeSexeFilter<"Passager"> | $Enums.TypeSexe
   dateNaissance?: Prisma.DateTimeNullableFilter<"Passager"> | Date | string | null
   categorie?: Prisma.EnumCategoriePassagerFilter<"Passager"> | $Enums.CategoriePassager
   prix?: Prisma.FloatFilter<"Passager"> | number
@@ -751,6 +810,7 @@ export type PassagerCreateWithoutReservationInput = {
   codeUnique: string
   nom: string
   prenom: string
+  sexe: $Enums.TypeSexe
   dateNaissance?: Date | string | null
   categorie: $Enums.CategoriePassager
   prix: number
@@ -759,6 +819,7 @@ export type PassagerCreateWithoutReservationInput = {
   ordre: number
   occupePlace?: boolean
   createdAt?: Date | string
+  colis?: Prisma.ColisCreateNestedManyWithoutPassagerInput
   client?: Prisma.ClientCreateNestedOneWithoutPassagersInput
 }
 
@@ -768,6 +829,7 @@ export type PassagerUncheckedCreateWithoutReservationInput = {
   clientId?: string | null
   nom: string
   prenom: string
+  sexe: $Enums.TypeSexe
   dateNaissance?: Date | string | null
   categorie: $Enums.CategoriePassager
   prix: number
@@ -776,6 +838,7 @@ export type PassagerUncheckedCreateWithoutReservationInput = {
   ordre: number
   occupePlace?: boolean
   createdAt?: Date | string
+  colis?: Prisma.ColisUncheckedCreateNestedManyWithoutPassagerInput
 }
 
 export type PassagerCreateOrConnectWithoutReservationInput = {
@@ -804,12 +867,101 @@ export type PassagerUpdateManyWithWhereWithoutReservationInput = {
   data: Prisma.XOR<Prisma.PassagerUpdateManyMutationInput, Prisma.PassagerUncheckedUpdateManyWithoutReservationInput>
 }
 
+export type PassagerCreateWithoutColisInput = {
+  id?: string
+  codeUnique: string
+  nom: string
+  prenom: string
+  sexe: $Enums.TypeSexe
+  dateNaissance?: Date | string | null
+  categorie: $Enums.CategoriePassager
+  prix: number
+  type: $Enums.TypePassager
+  statut: $Enums.TypePassager
+  ordre: number
+  occupePlace?: boolean
+  createdAt?: Date | string
+  client?: Prisma.ClientCreateNestedOneWithoutPassagersInput
+  reservation: Prisma.ReservationCreateNestedOneWithoutPassagersInput
+}
+
+export type PassagerUncheckedCreateWithoutColisInput = {
+  id?: string
+  reservationId: string
+  codeUnique: string
+  clientId?: string | null
+  nom: string
+  prenom: string
+  sexe: $Enums.TypeSexe
+  dateNaissance?: Date | string | null
+  categorie: $Enums.CategoriePassager
+  prix: number
+  type: $Enums.TypePassager
+  statut: $Enums.TypePassager
+  ordre: number
+  occupePlace?: boolean
+  createdAt?: Date | string
+}
+
+export type PassagerCreateOrConnectWithoutColisInput = {
+  where: Prisma.PassagerWhereUniqueInput
+  create: Prisma.XOR<Prisma.PassagerCreateWithoutColisInput, Prisma.PassagerUncheckedCreateWithoutColisInput>
+}
+
+export type PassagerUpsertWithoutColisInput = {
+  update: Prisma.XOR<Prisma.PassagerUpdateWithoutColisInput, Prisma.PassagerUncheckedUpdateWithoutColisInput>
+  create: Prisma.XOR<Prisma.PassagerCreateWithoutColisInput, Prisma.PassagerUncheckedCreateWithoutColisInput>
+  where?: Prisma.PassagerWhereInput
+}
+
+export type PassagerUpdateToOneWithWhereWithoutColisInput = {
+  where?: Prisma.PassagerWhereInput
+  data: Prisma.XOR<Prisma.PassagerUpdateWithoutColisInput, Prisma.PassagerUncheckedUpdateWithoutColisInput>
+}
+
+export type PassagerUpdateWithoutColisInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  sexe?: Prisma.EnumTypeSexeFieldUpdateOperationsInput | $Enums.TypeSexe
+  dateNaissance?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  categorie?: Prisma.EnumCategoriePassagerFieldUpdateOperationsInput | $Enums.CategoriePassager
+  prix?: Prisma.FloatFieldUpdateOperationsInput | number
+  type?: Prisma.EnumTypePassagerFieldUpdateOperationsInput | $Enums.TypePassager
+  statut?: Prisma.EnumTypePassagerFieldUpdateOperationsInput | $Enums.TypePassager
+  ordre?: Prisma.IntFieldUpdateOperationsInput | number
+  occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  client?: Prisma.ClientUpdateOneWithoutPassagersNestedInput
+  reservation?: Prisma.ReservationUpdateOneRequiredWithoutPassagersNestedInput
+}
+
+export type PassagerUncheckedUpdateWithoutColisInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reservationId?: Prisma.StringFieldUpdateOperationsInput | string
+  codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  sexe?: Prisma.EnumTypeSexeFieldUpdateOperationsInput | $Enums.TypeSexe
+  dateNaissance?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  categorie?: Prisma.EnumCategoriePassagerFieldUpdateOperationsInput | $Enums.CategoriePassager
+  prix?: Prisma.FloatFieldUpdateOperationsInput | number
+  type?: Prisma.EnumTypePassagerFieldUpdateOperationsInput | $Enums.TypePassager
+  statut?: Prisma.EnumTypePassagerFieldUpdateOperationsInput | $Enums.TypePassager
+  ordre?: Prisma.IntFieldUpdateOperationsInput | number
+  occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type PassagerCreateManyClientInput = {
   id?: string
   reservationId: string
   codeUnique: string
   nom: string
   prenom: string
+  sexe: $Enums.TypeSexe
   dateNaissance?: Date | string | null
   categorie: $Enums.CategoriePassager
   prix: number
@@ -825,6 +977,7 @@ export type PassagerUpdateWithoutClientInput = {
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   nom?: Prisma.StringFieldUpdateOperationsInput | string
   prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  sexe?: Prisma.EnumTypeSexeFieldUpdateOperationsInput | $Enums.TypeSexe
   dateNaissance?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   categorie?: Prisma.EnumCategoriePassagerFieldUpdateOperationsInput | $Enums.CategoriePassager
   prix?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -833,6 +986,7 @@ export type PassagerUpdateWithoutClientInput = {
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  colis?: Prisma.ColisUpdateManyWithoutPassagerNestedInput
   reservation?: Prisma.ReservationUpdateOneRequiredWithoutPassagersNestedInput
 }
 
@@ -842,6 +996,7 @@ export type PassagerUncheckedUpdateWithoutClientInput = {
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   nom?: Prisma.StringFieldUpdateOperationsInput | string
   prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  sexe?: Prisma.EnumTypeSexeFieldUpdateOperationsInput | $Enums.TypeSexe
   dateNaissance?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   categorie?: Prisma.EnumCategoriePassagerFieldUpdateOperationsInput | $Enums.CategoriePassager
   prix?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -850,6 +1005,7 @@ export type PassagerUncheckedUpdateWithoutClientInput = {
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  colis?: Prisma.ColisUncheckedUpdateManyWithoutPassagerNestedInput
 }
 
 export type PassagerUncheckedUpdateManyWithoutClientInput = {
@@ -858,6 +1014,7 @@ export type PassagerUncheckedUpdateManyWithoutClientInput = {
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   nom?: Prisma.StringFieldUpdateOperationsInput | string
   prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  sexe?: Prisma.EnumTypeSexeFieldUpdateOperationsInput | $Enums.TypeSexe
   dateNaissance?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   categorie?: Prisma.EnumCategoriePassagerFieldUpdateOperationsInput | $Enums.CategoriePassager
   prix?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -874,6 +1031,7 @@ export type PassagerCreateManyReservationInput = {
   clientId?: string | null
   nom: string
   prenom: string
+  sexe: $Enums.TypeSexe
   dateNaissance?: Date | string | null
   categorie: $Enums.CategoriePassager
   prix: number
@@ -889,6 +1047,7 @@ export type PassagerUpdateWithoutReservationInput = {
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   nom?: Prisma.StringFieldUpdateOperationsInput | string
   prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  sexe?: Prisma.EnumTypeSexeFieldUpdateOperationsInput | $Enums.TypeSexe
   dateNaissance?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   categorie?: Prisma.EnumCategoriePassagerFieldUpdateOperationsInput | $Enums.CategoriePassager
   prix?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -897,6 +1056,7 @@ export type PassagerUpdateWithoutReservationInput = {
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  colis?: Prisma.ColisUpdateManyWithoutPassagerNestedInput
   client?: Prisma.ClientUpdateOneWithoutPassagersNestedInput
 }
 
@@ -906,6 +1066,7 @@ export type PassagerUncheckedUpdateWithoutReservationInput = {
   clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nom?: Prisma.StringFieldUpdateOperationsInput | string
   prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  sexe?: Prisma.EnumTypeSexeFieldUpdateOperationsInput | $Enums.TypeSexe
   dateNaissance?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   categorie?: Prisma.EnumCategoriePassagerFieldUpdateOperationsInput | $Enums.CategoriePassager
   prix?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -914,6 +1075,7 @@ export type PassagerUncheckedUpdateWithoutReservationInput = {
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  colis?: Prisma.ColisUncheckedUpdateManyWithoutPassagerNestedInput
 }
 
 export type PassagerUncheckedUpdateManyWithoutReservationInput = {
@@ -922,6 +1084,7 @@ export type PassagerUncheckedUpdateManyWithoutReservationInput = {
   clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nom?: Prisma.StringFieldUpdateOperationsInput | string
   prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  sexe?: Prisma.EnumTypeSexeFieldUpdateOperationsInput | $Enums.TypeSexe
   dateNaissance?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   categorie?: Prisma.EnumCategoriePassagerFieldUpdateOperationsInput | $Enums.CategoriePassager
   prix?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -932,6 +1095,35 @@ export type PassagerUncheckedUpdateManyWithoutReservationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type PassagerCountOutputType
+ */
+
+export type PassagerCountOutputType = {
+  colis: number
+}
+
+export type PassagerCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  colis?: boolean | PassagerCountOutputTypeCountColisArgs
+}
+
+/**
+ * PassagerCountOutputType without action
+ */
+export type PassagerCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PassagerCountOutputType
+   */
+  select?: Prisma.PassagerCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * PassagerCountOutputType without action
+ */
+export type PassagerCountOutputTypeCountColisArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ColisWhereInput
+}
 
 
 export type PassagerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -941,6 +1133,7 @@ export type PassagerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   clientId?: boolean
   nom?: boolean
   prenom?: boolean
+  sexe?: boolean
   dateNaissance?: boolean
   categorie?: boolean
   prix?: boolean
@@ -949,8 +1142,10 @@ export type PassagerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   ordre?: boolean
   occupePlace?: boolean
   createdAt?: boolean
+  colis?: boolean | Prisma.Passager$colisArgs<ExtArgs>
   client?: boolean | Prisma.Passager$clientArgs<ExtArgs>
   reservation?: boolean | Prisma.ReservationDefaultArgs<ExtArgs>
+  _count?: boolean | Prisma.PassagerCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["passager"]>
 
 export type PassagerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -960,6 +1155,7 @@ export type PassagerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   clientId?: boolean
   nom?: boolean
   prenom?: boolean
+  sexe?: boolean
   dateNaissance?: boolean
   categorie?: boolean
   prix?: boolean
@@ -979,6 +1175,7 @@ export type PassagerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   clientId?: boolean
   nom?: boolean
   prenom?: boolean
+  sexe?: boolean
   dateNaissance?: boolean
   categorie?: boolean
   prix?: boolean
@@ -998,6 +1195,7 @@ export type PassagerSelectScalar = {
   clientId?: boolean
   nom?: boolean
   prenom?: boolean
+  sexe?: boolean
   dateNaissance?: boolean
   categorie?: boolean
   prix?: boolean
@@ -1008,10 +1206,12 @@ export type PassagerSelectScalar = {
   createdAt?: boolean
 }
 
-export type PassagerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reservationId" | "codeUnique" | "clientId" | "nom" | "prenom" | "dateNaissance" | "categorie" | "prix" | "type" | "statut" | "ordre" | "occupePlace" | "createdAt", ExtArgs["result"]["passager"]>
+export type PassagerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reservationId" | "codeUnique" | "clientId" | "nom" | "prenom" | "sexe" | "dateNaissance" | "categorie" | "prix" | "type" | "statut" | "ordre" | "occupePlace" | "createdAt", ExtArgs["result"]["passager"]>
 export type PassagerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  colis?: boolean | Prisma.Passager$colisArgs<ExtArgs>
   client?: boolean | Prisma.Passager$clientArgs<ExtArgs>
   reservation?: boolean | Prisma.ReservationDefaultArgs<ExtArgs>
+  _count?: boolean | Prisma.PassagerCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PassagerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.Passager$clientArgs<ExtArgs>
@@ -1025,6 +1225,7 @@ export type PassagerIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
 export type $PassagerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Passager"
   objects: {
+    colis: Prisma.$ColisPayload<ExtArgs>[]
     client: Prisma.$ClientPayload<ExtArgs> | null
     reservation: Prisma.$ReservationPayload<ExtArgs>
   }
@@ -1035,6 +1236,7 @@ export type $PassagerPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     clientId: string | null
     nom: string
     prenom: string
+    sexe: $Enums.TypeSexe
     dateNaissance: Date | null
     categorie: $Enums.CategoriePassager
     prix: number
@@ -1437,6 +1639,7 @@ readonly fields: PassagerFieldRefs;
  */
 export interface Prisma__PassagerClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  colis<T extends Prisma.Passager$colisArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Passager$colisArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ColisPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   client<T extends Prisma.Passager$clientArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Passager$clientArgs<ExtArgs>>): Prisma.Prisma__ClientClient<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   reservation<T extends Prisma.ReservationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ReservationDefaultArgs<ExtArgs>>): Prisma.Prisma__ReservationClient<runtime.Types.Result.GetResult<Prisma.$ReservationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1474,6 +1677,7 @@ export interface PassagerFieldRefs {
   readonly clientId: Prisma.FieldRef<"Passager", 'String'>
   readonly nom: Prisma.FieldRef<"Passager", 'String'>
   readonly prenom: Prisma.FieldRef<"Passager", 'String'>
+  readonly sexe: Prisma.FieldRef<"Passager", 'TypeSexe'>
   readonly dateNaissance: Prisma.FieldRef<"Passager", 'DateTime'>
   readonly categorie: Prisma.FieldRef<"Passager", 'CategoriePassager'>
   readonly prix: Prisma.FieldRef<"Passager", 'Float'>
@@ -1880,6 +2084,30 @@ export type PassagerDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Limit how many Passagers to delete.
    */
   limit?: number
+}
+
+/**
+ * Passager.colis
+ */
+export type Passager$colisArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Colis
+   */
+  select?: Prisma.ColisSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Colis
+   */
+  omit?: Prisma.ColisOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ColisInclude<ExtArgs> | null
+  where?: Prisma.ColisWhereInput
+  orderBy?: Prisma.ColisOrderByWithRelationInput | Prisma.ColisOrderByWithRelationInput[]
+  cursor?: Prisma.ColisWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ColisScalarFieldEnum | Prisma.ColisScalarFieldEnum[]
 }
 
 /**
