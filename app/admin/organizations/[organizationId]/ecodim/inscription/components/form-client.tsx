@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Check, User, Navigation, Ticket, Plane } from "lucide-react";
-
+import { createReservation } from "./client.action";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,7 @@ import "react-day-picker/dist/style.css";
 import "react-phone-number-input/style.css";
 import { searchClients } from "./client.action";
 import { useSession } from "@/lib/auth-client";
+import { toast } from "sonner";
 interface Passager {
   nom: string;
   prenom: string;
@@ -36,6 +37,7 @@ interface Passager {
   surplusKilos?: number;
   typeColis?: "ORDINAIRE" | "SPECIAL";
   montantColis?: number; // utilisé si SPECIAL
+  poids?: number;
 }
 interface FormData {
   nom: string;
@@ -119,6 +121,7 @@ export default function RegistrationPage({ trajets }: { trajets: any[] }) {
         surplusKilos: 0,
         typeColis: "ORDINAIRE",
         montantColis: 0,
+        poids: 0,
       },
     ],
   });
@@ -265,74 +268,89 @@ export default function RegistrationPage({ trajets }: { trajets: any[] }) {
     isPhoneValid &&
     formData.trajetId &&
     (formData.nombrePlaces > 0 ? formData.nom && formData.prenom : colis.typeColis);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
-    const payload = {
-      clientId: existingClient?.id ?? null, // si trouvé via searchClients
+    try {
+      setIsSubmitting(true);
 
-      client: {
-        nom: formData.nom,
-        prenom: formData.prenom,
-        telephone: formData.telephone,
-        email: formData.email,
-        adresse: formData.adresse,
-        societe: formData.societe,
-        dateInscription: formData.dateInscription,
-      },
+      const payload = {
+        clientId: existingClient?.id ?? null,
 
-      trajetId: formData.trajetId,
-      modePaiement: formData.modePaiement,
-      statutPaiement: "PENDING",
+        client: {
+          nom: formData.nom,
+          prenom: formData.prenom,
+          telephone: formData.telephone,
+          email: formData.email,
+          adresse: formData.adresse,
+          societe: formData.societe,
+          dateInscription: formData.dateInscription,
+        },
 
-      nombrePlaces: formData.nombrePlaces,
-      // ✅ NOUVEAU
+        trajetId: formData.trajetId,
+        modePaiement: formData.modePaiement,
+        statutPaiement: "PENDING",
+        nombrePlaces: formData.nombrePlaces,
 
-      dateDepart: selectedDepart?.dateDepart,
-      heureDepart: selectedDepart?.heureDepart,
-      trajetDepartId: formData.trajetDepartId,
+        dateDepart: selectedDepart?.dateDepart,
+        heureDepart: selectedDepart?.heureDepart,
+        trajetDepartId: formData.trajetDepartId,
 
-      // limite report = 24h avant départ
-      dateLimiteReport: selectedTrajet?.dateDepart
-        ? new Date(new Date(selectedTrajet.dateDepart).getTime() - 24 * 60 * 60 * 1000)
-        : null,
-      // ✅ statut réservation
-      statutReservation: "CONFIRME",
-      // ✅ pénalité initiale
-      penalite: 0,
-      passagers: passagersAvecPrix.map((p, i) => ({
-        nom: i === 0 ? formData.nom : p.nom,
-        prenom: i === 0 ? formData.prenom : p.prenom,
-        categorie: p.categorie,
-        sexe: p.sexe,
-        dateNaissance: p.dateNaissance,
-        prix: p.prix,
-        isClient: i === 0,
-      })),
+        dateLimiteReport: selectedDepart?.dateDepart
+          ? new Date(new Date(selectedDepart.dateDepart).getTime() - 24 * 60 * 60 * 1000)
+          : null,
 
-      colis: {
-        type: colis.typeColis,
-        poids: colis.poids,
-        kilosSupplement: colis.kilosSupplement,
-        montant: colis.montant,
-        commentaire: colis.commentaireColis,
-        prix: prixColisGlobal,
-      },
+        statutReservation: "CONFIRME",
+        penalite: 0,
 
-      pricing: {
-        totalPassagers,
-        totalColis: prixColisGlobal,
-        total: totalPrix,
-      },
-    };
+        passagers: passagersAvecPrix.map((p, i) => ({
+          nom: i === 0 ? formData.nom : p.nom,
+          prenom: i === 0 ? formData.prenom : p.prenom,
+          categorie: p.categorie,
+          sexe: p.sexe,
+          dateNaissance: p.dateNaissance,
+          prix: p.prix,
+          isClient: i === 0,
+        })),
 
-    console.log("PAYLOAD:", payload);
+        colis: {
+          type: colis.typeColis,
+          poids: `${(colis.kilosSupplement ?? 0) + (selectedTrajet?.kilosGratuits ?? 0)}`,
+          kilosSupplement: colis.kilosSupplement,
+          kilosGratuits: selectedTrajet.kilosGratuits,
+          montant: colis.montant,
+          commentaire: colis.commentaireColis,
+          prix: prixColisGlobal,
+        },
 
-    await new Promise((r) => setTimeout(r, 1500));
+        pricing: {
+          totalPassagers,
+          totalColis: prixColisGlobal,
+          total: totalPrix,
+        },
+      };
 
-    setIsSubmitting(false);
-    setShowSuccess(true);
+      const res = await createReservation(payload);
+
+      if (!res.success) {
+        toast.error(res.message || "Erreur lors de la réservation");
+        return;
+      }
+
+      toast.success("Réservation créée avec succès");
+
+      setShowPaymentDialog(false);
+      setShowSuccess(true);
+
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+
+      toast.error("Une erreur est survenue");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   const prixBase = selectedTrajet?.prixBase || 0;
 
