@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import { useRouter } from "next/navigation";
 import { Check, User, Navigation, Ticket, Plane } from "lucide-react";
 import { createReservation } from "./client.action";
@@ -26,6 +26,7 @@ import "react-phone-number-input/style.css";
 import { searchClients } from "./client.action";
 import { useSession } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { authClient } from "@/lib/auth-client";
 interface Passager {
   nom: string;
   prenom: string;
@@ -71,26 +72,30 @@ export default function RegistrationPage({ trajets }: { trajets: any[] }) {
   const { data: session } = useSession();
   const organizationId = session?.organization?.id ?? "";
   const router = useRouter();
-
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [showSuccess, setShowSuccess] = React.useState(false);
-  const [openCalendar, setOpenCalendar] = React.useState(false);
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>();
-  const [showPaymentDialog, setShowPaymentDialog] = React.useState(false);
-  const [query, setQuery] = React.useState("");
-  const [results, setResults] = React.useState<any[]>([]);
-  const [open, setOpen] = React.useState(false);
-  const [selecting, setSelecting] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const [existingClient, setExistingClient] = React.useState<any | null>(null);
-  const [colis, setColis] = React.useState({
+  const [permissions, setPermissions] = useState({
+    create: false,
+    update: false,
+    delete: false,
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [openCalendar, setOpenCalendar] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<any[]>([]);
+  const [open, setOpen] = useState(false);
+  const [selecting, setSelecting] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [existingClient, setExistingClient] = useState<any | null>(null);
+  const [colis, setColis] = useState({
     typeColis: "",
     poids: 0,
     kilosSupplement: 0,
     montant: 0,
     commentaireColis: "",
   });
-  const [formData, setFormData] = React.useState<FormData>({
+  const [formData, setFormData] = useState<FormData>({
     nom: "",
     postnom: "",
     prenom: "",
@@ -132,27 +137,44 @@ export default function RegistrationPage({ trajets }: { trajets: any[] }) {
     (d: TrajetDepart) => d.id === formData.trajetDepartId
   );
 
-  const flightsByDate = React.useMemo(() => {
-    const map = new Map<string, any[]>();
+ useEffect(() => {
+    const fetchPermissions = async () => {
+      try {
+        const [create, update, del] = await Promise.all([
+          authClient.admin.hasPermission({
+            permissions: {
+              inscription: ["create"],
+            },
+          }),
 
-    trajets.forEach((trajet) => {
-      trajet.trajetDepart?.forEach((d: any) => {
-        const key = new Date(d.dateDepart).toDateString();
+          authClient.admin.hasPermission({
+            permissions: {
+              inscription: ["update"],
+            },
+          }),
 
-        if (!map.has(key)) map.set(key, []);
-        map.get(key)!.push({
-          ...d,
-          trajet,
+          authClient.admin.hasPermission({
+            permissions: {
+              inscription: ["delete"],
+            },
+          }),
+        ]);
+
+        setPermissions({
+          create: create.data?.success ?? false,
+          update: update.data?.success ?? false,
+          delete: del.data?.success ?? false,
         });
-      });
-    });
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-    return map;
-  }, [trajets]);
-  const today = new Date();
-  const ref = React.useRef<HTMLDivElement>(null);
+    fetchPermissions();
+  }, []);
+  const ref = useRef<HTMLDivElement>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpenCalendar(false);
@@ -165,10 +187,10 @@ export default function RegistrationPage({ trajets }: { trajets: any[] }) {
   const availableDates = selectedTrajet?.trajetDepart?.map((d: TrajetDepart) =>
     new Date(d.dateDepart).toDateString()
   );
-  const availableDatesSet = React.useMemo(() => {
+  const availableDatesSet = useMemo(() => {
     return new Set(availableDates);
   }, [availableDates]);
-  React.useEffect(() => {
+  useEffect(() => {
     if (!query) {
       setResults([]);
       return;
@@ -393,7 +415,7 @@ export default function RegistrationPage({ trajets }: { trajets: any[] }) {
   const totalPassagers = passagersAvecPrix.reduce((acc, p) => acc + p.prix, 0);
 
   const totalPrix = totalPassagers + prixColisGlobal;
-  React.useEffect(() => {
+  useEffect(() => {
     if (formData.nombrePlaces === 0) {
       setFormData((prev) => ({
         ...prev,
@@ -401,7 +423,7 @@ export default function RegistrationPage({ trajets }: { trajets: any[] }) {
       }));
     }
   }, [formData.nombrePlaces]);
-  React.useEffect(() => {
+  useEffect(() => {
     setExistingClient(null);
 
     setFormData((prev) => ({
@@ -969,6 +991,7 @@ export default function RegistrationPage({ trajets }: { trajets: any[] }) {
           </div>
 
           <ResponsiveDialogFooter>
+            {permissions.create && (
             <Button
               onClick={() => {
                 setShowPaymentDialog(false);
@@ -977,6 +1000,7 @@ export default function RegistrationPage({ trajets }: { trajets: any[] }) {
             >
               Confirmer paiement
             </Button>
+            )}
           </ResponsiveDialogFooter>
         </ResponsiveDialogContent>
       </ResponsiveDialog>
