@@ -1,6 +1,13 @@
 import { createAuthClient } from "better-auth/react";
 import { adminClient, customSessionClient, organizationClient } from "better-auth/client/plugins";
 import type { auth } from "@/lib/auth";
+import {
+  APP_ROLE,
+  ORG_ROLE,
+  applicationRoles,
+  authAccessControl,
+  organizationRoles,
+} from "@/lib/permissions";
 
 
 function resolveAuthBaseURL(): string {
@@ -17,9 +24,15 @@ function resolveAuthBaseURL(): string {
 export const authClient = createAuthClient({
   baseURL: resolveAuthBaseURL(),
   plugins: [
-    adminClient(),
+    adminClient({
+      ac:authAccessControl, 
+      roles:applicationRoles
+    }),
     organizationClient({
       dynamicAccessControl: { enabled: true },
+      ac:authAccessControl, 
+      roles:organizationRoles,
+      
     }),
     customSessionClient<typeof auth>(),
   ],

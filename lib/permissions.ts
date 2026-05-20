@@ -43,11 +43,10 @@ export const ALL_ORG_ROLE_SLUGS = [
   ORG_ROLE.SURVEILLANT,
 ] as const;
 
-
-
 export const accessControlStatements = {
   ...adminPluginSchemaStatements,
   ...organizationPluginSchemaStatements,
+  inscription: ["create", "share", "update", "delete"],
 } as const;
 
 type StatementShape = {
@@ -71,6 +70,7 @@ export const applicationRoleStatements: Record<string, StatementShape> = {
 export const organizationRoleStatements: Record<string, StatementShape> = {
   [ORG_ROLE.OWNER]: {
     ...ownerAc.statements,
+    inscription: ["create", "share", "update", "delete"],
   },
   [ORG_ROLE.GESTIONNAIRE]: {
     ...organizationPluginMemberAc.statements,
@@ -91,7 +91,7 @@ function rolesFromStatements(defs: Record<string, StatementShape>) {
     Object.entries(defs).map(([role, statements]) => [
       role,
       authAccessControl.newRole(statements as NewPluginRoleArg),
-    ]),
+    ])
   );
 }
 
