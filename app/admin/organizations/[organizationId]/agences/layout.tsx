@@ -1,6 +1,6 @@
 import { MobileNav } from "@/components/layout/mobile-nav"
 
-export default function EcodimLayout({
+export default function AgenceLayout({
   children,
 }: {
   children: React.ReactNode

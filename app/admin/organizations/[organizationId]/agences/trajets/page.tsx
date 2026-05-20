@@ -42,7 +42,7 @@ export default function ClassesPage() {
             const occupancyRate = Math.round((cls.childrenCount / cls.capacity) * 100)
             
             return (
-              <Link key={cls.id} href={`/ecodim/classes/${cls.id}`}>
+              <Link key={cls.id} href={`/agences/colis/${cls.id}`}>
                 <Card className="active:bg-muted/50 transition-colors touch-manipulation">
                   <CardHeader className="pb-3">
                     <div className="flex items-start gap-3">

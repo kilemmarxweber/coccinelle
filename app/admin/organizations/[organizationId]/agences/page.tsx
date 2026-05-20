@@ -12,10 +12,10 @@ import { ListGroup, ListItem } from "@/components/ui/list-item";
 import { classes, children, courses, attendanceRecords, getClassById } from "@/lib/mock-data";
 import { useParams, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-export default function EcodimDashboard() {
+export default function AgencesDashboard() {
   const params = useParams();
   const id = params.organizationId as string;
-  const base = `/admin/organizations/${id}/ecodim`;
+  const base = `/admin/organizations/${id}/agences`;
   const totalChildren = children.length;
   const totalClasses = classes.length;
   const lastAttendance = attendanceRecords.filter((r) => r.date === "2024-05-05");
@@ -63,7 +63,7 @@ export default function EcodimDashboard() {
           </Button>
           <Button
             variant="outline"
-            render={<Link href="/ecodim/presence" />}
+            render={<Link href="/agences/passages" />}
             className="h-auto flex-col gap-2 py-4"
           >
             <ClipboardList className="size-5" />
@@ -78,7 +78,7 @@ export default function EcodimDashboard() {
             <Button
               variant="ghost"
               size="sm"
-              render={<Link href="/ecodim/classes" />}
+              render={<Link href="/agences/colis" />}
               className="-mr-2 gap-1"
             >
               Voir tout
@@ -101,7 +101,7 @@ export default function EcodimDashboard() {
                     {Math.round((cls.childrenCount / cls.capacity) * 100)}%
                   </Badge>
                 }
-                href="/ecodim/classes"
+                href="/agences/colis"
               />
             ))}
           </ListGroup>
@@ -114,7 +114,7 @@ export default function EcodimDashboard() {
             <Button
               variant="ghost"
               size="sm"
-              render={<Link href="/ecodim/enfants" />}
+              render={<Link href="/agences/clients" />}
               className="-mr-2 gap-1"
             >
               Voir tout
@@ -137,7 +137,7 @@ export default function EcodimDashboard() {
                       </AvatarFallback>
                     </Avatar>
                   }
-                  href={`/ecodim/enfants/${child.id}`}
+                  href={`/agences/clients/${child.id}`}
                 />
               );
             })}
@@ -151,7 +151,7 @@ export default function EcodimDashboard() {
             <Button
               variant="ghost"
               size="sm"
-              render={<Link href="/ecodim/cours" />}
+              render={<Link href="/agences/trajets" />}
               className="-mr-2 gap-1"
             >
               Voir tout

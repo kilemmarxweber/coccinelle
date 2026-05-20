@@ -106,7 +106,7 @@ export default function ChildrenPage() {
                           </Badge>
                         ) : null
                       }
-                      href={`/ecodim/enfants/${child.id}`}
+                      href={`/agences/clients/${child.id}`}
                     />
                   ))}
                 </ListGroup>
@@ -135,7 +135,7 @@ export default function ChildrenPage() {
                     </Badge>
                   ) : null
                 }
-                href={`/ecodim/enfants/${child.id}`}
+                href={`/agences/clients/${child.id}`}
               />
             ))}
           </ListGroup>
