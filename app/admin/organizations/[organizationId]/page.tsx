@@ -40,7 +40,7 @@ export default function AdminOrganizationHomePage() {
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Button
-              render={<Link href={`${base}/ecodim`} />}
+              render={<Link href={`${base}/agences`} />}
               variant="outline"
               className="h-auto min-h-22 w-full touch-manipulation justify-start gap-0 p-4 text-left sm:min-h-24"
             >

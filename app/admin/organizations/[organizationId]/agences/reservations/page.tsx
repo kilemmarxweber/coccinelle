@@ -1,4 +1,4 @@
-import { getTrajets } from "../classes/trajet.actions";
+import { getTrajets } from "../trajets/trajet.actions";
 import RegistrationPage from "./components/form-client";
 
 export default async function Page() {

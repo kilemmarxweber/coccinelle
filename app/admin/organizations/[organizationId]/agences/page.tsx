@@ -55,7 +55,7 @@ export default function AgencesDashboard() {
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3">
           <Button
-            render={<Link href={`${base}/inscription`} />}
+            render={<Link href={`${base}/reservations`} />}
             className="h-auto flex-col gap-2 py-4"
           >
             <Users className="size-5" />
