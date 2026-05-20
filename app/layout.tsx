@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { IdleLogout } from "@/lib/idle-logout";
 
 export const metadata: Metadata = {
   title: "Coccinelle flying",
@@ -25,6 +26,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           enableSystem
           disableTransitionOnChange
         >
+           <IdleLogout />
           {children}
           <Toaster richColors closeButton />
         </ThemeProvider>
