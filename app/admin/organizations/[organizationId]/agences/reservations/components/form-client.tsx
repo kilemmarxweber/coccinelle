@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useMemo, useRef, useState} from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, User, Navigation, Ticket, Plane } from "lucide-react";
 import { createReservation } from "./client.action";
@@ -27,6 +27,7 @@ import { searchClients } from "./client.action";
 import { useSession } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
+import { SearchInput } from "@/components/ui/search-input";
 interface Passager {
   nom: string;
   prenom: string;
@@ -137,7 +138,7 @@ export default function RegistrationPage({ trajets }: { trajets: any[] }) {
     (d: TrajetDepart) => d.id === formData.trajetDepartId
   );
 
- useEffect(() => {
+  useEffect(() => {
     const fetchPermissions = async () => {
       try {
         const [create, update, del] = await Promise.all([
@@ -458,12 +459,11 @@ export default function RegistrationPage({ trajets }: { trajets: any[] }) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="relative">
-              <Input
-                placeholder="Rechercher client (nom, téléphone...)"
+              <SearchInput
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(value) => setQuery(value)}
+                placeholder="Rechercher client (nom, téléphone...)"
               />
-
               {loading && <p className="text-xs text-muted-foreground mt-1">Recherche...</p>}
 
               {open && results.length > 0 && (
@@ -992,14 +992,14 @@ export default function RegistrationPage({ trajets }: { trajets: any[] }) {
 
           <ResponsiveDialogFooter>
             {permissions.create && (
-            <Button
-              onClick={() => {
-                setShowPaymentDialog(false);
-                handleSubmit(new Event("submit") as any);
-              }}
-            >
-              Confirmer paiement
-            </Button>
+              <Button
+                onClick={() => {
+                  setShowPaymentDialog(false);
+                  handleSubmit(new Event("submit") as any);
+                }}
+              >
+                Confirmer paiement
+              </Button>
             )}
           </ResponsiveDialogFooter>
         </ResponsiveDialogContent>
