@@ -14,14 +14,14 @@ async function main() {
   console.log("🚀 START FULL SEED");
   await seedOrganization();
   await seedTrajets();
+  await seedTrajetProgramme();
+  await seedTrajetDepart();
   await seedClients();
   await seedReservations();
   await seedPassagers();
   await seedColis();
   await seedPaiements();
   await seedPenalites();
-  await seedTrajetProgramme();
-  await seedTrajetDepart();
 
   console.log("🎉 ALL SEEDS COMPLETED");
 }
