@@ -19,12 +19,15 @@ export default function Navbar() {
     const [servicesOpen, setServicesOpen] = useState(false);
 
     return (
-        <header className="sticky top-0 z-50 px-4 pt-4">
+        <header className="sticky top-0 z-[999]">
             <div
                 className={`
           mx-auto max-w-6xl overflow-hidden
-          rounded-3xl border bg-background/80
-          backdrop-blur-xl shadow-lg
+         rounded-3xl border border-border/60
+bg-background/100
+supports-[backdrop-filter]:bg-background/80
+backdrop-blur-2xl
+shadow-[0_8px_30px_rgb(0,0,0,0.12)]
           transition-all duration-500
           ${servicesOpen ? "pb-4" : "pb-0"}
         `}
