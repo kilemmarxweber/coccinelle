@@ -43,9 +43,7 @@ export function AppSidebar() {
   const { data: session } = authClient.useSession();
   const canListGlobalUsers = Boolean(session?.user && session.user.role === APP_ROLE.ADMIN);
 
-  const visibleNav = navMain.filter(
-    (item) => !item.requiresGlobalUserList || canListGlobalUsers
-  );
+  const visibleNav = navMain.filter((item) => !item.requiresGlobalUserList || canListGlobalUsers);
 
   return (
     <ShadcnSidebar collapsible="offcanvas">
@@ -57,7 +55,7 @@ export function AppSidebar() {
                 <ShieldCheck className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">Smart Church</span>
+                <span className="truncate font-semibold">Coccinelle</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -103,4 +101,3 @@ export function AppSidebar() {
     </ShadcnSidebar>
   );
 }
-

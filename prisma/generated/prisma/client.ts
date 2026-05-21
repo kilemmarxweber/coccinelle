@@ -103,8 +103,7 @@ export type TrajetProgramme = Prisma.TrajetProgrammeModel
 export type TrajetDepart = Prisma.TrajetDepartModel
 /**
  * Model Passager
- * ///////////////////////
- * ///////////////////////
+ * 
  */
 export type Passager = Prisma.PassagerModel
 /**

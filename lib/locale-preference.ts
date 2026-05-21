@@ -1,4 +1,4 @@
-export const LOCALE_STORAGE_KEY = "smart-church-locale";
+export const LOCALE_STORAGE_KEY = "Coccinelle-locale";
 
 export const LOCALE_OPTIONS = [
   { value: "fr", label: "Français" },

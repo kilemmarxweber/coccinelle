@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Passager
- * ///////////////////////
- * ///////////////////////
+ * 
  */
 export type PassagerModel = runtime.Types.Result.DefaultSelection<Prisma.$PassagerPayload>
 

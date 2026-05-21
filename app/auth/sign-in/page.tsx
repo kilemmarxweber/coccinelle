@@ -3,8 +3,8 @@ import { AuthShell } from "@/components/layout/auth-shell";
 import { SignInForm } from "./components/sign-in-form";
 
 export const metadata: Metadata = {
-  title: "Connexion — Smart Church",
-  description: "Connectez-vous à EgliseManager.",
+  title: "Connexion — Coccinelle",
+  description: "Connectez-vous à Coccinelle.",
 };
 
 export default function SignInPage() {

@@ -3,15 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import {
-  Camera,
-  Globe,
-  KeyRound,
-  Lock,
-  Mail,
-  MessageCircleWarning,
-  User,
-} from "lucide-react";
+import { Camera, Globe, KeyRound, Lock, Mail, MessageCircleWarning, User } from "lucide-react";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import {
@@ -52,7 +44,7 @@ import {
 } from "./schema";
 
 const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? "0.1.0";
-const SUPPORT_EMAIL = "support@eglisemanager.example";
+const SUPPORT_EMAIL = "support@coccinelle.cd";
 
 type AccountViewProps = {
   memberSince: string | null;
@@ -220,9 +212,7 @@ export function AccountView({
           aria-label="Changer la photo de profil"
         >
           <Avatar className="size-20">
-            {user.image ? (
-              <AvatarImage src={user.image} alt={user.name ?? "Profil"} />
-            ) : null}
+            {user.image ? <AvatarImage src={user.image} alt={user.name ?? "Profil"} /> : null}
             <AvatarFallback className="text-lg font-semibold">{initials}</AvatarFallback>
           </Avatar>
           <span className="absolute -bottom-0.5 -right-0.5 flex size-8 items-center justify-center rounded-full border-2 border-card bg-primary text-primary-foreground">
@@ -308,16 +298,12 @@ export function AccountView({
           leading={<Lock className="size-5 text-muted-foreground" />}
           href="/admin/help"
         />
-        <ListItem
-          title="Version"
-          subtitle={`EgliseManager v${APP_VERSION}`}
-          showChevron={false}
-        />
+        <ListItem title="Version" subtitle={`Coccinelle v${APP_VERSION}`} showChevron={false} />
         <ListItem
           title="Signaler un souci"
           subtitle="Contactez le support"
           leading={<MessageCircleWarning className="size-5 text-muted-foreground" />}
-          href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Signalement EgliseManager")}`}
+          href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Signalement Coccinelle")}`}
         />
       </ListGroup>
 
@@ -366,7 +352,11 @@ export function AccountView({
                 )}
               />
               <ResponsiveDialogFooter>
-                <Button type="submit" className="w-full" disabled={profileForm.formState.isSubmitting}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={profileForm.formState.isSubmitting}
+                >
                   {profileForm.formState.isSubmitting ? "Enregistrement…" : "Enregistrer"}
                 </Button>
               </ResponsiveDialogFooter>
@@ -399,7 +389,11 @@ export function AccountView({
                 )}
               />
               <ResponsiveDialogFooter>
-                <Button type="submit" className="w-full" disabled={emailForm.formState.isSubmitting}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={emailForm.formState.isSubmitting}
+                >
                   {emailForm.formState.isSubmitting ? "Envoi…" : "Confirmer"}
                 </Button>
               </ResponsiveDialogFooter>
@@ -476,7 +470,11 @@ export function AccountView({
                 )}
               />
               <ResponsiveDialogFooter>
-                <Button type="submit" className="w-full" disabled={passwordForm.formState.isSubmitting}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={passwordForm.formState.isSubmitting}
+                >
                   {passwordForm.formState.isSubmitting ? "Mise à jour…" : "Changer le mot de passe"}
                 </Button>
               </ResponsiveDialogFooter>

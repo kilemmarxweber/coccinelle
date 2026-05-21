@@ -68,7 +68,7 @@ export function CreateOrganizationForm() {
         if (activeError) {
           toast.message(
             "Organisation créée, mais l’activation par défaut a échoué. Choisissez-la dans les paramètres.",
-            { description: activeError.message },
+            { description: activeError.message }
           );
         }
       }
@@ -147,7 +147,7 @@ export function CreateOrganizationForm() {
                   autoCapitalize="none"
                   autoCorrect="off"
                   spellCheck={false}
-                  placeholder="mon-eglise"
+                  placeholder="mon-organisation"
                   className="h-11 font-mono text-sm"
                   disabled={isSubmitting}
                   onChange={(e) => {

@@ -41,14 +41,9 @@ export function SignInForm() {
       if (error) {
         form.setError("root", {
           type: "server",
-          message:
-            error.message ??
-            "Connexion impossible. Vérifiez vos identifiants.",
+          message: error.message ?? "Connexion impossible. Vérifiez vos identifiants.",
         });
-        toast.error(
-          error.message ??
-            "Connexion impossible. Vérifiez vos identifiants.",
-        );
+        toast.error(error.message ?? "Connexion impossible. Vérifiez vos identifiants.");
         return;
       }
 
@@ -58,14 +53,12 @@ export function SignInForm() {
         credentials: "include",
       });
       const redirectBody = (await redirectRes.json()) as { path?: string };
-      const destination =
-        redirectRes.ok && redirectBody.path ? redirectBody.path : "/admin";
+      const destination = redirectRes.ok && redirectBody.path ? redirectBody.path : "/admin";
 
       router.refresh();
       router.push(destination);
     } catch (cause) {
-      const message =
-        cause instanceof Error ? cause.message : "Erreur réseau.";
+      const message = cause instanceof Error ? cause.message : "Erreur réseau.";
       form.setError("root", {
         type: "server",
         message:
@@ -97,7 +90,7 @@ export function SignInForm() {
                   autoComplete="email"
                   inputMode="email"
                   spellCheck={false}
-                  placeholder="vous@eglise.example"
+                  placeholder="vous@coccinelle.example"
                   className="h-11"
                   disabled={isSubmitting}
                 />
@@ -146,8 +139,6 @@ export function SignInForm() {
             Créer un compte
           </Link>
         </p>
-
-       
       </form>
     </Form>
   );

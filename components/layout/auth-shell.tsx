@@ -13,18 +13,13 @@ interface AuthShellProps {
   className?: string;
 }
 
-/** Présentation type « écran plein smartphone » avec dégradé discret et largeur contenue sur tablette. */
-export function AuthShell({
-  headline,
-  description,
-  children,
-  className,
-}: AuthShellProps) {
+/** Présentation type « écran plein phone » avec dégradé discret et largeur contenue sur tablette. */
+export function AuthShell({ headline, description, children, className }: AuthShellProps) {
   return (
     <div
       className={cn(
         "relative flex min-h-svh flex-col bg-gradient-to-b from-primary/12 via-background to-background pb-12",
-        className,
+        className
       )}
     >
       <div
@@ -45,18 +40,14 @@ export function AuthShell({
                 <BookOpen className="size-6" aria-hidden />
               </span>
               <div className="text-left">
-                <p className="text-sm font-semibold leading-none">EgliseManager</p>
-                <p className="mt-1 text-xs text-muted-foreground">Smart Church</p>
+                <p className="text-sm font-semibold leading-none">Coccinelle</p>
+                <p className="mt-1 text-xs text-muted-foreground">Organisation</p>
               </div>
             </Link>
             <div>
-              <h1 className="text-balance text-2xl font-semibold tracking-tight">
-                {headline}
-              </h1>
+              <h1 className="text-balance text-2xl font-semibold tracking-tight">{headline}</h1>
               {description && (
-                <p className="mt-2 text-pretty text-sm text-muted-foreground">
-                  {description}
-                </p>
+                <p className="mt-2 text-pretty text-sm text-muted-foreground">{description}</p>
               )}
             </div>
           </header>

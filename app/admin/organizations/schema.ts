@@ -13,10 +13,7 @@ export const createOrganizationFormSchema = z.object({
     .trim()
     .min(2, "Le slug doit contenir au moins 2 caractères.")
     .max(64, "Le slug est trop long.")
-    .regex(
-      slugRegex,
-      "Utilisez des minuscules, des chiffres et des tirets (ex. mon-eglise).",
-    ),
+    .regex(slugRegex, "Utilisez des minuscules, des chiffres et des tirets (ex. mon-Coccinelle)."),
 });
 
 export type CreateOrganizationFormValues = z.infer<typeof createOrganizationFormSchema>;

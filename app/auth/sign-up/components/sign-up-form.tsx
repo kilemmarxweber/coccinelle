@@ -17,11 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  MIN_PASSWORD_LENGTH,
-  signUpSchema,
-  type SignUpValues,
-} from "@/app/auth/schema";
+import { MIN_PASSWORD_LENGTH, signUpSchema, type SignUpValues } from "@/app/auth/schema";
 
 export function SignUpForm() {
   const router = useRouter();
@@ -47,23 +43,16 @@ export function SignUpForm() {
       if (error) {
         form.setError("root", {
           type: "server",
-          message:
-            error.message ??
-            "Inscription impossible. Réessayez plus tard.",
+          message: error.message ?? "Inscription impossible. Réessayez plus tard.",
         });
-        toast.error(
-          error.message ?? "Inscription impossible. Réessayez plus tard.",
-        );
+        toast.error(error.message ?? "Inscription impossible. Réessayez plus tard.");
         return;
       }
 
       toast.success("Compte créé. Connectez-vous avec votre email.");
       router.push("/auth/sign-in");
     } catch (cause) {
-      const message =
-        cause instanceof Error
-          ? cause.message
-          : "Impossible de joindre le serveur.";
+      const message = cause instanceof Error ? cause.message : "Impossible de joindre le serveur.";
       form.setError("root", {
         type: "server",
         message:
@@ -115,7 +104,7 @@ export function SignUpForm() {
                   autoCapitalize="none"
                   autoComplete="email"
                   inputMode="email"
-                  placeholder="vous@eglise.example"
+                  placeholder="vous@coccinelle.example"
                   className="h-11"
                   disabled={isSubmitting}
                 />
@@ -140,9 +129,7 @@ export function SignUpForm() {
                   disabled={isSubmitting}
                 />
               </FormControl>
-              <FormDescription>
-                Au moins {MIN_PASSWORD_LENGTH} caractères.
-              </FormDescription>
+              <FormDescription>Au moins {MIN_PASSWORD_LENGTH} caractères.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
