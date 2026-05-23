@@ -8,6 +8,83 @@ datasource db {
   provider = "postgresql"
 }
 
+
+
+enum RoleFamille {
+  CHEF
+  CONJOINT
+  ENFANT
+}
+
+enum StatutReservation {
+  CONFIRME
+  EMBARQUE
+  RATE
+  REPORTE
+  ANNULE
+}
+
+enum StatutPaiement {
+  EN_ATTENTE
+  PAYE
+  ECHOUE
+}
+
+enum MethodePaiement {
+  CASH
+  MOBILE_MONEY
+  CARTE
+}
+
+enum StatutColis {
+  EN_ATTENTE
+  EXPEDIE
+  LIVRE
+}
+
+enum TypePassager {
+  CLIENT
+  EXTERNE
+}
+
+enum CategoriePassager {
+  ADULTE
+  ENFANT
+  BEBE
+}
+
+enum TypeColis {
+  ORDINAIRE
+  SPECIAL
+}
+
+enum TypeSexe {
+  M
+  F
+}
+
+enum JourSemaine {
+  LUNDI
+  MARDI
+  MERCREDI
+  JEUDI
+  VENDREDI
+  SAMEDI
+  DIMANCHE
+}
+
+enum StatutTrajetDepart {
+  PLANIFIE
+  OUVERT
+  ANNULE
+}
+
+enum SourceReservation {
+  GUICHET
+  EN_LIGNE
+}
+
+
 model User {
   id            String       @id
   name          String
@@ -20,11 +97,12 @@ model User {
   banned        Boolean?     @default(false)
   banReason     String?
   banExpires    DateTime?
-  client        Client?
-  accounts      Account[]
-  invitations   Invitation[]
-  members       Member[]
-  sessions      Session[]
+  client            Client?
+  accounts          Account[]
+  invitations       Invitation[]
+  members           Member[]
+  sessions          Session[]
+  reservationDrafts ReservationDraft[]
 
   @@map("user")
 }
@@ -88,6 +166,8 @@ model Organization {
   invitations       Invitation[]
   members           Member[]
   organizationroles OrganizationRole[]
+  trajets           Trajet[]
+  reservationDrafts ReservationDraft[]
 
   @@map("organization")
 }
@@ -156,6 +236,7 @@ model Client {
 
 model Trajet {
   id              String            @id @default(uuid())
+  organizationId  String
   villeDepart     String
   villeArrivee    String
   kilosGratuits   Float
@@ -164,18 +245,21 @@ model Trajet {
   dureeEstimee    Int?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
+  organization    Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   trajetProgramme TrajetProgramme[]
   trajetDepart    TrajetDepart[]
+  reservations    Reservation[]
+  colis           Colis[]
 
-  @@index([villeDepart, villeArrivee])
+  @@index([organizationId, villeDepart, villeArrivee])
 }
 
 model TrajetProgramme {
   id       String @id @default(uuid())
   trajetId String
 
-  jourSemaine JourSemaine // 1 = lundi ... 7 = dimanche
-  heureDepart String // "06:00"
+  jourSemaine JourSemaine 
+  heureDepart String 
 
   actif Boolean @default(true)
 
@@ -183,19 +267,20 @@ model TrajetProgramme {
 }
 
 model TrajetDepart {
-  id          String   @id @default(uuid())
+  id          String             @id @default(uuid())
   trajetId    String
   dateDepart  DateTime
   heureDepart String
+  statut      StatutTrajetDepart @default(PLANIFIE)
 
-  statut String @default("PLANIFIE")
-
-  trajet       Trajet        @relation(fields: [trajetId], references: [id])
+  trajet       Trajet        @relation(fields: [trajetId], references: [id], onDelete: Cascade)
   reservations Reservation[]
   colis        Colis[]
+
+  @@index([trajetId, dateDepart])
+  @@index([statut])
 }
-/// ///////////////////////
-/// ///////////////////////
+
 
 model Passager {
   id            String            @id @default(uuid())
@@ -222,35 +307,40 @@ model Passager {
   @@index([clientId])
 }
 
+
 model Reservation {
-  id               String            @id @default(uuid())
-  codeUnique       String            @unique
+  id               String              @id @default(uuid())
+  codeUnique       String              @unique
   clientId         String
   trajetId         String
+  trajetDepartId   String
   dateDepart       DateTime
   heureDepart      String
-  statut           StatutReservation @default(CONFIRME)
+  statut           StatutReservation   @default(CONFIRME)
+  source           SourceReservation   @default(GUICHET)
   nombreKilos      Float?
   surplusKilos     Float?
   montantSurplus   Float?
   prixBillet       Float
   prixTotal        Float
-  penalite         Float?            @default(0)
-  peutReporter     Boolean           @default(true)
+  penalite         Float?              @default(0)
+  peutReporter     Boolean             @default(true)
   dateLimiteReport DateTime?
   nombrePlaces     Int
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
   paiements        Paiement[]
   passagers        Passager[]
   penalites        Penalite[]
-  client           Client            @relation(fields: [clientId], references: [id])
-  trajetDepartId   String
-  trajetDepart     TrajetDepart      @relation(fields: [trajetDepartId], references: [id])
+  client           Client              @relation(fields: [clientId], references: [id])
+  trajet           Trajet              @relation(fields: [trajetId], references: [id])
+  trajetDepart     TrajetDepart        @relation(fields: [trajetDepartId], references: [id])
 
   @@index([clientId])
   @@index([trajetId])
+  @@index([trajetDepartId])
   @@index([codeUnique])
+  @@index([source])
 }
 
 model Colis {
@@ -262,7 +352,7 @@ model Colis {
   kilosGratuits  Float
   surplusKilos   Float
   montantAPayer  Float
-  passagerId     String? // 👈 NOUVEAU (optionnel)
+  passagerId     String? 
   type           TypeColis
   montantFixe    Float?
   commentaire    String?
@@ -270,6 +360,7 @@ model Colis {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   client         Client        @relation(fields: [clientId], references: [id])
+  trajet         Trajet        @relation(fields: [trajetId], references: [id])
   trajetDepartId String?
   trajetDepart   TrajetDepart? @relation(fields: [trajetDepartId], references: [id])
   passager       Passager?     @relation(fields: [passagerId], references: [id])
@@ -277,6 +368,22 @@ model Colis {
   @@index([clientId])
   @@index([trajetId])
   @@index([codeUnique])
+}
+
+model ReservationDraft {
+  id             String       @id @default(uuid())
+  draftToken     String       @unique @default(uuid())
+  organizationId String
+  userId         String?
+  payload        Json
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, userId])
+  @@index([expiresAt])
 }
 
 model Paiement {
@@ -307,65 +414,3 @@ model Penalite {
   @@index([reservationId])
 }
 
-enum RoleFamille {
-  CHEF
-  CONJOINT
-  ENFANT
-}
-
-enum StatutReservation {
-  CONFIRME
-  EMBARQUE
-  RATE
-  REPORTE
-  ANNULE
-}
-
-enum StatutPaiement {
-  EN_ATTENTE
-  PAYE
-  ECHOUE
-}
-
-enum MethodePaiement {
-  CASH
-  MOBILE_MONEY
-  CARTE
-}
-
-enum StatutColis {
-  EN_ATTENTE
-  EXPEDIE
-  LIVRE
-}
-
-enum TypePassager {
-  CLIENT
-  EXTERNE
-}
-
-enum CategoriePassager {
-  ADULTE
-  ENFANT
-  BEBE
-}
-
-enum TypeColis {
-  ORDINAIRE
-  SPECIAL
-}
-
-enum TypeSexe {
-  M
-  F
-}
-
-enum JourSemaine {
-  LUNDI
-  MARDI
-  MERCREDI
-  JEUDI
-  VENDREDI
-  SAMEDI
-  DIMANCHE
-}

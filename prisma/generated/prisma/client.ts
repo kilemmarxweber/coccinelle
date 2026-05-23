@@ -103,8 +103,7 @@ export type TrajetProgramme = Prisma.TrajetProgrammeModel
 export type TrajetDepart = Prisma.TrajetDepartModel
 /**
  * Model Passager
- * ///////////////////////
- * ///////////////////////
+ * 
  */
 export type Passager = Prisma.PassagerModel
 /**
@@ -117,6 +116,11 @@ export type Reservation = Prisma.ReservationModel
  * 
  */
 export type Colis = Prisma.ColisModel
+/**
+ * Model ReservationDraft
+ * 
+ */
+export type ReservationDraft = Prisma.ReservationDraftModel
 /**
  * Model Paiement
  * 

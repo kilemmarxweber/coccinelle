@@ -100,3 +100,20 @@ export const JourSemaine = {
 } as const
 
 export type JourSemaine = (typeof JourSemaine)[keyof typeof JourSemaine]
+
+
+export const StatutTrajetDepart = {
+  PLANIFIE: 'PLANIFIE',
+  OUVERT: 'OUVERT',
+  ANNULE: 'ANNULE'
+} as const
+
+export type StatutTrajetDepart = (typeof StatutTrajetDepart)[keyof typeof StatutTrajetDepart]
+
+
+export const SourceReservation = {
+  GUICHET: 'GUICHET',
+  EN_LIGNE: 'EN_LIGNE'
+} as const
+
+export type SourceReservation = (typeof SourceReservation)[keyof typeof SourceReservation]

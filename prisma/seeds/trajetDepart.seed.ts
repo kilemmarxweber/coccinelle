@@ -34,7 +34,7 @@ export async function seedTrajetDepart() {
         trajetId: p.trajetId,
         dateDepart: date,
         heureDepart: p.heureDepart,
-        statut: "PLANIFIE",
+        statut: i === 0 ? "OUVERT" : "PLANIFIE",
       });
     }
   }
