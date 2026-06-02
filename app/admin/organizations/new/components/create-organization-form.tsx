@@ -112,7 +112,7 @@ export function CreateOrganizationForm() {
                   {...field}
                   type="text"
                   autoComplete="organization"
-                  placeholder="Église locale"
+                  placeholder="Organisation locale"
                   className="h-11"
                   disabled={isSubmitting}
                   onBlur={(e) => {
