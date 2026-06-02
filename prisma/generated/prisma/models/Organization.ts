@@ -193,6 +193,8 @@ export type OrganizationWhereInput = {
   invitations?: Prisma.InvitationListRelationFilter
   members?: Prisma.MemberListRelationFilter
   organizationroles?: Prisma.OrganizationRoleListRelationFilter
+  trajets?: Prisma.TrajetListRelationFilter
+  reservationDrafts?: Prisma.ReservationDraftListRelationFilter
 }
 
 export type OrganizationOrderByWithRelationInput = {
@@ -205,6 +207,8 @@ export type OrganizationOrderByWithRelationInput = {
   invitations?: Prisma.InvitationOrderByRelationAggregateInput
   members?: Prisma.MemberOrderByRelationAggregateInput
   organizationroles?: Prisma.OrganizationRoleOrderByRelationAggregateInput
+  trajets?: Prisma.TrajetOrderByRelationAggregateInput
+  reservationDrafts?: Prisma.ReservationDraftOrderByRelationAggregateInput
 }
 
 export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -220,6 +224,8 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   invitations?: Prisma.InvitationListRelationFilter
   members?: Prisma.MemberListRelationFilter
   organizationroles?: Prisma.OrganizationRoleListRelationFilter
+  trajets?: Prisma.TrajetListRelationFilter
+  reservationDrafts?: Prisma.ReservationDraftListRelationFilter
 }, "id" | "slug">
 
 export type OrganizationOrderByWithAggregationInput = {
@@ -256,6 +262,8 @@ export type OrganizationCreateInput = {
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateInput = {
@@ -268,6 +276,8 @@ export type OrganizationUncheckedCreateInput = {
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUpdateInput = {
@@ -280,6 +290,8 @@ export type OrganizationUpdateInput = {
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateInput = {
@@ -292,6 +304,8 @@ export type OrganizationUncheckedUpdateInput = {
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateManyInput = {
@@ -395,6 +409,34 @@ export type OrganizationUpdateOneRequiredWithoutInvitationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutInvitationsInput, Prisma.OrganizationUpdateWithoutInvitationsInput>, Prisma.OrganizationUncheckedUpdateWithoutInvitationsInput>
 }
 
+export type OrganizationCreateNestedOneWithoutTrajetsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutTrajetsInput, Prisma.OrganizationUncheckedCreateWithoutTrajetsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutTrajetsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutTrajetsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutTrajetsInput, Prisma.OrganizationUncheckedCreateWithoutTrajetsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutTrajetsInput
+  upsert?: Prisma.OrganizationUpsertWithoutTrajetsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutTrajetsInput, Prisma.OrganizationUpdateWithoutTrajetsInput>, Prisma.OrganizationUncheckedUpdateWithoutTrajetsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutReservationDraftsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutReservationDraftsInput, Prisma.OrganizationUncheckedCreateWithoutReservationDraftsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutReservationDraftsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutReservationDraftsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutReservationDraftsInput, Prisma.OrganizationUncheckedCreateWithoutReservationDraftsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutReservationDraftsInput
+  upsert?: Prisma.OrganizationUpsertWithoutReservationDraftsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutReservationDraftsInput, Prisma.OrganizationUpdateWithoutReservationDraftsInput>, Prisma.OrganizationUncheckedUpdateWithoutReservationDraftsInput>
+}
+
 export type OrganizationCreateWithoutOrganizationrolesInput = {
   id: string
   name: string
@@ -404,6 +446,8 @@ export type OrganizationCreateWithoutOrganizationrolesInput = {
   metadata?: string | null
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutOrganizationrolesInput = {
@@ -415,6 +459,8 @@ export type OrganizationUncheckedCreateWithoutOrganizationrolesInput = {
   metadata?: string | null
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutOrganizationrolesInput = {
@@ -442,6 +488,8 @@ export type OrganizationUpdateWithoutOrganizationrolesInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutOrganizationrolesInput = {
@@ -453,6 +501,8 @@ export type OrganizationUncheckedUpdateWithoutOrganizationrolesInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutMembersInput = {
@@ -464,6 +514,8 @@ export type OrganizationCreateWithoutMembersInput = {
   metadata?: string | null
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
   organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutMembersInput = {
@@ -475,6 +527,8 @@ export type OrganizationUncheckedCreateWithoutMembersInput = {
   metadata?: string | null
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
   organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutMembersInput = {
@@ -502,6 +556,8 @@ export type OrganizationUpdateWithoutMembersInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
   organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutMembersInput = {
@@ -513,6 +569,8 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutInvitationsInput = {
@@ -524,6 +582,8 @@ export type OrganizationCreateWithoutInvitationsInput = {
   metadata?: string | null
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutInvitationsInput = {
@@ -535,6 +595,8 @@ export type OrganizationUncheckedCreateWithoutInvitationsInput = {
   metadata?: string | null
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutInvitationsInput = {
@@ -562,6 +624,8 @@ export type OrganizationUpdateWithoutInvitationsInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
@@ -573,6 +637,144 @@ export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutTrajetsInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutTrajetsInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutTrajetsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTrajetsInput, Prisma.OrganizationUncheckedCreateWithoutTrajetsInput>
+}
+
+export type OrganizationUpsertWithoutTrajetsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutTrajetsInput, Prisma.OrganizationUncheckedUpdateWithoutTrajetsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTrajetsInput, Prisma.OrganizationUncheckedCreateWithoutTrajetsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutTrajetsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutTrajetsInput, Prisma.OrganizationUncheckedUpdateWithoutTrajetsInput>
+}
+
+export type OrganizationUpdateWithoutTrajetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutTrajetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutReservationDraftsInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutReservationDraftsInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutReservationDraftsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutReservationDraftsInput, Prisma.OrganizationUncheckedCreateWithoutReservationDraftsInput>
+}
+
+export type OrganizationUpsertWithoutReservationDraftsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutReservationDraftsInput, Prisma.OrganizationUncheckedUpdateWithoutReservationDraftsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutReservationDraftsInput, Prisma.OrganizationUncheckedCreateWithoutReservationDraftsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutReservationDraftsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutReservationDraftsInput, Prisma.OrganizationUncheckedUpdateWithoutReservationDraftsInput>
+}
+
+export type OrganizationUpdateWithoutReservationDraftsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutReservationDraftsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 
@@ -584,12 +786,16 @@ export type OrganizationCountOutputType = {
   invitations: number
   members: number
   organizationroles: number
+  trajets: number
+  reservationDrafts: number
 }
 
 export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invitations?: boolean | OrganizationCountOutputTypeCountInvitationsArgs
   members?: boolean | OrganizationCountOutputTypeCountMembersArgs
   organizationroles?: boolean | OrganizationCountOutputTypeCountOrganizationrolesArgs
+  trajets?: boolean | OrganizationCountOutputTypeCountTrajetsArgs
+  reservationDrafts?: boolean | OrganizationCountOutputTypeCountReservationDraftsArgs
 }
 
 /**
@@ -623,6 +829,20 @@ export type OrganizationCountOutputTypeCountOrganizationrolesArgs<ExtArgs extend
   where?: Prisma.OrganizationRoleWhereInput
 }
 
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountTrajetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TrajetWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountReservationDraftsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReservationDraftWhereInput
+}
+
 
 export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -634,6 +854,8 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   invitations?: boolean | Prisma.Organization$invitationsArgs<ExtArgs>
   members?: boolean | Prisma.Organization$membersArgs<ExtArgs>
   organizationroles?: boolean | Prisma.Organization$organizationrolesArgs<ExtArgs>
+  trajets?: boolean | Prisma.Organization$trajetsArgs<ExtArgs>
+  reservationDrafts?: boolean | Prisma.Organization$reservationDraftsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organization"]>
 
@@ -669,6 +891,8 @@ export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   invitations?: boolean | Prisma.Organization$invitationsArgs<ExtArgs>
   members?: boolean | Prisma.Organization$membersArgs<ExtArgs>
   organizationroles?: boolean | Prisma.Organization$organizationrolesArgs<ExtArgs>
+  trajets?: boolean | Prisma.Organization$trajetsArgs<ExtArgs>
+  reservationDrafts?: boolean | Prisma.Organization$reservationDraftsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -680,6 +904,8 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     invitations: Prisma.$InvitationPayload<ExtArgs>[]
     members: Prisma.$MemberPayload<ExtArgs>[]
     organizationroles: Prisma.$OrganizationRolePayload<ExtArgs>[]
+    trajets: Prisma.$TrajetPayload<ExtArgs>[]
+    reservationDrafts: Prisma.$ReservationDraftPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1085,6 +1311,8 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   invitations<T extends Prisma.Organization$invitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   members<T extends Prisma.Organization$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   organizationroles<T extends Prisma.Organization$organizationrolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$organizationrolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrganizationRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  trajets<T extends Prisma.Organization$trajetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$trajetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrajetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reservationDrafts<T extends Prisma.Organization$reservationDraftsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$reservationDraftsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationDraftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1582,6 +1810,54 @@ export type Organization$organizationrolesArgs<ExtArgs extends runtime.Types.Ext
   take?: number
   skip?: number
   distinct?: Prisma.OrganizationRoleScalarFieldEnum | Prisma.OrganizationRoleScalarFieldEnum[]
+}
+
+/**
+ * Organization.trajets
+ */
+export type Organization$trajetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Trajet
+   */
+  select?: Prisma.TrajetSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Trajet
+   */
+  omit?: Prisma.TrajetOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TrajetInclude<ExtArgs> | null
+  where?: Prisma.TrajetWhereInput
+  orderBy?: Prisma.TrajetOrderByWithRelationInput | Prisma.TrajetOrderByWithRelationInput[]
+  cursor?: Prisma.TrajetWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TrajetScalarFieldEnum | Prisma.TrajetScalarFieldEnum[]
+}
+
+/**
+ * Organization.reservationDrafts
+ */
+export type Organization$reservationDraftsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReservationDraft
+   */
+  select?: Prisma.ReservationDraftSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReservationDraft
+   */
+  omit?: Prisma.ReservationDraftOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReservationDraftInclude<ExtArgs> | null
+  where?: Prisma.ReservationDraftWhereInput
+  orderBy?: Prisma.ReservationDraftOrderByWithRelationInput | Prisma.ReservationDraftOrderByWithRelationInput[]
+  cursor?: Prisma.ReservationDraftWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReservationDraftScalarFieldEnum | Prisma.ReservationDraftScalarFieldEnum[]
 }
 
 /**

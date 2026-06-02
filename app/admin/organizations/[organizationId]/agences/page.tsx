@@ -59,7 +59,7 @@ export default function AgencesDashboard() {
             className="h-auto flex-col gap-2 py-4"
           >
             <Users className="size-5" />
-            <span className="text-sm">Inscrire un client</span>
+            <span className="text-sm">Guichet</span>
           </Button>
           <Button
             variant="outline"
@@ -78,7 +78,7 @@ export default function AgencesDashboard() {
             <Button
               variant="ghost"
               size="sm"
-              render={<Link href="/agences/colis" />}
+              render={<Link href={`${base}/trajets`} />}
               className="-mr-2 gap-1"
             >
               Voir tout

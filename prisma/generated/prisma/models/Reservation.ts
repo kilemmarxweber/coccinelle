@@ -51,9 +51,11 @@ export type ReservationMinAggregateOutputType = {
   codeUnique: string | null
   clientId: string | null
   trajetId: string | null
+  trajetDepartId: string | null
   dateDepart: Date | null
   heureDepart: string | null
   statut: $Enums.StatutReservation | null
+  source: $Enums.SourceReservation | null
   nombreKilos: number | null
   surplusKilos: number | null
   montantSurplus: number | null
@@ -65,7 +67,6 @@ export type ReservationMinAggregateOutputType = {
   nombrePlaces: number | null
   createdAt: Date | null
   updatedAt: Date | null
-  trajetDepartId: string | null
 }
 
 export type ReservationMaxAggregateOutputType = {
@@ -73,9 +74,11 @@ export type ReservationMaxAggregateOutputType = {
   codeUnique: string | null
   clientId: string | null
   trajetId: string | null
+  trajetDepartId: string | null
   dateDepart: Date | null
   heureDepart: string | null
   statut: $Enums.StatutReservation | null
+  source: $Enums.SourceReservation | null
   nombreKilos: number | null
   surplusKilos: number | null
   montantSurplus: number | null
@@ -87,7 +90,6 @@ export type ReservationMaxAggregateOutputType = {
   nombrePlaces: number | null
   createdAt: Date | null
   updatedAt: Date | null
-  trajetDepartId: string | null
 }
 
 export type ReservationCountAggregateOutputType = {
@@ -95,9 +97,11 @@ export type ReservationCountAggregateOutputType = {
   codeUnique: number
   clientId: number
   trajetId: number
+  trajetDepartId: number
   dateDepart: number
   heureDepart: number
   statut: number
+  source: number
   nombreKilos: number
   surplusKilos: number
   montantSurplus: number
@@ -109,7 +113,6 @@ export type ReservationCountAggregateOutputType = {
   nombrePlaces: number
   createdAt: number
   updatedAt: number
-  trajetDepartId: number
   _all: number
 }
 
@@ -139,9 +142,11 @@ export type ReservationMinAggregateInputType = {
   codeUnique?: true
   clientId?: true
   trajetId?: true
+  trajetDepartId?: true
   dateDepart?: true
   heureDepart?: true
   statut?: true
+  source?: true
   nombreKilos?: true
   surplusKilos?: true
   montantSurplus?: true
@@ -153,7 +158,6 @@ export type ReservationMinAggregateInputType = {
   nombrePlaces?: true
   createdAt?: true
   updatedAt?: true
-  trajetDepartId?: true
 }
 
 export type ReservationMaxAggregateInputType = {
@@ -161,9 +165,11 @@ export type ReservationMaxAggregateInputType = {
   codeUnique?: true
   clientId?: true
   trajetId?: true
+  trajetDepartId?: true
   dateDepart?: true
   heureDepart?: true
   statut?: true
+  source?: true
   nombreKilos?: true
   surplusKilos?: true
   montantSurplus?: true
@@ -175,7 +181,6 @@ export type ReservationMaxAggregateInputType = {
   nombrePlaces?: true
   createdAt?: true
   updatedAt?: true
-  trajetDepartId?: true
 }
 
 export type ReservationCountAggregateInputType = {
@@ -183,9 +188,11 @@ export type ReservationCountAggregateInputType = {
   codeUnique?: true
   clientId?: true
   trajetId?: true
+  trajetDepartId?: true
   dateDepart?: true
   heureDepart?: true
   statut?: true
+  source?: true
   nombreKilos?: true
   surplusKilos?: true
   montantSurplus?: true
@@ -197,7 +204,6 @@ export type ReservationCountAggregateInputType = {
   nombrePlaces?: true
   createdAt?: true
   updatedAt?: true
-  trajetDepartId?: true
   _all?: true
 }
 
@@ -292,9 +298,11 @@ export type ReservationGroupByOutputType = {
   codeUnique: string
   clientId: string
   trajetId: string
+  trajetDepartId: string
   dateDepart: Date
   heureDepart: string
   statut: $Enums.StatutReservation
+  source: $Enums.SourceReservation
   nombreKilos: number | null
   surplusKilos: number | null
   montantSurplus: number | null
@@ -306,7 +314,6 @@ export type ReservationGroupByOutputType = {
   nombrePlaces: number
   createdAt: Date
   updatedAt: Date
-  trajetDepartId: string
   _count: ReservationCountAggregateOutputType | null
   _avg: ReservationAvgAggregateOutputType | null
   _sum: ReservationSumAggregateOutputType | null
@@ -337,9 +344,11 @@ export type ReservationWhereInput = {
   codeUnique?: Prisma.StringFilter<"Reservation"> | string
   clientId?: Prisma.StringFilter<"Reservation"> | string
   trajetId?: Prisma.StringFilter<"Reservation"> | string
+  trajetDepartId?: Prisma.StringFilter<"Reservation"> | string
   dateDepart?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   heureDepart?: Prisma.StringFilter<"Reservation"> | string
   statut?: Prisma.EnumStatutReservationFilter<"Reservation"> | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFilter<"Reservation"> | $Enums.SourceReservation
   nombreKilos?: Prisma.FloatNullableFilter<"Reservation"> | number | null
   surplusKilos?: Prisma.FloatNullableFilter<"Reservation"> | number | null
   montantSurplus?: Prisma.FloatNullableFilter<"Reservation"> | number | null
@@ -351,11 +360,11 @@ export type ReservationWhereInput = {
   nombrePlaces?: Prisma.IntFilter<"Reservation"> | number
   createdAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
-  trajetDepartId?: Prisma.StringFilter<"Reservation"> | string
   paiements?: Prisma.PaiementListRelationFilter
   passagers?: Prisma.PassagerListRelationFilter
   penalites?: Prisma.PenaliteListRelationFilter
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
+  trajet?: Prisma.XOR<Prisma.TrajetScalarRelationFilter, Prisma.TrajetWhereInput>
   trajetDepart?: Prisma.XOR<Prisma.TrajetDepartScalarRelationFilter, Prisma.TrajetDepartWhereInput>
 }
 
@@ -364,9 +373,11 @@ export type ReservationOrderByWithRelationInput = {
   codeUnique?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   trajetId?: Prisma.SortOrder
+  trajetDepartId?: Prisma.SortOrder
   dateDepart?: Prisma.SortOrder
   heureDepart?: Prisma.SortOrder
   statut?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   nombreKilos?: Prisma.SortOrderInput | Prisma.SortOrder
   surplusKilos?: Prisma.SortOrderInput | Prisma.SortOrder
   montantSurplus?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -378,11 +389,11 @@ export type ReservationOrderByWithRelationInput = {
   nombrePlaces?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  trajetDepartId?: Prisma.SortOrder
   paiements?: Prisma.PaiementOrderByRelationAggregateInput
   passagers?: Prisma.PassagerOrderByRelationAggregateInput
   penalites?: Prisma.PenaliteOrderByRelationAggregateInput
   client?: Prisma.ClientOrderByWithRelationInput
+  trajet?: Prisma.TrajetOrderByWithRelationInput
   trajetDepart?: Prisma.TrajetDepartOrderByWithRelationInput
 }
 
@@ -394,9 +405,11 @@ export type ReservationWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ReservationWhereInput | Prisma.ReservationWhereInput[]
   clientId?: Prisma.StringFilter<"Reservation"> | string
   trajetId?: Prisma.StringFilter<"Reservation"> | string
+  trajetDepartId?: Prisma.StringFilter<"Reservation"> | string
   dateDepart?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   heureDepart?: Prisma.StringFilter<"Reservation"> | string
   statut?: Prisma.EnumStatutReservationFilter<"Reservation"> | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFilter<"Reservation"> | $Enums.SourceReservation
   nombreKilos?: Prisma.FloatNullableFilter<"Reservation"> | number | null
   surplusKilos?: Prisma.FloatNullableFilter<"Reservation"> | number | null
   montantSurplus?: Prisma.FloatNullableFilter<"Reservation"> | number | null
@@ -408,11 +421,11 @@ export type ReservationWhereUniqueInput = Prisma.AtLeast<{
   nombrePlaces?: Prisma.IntFilter<"Reservation"> | number
   createdAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
-  trajetDepartId?: Prisma.StringFilter<"Reservation"> | string
   paiements?: Prisma.PaiementListRelationFilter
   passagers?: Prisma.PassagerListRelationFilter
   penalites?: Prisma.PenaliteListRelationFilter
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
+  trajet?: Prisma.XOR<Prisma.TrajetScalarRelationFilter, Prisma.TrajetWhereInput>
   trajetDepart?: Prisma.XOR<Prisma.TrajetDepartScalarRelationFilter, Prisma.TrajetDepartWhereInput>
 }, "id" | "codeUnique">
 
@@ -421,9 +434,11 @@ export type ReservationOrderByWithAggregationInput = {
   codeUnique?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   trajetId?: Prisma.SortOrder
+  trajetDepartId?: Prisma.SortOrder
   dateDepart?: Prisma.SortOrder
   heureDepart?: Prisma.SortOrder
   statut?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   nombreKilos?: Prisma.SortOrderInput | Prisma.SortOrder
   surplusKilos?: Prisma.SortOrderInput | Prisma.SortOrder
   montantSurplus?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -435,7 +450,6 @@ export type ReservationOrderByWithAggregationInput = {
   nombrePlaces?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  trajetDepartId?: Prisma.SortOrder
   _count?: Prisma.ReservationCountOrderByAggregateInput
   _avg?: Prisma.ReservationAvgOrderByAggregateInput
   _max?: Prisma.ReservationMaxOrderByAggregateInput
@@ -451,9 +465,11 @@ export type ReservationScalarWhereWithAggregatesInput = {
   codeUnique?: Prisma.StringWithAggregatesFilter<"Reservation"> | string
   clientId?: Prisma.StringWithAggregatesFilter<"Reservation"> | string
   trajetId?: Prisma.StringWithAggregatesFilter<"Reservation"> | string
+  trajetDepartId?: Prisma.StringWithAggregatesFilter<"Reservation"> | string
   dateDepart?: Prisma.DateTimeWithAggregatesFilter<"Reservation"> | Date | string
   heureDepart?: Prisma.StringWithAggregatesFilter<"Reservation"> | string
   statut?: Prisma.EnumStatutReservationWithAggregatesFilter<"Reservation"> | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationWithAggregatesFilter<"Reservation"> | $Enums.SourceReservation
   nombreKilos?: Prisma.FloatNullableWithAggregatesFilter<"Reservation"> | number | null
   surplusKilos?: Prisma.FloatNullableWithAggregatesFilter<"Reservation"> | number | null
   montantSurplus?: Prisma.FloatNullableWithAggregatesFilter<"Reservation"> | number | null
@@ -465,16 +481,15 @@ export type ReservationScalarWhereWithAggregatesInput = {
   nombrePlaces?: Prisma.IntWithAggregatesFilter<"Reservation"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Reservation"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Reservation"> | Date | string
-  trajetDepartId?: Prisma.StringWithAggregatesFilter<"Reservation"> | string
 }
 
 export type ReservationCreateInput = {
   id?: string
   codeUnique: string
-  trajetId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
   nombreKilos?: number | null
   surplusKilos?: number | null
   montantSurplus?: number | null
@@ -490,6 +505,7 @@ export type ReservationCreateInput = {
   passagers?: Prisma.PassagerCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteCreateNestedManyWithoutReservationInput
   client: Prisma.ClientCreateNestedOneWithoutReservationsInput
+  trajet: Prisma.TrajetCreateNestedOneWithoutReservationsInput
   trajetDepart: Prisma.TrajetDepartCreateNestedOneWithoutReservationsInput
 }
 
@@ -498,9 +514,11 @@ export type ReservationUncheckedCreateInput = {
   codeUnique: string
   clientId: string
   trajetId: string
+  trajetDepartId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
   nombreKilos?: number | null
   surplusKilos?: number | null
   montantSurplus?: number | null
@@ -512,7 +530,6 @@ export type ReservationUncheckedCreateInput = {
   nombrePlaces: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  trajetDepartId: string
   paiements?: Prisma.PaiementUncheckedCreateNestedManyWithoutReservationInput
   passagers?: Prisma.PassagerUncheckedCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteUncheckedCreateNestedManyWithoutReservationInput
@@ -521,10 +538,10 @@ export type ReservationUncheckedCreateInput = {
 export type ReservationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
-  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
   nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -540,6 +557,7 @@ export type ReservationUpdateInput = {
   passagers?: Prisma.PassagerUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUpdateManyWithoutReservationNestedInput
   client?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
+  trajet?: Prisma.TrajetUpdateOneRequiredWithoutReservationsNestedInput
   trajetDepart?: Prisma.TrajetDepartUpdateOneRequiredWithoutReservationsNestedInput
 }
 
@@ -548,9 +566,11 @@ export type ReservationUncheckedUpdateInput = {
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   trajetId?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
   nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -562,7 +582,6 @@ export type ReservationUncheckedUpdateInput = {
   nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   paiements?: Prisma.PaiementUncheckedUpdateManyWithoutReservationNestedInput
   passagers?: Prisma.PassagerUncheckedUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUncheckedUpdateManyWithoutReservationNestedInput
@@ -573,9 +592,11 @@ export type ReservationCreateManyInput = {
   codeUnique: string
   clientId: string
   trajetId: string
+  trajetDepartId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
   nombreKilos?: number | null
   surplusKilos?: number | null
   montantSurplus?: number | null
@@ -587,16 +608,15 @@ export type ReservationCreateManyInput = {
   nombrePlaces: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  trajetDepartId: string
 }
 
 export type ReservationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
-  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
   nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -615,9 +635,11 @@ export type ReservationUncheckedUpdateManyInput = {
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   trajetId?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
   nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -629,7 +651,6 @@ export type ReservationUncheckedUpdateManyInput = {
   nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ReservationListRelationFilter = {
@@ -652,9 +673,11 @@ export type ReservationCountOrderByAggregateInput = {
   codeUnique?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   trajetId?: Prisma.SortOrder
+  trajetDepartId?: Prisma.SortOrder
   dateDepart?: Prisma.SortOrder
   heureDepart?: Prisma.SortOrder
   statut?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   nombreKilos?: Prisma.SortOrder
   surplusKilos?: Prisma.SortOrder
   montantSurplus?: Prisma.SortOrder
@@ -666,7 +689,6 @@ export type ReservationCountOrderByAggregateInput = {
   nombrePlaces?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  trajetDepartId?: Prisma.SortOrder
 }
 
 export type ReservationAvgOrderByAggregateInput = {
@@ -684,9 +706,11 @@ export type ReservationMaxOrderByAggregateInput = {
   codeUnique?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   trajetId?: Prisma.SortOrder
+  trajetDepartId?: Prisma.SortOrder
   dateDepart?: Prisma.SortOrder
   heureDepart?: Prisma.SortOrder
   statut?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   nombreKilos?: Prisma.SortOrder
   surplusKilos?: Prisma.SortOrder
   montantSurplus?: Prisma.SortOrder
@@ -698,7 +722,6 @@ export type ReservationMaxOrderByAggregateInput = {
   nombrePlaces?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  trajetDepartId?: Prisma.SortOrder
 }
 
 export type ReservationMinOrderByAggregateInput = {
@@ -706,9 +729,11 @@ export type ReservationMinOrderByAggregateInput = {
   codeUnique?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   trajetId?: Prisma.SortOrder
+  trajetDepartId?: Prisma.SortOrder
   dateDepart?: Prisma.SortOrder
   heureDepart?: Prisma.SortOrder
   statut?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   nombreKilos?: Prisma.SortOrder
   surplusKilos?: Prisma.SortOrder
   montantSurplus?: Prisma.SortOrder
@@ -720,7 +745,6 @@ export type ReservationMinOrderByAggregateInput = {
   nombrePlaces?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  trajetDepartId?: Prisma.SortOrder
 }
 
 export type ReservationSumOrderByAggregateInput = {
@@ -772,6 +796,48 @@ export type ReservationUncheckedUpdateManyWithoutClientNestedInput = {
   connect?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
   update?: Prisma.ReservationUpdateWithWhereUniqueWithoutClientInput | Prisma.ReservationUpdateWithWhereUniqueWithoutClientInput[]
   updateMany?: Prisma.ReservationUpdateManyWithWhereWithoutClientInput | Prisma.ReservationUpdateManyWithWhereWithoutClientInput[]
+  deleteMany?: Prisma.ReservationScalarWhereInput | Prisma.ReservationScalarWhereInput[]
+}
+
+export type ReservationCreateNestedManyWithoutTrajetInput = {
+  create?: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetInput, Prisma.ReservationUncheckedCreateWithoutTrajetInput> | Prisma.ReservationCreateWithoutTrajetInput[] | Prisma.ReservationUncheckedCreateWithoutTrajetInput[]
+  connectOrCreate?: Prisma.ReservationCreateOrConnectWithoutTrajetInput | Prisma.ReservationCreateOrConnectWithoutTrajetInput[]
+  createMany?: Prisma.ReservationCreateManyTrajetInputEnvelope
+  connect?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
+}
+
+export type ReservationUncheckedCreateNestedManyWithoutTrajetInput = {
+  create?: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetInput, Prisma.ReservationUncheckedCreateWithoutTrajetInput> | Prisma.ReservationCreateWithoutTrajetInput[] | Prisma.ReservationUncheckedCreateWithoutTrajetInput[]
+  connectOrCreate?: Prisma.ReservationCreateOrConnectWithoutTrajetInput | Prisma.ReservationCreateOrConnectWithoutTrajetInput[]
+  createMany?: Prisma.ReservationCreateManyTrajetInputEnvelope
+  connect?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
+}
+
+export type ReservationUpdateManyWithoutTrajetNestedInput = {
+  create?: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetInput, Prisma.ReservationUncheckedCreateWithoutTrajetInput> | Prisma.ReservationCreateWithoutTrajetInput[] | Prisma.ReservationUncheckedCreateWithoutTrajetInput[]
+  connectOrCreate?: Prisma.ReservationCreateOrConnectWithoutTrajetInput | Prisma.ReservationCreateOrConnectWithoutTrajetInput[]
+  upsert?: Prisma.ReservationUpsertWithWhereUniqueWithoutTrajetInput | Prisma.ReservationUpsertWithWhereUniqueWithoutTrajetInput[]
+  createMany?: Prisma.ReservationCreateManyTrajetInputEnvelope
+  set?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
+  disconnect?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
+  delete?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
+  connect?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
+  update?: Prisma.ReservationUpdateWithWhereUniqueWithoutTrajetInput | Prisma.ReservationUpdateWithWhereUniqueWithoutTrajetInput[]
+  updateMany?: Prisma.ReservationUpdateManyWithWhereWithoutTrajetInput | Prisma.ReservationUpdateManyWithWhereWithoutTrajetInput[]
+  deleteMany?: Prisma.ReservationScalarWhereInput | Prisma.ReservationScalarWhereInput[]
+}
+
+export type ReservationUncheckedUpdateManyWithoutTrajetNestedInput = {
+  create?: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetInput, Prisma.ReservationUncheckedCreateWithoutTrajetInput> | Prisma.ReservationCreateWithoutTrajetInput[] | Prisma.ReservationUncheckedCreateWithoutTrajetInput[]
+  connectOrCreate?: Prisma.ReservationCreateOrConnectWithoutTrajetInput | Prisma.ReservationCreateOrConnectWithoutTrajetInput[]
+  upsert?: Prisma.ReservationUpsertWithWhereUniqueWithoutTrajetInput | Prisma.ReservationUpsertWithWhereUniqueWithoutTrajetInput[]
+  createMany?: Prisma.ReservationCreateManyTrajetInputEnvelope
+  set?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
+  disconnect?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
+  delete?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
+  connect?: Prisma.ReservationWhereUniqueInput | Prisma.ReservationWhereUniqueInput[]
+  update?: Prisma.ReservationUpdateWithWhereUniqueWithoutTrajetInput | Prisma.ReservationUpdateWithWhereUniqueWithoutTrajetInput[]
+  updateMany?: Prisma.ReservationUpdateManyWithWhereWithoutTrajetInput | Prisma.ReservationUpdateManyWithWhereWithoutTrajetInput[]
   deleteMany?: Prisma.ReservationScalarWhereInput | Prisma.ReservationScalarWhereInput[]
 }
 
@@ -835,6 +901,10 @@ export type EnumStatutReservationFieldUpdateOperationsInput = {
   set?: $Enums.StatutReservation
 }
 
+export type EnumSourceReservationFieldUpdateOperationsInput = {
+  set?: $Enums.SourceReservation
+}
+
 export type NullableFloatFieldUpdateOperationsInput = {
   set?: number | null
   increment?: number
@@ -874,10 +944,10 @@ export type ReservationUpdateOneRequiredWithoutPenalitesNestedInput = {
 export type ReservationCreateWithoutClientInput = {
   id?: string
   codeUnique: string
-  trajetId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
   nombreKilos?: number | null
   surplusKilos?: number | null
   montantSurplus?: number | null
@@ -892,6 +962,7 @@ export type ReservationCreateWithoutClientInput = {
   paiements?: Prisma.PaiementCreateNestedManyWithoutReservationInput
   passagers?: Prisma.PassagerCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteCreateNestedManyWithoutReservationInput
+  trajet: Prisma.TrajetCreateNestedOneWithoutReservationsInput
   trajetDepart: Prisma.TrajetDepartCreateNestedOneWithoutReservationsInput
 }
 
@@ -899,9 +970,11 @@ export type ReservationUncheckedCreateWithoutClientInput = {
   id?: string
   codeUnique: string
   trajetId: string
+  trajetDepartId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
   nombreKilos?: number | null
   surplusKilos?: number | null
   montantSurplus?: number | null
@@ -913,7 +986,6 @@ export type ReservationUncheckedCreateWithoutClientInput = {
   nombrePlaces: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  trajetDepartId: string
   paiements?: Prisma.PaiementUncheckedCreateNestedManyWithoutReservationInput
   passagers?: Prisma.PassagerUncheckedCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteUncheckedCreateNestedManyWithoutReservationInput
@@ -953,9 +1025,11 @@ export type ReservationScalarWhereInput = {
   codeUnique?: Prisma.StringFilter<"Reservation"> | string
   clientId?: Prisma.StringFilter<"Reservation"> | string
   trajetId?: Prisma.StringFilter<"Reservation"> | string
+  trajetDepartId?: Prisma.StringFilter<"Reservation"> | string
   dateDepart?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   heureDepart?: Prisma.StringFilter<"Reservation"> | string
   statut?: Prisma.EnumStatutReservationFilter<"Reservation"> | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFilter<"Reservation"> | $Enums.SourceReservation
   nombreKilos?: Prisma.FloatNullableFilter<"Reservation"> | number | null
   surplusKilos?: Prisma.FloatNullableFilter<"Reservation"> | number | null
   montantSurplus?: Prisma.FloatNullableFilter<"Reservation"> | number | null
@@ -967,16 +1041,15 @@ export type ReservationScalarWhereInput = {
   nombrePlaces?: Prisma.IntFilter<"Reservation"> | number
   createdAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
-  trajetDepartId?: Prisma.StringFilter<"Reservation"> | string
 }
 
-export type ReservationCreateWithoutTrajetDepartInput = {
+export type ReservationCreateWithoutTrajetInput = {
   id?: string
   codeUnique: string
-  trajetId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
   nombreKilos?: number | null
   surplusKilos?: number | null
   montantSurplus?: number | null
@@ -992,6 +1065,83 @@ export type ReservationCreateWithoutTrajetDepartInput = {
   passagers?: Prisma.PassagerCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteCreateNestedManyWithoutReservationInput
   client: Prisma.ClientCreateNestedOneWithoutReservationsInput
+  trajetDepart: Prisma.TrajetDepartCreateNestedOneWithoutReservationsInput
+}
+
+export type ReservationUncheckedCreateWithoutTrajetInput = {
+  id?: string
+  codeUnique: string
+  clientId: string
+  trajetDepartId: string
+  dateDepart: Date | string
+  heureDepart: string
+  statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
+  nombreKilos?: number | null
+  surplusKilos?: number | null
+  montantSurplus?: number | null
+  prixBillet: number
+  prixTotal: number
+  penalite?: number | null
+  peutReporter?: boolean
+  dateLimiteReport?: Date | string | null
+  nombrePlaces: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  paiements?: Prisma.PaiementUncheckedCreateNestedManyWithoutReservationInput
+  passagers?: Prisma.PassagerUncheckedCreateNestedManyWithoutReservationInput
+  penalites?: Prisma.PenaliteUncheckedCreateNestedManyWithoutReservationInput
+}
+
+export type ReservationCreateOrConnectWithoutTrajetInput = {
+  where: Prisma.ReservationWhereUniqueInput
+  create: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetInput, Prisma.ReservationUncheckedCreateWithoutTrajetInput>
+}
+
+export type ReservationCreateManyTrajetInputEnvelope = {
+  data: Prisma.ReservationCreateManyTrajetInput | Prisma.ReservationCreateManyTrajetInput[]
+  skipDuplicates?: boolean
+}
+
+export type ReservationUpsertWithWhereUniqueWithoutTrajetInput = {
+  where: Prisma.ReservationWhereUniqueInput
+  update: Prisma.XOR<Prisma.ReservationUpdateWithoutTrajetInput, Prisma.ReservationUncheckedUpdateWithoutTrajetInput>
+  create: Prisma.XOR<Prisma.ReservationCreateWithoutTrajetInput, Prisma.ReservationUncheckedCreateWithoutTrajetInput>
+}
+
+export type ReservationUpdateWithWhereUniqueWithoutTrajetInput = {
+  where: Prisma.ReservationWhereUniqueInput
+  data: Prisma.XOR<Prisma.ReservationUpdateWithoutTrajetInput, Prisma.ReservationUncheckedUpdateWithoutTrajetInput>
+}
+
+export type ReservationUpdateManyWithWhereWithoutTrajetInput = {
+  where: Prisma.ReservationScalarWhereInput
+  data: Prisma.XOR<Prisma.ReservationUpdateManyMutationInput, Prisma.ReservationUncheckedUpdateManyWithoutTrajetInput>
+}
+
+export type ReservationCreateWithoutTrajetDepartInput = {
+  id?: string
+  codeUnique: string
+  dateDepart: Date | string
+  heureDepart: string
+  statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
+  nombreKilos?: number | null
+  surplusKilos?: number | null
+  montantSurplus?: number | null
+  prixBillet: number
+  prixTotal: number
+  penalite?: number | null
+  peutReporter?: boolean
+  dateLimiteReport?: Date | string | null
+  nombrePlaces: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  paiements?: Prisma.PaiementCreateNestedManyWithoutReservationInput
+  passagers?: Prisma.PassagerCreateNestedManyWithoutReservationInput
+  penalites?: Prisma.PenaliteCreateNestedManyWithoutReservationInput
+  client: Prisma.ClientCreateNestedOneWithoutReservationsInput
+  trajet: Prisma.TrajetCreateNestedOneWithoutReservationsInput
 }
 
 export type ReservationUncheckedCreateWithoutTrajetDepartInput = {
@@ -1002,6 +1152,7 @@ export type ReservationUncheckedCreateWithoutTrajetDepartInput = {
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
   nombreKilos?: number | null
   surplusKilos?: number | null
   montantSurplus?: number | null
@@ -1047,10 +1198,10 @@ export type ReservationUpdateManyWithWhereWithoutTrajetDepartInput = {
 export type ReservationCreateWithoutPassagersInput = {
   id?: string
   codeUnique: string
-  trajetId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
   nombreKilos?: number | null
   surplusKilos?: number | null
   montantSurplus?: number | null
@@ -1065,6 +1216,7 @@ export type ReservationCreateWithoutPassagersInput = {
   paiements?: Prisma.PaiementCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteCreateNestedManyWithoutReservationInput
   client: Prisma.ClientCreateNestedOneWithoutReservationsInput
+  trajet: Prisma.TrajetCreateNestedOneWithoutReservationsInput
   trajetDepart: Prisma.TrajetDepartCreateNestedOneWithoutReservationsInput
 }
 
@@ -1073,9 +1225,11 @@ export type ReservationUncheckedCreateWithoutPassagersInput = {
   codeUnique: string
   clientId: string
   trajetId: string
+  trajetDepartId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
   nombreKilos?: number | null
   surplusKilos?: number | null
   montantSurplus?: number | null
@@ -1087,7 +1241,6 @@ export type ReservationUncheckedCreateWithoutPassagersInput = {
   nombrePlaces: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  trajetDepartId: string
   paiements?: Prisma.PaiementUncheckedCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteUncheckedCreateNestedManyWithoutReservationInput
 }
@@ -1111,10 +1264,10 @@ export type ReservationUpdateToOneWithWhereWithoutPassagersInput = {
 export type ReservationUpdateWithoutPassagersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
-  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
   nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1129,6 +1282,7 @@ export type ReservationUpdateWithoutPassagersInput = {
   paiements?: Prisma.PaiementUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUpdateManyWithoutReservationNestedInput
   client?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
+  trajet?: Prisma.TrajetUpdateOneRequiredWithoutReservationsNestedInput
   trajetDepart?: Prisma.TrajetDepartUpdateOneRequiredWithoutReservationsNestedInput
 }
 
@@ -1137,9 +1291,11 @@ export type ReservationUncheckedUpdateWithoutPassagersInput = {
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   trajetId?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
   nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1151,7 +1307,6 @@ export type ReservationUncheckedUpdateWithoutPassagersInput = {
   nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   paiements?: Prisma.PaiementUncheckedUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUncheckedUpdateManyWithoutReservationNestedInput
 }
@@ -1159,10 +1314,10 @@ export type ReservationUncheckedUpdateWithoutPassagersInput = {
 export type ReservationCreateWithoutPaiementsInput = {
   id?: string
   codeUnique: string
-  trajetId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
   nombreKilos?: number | null
   surplusKilos?: number | null
   montantSurplus?: number | null
@@ -1177,6 +1332,7 @@ export type ReservationCreateWithoutPaiementsInput = {
   passagers?: Prisma.PassagerCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteCreateNestedManyWithoutReservationInput
   client: Prisma.ClientCreateNestedOneWithoutReservationsInput
+  trajet: Prisma.TrajetCreateNestedOneWithoutReservationsInput
   trajetDepart: Prisma.TrajetDepartCreateNestedOneWithoutReservationsInput
 }
 
@@ -1185,9 +1341,11 @@ export type ReservationUncheckedCreateWithoutPaiementsInput = {
   codeUnique: string
   clientId: string
   trajetId: string
+  trajetDepartId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
   nombreKilos?: number | null
   surplusKilos?: number | null
   montantSurplus?: number | null
@@ -1199,7 +1357,6 @@ export type ReservationUncheckedCreateWithoutPaiementsInput = {
   nombrePlaces: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  trajetDepartId: string
   passagers?: Prisma.PassagerUncheckedCreateNestedManyWithoutReservationInput
   penalites?: Prisma.PenaliteUncheckedCreateNestedManyWithoutReservationInput
 }
@@ -1223,10 +1380,10 @@ export type ReservationUpdateToOneWithWhereWithoutPaiementsInput = {
 export type ReservationUpdateWithoutPaiementsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
-  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
   nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1241,6 +1398,7 @@ export type ReservationUpdateWithoutPaiementsInput = {
   passagers?: Prisma.PassagerUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUpdateManyWithoutReservationNestedInput
   client?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
+  trajet?: Prisma.TrajetUpdateOneRequiredWithoutReservationsNestedInput
   trajetDepart?: Prisma.TrajetDepartUpdateOneRequiredWithoutReservationsNestedInput
 }
 
@@ -1249,9 +1407,11 @@ export type ReservationUncheckedUpdateWithoutPaiementsInput = {
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   trajetId?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
   nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1263,7 +1423,6 @@ export type ReservationUncheckedUpdateWithoutPaiementsInput = {
   nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   passagers?: Prisma.PassagerUncheckedUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUncheckedUpdateManyWithoutReservationNestedInput
 }
@@ -1271,10 +1430,10 @@ export type ReservationUncheckedUpdateWithoutPaiementsInput = {
 export type ReservationCreateWithoutPenalitesInput = {
   id?: string
   codeUnique: string
-  trajetId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
   nombreKilos?: number | null
   surplusKilos?: number | null
   montantSurplus?: number | null
@@ -1289,6 +1448,7 @@ export type ReservationCreateWithoutPenalitesInput = {
   paiements?: Prisma.PaiementCreateNestedManyWithoutReservationInput
   passagers?: Prisma.PassagerCreateNestedManyWithoutReservationInput
   client: Prisma.ClientCreateNestedOneWithoutReservationsInput
+  trajet: Prisma.TrajetCreateNestedOneWithoutReservationsInput
   trajetDepart: Prisma.TrajetDepartCreateNestedOneWithoutReservationsInput
 }
 
@@ -1297,9 +1457,11 @@ export type ReservationUncheckedCreateWithoutPenalitesInput = {
   codeUnique: string
   clientId: string
   trajetId: string
+  trajetDepartId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
   nombreKilos?: number | null
   surplusKilos?: number | null
   montantSurplus?: number | null
@@ -1311,7 +1473,6 @@ export type ReservationUncheckedCreateWithoutPenalitesInput = {
   nombrePlaces: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  trajetDepartId: string
   paiements?: Prisma.PaiementUncheckedCreateNestedManyWithoutReservationInput
   passagers?: Prisma.PassagerUncheckedCreateNestedManyWithoutReservationInput
 }
@@ -1335,10 +1496,10 @@ export type ReservationUpdateToOneWithWhereWithoutPenalitesInput = {
 export type ReservationUpdateWithoutPenalitesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
-  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
   nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1353,6 +1514,7 @@ export type ReservationUpdateWithoutPenalitesInput = {
   paiements?: Prisma.PaiementUpdateManyWithoutReservationNestedInput
   passagers?: Prisma.PassagerUpdateManyWithoutReservationNestedInput
   client?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
+  trajet?: Prisma.TrajetUpdateOneRequiredWithoutReservationsNestedInput
   trajetDepart?: Prisma.TrajetDepartUpdateOneRequiredWithoutReservationsNestedInput
 }
 
@@ -1361,9 +1523,11 @@ export type ReservationUncheckedUpdateWithoutPenalitesInput = {
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   trajetId?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
   nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1375,7 +1539,6 @@ export type ReservationUncheckedUpdateWithoutPenalitesInput = {
   nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   paiements?: Prisma.PaiementUncheckedUpdateManyWithoutReservationNestedInput
   passagers?: Prisma.PassagerUncheckedUpdateManyWithoutReservationNestedInput
 }
@@ -1384,9 +1547,11 @@ export type ReservationCreateManyClientInput = {
   id?: string
   codeUnique: string
   trajetId: string
+  trajetDepartId: string
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
   nombreKilos?: number | null
   surplusKilos?: number | null
   montantSurplus?: number | null
@@ -1398,16 +1563,15 @@ export type ReservationCreateManyClientInput = {
   nombrePlaces: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  trajetDepartId: string
 }
 
 export type ReservationUpdateWithoutClientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
-  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
   nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1422,6 +1586,7 @@ export type ReservationUpdateWithoutClientInput = {
   paiements?: Prisma.PaiementUpdateManyWithoutReservationNestedInput
   passagers?: Prisma.PassagerUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUpdateManyWithoutReservationNestedInput
+  trajet?: Prisma.TrajetUpdateOneRequiredWithoutReservationsNestedInput
   trajetDepart?: Prisma.TrajetDepartUpdateOneRequiredWithoutReservationsNestedInput
 }
 
@@ -1429,9 +1594,11 @@ export type ReservationUncheckedUpdateWithoutClientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   trajetId?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
   nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1443,7 +1610,6 @@ export type ReservationUncheckedUpdateWithoutClientInput = {
   nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   paiements?: Prisma.PaiementUncheckedUpdateManyWithoutReservationNestedInput
   passagers?: Prisma.PassagerUncheckedUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUncheckedUpdateManyWithoutReservationNestedInput
@@ -1453,9 +1619,11 @@ export type ReservationUncheckedUpdateManyWithoutClientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
   trajetId?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
   nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1467,7 +1635,100 @@ export type ReservationUncheckedUpdateManyWithoutClientInput = {
   nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ReservationCreateManyTrajetInput = {
+  id?: string
+  codeUnique: string
+  clientId: string
+  trajetDepartId: string
+  dateDepart: Date | string
+  heureDepart: string
+  statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
+  nombreKilos?: number | null
+  surplusKilos?: number | null
+  montantSurplus?: number | null
+  prixBillet: number
+  prixTotal: number
+  penalite?: number | null
+  peutReporter?: boolean
+  dateLimiteReport?: Date | string | null
+  nombrePlaces: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ReservationUpdateWithoutTrajetInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
+  statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
+  nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  prixBillet?: Prisma.FloatFieldUpdateOperationsInput | number
+  prixTotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  penalite?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  peutReporter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dateLimiteReport?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paiements?: Prisma.PaiementUpdateManyWithoutReservationNestedInput
+  passagers?: Prisma.PassagerUpdateManyWithoutReservationNestedInput
+  penalites?: Prisma.PenaliteUpdateManyWithoutReservationNestedInput
+  client?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
+  trajetDepart?: Prisma.TrajetDepartUpdateOneRequiredWithoutReservationsNestedInput
+}
+
+export type ReservationUncheckedUpdateWithoutTrajetInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
   trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
+  dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
+  statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
+  nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  prixBillet?: Prisma.FloatFieldUpdateOperationsInput | number
+  prixTotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  penalite?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  peutReporter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dateLimiteReport?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paiements?: Prisma.PaiementUncheckedUpdateManyWithoutReservationNestedInput
+  passagers?: Prisma.PassagerUncheckedUpdateManyWithoutReservationNestedInput
+  penalites?: Prisma.PenaliteUncheckedUpdateManyWithoutReservationNestedInput
+}
+
+export type ReservationUncheckedUpdateManyWithoutTrajetInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  trajetDepartId?: Prisma.StringFieldUpdateOperationsInput | string
+  dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
+  statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
+  nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  prixBillet?: Prisma.FloatFieldUpdateOperationsInput | number
+  prixTotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  penalite?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  peutReporter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dateLimiteReport?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nombrePlaces?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ReservationCreateManyTrajetDepartInput = {
@@ -1478,6 +1739,7 @@ export type ReservationCreateManyTrajetDepartInput = {
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutReservation
+  source?: $Enums.SourceReservation
   nombreKilos?: number | null
   surplusKilos?: number | null
   montantSurplus?: number | null
@@ -1494,10 +1756,10 @@ export type ReservationCreateManyTrajetDepartInput = {
 export type ReservationUpdateWithoutTrajetDepartInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   codeUnique?: Prisma.StringFieldUpdateOperationsInput | string
-  trajetId?: Prisma.StringFieldUpdateOperationsInput | string
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
   nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1513,6 +1775,7 @@ export type ReservationUpdateWithoutTrajetDepartInput = {
   passagers?: Prisma.PassagerUpdateManyWithoutReservationNestedInput
   penalites?: Prisma.PenaliteUpdateManyWithoutReservationNestedInput
   client?: Prisma.ClientUpdateOneRequiredWithoutReservationsNestedInput
+  trajet?: Prisma.TrajetUpdateOneRequiredWithoutReservationsNestedInput
 }
 
 export type ReservationUncheckedUpdateWithoutTrajetDepartInput = {
@@ -1523,6 +1786,7 @@ export type ReservationUncheckedUpdateWithoutTrajetDepartInput = {
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
   nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1547,6 +1811,7 @@ export type ReservationUncheckedUpdateManyWithoutTrajetDepartInput = {
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutReservationFieldUpdateOperationsInput | $Enums.StatutReservation
+  source?: Prisma.EnumSourceReservationFieldUpdateOperationsInput | $Enums.SourceReservation
   nombreKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   surplusKilos?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   montantSurplus?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1614,9 +1879,11 @@ export type ReservationSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   codeUnique?: boolean
   clientId?: boolean
   trajetId?: boolean
+  trajetDepartId?: boolean
   dateDepart?: boolean
   heureDepart?: boolean
   statut?: boolean
+  source?: boolean
   nombreKilos?: boolean
   surplusKilos?: boolean
   montantSurplus?: boolean
@@ -1628,11 +1895,11 @@ export type ReservationSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   nombrePlaces?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  trajetDepartId?: boolean
   paiements?: boolean | Prisma.Reservation$paiementsArgs<ExtArgs>
   passagers?: boolean | Prisma.Reservation$passagersArgs<ExtArgs>
   penalites?: boolean | Prisma.Reservation$penalitesArgs<ExtArgs>
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
   trajetDepart?: boolean | Prisma.TrajetDepartDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ReservationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reservation"]>
@@ -1642,9 +1909,11 @@ export type ReservationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   codeUnique?: boolean
   clientId?: boolean
   trajetId?: boolean
+  trajetDepartId?: boolean
   dateDepart?: boolean
   heureDepart?: boolean
   statut?: boolean
+  source?: boolean
   nombreKilos?: boolean
   surplusKilos?: boolean
   montantSurplus?: boolean
@@ -1656,8 +1925,8 @@ export type ReservationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   nombrePlaces?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  trajetDepartId?: boolean
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
   trajetDepart?: boolean | Prisma.TrajetDepartDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reservation"]>
 
@@ -1666,9 +1935,11 @@ export type ReservationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   codeUnique?: boolean
   clientId?: boolean
   trajetId?: boolean
+  trajetDepartId?: boolean
   dateDepart?: boolean
   heureDepart?: boolean
   statut?: boolean
+  source?: boolean
   nombreKilos?: boolean
   surplusKilos?: boolean
   montantSurplus?: boolean
@@ -1680,8 +1951,8 @@ export type ReservationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   nombrePlaces?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  trajetDepartId?: boolean
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
   trajetDepart?: boolean | Prisma.TrajetDepartDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reservation"]>
 
@@ -1690,9 +1961,11 @@ export type ReservationSelectScalar = {
   codeUnique?: boolean
   clientId?: boolean
   trajetId?: boolean
+  trajetDepartId?: boolean
   dateDepart?: boolean
   heureDepart?: boolean
   statut?: boolean
+  source?: boolean
   nombreKilos?: boolean
   surplusKilos?: boolean
   montantSurplus?: boolean
@@ -1704,24 +1977,26 @@ export type ReservationSelectScalar = {
   nombrePlaces?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  trajetDepartId?: boolean
 }
 
-export type ReservationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "codeUnique" | "clientId" | "trajetId" | "dateDepart" | "heureDepart" | "statut" | "nombreKilos" | "surplusKilos" | "montantSurplus" | "prixBillet" | "prixTotal" | "penalite" | "peutReporter" | "dateLimiteReport" | "nombrePlaces" | "createdAt" | "updatedAt" | "trajetDepartId", ExtArgs["result"]["reservation"]>
+export type ReservationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "codeUnique" | "clientId" | "trajetId" | "trajetDepartId" | "dateDepart" | "heureDepart" | "statut" | "source" | "nombreKilos" | "surplusKilos" | "montantSurplus" | "prixBillet" | "prixTotal" | "penalite" | "peutReporter" | "dateLimiteReport" | "nombrePlaces" | "createdAt" | "updatedAt", ExtArgs["result"]["reservation"]>
 export type ReservationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   paiements?: boolean | Prisma.Reservation$paiementsArgs<ExtArgs>
   passagers?: boolean | Prisma.Reservation$passagersArgs<ExtArgs>
   penalites?: boolean | Prisma.Reservation$penalitesArgs<ExtArgs>
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
   trajetDepart?: boolean | Prisma.TrajetDepartDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ReservationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ReservationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
   trajetDepart?: boolean | Prisma.TrajetDepartDefaultArgs<ExtArgs>
 }
 export type ReservationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
+  trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
   trajetDepart?: boolean | Prisma.TrajetDepartDefaultArgs<ExtArgs>
 }
 
@@ -1732,6 +2007,7 @@ export type $ReservationPayload<ExtArgs extends runtime.Types.Extensions.Interna
     passagers: Prisma.$PassagerPayload<ExtArgs>[]
     penalites: Prisma.$PenalitePayload<ExtArgs>[]
     client: Prisma.$ClientPayload<ExtArgs>
+    trajet: Prisma.$TrajetPayload<ExtArgs>
     trajetDepart: Prisma.$TrajetDepartPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1739,9 +2015,11 @@ export type $ReservationPayload<ExtArgs extends runtime.Types.Extensions.Interna
     codeUnique: string
     clientId: string
     trajetId: string
+    trajetDepartId: string
     dateDepart: Date
     heureDepart: string
     statut: $Enums.StatutReservation
+    source: $Enums.SourceReservation
     nombreKilos: number | null
     surplusKilos: number | null
     montantSurplus: number | null
@@ -1753,7 +2031,6 @@ export type $ReservationPayload<ExtArgs extends runtime.Types.Extensions.Interna
     nombrePlaces: number
     createdAt: Date
     updatedAt: Date
-    trajetDepartId: string
   }, ExtArgs["result"]["reservation"]>
   composites: {}
 }
@@ -2152,6 +2429,7 @@ export interface Prisma__ReservationClient<T, Null = never, ExtArgs extends runt
   passagers<T extends Prisma.Reservation$passagersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Reservation$passagersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PassagerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   penalites<T extends Prisma.Reservation$penalitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Reservation$penalitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PenalitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   client<T extends Prisma.ClientDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClientDefaultArgs<ExtArgs>>): Prisma.Prisma__ClientClient<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  trajet<T extends Prisma.TrajetDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TrajetDefaultArgs<ExtArgs>>): Prisma.Prisma__TrajetClient<runtime.Types.Result.GetResult<Prisma.$TrajetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   trajetDepart<T extends Prisma.TrajetDepartDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TrajetDepartDefaultArgs<ExtArgs>>): Prisma.Prisma__TrajetDepartClient<runtime.Types.Result.GetResult<Prisma.$TrajetDepartPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2186,9 +2464,11 @@ export interface ReservationFieldRefs {
   readonly codeUnique: Prisma.FieldRef<"Reservation", 'String'>
   readonly clientId: Prisma.FieldRef<"Reservation", 'String'>
   readonly trajetId: Prisma.FieldRef<"Reservation", 'String'>
+  readonly trajetDepartId: Prisma.FieldRef<"Reservation", 'String'>
   readonly dateDepart: Prisma.FieldRef<"Reservation", 'DateTime'>
   readonly heureDepart: Prisma.FieldRef<"Reservation", 'String'>
   readonly statut: Prisma.FieldRef<"Reservation", 'StatutReservation'>
+  readonly source: Prisma.FieldRef<"Reservation", 'SourceReservation'>
   readonly nombreKilos: Prisma.FieldRef<"Reservation", 'Float'>
   readonly surplusKilos: Prisma.FieldRef<"Reservation", 'Float'>
   readonly montantSurplus: Prisma.FieldRef<"Reservation", 'Float'>
@@ -2200,7 +2480,6 @@ export interface ReservationFieldRefs {
   readonly nombrePlaces: Prisma.FieldRef<"Reservation", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Reservation", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Reservation", 'DateTime'>
-  readonly trajetDepartId: Prisma.FieldRef<"Reservation", 'String'>
 }
     
 

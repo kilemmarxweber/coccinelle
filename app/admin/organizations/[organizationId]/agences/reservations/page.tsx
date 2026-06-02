@@ -1,8 +1,23 @@
-import { getTrajets } from "../trajets/trajet.actions";
-import RegistrationPage from "./components/form-client";
+import { ReservationsList } from "./components/reservations-list";
+import { getReservationsAction } from "./actions";
 
-export default async function Page() {
-  const trajets = await getTrajets();
+type PageProps = { params: Promise<{ organizationId: string }> };
 
-  return <RegistrationPage trajets={trajets} />;
+export default async function ReservationsPage({ params }: PageProps) {
+  const { organizationId } = await params;
+  const result = await getReservationsAction(organizationId);
+
+  if (!result.ok) {
+    return (
+      <ReservationsList reservations={[]} errorMessage={result.message} />
+    );
+  }
+
+  const reservations = result.data.map((r) => ({
+    ...r,
+    dateDepart: r.dateDepart.toISOString(),
+    createdAt: r.createdAt.toISOString(),
+  }));
+
+  return <ReservationsList reservations={reservations} />;
 }

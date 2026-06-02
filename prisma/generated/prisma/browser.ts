@@ -93,6 +93,11 @@ export type Reservation = Prisma.ReservationModel
  */
 export type Colis = Prisma.ColisModel
 /**
+ * Model ReservationDraft
+ * 
+ */
+export type ReservationDraft = Prisma.ReservationDraftModel
+/**
  * Model Paiement
  * 
  */

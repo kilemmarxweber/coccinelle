@@ -399,6 +399,7 @@ export const ModelName = {
   Passager: 'Passager',
   Reservation: 'Reservation',
   Colis: 'Colis',
+  ReservationDraft: 'ReservationDraft',
   Paiement: 'Paiement',
   Penalite: 'Penalite'
 } as const
@@ -416,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationRole" | "member" | "invitation" | "client" | "trajet" | "trajetProgramme" | "trajetDepart" | "passager" | "reservation" | "colis" | "paiement" | "penalite"
+    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationRole" | "member" | "invitation" | "client" | "trajet" | "trajetProgramme" | "trajetDepart" | "passager" | "reservation" | "colis" | "reservationDraft" | "paiement" | "penalite"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1530,6 +1531,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ReservationDraft: {
+      payload: Prisma.$ReservationDraftPayload<ExtArgs>
+      fields: Prisma.ReservationDraftFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ReservationDraftFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationDraftPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ReservationDraftFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationDraftPayload>
+        }
+        findFirst: {
+          args: Prisma.ReservationDraftFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationDraftPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ReservationDraftFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationDraftPayload>
+        }
+        findMany: {
+          args: Prisma.ReservationDraftFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationDraftPayload>[]
+        }
+        create: {
+          args: Prisma.ReservationDraftCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationDraftPayload>
+        }
+        createMany: {
+          args: Prisma.ReservationDraftCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ReservationDraftCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationDraftPayload>[]
+        }
+        delete: {
+          args: Prisma.ReservationDraftDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationDraftPayload>
+        }
+        update: {
+          args: Prisma.ReservationDraftUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationDraftPayload>
+        }
+        deleteMany: {
+          args: Prisma.ReservationDraftDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ReservationDraftUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ReservationDraftUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationDraftPayload>[]
+        }
+        upsert: {
+          args: Prisma.ReservationDraftUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationDraftPayload>
+        }
+        aggregate: {
+          args: Prisma.ReservationDraftAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateReservationDraft>
+        }
+        groupBy: {
+          args: Prisma.ReservationDraftGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReservationDraftGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ReservationDraftCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReservationDraftCountAggregateOutputType> | number
+        }
+      }
+    }
     Paiement: {
       payload: Prisma.$PaiementPayload<ExtArgs>
       fields: Prisma.PaiementFieldRefs
@@ -1848,6 +1923,7 @@ export type ClientScalarFieldEnum = (typeof ClientScalarFieldEnum)[keyof typeof 
 
 export const TrajetScalarFieldEnum = {
   id: 'id',
+  organizationId: 'organizationId',
   villeDepart: 'villeDepart',
   villeArrivee: 'villeArrivee',
   kilosGratuits: 'kilosGratuits',
@@ -1909,9 +1985,11 @@ export const ReservationScalarFieldEnum = {
   codeUnique: 'codeUnique',
   clientId: 'clientId',
   trajetId: 'trajetId',
+  trajetDepartId: 'trajetDepartId',
   dateDepart: 'dateDepart',
   heureDepart: 'heureDepart',
   statut: 'statut',
+  source: 'source',
   nombreKilos: 'nombreKilos',
   surplusKilos: 'surplusKilos',
   montantSurplus: 'montantSurplus',
@@ -1922,8 +2000,7 @@ export const ReservationScalarFieldEnum = {
   dateLimiteReport: 'dateLimiteReport',
   nombrePlaces: 'nombrePlaces',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  trajetDepartId: 'trajetDepartId'
+  updatedAt: 'updatedAt'
 } as const
 
 export type ReservationScalarFieldEnum = (typeof ReservationScalarFieldEnum)[keyof typeof ReservationScalarFieldEnum]
@@ -1949,6 +2026,20 @@ export const ColisScalarFieldEnum = {
 } as const
 
 export type ColisScalarFieldEnum = (typeof ColisScalarFieldEnum)[keyof typeof ColisScalarFieldEnum]
+
+
+export const ReservationDraftScalarFieldEnum = {
+  id: 'id',
+  draftToken: 'draftToken',
+  organizationId: 'organizationId',
+  userId: 'userId',
+  payload: 'payload',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReservationDraftScalarFieldEnum = (typeof ReservationDraftScalarFieldEnum)[keyof typeof ReservationDraftScalarFieldEnum]
 
 
 export const PaiementScalarFieldEnum = {
@@ -1986,6 +2077,13 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -2000,6 +2098,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -2086,6 +2193,20 @@ export type ListEnumJourSemaineFieldRefInput<$PrismaModel> = FieldRefInputType<$
 
 
 /**
+ * Reference to a field of type 'StatutTrajetDepart'
+ */
+export type EnumStatutTrajetDepartFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatutTrajetDepart'>
+    
+
+
+/**
+ * Reference to a field of type 'StatutTrajetDepart[]'
+ */
+export type ListEnumStatutTrajetDepartFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatutTrajetDepart[]'>
+    
+
+
+/**
  * Reference to a field of type 'TypeSexe'
  */
 export type EnumTypeSexeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TypeSexe'>
@@ -2142,6 +2263,20 @@ export type ListEnumStatutReservationFieldRefInput<$PrismaModel> = FieldRefInput
 
 
 /**
+ * Reference to a field of type 'SourceReservation'
+ */
+export type EnumSourceReservationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SourceReservation'>
+    
+
+
+/**
+ * Reference to a field of type 'SourceReservation[]'
+ */
+export type ListEnumSourceReservationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SourceReservation[]'>
+    
+
+
+/**
  * Reference to a field of type 'TypeColis'
  */
 export type EnumTypeColisFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TypeColis'>
@@ -2166,6 +2301,20 @@ export type EnumStatutColisFieldRefInput<$PrismaModel> = FieldRefInputType<$Pris
  * Reference to a field of type 'StatutColis[]'
  */
 export type ListEnumStatutColisFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatutColis[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -2321,6 +2470,7 @@ export type GlobalOmitConfig = {
   passager?: Prisma.PassagerOmit
   reservation?: Prisma.ReservationOmit
   colis?: Prisma.ColisOmit
+  reservationDraft?: Prisma.ReservationDraftOmit
   paiement?: Prisma.PaiementOmit
   penalite?: Prisma.PenaliteOmit
 }
