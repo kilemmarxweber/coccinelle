@@ -7,9 +7,7 @@ import { assertInscriptionPermission } from "@/lib/auth/inscription-permission";
 import { organizationIdSchema } from "@/lib/reservation/schema";
 import prisma from "@/lib/prisma";
 
-type ActionResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; message: string };
+type ActionResult<T> = { ok: true; data: T } | { ok: false; message: string };
 
 function zodFirstMessage(err: ZodError): string {
   return err.issues[0]?.message ?? "Données invalides.";
@@ -21,10 +19,7 @@ function trajetsPath(organizationId: string) {
 
 function revalidateTrajets(organizationId: string) {
   revalidatePath(trajetsPath(organizationId), "page");
-  revalidatePath(
-    `/admin/organizations/${organizationId}/agences/reservations/guichet`,
-    "page",
-  );
+  revalidatePath(`/admin/organizations/${organizationId}/agences/reservations/guichet`, "page");
 }
 
 export async function getTrajetsForOrganizationAction(organizationId: string) {
@@ -109,7 +104,7 @@ const createDepartSchema = z.object({
 });
 
 export async function createTrajetDepartAction(
-  input: unknown,
+  input: unknown
 ): Promise<ActionResult<{ id: string }>> {
   const parsed = createDepartSchema.safeParse(input);
   if (!parsed.success) return { ok: false, message: zodFirstMessage(parsed.error) };
@@ -140,7 +135,7 @@ export async function createTrajetDepartAction(
 
 /** Crée 2 trajets + départs à venir (démo / première config). */
 export async function provisionDemoTrajetsAction(
-  organizationId: string,
+  organizationId: string
 ): Promise<ActionResult<{ count: number }>> {
   const parsed = organizationIdSchema.safeParse(organizationId);
   if (!parsed.success) return { ok: false, message: zodFirstMessage(parsed.error) };
@@ -152,7 +147,10 @@ export async function provisionDemoTrajetsAction(
     where: { organizationId: parsed.data },
   });
   if (existing > 0) {
-    return { ok: false, message: "Cette agence a déjà des trajets. Ajoutez des départs depuis la page Trajets." };
+    return {
+      ok: false,
+      message: "Cette agence a déjà des trajets. Ajoutez des départs depuis la page Trajets.",
+    };
   }
 
   const templates = [

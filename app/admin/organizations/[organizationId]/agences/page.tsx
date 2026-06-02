@@ -63,11 +63,11 @@ export default function AgencesDashboard() {
           </Button>
           <Button
             variant="outline"
-            render={<Link href="/agences/passages" />}
+            render={<Link href={`${base}/colis`} />}
             className="h-auto flex-col gap-2 py-4"
           >
             <ClipboardList className="size-5" />
-            <span className="text-sm">Reservation</span>
+            <span className="text-sm">Colis</span>
           </Button>
         </div>
 

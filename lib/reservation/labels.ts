@@ -17,6 +17,12 @@ export const SOURCE_RESERVATION_LABELS: Record<string, string> = {
   EN_LIGNE: "En ligne",
 };
 
+export const STATUT_COLIS_LABELS: Record<string, string> = {
+  EN_ATTENTE: "En attente",
+  EXPEDIE: "Expédié",
+  LIVRE: "Livré",
+};
+
 export const METHODE_PAIEMENT_LABELS: Record<string, string> = {
   CASH: "Espèces",
   MOBILE_MONEY: "Mobile Money",
