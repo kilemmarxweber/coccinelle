@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import type { ReactNode } from "react";
+import { getTheme } from "@teispace/next-themes/server";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -13,6 +14,8 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  const initialTheme = await getTheme();
+
   return (
     <html
       lang="fr"
@@ -22,11 +25,14 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <body className="min-h-svh font-sans antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
-          enableSystem
+          defaultTheme="dark"
+          forcedTheme="dark"
+          enableSystem={false}
           disableTransitionOnChange
+          storage="local"
+          initialTheme={initialTheme ?? "dark"}
         >
-           <IdleLogout />
+          <IdleLogout />
           {children}
           <Toaster richColors closeButton />
         </ThemeProvider>

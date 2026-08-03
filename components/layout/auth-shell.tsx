@@ -1,70 +1,115 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
+import { Plane } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+type AuthMode = "sign-in" | "sign-up";
+
 interface AuthShellProps {
-  /** Titre affiché sous le logo */
-  headline: string;
-  /** Description courte optionnelle */
-  description?: string;
-  /** Carte avec le formulaire */
+  mode: AuthMode;
   children: ReactNode;
   className?: string;
 }
 
-/** Présentation type « écran plein smartphone » avec dégradé discret et largeur contenue sur tablette. */
-export function AuthShell({
-  headline,
-  description,
-  children,
-  className,
-}: AuthShellProps) {
+const panelCopy: Record<
+  AuthMode,
+  {
+    badge: string;
+    title: string;
+    description: string;
+    ctaLabel: string;
+    ctaHref: string;
+    quote: string;
+  }
+> = {
+  "sign-in": {
+    badge: "COCCINELLE VOYAGE",
+    title: "Nouveau dans l'équipe ?",
+    description:
+      "Créez votre compte opérateur et gérez voyages, réservations et colis en quelques minutes.",
+    ctaLabel: "Créer un compte",
+    ctaHref: "/auth/sign-up",
+    quote: "Voyager loin, c’est commencer ici.",
+  },
+  "sign-up": {
+    badge: "COCCINELLE VOYAGE",
+    title: "Déjà un compte ?",
+    description:
+      "Reconnectez-vous à la console pour reprendre la gestion de vos trajets et passagers.",
+    ctaLabel: "Se connecter",
+    ctaHref: "/auth/sign-in",
+    quote: "Chaque trajet commence par une connexion.",
+  },
+};
+
+/** Écran auth split : formulaire sombre + panneau accent bleu. */
+export function AuthShell({ mode, children, className }: AuthShellProps) {
+  const panel = panelCopy[mode];
+
   return (
     <div
       className={cn(
-        "relative flex min-h-svh flex-col bg-gradient-to-b from-primary/12 via-background to-background pb-12",
+        "relative flex min-h-svh items-center justify-center overflow-hidden bg-background px-4 py-8 sm:px-6",
         className,
       )}
     >
       <div
-        style={{
-          paddingTop: "max(1.25rem, env(safe-area-inset-top))",
-          paddingLeft: "max(1rem, env(safe-area-inset-left))",
-          paddingRight: "max(1rem, env(safe-area-inset-right))",
-          paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))",
-        }}
-      >
-        <div className="mx-auto flex max-w-[440px] flex-col md:mx-auto md:max-w-[480px]">
-          <header className="mb-10 flex flex-col items-center gap-3 text-center">
-            <Link
-              href="/"
-              className="flex items-center gap-3 rounded-2xl border border-primary/25 bg-card/80 px-4 py-3 shadow-sm backdrop-blur-sm"
-            >
-              <span className="rounded-xl bg-primary p-2.5 text-primary-foreground">
-                <BookOpen className="size-6" aria-hidden />
-              </span>
-              <div className="text-left">
-                <p className="text-sm font-semibold leading-none">EgliseManager</p>
-                <p className="mt-1 text-xs text-muted-foreground">Smart Church</p>
-              </div>
-            </Link>
-            <div>
-              <h1 className="text-balance text-2xl font-semibold tracking-tight">
-                {headline}
-              </h1>
-              {description && (
-                <p className="mt-2 text-pretty text-sm text-muted-foreground">
-                  {description}
-                </p>
-              )}
-            </div>
-          </header>
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklab,var(--primary)_18%,transparent),_transparent_55%),radial-gradient(ellipse_at_bottom_right,_color-mix(in_oklab,var(--primary)_8%,transparent),_transparent_40%)]"
+      />
 
-          <div className="rounded-[1.35rem] border bg-card shadow-sm md:rounded-3xl md:shadow-md">
-            {children}
+      <div className="relative z-10 w-full max-w-5xl overflow-hidden rounded-[1.75rem] border border-border shadow-2xl shadow-black/50 md:grid md:grid-cols-[1.15fr_0.85fr]">
+        <div className="bg-card px-6 py-8 sm:px-10 sm:py-10 lg:px-12">{children}</div>
+
+        <aside className="relative hidden overflow-hidden bg-gradient-to-br from-primary via-primary to-blue-800 p-8 text-primary-foreground md:flex md:flex-col md:justify-between lg:p-10">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -top-16 -right-10 size-56 rounded-full bg-white/10"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -bottom-20 -left-10 size-64 rounded-full bg-blue-400/40"
+          />
+
+          <div className="relative space-y-6">
+            <div className="flex gap-1.5">
+              {[0, 1, 2, 3].map((i) => (
+                <span
+                  key={i}
+                  className={cn(
+                    "h-1 w-8 rounded-full",
+                    i === 0 ? "bg-white" : "bg-white/35",
+                  )}
+                />
+              ))}
+            </div>
+
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide backdrop-blur-sm">
+              <Plane className="size-3.5" aria-hidden />
+              {panel.badge}
+            </div>
+
+            <div className="space-y-3 pt-4">
+              <h2 className="text-3xl font-bold tracking-tight text-balance lg:text-4xl">
+                {panel.title}
+              </h2>
+              <p className="max-w-sm text-sm leading-relaxed text-white/90 lg:text-base">
+                {panel.description}
+              </p>
+            </div>
+
+            <Link
+              href={panel.ctaHref}
+              className="inline-flex h-11 items-center justify-center rounded-xl border border-white/80 bg-transparent px-5 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              {panel.ctaLabel}
+            </Link>
           </div>
-        </div>
+
+          <p className="relative mt-10 text-sm text-white/80 italic">
+            “{panel.quote}”
+          </p>
+        </aside>
       </div>
     </div>
   );
