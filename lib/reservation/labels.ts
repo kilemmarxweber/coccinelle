@@ -29,6 +29,17 @@ export const CATEGORIE_PASSAGER_LABELS: Record<string, string> = {
   BEBE: "Bébé",
 };
 
+export const MODE_TRANSPORT_LABELS: Record<string, string> = {
+  BUS: "Bus",
+  AVION: "Avion",
+};
+
+export const STATUT_TRAJET_DEPART_LABELS: Record<string, string> = {
+  PLANIFIE: "Planifié",
+  OUVERT: "Ouvert",
+  ANNULE: "Annulé",
+};
+
 export function formatMontantFc(value: number): string {
   return new Intl.NumberFormat("fr-CD", {
     style: "currency",

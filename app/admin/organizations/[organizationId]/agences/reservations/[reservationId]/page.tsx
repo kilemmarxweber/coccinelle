@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
+import { generatePassengerQr } from "@/lib/reservation/passenger-qr";
 import { ReservationDetail } from "../components/reservation-detail";
 import { getReservationAction } from "../actions";
 
@@ -42,6 +43,23 @@ export default async function ReservationDetailPage({ params }: PageProps) {
   }
 
   const r = result.data;
+  const passagers = await Promise.all(
+    r.passagers.map(async (p) => {
+      const qr = await generatePassengerQr(p.codeUnique);
+      return {
+        id: p.id,
+        nom: p.nom,
+        prenom: p.prenom,
+        categorie: p.categorie,
+        prix: p.prix,
+        codeUnique: p.codeUnique,
+        occupePlace: p.occupePlace,
+        qrDataUrl: qr.dataUrl,
+        qrPayload: qr.payload,
+      };
+    }),
+  );
+
   const reservation = {
     id: r.id,
     codeUnique: r.codeUnique,
@@ -62,14 +80,25 @@ export default async function ReservationDetailPage({ params }: PageProps) {
       prenom: r.client.prenom,
       postnom: r.client.postnom,
     },
-    trajet: r.trajet,
-    passagers: r.passagers.map((p) => ({
-      id: p.id,
-      nom: p.nom,
-      prenom: p.prenom,
-      categorie: p.categorie,
-      prix: p.prix,
-      codeUnique: p.codeUnique,
+    organization: {
+      name: r.trajet.organization.name,
+      logo: r.trajet.organization.logo,
+    },
+    trajet: {
+      villeDepart: r.trajet.villeDepart,
+      villeArrivee: r.trajet.villeArrivee,
+      modeTransport: r.trajet.modeTransport,
+    },
+    passagers,
+    colis: r.colis.map((c) => ({
+      id: c.id,
+      codeUnique: c.codeUnique,
+      type: c.type,
+      poids: c.poids,
+      montantAPayer: c.montantAPayer,
+      destinataireNom: c.destinataireNom,
+      destinataireTel: c.destinataireTel,
+      destinataireId: c.destinataireId,
     })),
     paiements: r.paiements.map((pay) => ({
       id: pay.id,

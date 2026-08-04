@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { ALL_ORG_ROLE_SLUGS } from "@/lib/permissions";
+import { ALL_ORG_ROLE_SLUGS, ORG_ROLE } from "@/lib/permissions";
 import { orgRoleLabel } from "@/lib/org-role-labels";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,7 +34,7 @@ export function CreateMemberForm({ organizationId }: Props) {
       organizationId,
       email: "",
       name: "",
-      orgRole: ALL_ORG_ROLE_SLUGS[2],
+      orgRole: ORG_ROLE.PARENT,
     },
     mode: "onSubmit",
   });

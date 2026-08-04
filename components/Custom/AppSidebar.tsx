@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Sidebar admin plateforme (`APP_ROLE.admin`) — distincte du shell gérant
+ * (`components/Custom/GerantSidebar.tsx`, routes `/agence/[orgId]/gerant`).
+ */
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserMenu } from "@/components/Custom/UserMenu";
@@ -57,7 +62,7 @@ export function AppSidebar() {
                 <ShieldCheck className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">Smart Church</span>
+                <span className="truncate font-semibold">Coccinelle</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

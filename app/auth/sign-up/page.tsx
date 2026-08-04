@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AuthShell } from "@/components/layout/auth-shell";
+import { safeAuthCallbackUrl } from "@/lib/auth/safe-callback-url";
 import { SignUpForm } from "./components/sign-up-form";
 
 export const metadata: Metadata = {
@@ -7,10 +8,17 @@ export const metadata: Metadata = {
   description: "Inscription à Coccinelle Voyage.",
 };
 
-export default function SignUpPage() {
+type PageProps = {
+  searchParams: Promise<{ callbackUrl?: string }>;
+};
+
+export default async function SignUpPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const callbackUrl = safeAuthCallbackUrl(params.callbackUrl, "");
+
   return (
     <AuthShell mode="sign-up">
-      <SignUpForm />
+      <SignUpForm callbackUrl={callbackUrl || undefined} />
     </AuthShell>
   );
 }

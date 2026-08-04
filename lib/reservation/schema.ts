@@ -5,8 +5,12 @@ import { z } from "zod";
  * Partagé entre `actions.ts` (admin) et `lib/reservation/create-reservation.ts`.
  */
 
-/** Entités Prisma avec `@default(uuid())` (client, trajet, réservation, …). */
-export const uuidSchema = z.string().uuid("Identifiant invalide.");
+/**
+ * ID d’entité métier.
+ * Prisma `@default(uuid())` en création libre ; les seeds / upserts
+ * peuvent utiliser des ids stables non-UUID (`org-1-kin-paris`, …).
+ */
+export const uuidSchema = z.string().trim().min(1, "Identifiant invalide.");
 
 /** Organisation Better Auth : id alphanumérique, pas un UUID. */
 export const organizationIdSchema = z
@@ -44,6 +48,9 @@ const colis = z.object({
   montant: amount.optional(),
   commentaire: z.string().optional(),
   prix: amount.optional(),
+  destinataireNom: z.string().trim().optional(),
+  destinataireTel: z.string().trim().optional(),
+  destinataireId: z.string().trim().optional(),
 });
 
 const pricing = z.object({
@@ -79,6 +86,32 @@ export const createReservationSchema = z
     pricing: pricing,
   })
   .superRefine((data, ctx) => {
+    const hasColis = Boolean(data.colis?.type);
+
+    if (hasColis) {
+      if (!data.colis.destinataireNom?.trim()) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Nom du destinataire requis lorsqu’un colis est présent.",
+          path: ["colis", "destinataireNom"],
+        });
+      }
+      if (!data.colis.destinataireTel?.trim()) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Téléphone du destinataire requis lorsqu’un colis est présent.",
+          path: ["colis", "destinataireTel"],
+        });
+      }
+      if (!data.colis.destinataireId?.trim()) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Pièce d’identité du destinataire requise lorsqu’un colis est présent.",
+          path: ["colis", "destinataireId"],
+        });
+      }
+    }
+
     if (data.nombrePlaces > 0) {
       if (data.passagers.length !== data.nombrePlaces) {
         ctx.addIssue({
@@ -98,7 +131,7 @@ export const createReservationSchema = z
       return;
     }
 
-    if (!data.colis?.type) {
+    if (!hasColis) {
       ctx.addIssue({
         code: "custom",
         message: "Type de colis requis pour une réservation sans place.",

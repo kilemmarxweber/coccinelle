@@ -45,6 +45,7 @@ export type TrajetMinAggregateOutputType = {
   organizationId: string | null
   villeDepart: string | null
   villeArrivee: string | null
+  modeTransport: $Enums.ModeTransport | null
   kilosGratuits: number | null
   prixParKilo: number | null
   prixBase: number | null
@@ -58,6 +59,7 @@ export type TrajetMaxAggregateOutputType = {
   organizationId: string | null
   villeDepart: string | null
   villeArrivee: string | null
+  modeTransport: $Enums.ModeTransport | null
   kilosGratuits: number | null
   prixParKilo: number | null
   prixBase: number | null
@@ -71,6 +73,7 @@ export type TrajetCountAggregateOutputType = {
   organizationId: number
   villeDepart: number
   villeArrivee: number
+  modeTransport: number
   kilosGratuits: number
   prixParKilo: number
   prixBase: number
@@ -100,6 +103,7 @@ export type TrajetMinAggregateInputType = {
   organizationId?: true
   villeDepart?: true
   villeArrivee?: true
+  modeTransport?: true
   kilosGratuits?: true
   prixParKilo?: true
   prixBase?: true
@@ -113,6 +117,7 @@ export type TrajetMaxAggregateInputType = {
   organizationId?: true
   villeDepart?: true
   villeArrivee?: true
+  modeTransport?: true
   kilosGratuits?: true
   prixParKilo?: true
   prixBase?: true
@@ -126,6 +131,7 @@ export type TrajetCountAggregateInputType = {
   organizationId?: true
   villeDepart?: true
   villeArrivee?: true
+  modeTransport?: true
   kilosGratuits?: true
   prixParKilo?: true
   prixBase?: true
@@ -226,6 +232,7 @@ export type TrajetGroupByOutputType = {
   organizationId: string
   villeDepart: string
   villeArrivee: string
+  modeTransport: $Enums.ModeTransport
   kilosGratuits: number
   prixParKilo: number
   prixBase: number
@@ -262,6 +269,7 @@ export type TrajetWhereInput = {
   organizationId?: Prisma.StringFilter<"Trajet"> | string
   villeDepart?: Prisma.StringFilter<"Trajet"> | string
   villeArrivee?: Prisma.StringFilter<"Trajet"> | string
+  modeTransport?: Prisma.EnumModeTransportFilter<"Trajet"> | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFilter<"Trajet"> | number
   prixParKilo?: Prisma.FloatFilter<"Trajet"> | number
   prixBase?: Prisma.FloatFilter<"Trajet"> | number
@@ -280,6 +288,7 @@ export type TrajetOrderByWithRelationInput = {
   organizationId?: Prisma.SortOrder
   villeDepart?: Prisma.SortOrder
   villeArrivee?: Prisma.SortOrder
+  modeTransport?: Prisma.SortOrder
   kilosGratuits?: Prisma.SortOrder
   prixParKilo?: Prisma.SortOrder
   prixBase?: Prisma.SortOrder
@@ -301,6 +310,7 @@ export type TrajetWhereUniqueInput = Prisma.AtLeast<{
   organizationId?: Prisma.StringFilter<"Trajet"> | string
   villeDepart?: Prisma.StringFilter<"Trajet"> | string
   villeArrivee?: Prisma.StringFilter<"Trajet"> | string
+  modeTransport?: Prisma.EnumModeTransportFilter<"Trajet"> | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFilter<"Trajet"> | number
   prixParKilo?: Prisma.FloatFilter<"Trajet"> | number
   prixBase?: Prisma.FloatFilter<"Trajet"> | number
@@ -319,6 +329,7 @@ export type TrajetOrderByWithAggregationInput = {
   organizationId?: Prisma.SortOrder
   villeDepart?: Prisma.SortOrder
   villeArrivee?: Prisma.SortOrder
+  modeTransport?: Prisma.SortOrder
   kilosGratuits?: Prisma.SortOrder
   prixParKilo?: Prisma.SortOrder
   prixBase?: Prisma.SortOrder
@@ -340,6 +351,7 @@ export type TrajetScalarWhereWithAggregatesInput = {
   organizationId?: Prisma.StringWithAggregatesFilter<"Trajet"> | string
   villeDepart?: Prisma.StringWithAggregatesFilter<"Trajet"> | string
   villeArrivee?: Prisma.StringWithAggregatesFilter<"Trajet"> | string
+  modeTransport?: Prisma.EnumModeTransportWithAggregatesFilter<"Trajet"> | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatWithAggregatesFilter<"Trajet"> | number
   prixParKilo?: Prisma.FloatWithAggregatesFilter<"Trajet"> | number
   prixBase?: Prisma.FloatWithAggregatesFilter<"Trajet"> | number
@@ -352,6 +364,7 @@ export type TrajetCreateInput = {
   id?: string
   villeDepart: string
   villeArrivee: string
+  modeTransport?: $Enums.ModeTransport
   kilosGratuits: number
   prixParKilo: number
   prixBase: number
@@ -370,6 +383,7 @@ export type TrajetUncheckedCreateInput = {
   organizationId: string
   villeDepart: string
   villeArrivee: string
+  modeTransport?: $Enums.ModeTransport
   kilosGratuits: number
   prixParKilo: number
   prixBase: number
@@ -386,6 +400,7 @@ export type TrajetUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
+  modeTransport?: Prisma.EnumModeTransportFieldUpdateOperationsInput | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   prixParKilo?: Prisma.FloatFieldUpdateOperationsInput | number
   prixBase?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -404,6 +419,7 @@ export type TrajetUncheckedUpdateInput = {
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
+  modeTransport?: Prisma.EnumModeTransportFieldUpdateOperationsInput | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   prixParKilo?: Prisma.FloatFieldUpdateOperationsInput | number
   prixBase?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -421,6 +437,7 @@ export type TrajetCreateManyInput = {
   organizationId: string
   villeDepart: string
   villeArrivee: string
+  modeTransport?: $Enums.ModeTransport
   kilosGratuits: number
   prixParKilo: number
   prixBase: number
@@ -433,6 +450,7 @@ export type TrajetUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
+  modeTransport?: Prisma.EnumModeTransportFieldUpdateOperationsInput | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   prixParKilo?: Prisma.FloatFieldUpdateOperationsInput | number
   prixBase?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -446,6 +464,7 @@ export type TrajetUncheckedUpdateManyInput = {
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
+  modeTransport?: Prisma.EnumModeTransportFieldUpdateOperationsInput | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   prixParKilo?: Prisma.FloatFieldUpdateOperationsInput | number
   prixBase?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -469,6 +488,7 @@ export type TrajetCountOrderByAggregateInput = {
   organizationId?: Prisma.SortOrder
   villeDepart?: Prisma.SortOrder
   villeArrivee?: Prisma.SortOrder
+  modeTransport?: Prisma.SortOrder
   kilosGratuits?: Prisma.SortOrder
   prixParKilo?: Prisma.SortOrder
   prixBase?: Prisma.SortOrder
@@ -489,6 +509,7 @@ export type TrajetMaxOrderByAggregateInput = {
   organizationId?: Prisma.SortOrder
   villeDepart?: Prisma.SortOrder
   villeArrivee?: Prisma.SortOrder
+  modeTransport?: Prisma.SortOrder
   kilosGratuits?: Prisma.SortOrder
   prixParKilo?: Prisma.SortOrder
   prixBase?: Prisma.SortOrder
@@ -502,6 +523,7 @@ export type TrajetMinOrderByAggregateInput = {
   organizationId?: Prisma.SortOrder
   villeDepart?: Prisma.SortOrder
   villeArrivee?: Prisma.SortOrder
+  modeTransport?: Prisma.SortOrder
   kilosGratuits?: Prisma.SortOrder
   prixParKilo?: Prisma.SortOrder
   prixBase?: Prisma.SortOrder
@@ -562,6 +584,10 @@ export type TrajetUncheckedUpdateManyWithoutOrganizationNestedInput = {
   update?: Prisma.TrajetUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.TrajetUpdateWithWhereUniqueWithoutOrganizationInput[]
   updateMany?: Prisma.TrajetUpdateManyWithWhereWithoutOrganizationInput | Prisma.TrajetUpdateManyWithWhereWithoutOrganizationInput[]
   deleteMany?: Prisma.TrajetScalarWhereInput | Prisma.TrajetScalarWhereInput[]
+}
+
+export type EnumModeTransportFieldUpdateOperationsInput = {
+  set?: $Enums.ModeTransport
 }
 
 export type FloatFieldUpdateOperationsInput = {
@@ -640,6 +666,7 @@ export type TrajetCreateWithoutOrganizationInput = {
   id?: string
   villeDepart: string
   villeArrivee: string
+  modeTransport?: $Enums.ModeTransport
   kilosGratuits: number
   prixParKilo: number
   prixBase: number
@@ -656,6 +683,7 @@ export type TrajetUncheckedCreateWithoutOrganizationInput = {
   id?: string
   villeDepart: string
   villeArrivee: string
+  modeTransport?: $Enums.ModeTransport
   kilosGratuits: number
   prixParKilo: number
   prixBase: number
@@ -702,6 +730,7 @@ export type TrajetScalarWhereInput = {
   organizationId?: Prisma.StringFilter<"Trajet"> | string
   villeDepart?: Prisma.StringFilter<"Trajet"> | string
   villeArrivee?: Prisma.StringFilter<"Trajet"> | string
+  modeTransport?: Prisma.EnumModeTransportFilter<"Trajet"> | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFilter<"Trajet"> | number
   prixParKilo?: Prisma.FloatFilter<"Trajet"> | number
   prixBase?: Prisma.FloatFilter<"Trajet"> | number
@@ -714,6 +743,7 @@ export type TrajetCreateWithoutTrajetProgrammeInput = {
   id?: string
   villeDepart: string
   villeArrivee: string
+  modeTransport?: $Enums.ModeTransport
   kilosGratuits: number
   prixParKilo: number
   prixBase: number
@@ -731,6 +761,7 @@ export type TrajetUncheckedCreateWithoutTrajetProgrammeInput = {
   organizationId: string
   villeDepart: string
   villeArrivee: string
+  modeTransport?: $Enums.ModeTransport
   kilosGratuits: number
   prixParKilo: number
   prixBase: number
@@ -762,6 +793,7 @@ export type TrajetUpdateWithoutTrajetProgrammeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
+  modeTransport?: Prisma.EnumModeTransportFieldUpdateOperationsInput | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   prixParKilo?: Prisma.FloatFieldUpdateOperationsInput | number
   prixBase?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -779,6 +811,7 @@ export type TrajetUncheckedUpdateWithoutTrajetProgrammeInput = {
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
+  modeTransport?: Prisma.EnumModeTransportFieldUpdateOperationsInput | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   prixParKilo?: Prisma.FloatFieldUpdateOperationsInput | number
   prixBase?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -794,6 +827,7 @@ export type TrajetCreateWithoutTrajetDepartInput = {
   id?: string
   villeDepart: string
   villeArrivee: string
+  modeTransport?: $Enums.ModeTransport
   kilosGratuits: number
   prixParKilo: number
   prixBase: number
@@ -811,6 +845,7 @@ export type TrajetUncheckedCreateWithoutTrajetDepartInput = {
   organizationId: string
   villeDepart: string
   villeArrivee: string
+  modeTransport?: $Enums.ModeTransport
   kilosGratuits: number
   prixParKilo: number
   prixBase: number
@@ -842,6 +877,7 @@ export type TrajetUpdateWithoutTrajetDepartInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
+  modeTransport?: Prisma.EnumModeTransportFieldUpdateOperationsInput | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   prixParKilo?: Prisma.FloatFieldUpdateOperationsInput | number
   prixBase?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -859,6 +895,7 @@ export type TrajetUncheckedUpdateWithoutTrajetDepartInput = {
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
+  modeTransport?: Prisma.EnumModeTransportFieldUpdateOperationsInput | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   prixParKilo?: Prisma.FloatFieldUpdateOperationsInput | number
   prixBase?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -874,6 +911,7 @@ export type TrajetCreateWithoutReservationsInput = {
   id?: string
   villeDepart: string
   villeArrivee: string
+  modeTransport?: $Enums.ModeTransport
   kilosGratuits: number
   prixParKilo: number
   prixBase: number
@@ -891,6 +929,7 @@ export type TrajetUncheckedCreateWithoutReservationsInput = {
   organizationId: string
   villeDepart: string
   villeArrivee: string
+  modeTransport?: $Enums.ModeTransport
   kilosGratuits: number
   prixParKilo: number
   prixBase: number
@@ -922,6 +961,7 @@ export type TrajetUpdateWithoutReservationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
+  modeTransport?: Prisma.EnumModeTransportFieldUpdateOperationsInput | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   prixParKilo?: Prisma.FloatFieldUpdateOperationsInput | number
   prixBase?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -939,6 +979,7 @@ export type TrajetUncheckedUpdateWithoutReservationsInput = {
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
+  modeTransport?: Prisma.EnumModeTransportFieldUpdateOperationsInput | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   prixParKilo?: Prisma.FloatFieldUpdateOperationsInput | number
   prixBase?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -954,6 +995,7 @@ export type TrajetCreateWithoutColisInput = {
   id?: string
   villeDepart: string
   villeArrivee: string
+  modeTransport?: $Enums.ModeTransport
   kilosGratuits: number
   prixParKilo: number
   prixBase: number
@@ -971,6 +1013,7 @@ export type TrajetUncheckedCreateWithoutColisInput = {
   organizationId: string
   villeDepart: string
   villeArrivee: string
+  modeTransport?: $Enums.ModeTransport
   kilosGratuits: number
   prixParKilo: number
   prixBase: number
@@ -1002,6 +1045,7 @@ export type TrajetUpdateWithoutColisInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
+  modeTransport?: Prisma.EnumModeTransportFieldUpdateOperationsInput | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   prixParKilo?: Prisma.FloatFieldUpdateOperationsInput | number
   prixBase?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1019,6 +1063,7 @@ export type TrajetUncheckedUpdateWithoutColisInput = {
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
+  modeTransport?: Prisma.EnumModeTransportFieldUpdateOperationsInput | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   prixParKilo?: Prisma.FloatFieldUpdateOperationsInput | number
   prixBase?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1034,6 +1079,7 @@ export type TrajetCreateManyOrganizationInput = {
   id?: string
   villeDepart: string
   villeArrivee: string
+  modeTransport?: $Enums.ModeTransport
   kilosGratuits: number
   prixParKilo: number
   prixBase: number
@@ -1046,6 +1092,7 @@ export type TrajetUpdateWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
+  modeTransport?: Prisma.EnumModeTransportFieldUpdateOperationsInput | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   prixParKilo?: Prisma.FloatFieldUpdateOperationsInput | number
   prixBase?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1062,6 +1109,7 @@ export type TrajetUncheckedUpdateWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
+  modeTransport?: Prisma.EnumModeTransportFieldUpdateOperationsInput | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   prixParKilo?: Prisma.FloatFieldUpdateOperationsInput | number
   prixBase?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1078,6 +1126,7 @@ export type TrajetUncheckedUpdateManyWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   villeDepart?: Prisma.StringFieldUpdateOperationsInput | string
   villeArrivee?: Prisma.StringFieldUpdateOperationsInput | string
+  modeTransport?: Prisma.EnumModeTransportFieldUpdateOperationsInput | $Enums.ModeTransport
   kilosGratuits?: Prisma.FloatFieldUpdateOperationsInput | number
   prixParKilo?: Prisma.FloatFieldUpdateOperationsInput | number
   prixBase?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1149,6 +1198,7 @@ export type TrajetSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   organizationId?: boolean
   villeDepart?: boolean
   villeArrivee?: boolean
+  modeTransport?: boolean
   kilosGratuits?: boolean
   prixParKilo?: boolean
   prixBase?: boolean
@@ -1168,6 +1218,7 @@ export type TrajetSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   organizationId?: boolean
   villeDepart?: boolean
   villeArrivee?: boolean
+  modeTransport?: boolean
   kilosGratuits?: boolean
   prixParKilo?: boolean
   prixBase?: boolean
@@ -1182,6 +1233,7 @@ export type TrajetSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   organizationId?: boolean
   villeDepart?: boolean
   villeArrivee?: boolean
+  modeTransport?: boolean
   kilosGratuits?: boolean
   prixParKilo?: boolean
   prixBase?: boolean
@@ -1196,6 +1248,7 @@ export type TrajetSelectScalar = {
   organizationId?: boolean
   villeDepart?: boolean
   villeArrivee?: boolean
+  modeTransport?: boolean
   kilosGratuits?: boolean
   prixParKilo?: boolean
   prixBase?: boolean
@@ -1204,7 +1257,7 @@ export type TrajetSelectScalar = {
   updatedAt?: boolean
 }
 
-export type TrajetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "villeDepart" | "villeArrivee" | "kilosGratuits" | "prixParKilo" | "prixBase" | "dureeEstimee" | "createdAt" | "updatedAt", ExtArgs["result"]["trajet"]>
+export type TrajetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "villeDepart" | "villeArrivee" | "modeTransport" | "kilosGratuits" | "prixParKilo" | "prixBase" | "dureeEstimee" | "createdAt" | "updatedAt", ExtArgs["result"]["trajet"]>
 export type TrajetInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   trajetProgramme?: boolean | Prisma.Trajet$trajetProgrammeArgs<ExtArgs>
@@ -1234,6 +1287,7 @@ export type $TrajetPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     organizationId: string
     villeDepart: string
     villeArrivee: string
+    modeTransport: $Enums.ModeTransport
     kilosGratuits: number
     prixParKilo: number
     prixBase: number
@@ -1672,6 +1726,7 @@ export interface TrajetFieldRefs {
   readonly organizationId: Prisma.FieldRef<"Trajet", 'String'>
   readonly villeDepart: Prisma.FieldRef<"Trajet", 'String'>
   readonly villeArrivee: Prisma.FieldRef<"Trajet", 'String'>
+  readonly modeTransport: Prisma.FieldRef<"Trajet", 'ModeTransport'>
   readonly kilosGratuits: Prisma.FieldRef<"Trajet", 'Float'>
   readonly prixParKilo: Prisma.FieldRef<"Trajet", 'Float'>
   readonly prixBase: Prisma.FieldRef<"Trajet", 'Float'>

@@ -1,13 +1,11 @@
 import { ALL_ORG_ROLE_SLUGS, ORG_ROLE } from "@/lib/permissions";
 
-/** Libellés UI pour les slugs de rôle d’organisation. */
+/** Libellés UI FR pour les slugs de rôle d’organisation (U04). */
 export const ORG_ROLE_LABEL: Record<(typeof ALL_ORG_ROLE_SLUGS)[number], string> = {
-  [ORG_ROLE.OWNER]: "Propriétaire",
-  [ORG_ROLE.GESTIONNAIRE]: "Gestionnaire",
-  [ORG_ROLE.PARENT]: "Parent",
-  [ORG_ROLE.MONITEUR]: "Moniteur",
-  [ORG_ROLE.RESPONSABLE]: "Responsable",
-  [ORG_ROLE.SURVEILLANT]: "Surveillant",
+  [ORG_ROLE.OWNER]: "Owner",
+  [ORG_ROLE.GESTIONNAIRE]: "Gérant",
+  [ORG_ROLE.GUICHETIER]: "Guichetier",
+  [ORG_ROLE.PARENT]: "Client",
 };
 
 export function orgRoleLabel(slug: string): string {

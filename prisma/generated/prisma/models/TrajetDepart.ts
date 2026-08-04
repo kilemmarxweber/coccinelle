@@ -20,8 +20,18 @@ export type TrajetDepartModel = runtime.Types.Result.DefaultSelection<Prisma.$Tr
 
 export type AggregateTrajetDepart = {
   _count: TrajetDepartCountAggregateOutputType | null
+  _avg: TrajetDepartAvgAggregateOutputType | null
+  _sum: TrajetDepartSumAggregateOutputType | null
   _min: TrajetDepartMinAggregateOutputType | null
   _max: TrajetDepartMaxAggregateOutputType | null
+}
+
+export type TrajetDepartAvgAggregateOutputType = {
+  capacitePlaces: number | null
+}
+
+export type TrajetDepartSumAggregateOutputType = {
+  capacitePlaces: number | null
 }
 
 export type TrajetDepartMinAggregateOutputType = {
@@ -30,6 +40,7 @@ export type TrajetDepartMinAggregateOutputType = {
   dateDepart: Date | null
   heureDepart: string | null
   statut: $Enums.StatutTrajetDepart | null
+  capacitePlaces: number | null
 }
 
 export type TrajetDepartMaxAggregateOutputType = {
@@ -38,6 +49,7 @@ export type TrajetDepartMaxAggregateOutputType = {
   dateDepart: Date | null
   heureDepart: string | null
   statut: $Enums.StatutTrajetDepart | null
+  capacitePlaces: number | null
 }
 
 export type TrajetDepartCountAggregateOutputType = {
@@ -46,9 +58,18 @@ export type TrajetDepartCountAggregateOutputType = {
   dateDepart: number
   heureDepart: number
   statut: number
+  capacitePlaces: number
   _all: number
 }
 
+
+export type TrajetDepartAvgAggregateInputType = {
+  capacitePlaces?: true
+}
+
+export type TrajetDepartSumAggregateInputType = {
+  capacitePlaces?: true
+}
 
 export type TrajetDepartMinAggregateInputType = {
   id?: true
@@ -56,6 +77,7 @@ export type TrajetDepartMinAggregateInputType = {
   dateDepart?: true
   heureDepart?: true
   statut?: true
+  capacitePlaces?: true
 }
 
 export type TrajetDepartMaxAggregateInputType = {
@@ -64,6 +86,7 @@ export type TrajetDepartMaxAggregateInputType = {
   dateDepart?: true
   heureDepart?: true
   statut?: true
+  capacitePlaces?: true
 }
 
 export type TrajetDepartCountAggregateInputType = {
@@ -72,6 +95,7 @@ export type TrajetDepartCountAggregateInputType = {
   dateDepart?: true
   heureDepart?: true
   statut?: true
+  capacitePlaces?: true
   _all?: true
 }
 
@@ -113,6 +137,18 @@ export type TrajetDepartAggregateArgs<ExtArgs extends runtime.Types.Extensions.I
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: TrajetDepartAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: TrajetDepartSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: TrajetDepartMinAggregateInputType
@@ -143,6 +179,8 @@ export type TrajetDepartGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   _count?: TrajetDepartCountAggregateInputType | true
+  _avg?: TrajetDepartAvgAggregateInputType
+  _sum?: TrajetDepartSumAggregateInputType
   _min?: TrajetDepartMinAggregateInputType
   _max?: TrajetDepartMaxAggregateInputType
 }
@@ -153,7 +191,10 @@ export type TrajetDepartGroupByOutputType = {
   dateDepart: Date
   heureDepart: string
   statut: $Enums.StatutTrajetDepart
+  capacitePlaces: number
   _count: TrajetDepartCountAggregateOutputType | null
+  _avg: TrajetDepartAvgAggregateOutputType | null
+  _sum: TrajetDepartSumAggregateOutputType | null
   _min: TrajetDepartMinAggregateOutputType | null
   _max: TrajetDepartMaxAggregateOutputType | null
 }
@@ -182,6 +223,7 @@ export type TrajetDepartWhereInput = {
   dateDepart?: Prisma.DateTimeFilter<"TrajetDepart"> | Date | string
   heureDepart?: Prisma.StringFilter<"TrajetDepart"> | string
   statut?: Prisma.EnumStatutTrajetDepartFilter<"TrajetDepart"> | $Enums.StatutTrajetDepart
+  capacitePlaces?: Prisma.IntFilter<"TrajetDepart"> | number
   trajet?: Prisma.XOR<Prisma.TrajetScalarRelationFilter, Prisma.TrajetWhereInput>
   reservations?: Prisma.ReservationListRelationFilter
   colis?: Prisma.ColisListRelationFilter
@@ -193,6 +235,7 @@ export type TrajetDepartOrderByWithRelationInput = {
   dateDepart?: Prisma.SortOrder
   heureDepart?: Prisma.SortOrder
   statut?: Prisma.SortOrder
+  capacitePlaces?: Prisma.SortOrder
   trajet?: Prisma.TrajetOrderByWithRelationInput
   reservations?: Prisma.ReservationOrderByRelationAggregateInput
   colis?: Prisma.ColisOrderByRelationAggregateInput
@@ -207,6 +250,7 @@ export type TrajetDepartWhereUniqueInput = Prisma.AtLeast<{
   dateDepart?: Prisma.DateTimeFilter<"TrajetDepart"> | Date | string
   heureDepart?: Prisma.StringFilter<"TrajetDepart"> | string
   statut?: Prisma.EnumStatutTrajetDepartFilter<"TrajetDepart"> | $Enums.StatutTrajetDepart
+  capacitePlaces?: Prisma.IntFilter<"TrajetDepart"> | number
   trajet?: Prisma.XOR<Prisma.TrajetScalarRelationFilter, Prisma.TrajetWhereInput>
   reservations?: Prisma.ReservationListRelationFilter
   colis?: Prisma.ColisListRelationFilter
@@ -218,9 +262,12 @@ export type TrajetDepartOrderByWithAggregationInput = {
   dateDepart?: Prisma.SortOrder
   heureDepart?: Prisma.SortOrder
   statut?: Prisma.SortOrder
+  capacitePlaces?: Prisma.SortOrder
   _count?: Prisma.TrajetDepartCountOrderByAggregateInput
+  _avg?: Prisma.TrajetDepartAvgOrderByAggregateInput
   _max?: Prisma.TrajetDepartMaxOrderByAggregateInput
   _min?: Prisma.TrajetDepartMinOrderByAggregateInput
+  _sum?: Prisma.TrajetDepartSumOrderByAggregateInput
 }
 
 export type TrajetDepartScalarWhereWithAggregatesInput = {
@@ -232,6 +279,7 @@ export type TrajetDepartScalarWhereWithAggregatesInput = {
   dateDepart?: Prisma.DateTimeWithAggregatesFilter<"TrajetDepart"> | Date | string
   heureDepart?: Prisma.StringWithAggregatesFilter<"TrajetDepart"> | string
   statut?: Prisma.EnumStatutTrajetDepartWithAggregatesFilter<"TrajetDepart"> | $Enums.StatutTrajetDepart
+  capacitePlaces?: Prisma.IntWithAggregatesFilter<"TrajetDepart"> | number
 }
 
 export type TrajetDepartCreateInput = {
@@ -239,6 +287,7 @@ export type TrajetDepartCreateInput = {
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutTrajetDepart
+  capacitePlaces?: number
   trajet: Prisma.TrajetCreateNestedOneWithoutTrajetDepartInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutTrajetDepartInput
   colis?: Prisma.ColisCreateNestedManyWithoutTrajetDepartInput
@@ -250,6 +299,7 @@ export type TrajetDepartUncheckedCreateInput = {
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutTrajetDepart
+  capacitePlaces?: number
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutTrajetDepartInput
   colis?: Prisma.ColisUncheckedCreateNestedManyWithoutTrajetDepartInput
 }
@@ -259,6 +309,7 @@ export type TrajetDepartUpdateInput = {
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutTrajetDepartFieldUpdateOperationsInput | $Enums.StatutTrajetDepart
+  capacitePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   trajet?: Prisma.TrajetUpdateOneRequiredWithoutTrajetDepartNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutTrajetDepartNestedInput
   colis?: Prisma.ColisUpdateManyWithoutTrajetDepartNestedInput
@@ -270,6 +321,7 @@ export type TrajetDepartUncheckedUpdateInput = {
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutTrajetDepartFieldUpdateOperationsInput | $Enums.StatutTrajetDepart
+  capacitePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutTrajetDepartNestedInput
   colis?: Prisma.ColisUncheckedUpdateManyWithoutTrajetDepartNestedInput
 }
@@ -280,6 +332,7 @@ export type TrajetDepartCreateManyInput = {
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutTrajetDepart
+  capacitePlaces?: number
 }
 
 export type TrajetDepartUpdateManyMutationInput = {
@@ -287,6 +340,7 @@ export type TrajetDepartUpdateManyMutationInput = {
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutTrajetDepartFieldUpdateOperationsInput | $Enums.StatutTrajetDepart
+  capacitePlaces?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TrajetDepartUncheckedUpdateManyInput = {
@@ -295,6 +349,7 @@ export type TrajetDepartUncheckedUpdateManyInput = {
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutTrajetDepartFieldUpdateOperationsInput | $Enums.StatutTrajetDepart
+  capacitePlaces?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TrajetDepartListRelationFilter = {
@@ -313,6 +368,11 @@ export type TrajetDepartCountOrderByAggregateInput = {
   dateDepart?: Prisma.SortOrder
   heureDepart?: Prisma.SortOrder
   statut?: Prisma.SortOrder
+  capacitePlaces?: Prisma.SortOrder
+}
+
+export type TrajetDepartAvgOrderByAggregateInput = {
+  capacitePlaces?: Prisma.SortOrder
 }
 
 export type TrajetDepartMaxOrderByAggregateInput = {
@@ -321,6 +381,7 @@ export type TrajetDepartMaxOrderByAggregateInput = {
   dateDepart?: Prisma.SortOrder
   heureDepart?: Prisma.SortOrder
   statut?: Prisma.SortOrder
+  capacitePlaces?: Prisma.SortOrder
 }
 
 export type TrajetDepartMinOrderByAggregateInput = {
@@ -329,6 +390,11 @@ export type TrajetDepartMinOrderByAggregateInput = {
   dateDepart?: Prisma.SortOrder
   heureDepart?: Prisma.SortOrder
   statut?: Prisma.SortOrder
+  capacitePlaces?: Prisma.SortOrder
+}
+
+export type TrajetDepartSumOrderByAggregateInput = {
+  capacitePlaces?: Prisma.SortOrder
 }
 
 export type TrajetDepartScalarRelationFilter = {
@@ -387,6 +453,14 @@ export type EnumStatutTrajetDepartFieldUpdateOperationsInput = {
   set?: $Enums.StatutTrajetDepart
 }
 
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type TrajetDepartCreateNestedOneWithoutReservationsInput = {
   create?: Prisma.XOR<Prisma.TrajetDepartCreateWithoutReservationsInput, Prisma.TrajetDepartUncheckedCreateWithoutReservationsInput>
   connectOrCreate?: Prisma.TrajetDepartCreateOrConnectWithoutReservationsInput
@@ -422,6 +496,7 @@ export type TrajetDepartCreateWithoutTrajetInput = {
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutTrajetDepart
+  capacitePlaces?: number
   reservations?: Prisma.ReservationCreateNestedManyWithoutTrajetDepartInput
   colis?: Prisma.ColisCreateNestedManyWithoutTrajetDepartInput
 }
@@ -431,6 +506,7 @@ export type TrajetDepartUncheckedCreateWithoutTrajetInput = {
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutTrajetDepart
+  capacitePlaces?: number
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutTrajetDepartInput
   colis?: Prisma.ColisUncheckedCreateNestedManyWithoutTrajetDepartInput
 }
@@ -470,6 +546,7 @@ export type TrajetDepartScalarWhereInput = {
   dateDepart?: Prisma.DateTimeFilter<"TrajetDepart"> | Date | string
   heureDepart?: Prisma.StringFilter<"TrajetDepart"> | string
   statut?: Prisma.EnumStatutTrajetDepartFilter<"TrajetDepart"> | $Enums.StatutTrajetDepart
+  capacitePlaces?: Prisma.IntFilter<"TrajetDepart"> | number
 }
 
 export type TrajetDepartCreateWithoutReservationsInput = {
@@ -477,6 +554,7 @@ export type TrajetDepartCreateWithoutReservationsInput = {
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutTrajetDepart
+  capacitePlaces?: number
   trajet: Prisma.TrajetCreateNestedOneWithoutTrajetDepartInput
   colis?: Prisma.ColisCreateNestedManyWithoutTrajetDepartInput
 }
@@ -487,6 +565,7 @@ export type TrajetDepartUncheckedCreateWithoutReservationsInput = {
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutTrajetDepart
+  capacitePlaces?: number
   colis?: Prisma.ColisUncheckedCreateNestedManyWithoutTrajetDepartInput
 }
 
@@ -511,6 +590,7 @@ export type TrajetDepartUpdateWithoutReservationsInput = {
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutTrajetDepartFieldUpdateOperationsInput | $Enums.StatutTrajetDepart
+  capacitePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   trajet?: Prisma.TrajetUpdateOneRequiredWithoutTrajetDepartNestedInput
   colis?: Prisma.ColisUpdateManyWithoutTrajetDepartNestedInput
 }
@@ -521,6 +601,7 @@ export type TrajetDepartUncheckedUpdateWithoutReservationsInput = {
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutTrajetDepartFieldUpdateOperationsInput | $Enums.StatutTrajetDepart
+  capacitePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   colis?: Prisma.ColisUncheckedUpdateManyWithoutTrajetDepartNestedInput
 }
 
@@ -529,6 +610,7 @@ export type TrajetDepartCreateWithoutColisInput = {
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutTrajetDepart
+  capacitePlaces?: number
   trajet: Prisma.TrajetCreateNestedOneWithoutTrajetDepartInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutTrajetDepartInput
 }
@@ -539,6 +621,7 @@ export type TrajetDepartUncheckedCreateWithoutColisInput = {
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutTrajetDepart
+  capacitePlaces?: number
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutTrajetDepartInput
 }
 
@@ -563,6 +646,7 @@ export type TrajetDepartUpdateWithoutColisInput = {
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutTrajetDepartFieldUpdateOperationsInput | $Enums.StatutTrajetDepart
+  capacitePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   trajet?: Prisma.TrajetUpdateOneRequiredWithoutTrajetDepartNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutTrajetDepartNestedInput
 }
@@ -573,6 +657,7 @@ export type TrajetDepartUncheckedUpdateWithoutColisInput = {
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutTrajetDepartFieldUpdateOperationsInput | $Enums.StatutTrajetDepart
+  capacitePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutTrajetDepartNestedInput
 }
 
@@ -581,6 +666,7 @@ export type TrajetDepartCreateManyTrajetInput = {
   dateDepart: Date | string
   heureDepart: string
   statut?: $Enums.StatutTrajetDepart
+  capacitePlaces?: number
 }
 
 export type TrajetDepartUpdateWithoutTrajetInput = {
@@ -588,6 +674,7 @@ export type TrajetDepartUpdateWithoutTrajetInput = {
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutTrajetDepartFieldUpdateOperationsInput | $Enums.StatutTrajetDepart
+  capacitePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   reservations?: Prisma.ReservationUpdateManyWithoutTrajetDepartNestedInput
   colis?: Prisma.ColisUpdateManyWithoutTrajetDepartNestedInput
 }
@@ -597,6 +684,7 @@ export type TrajetDepartUncheckedUpdateWithoutTrajetInput = {
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutTrajetDepartFieldUpdateOperationsInput | $Enums.StatutTrajetDepart
+  capacitePlaces?: Prisma.IntFieldUpdateOperationsInput | number
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutTrajetDepartNestedInput
   colis?: Prisma.ColisUncheckedUpdateManyWithoutTrajetDepartNestedInput
 }
@@ -606,6 +694,7 @@ export type TrajetDepartUncheckedUpdateManyWithoutTrajetInput = {
   dateDepart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   heureDepart?: Prisma.StringFieldUpdateOperationsInput | string
   statut?: Prisma.EnumStatutTrajetDepartFieldUpdateOperationsInput | $Enums.StatutTrajetDepart
+  capacitePlaces?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
@@ -654,6 +743,7 @@ export type TrajetDepartSelect<ExtArgs extends runtime.Types.Extensions.Internal
   dateDepart?: boolean
   heureDepart?: boolean
   statut?: boolean
+  capacitePlaces?: boolean
   trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
   reservations?: boolean | Prisma.TrajetDepart$reservationsArgs<ExtArgs>
   colis?: boolean | Prisma.TrajetDepart$colisArgs<ExtArgs>
@@ -666,6 +756,7 @@ export type TrajetDepartSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   dateDepart?: boolean
   heureDepart?: boolean
   statut?: boolean
+  capacitePlaces?: boolean
   trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["trajetDepart"]>
 
@@ -675,6 +766,7 @@ export type TrajetDepartSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   dateDepart?: boolean
   heureDepart?: boolean
   statut?: boolean
+  capacitePlaces?: boolean
   trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["trajetDepart"]>
 
@@ -684,9 +776,10 @@ export type TrajetDepartSelectScalar = {
   dateDepart?: boolean
   heureDepart?: boolean
   statut?: boolean
+  capacitePlaces?: boolean
 }
 
-export type TrajetDepartOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "trajetId" | "dateDepart" | "heureDepart" | "statut", ExtArgs["result"]["trajetDepart"]>
+export type TrajetDepartOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "trajetId" | "dateDepart" | "heureDepart" | "statut" | "capacitePlaces", ExtArgs["result"]["trajetDepart"]>
 export type TrajetDepartInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
   reservations?: boolean | Prisma.TrajetDepart$reservationsArgs<ExtArgs>
@@ -713,6 +806,7 @@ export type $TrajetDepartPayload<ExtArgs extends runtime.Types.Extensions.Intern
     dateDepart: Date
     heureDepart: string
     statut: $Enums.StatutTrajetDepart
+    capacitePlaces: number
   }, ExtArgs["result"]["trajetDepart"]>
   composites: {}
 }
@@ -1144,6 +1238,7 @@ export interface TrajetDepartFieldRefs {
   readonly dateDepart: Prisma.FieldRef<"TrajetDepart", 'DateTime'>
   readonly heureDepart: Prisma.FieldRef<"TrajetDepart", 'String'>
   readonly statut: Prisma.FieldRef<"TrajetDepart", 'StatutTrajetDepart'>
+  readonly capacitePlaces: Prisma.FieldRef<"TrajetDepart", 'Int'>
 }
     
 

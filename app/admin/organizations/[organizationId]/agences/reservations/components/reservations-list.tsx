@@ -104,7 +104,7 @@ export function ReservationsList({ reservations, errorMessage }: Props) {
         actions={[
           {
             label: "Nouvelle",
-            onClick: () => router.push(`${base}/guichet`),
+            onClick: () => router.push(`${base}/guichet/vendre`),
             icon: <Plus className="size-4" />,
           },
         ]}
@@ -141,7 +141,7 @@ export function ReservationsList({ reservations, errorMessage }: Props) {
                 : "Créez une réservation au guichet pour commencer."
             }
             action={
-              <Button render={<Link href={`${base}/guichet`} />}>
+              <Button render={<Link href={`${base}/guichet/vendre`} />}>
                 <Plus className="size-4" />
                 Nouvelle réservation
               </Button>

@@ -2,8 +2,6 @@ import { createAuthClient } from "better-auth/react";
 import { adminClient, customSessionClient, organizationClient } from "better-auth/client/plugins";
 import type { auth } from "@/lib/auth";
 import {
-  APP_ROLE,
-  ORG_ROLE,
   applicationRoles,
   authAccessControl,
   organizationRoles,

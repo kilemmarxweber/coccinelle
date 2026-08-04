@@ -84,6 +84,11 @@ enum SourceReservation {
   EN_LIGNE
 }
 
+enum ModeTransport {
+  BUS
+  AVION
+}
+
 
 model User {
   id            String       @id
@@ -239,6 +244,7 @@ model Trajet {
   organizationId  String
   villeDepart     String
   villeArrivee    String
+  modeTransport   ModeTransport     @default(BUS)
   kilosGratuits   Float
   prixParKilo     Float
   prixBase        Float
@@ -252,6 +258,7 @@ model Trajet {
   colis           Colis[]
 
   @@index([organizationId, villeDepart, villeArrivee])
+  @@index([organizationId, modeTransport])
 }
 
 model TrajetProgramme {
@@ -267,11 +274,12 @@ model TrajetProgramme {
 }
 
 model TrajetDepart {
-  id          String             @id @default(uuid())
-  trajetId    String
-  dateDepart  DateTime
-  heureDepart String
-  statut      StatutTrajetDepart @default(PLANIFIE)
+  id             String             @id @default(uuid())
+  trajetId       String
+  dateDepart     DateTime
+  heureDepart    String
+  statut         StatutTrajetDepart @default(PLANIFIE)
+  capacitePlaces Int                @default(50)
 
   trajet       Trajet        @relation(fields: [trajetId], references: [id], onDelete: Cascade)
   reservations Reservation[]
@@ -344,26 +352,29 @@ model Reservation {
 }
 
 model Colis {
-  id             String        @id @default(uuid())
-  codeUnique     String        @unique
-  clientId       String
-  trajetId       String
-  poids          Float
-  kilosGratuits  Float
-  surplusKilos   Float
-  montantAPayer  Float
-  passagerId     String? 
-  type           TypeColis
-  montantFixe    Float?
-  commentaire    String?
-  statut         StatutColis   @default(EN_ATTENTE)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  client         Client        @relation(fields: [clientId], references: [id])
-  trajet         Trajet        @relation(fields: [trajetId], references: [id])
-  trajetDepartId String?
-  trajetDepart   TrajetDepart? @relation(fields: [trajetDepartId], references: [id])
-  passager       Passager?     @relation(fields: [passagerId], references: [id])
+  id               String        @id @default(uuid())
+  codeUnique       String        @unique
+  clientId         String
+  trajetId         String
+  poids            Float
+  kilosGratuits    Float
+  surplusKilos     Float
+  montantAPayer    Float
+  passagerId       String?
+  type             TypeColis
+  montantFixe      Float?
+  commentaire      String?
+  destinataireNom  String?
+  destinataireTel  String?
+  destinataireId   String?
+  statut           StatutColis   @default(EN_ATTENTE)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  client           Client        @relation(fields: [clientId], references: [id])
+  trajet           Trajet        @relation(fields: [trajetId], references: [id])
+  trajetDepartId   String?
+  trajetDepart     TrajetDepart? @relation(fields: [trajetDepartId], references: [id])
+  passager         Passager?     @relation(fields: [passagerId], references: [id])
 
   @@index([clientId])
   @@index([trajetId])

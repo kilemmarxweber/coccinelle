@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/layout/page-header";
+import { TicketPrintActions } from "@/components/ticket/ticket-print-actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -19,6 +20,7 @@ import {
   STATUT_PAIEMENT_LABELS,
   STATUT_RESERVATION_LABELS,
 } from "@/lib/reservation/labels";
+import type { TicketReservation } from "@/lib/reservation/ticket-data";
 import {
   deleteReservationAction,
   updateReservationAction,
@@ -52,6 +54,11 @@ export type ReservationDetailData = {
   trajet: {
     villeDepart: string;
     villeArrivee: string;
+    modeTransport: string;
+  };
+  organization: {
+    name: string;
+    logo: string | null;
   };
   passagers: Array<{
     id: string;
@@ -60,6 +67,19 @@ export type ReservationDetailData = {
     categorie: string;
     prix: number;
     codeUnique: string;
+    occupePlace: boolean;
+    qrDataUrl: string;
+    qrPayload: string;
+  }>;
+  colis: Array<{
+    id: string;
+    codeUnique: string;
+    type: string;
+    poids: number;
+    montantAPayer: number;
+    destinataireNom: string | null;
+    destinataireTel: string | null;
+    destinataireId: string | null;
   }>;
   paiements: Array<{
     id: string;
@@ -131,6 +151,28 @@ export function ReservationDetail({ organizationId, reservation }: Props) {
 
   const paiement = reservation.paiements[0];
 
+  const ticket: TicketReservation = {
+    codeUnique: reservation.codeUnique,
+    dateDepart: reservation.dateDepart,
+    heureDepart: reservation.heureDepart,
+    prixBillet: reservation.prixBillet,
+    prixTotal: reservation.prixTotal,
+    organization: reservation.organization,
+    trajet: reservation.trajet,
+    client: {
+      displayName: clientName || "—",
+      telephone: reservation.client.telephone,
+    },
+    passagers: reservation.passagers,
+    paiement: paiement
+      ? {
+          methode: paiement.methode,
+          montant: paiement.montant,
+          statut: paiement.statut,
+        }
+      : null,
+  };
+
   return (
     <div className="min-h-screen">
       <PageHeader
@@ -184,20 +226,63 @@ export function ReservationDetail({ organizationId, reservation }: Props) {
                 Passagers
               </h2>
               <ListGroup>
-                {reservation.passagers.map((p) => (
-                  <ListItem
-                    key={p.id}
-                    title={`${p.prenom} ${p.nom}`}
-                    description={`${CATEGORIE_PASSAGER_LABELS[p.categorie] ?? p.categorie} · ${p.codeUnique}`}
-                    trailing={
-                      <span className="text-sm font-medium">
-                        {formatMontantFc(p.prix)}
-                      </span>
-                    }
-                    showChevron={false}
-                  />
-                ))}
+                {reservation.passagers.map((p) => {
+                  const cat =
+                    CATEGORIE_PASSAGER_LABELS[p.categorie] ?? p.categorie;
+                  const bebeNote =
+                    p.categorie === "BEBE" || !p.occupePlace
+                      ? " · sans siège"
+                      : "";
+                  return (
+                    <ListItem
+                      key={p.id}
+                      title={`${p.prenom} ${p.nom}`}
+                      description={`${cat}${bebeNote} · ${p.codeUnique}`}
+                      trailing={
+                        <span className="text-sm font-medium">
+                          {formatMontantFc(p.prix)}
+                        </span>
+                      }
+                      showChevron={false}
+                    />
+                  );
+                })}
               </ListGroup>
+            </section>
+          )}
+
+          {reservation.colis.length > 0 && (
+            <section>
+              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                Colis
+              </h2>
+              <div className="flex flex-col gap-3">
+                {reservation.colis.map((c) => (
+                  <Card key={c.id}>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-base">{c.codeUnique}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-1 text-sm">
+                      <p>
+                        <span className="text-muted-foreground">Type · </span>
+                        {c.type}
+                        {c.poids > 0 ? ` · ${c.poids} kg` : ""}
+                      </p>
+                      <p>
+                        <span className="text-muted-foreground">Montant · </span>
+                        {formatMontantFc(c.montantAPayer)}
+                      </p>
+                      <Separator className="my-2" />
+                      <p className="font-medium">Destinataire</p>
+                      <p>{c.destinataireNom ?? "—"}</p>
+                      <p className="text-muted-foreground">{c.destinataireTel ?? "—"}</p>
+                      <p className="text-muted-foreground">
+                        Pièce · {c.destinataireId ?? "—"}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </section>
           )}
 
@@ -235,8 +320,10 @@ export function ReservationDetail({ organizationId, reservation }: Props) {
             <CardHeader className="pb-2">
               <CardTitle className="text-base">Actions</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-1.5">
+            <CardContent className="flex flex-col gap-4">
+              <TicketPrintActions ticket={ticket} />
+              <Separator />
+              <div className="flex flex-col gap-1.5">
                 <Label>Statut réservation</Label>
                 <Select
                   className="h-11 w-full"
@@ -252,7 +339,7 @@ export function ReservationDetail({ organizationId, reservation }: Props) {
                   ))}
                 </Select>
               </div>
-              <div className="space-y-1.5">
+              <div className="flex flex-col gap-1.5">
                 <Label>Statut paiement</Label>
                 <Select
                   className="h-11 w-full"

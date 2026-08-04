@@ -4,15 +4,14 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  BookOpen,
   Building2,
-  ClipboardList,
   Home,
   LayoutDashboard,
   LogOut,
+  MapPin,
   Settings,
+  Ticket,
   User,
-  Users,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -34,13 +33,6 @@ interface NavItem {
   icon: LucideIcon;
 }
 
-const ecodimNavItems: NavItem[] = [
-  { href: "/ecodim", label: "Accueil", icon: Home },
-  { href: "/ecodim/enfants", label: "Enfants", icon: Users },
-  { href: "/ecodim/classes", label: "Classes", icon: BookOpen },
-  { href: "/ecodim/presence", label: "Presence", icon: ClipboardList },
-];
-
 function getUserDisplayName(name?: string | null, email?: string | null) {
   if (name?.trim()) return name.trim();
   if (email?.includes("@")) return email.split("@")[0];
@@ -56,11 +48,18 @@ function getUserInitials(name?: string | null, email?: string | null) {
   return display.charAt(0).toUpperCase();
 }
 
-function resolveEcodimBasePath(pathname: string, organizationId?: string | null): string {
-  const fromPath = pathname.match(/^(\/admin\/organizations\/[^/]+\/ecodim)/)?.[1];
+function resolveAgenceBasePath(
+  pathname: string,
+  organizationId?: string | null,
+): string | null {
+  const fromPath = pathname.match(
+    /^(\/admin\/organizations\/[^/]+\/agences)/,
+  )?.[1];
   if (fromPath) return fromPath;
-  if (organizationId) return `/admin/organizations/${organizationId}/ecodim`;
-  return "/ecodim";
+  if (organizationId) {
+    return `/admin/organizations/${organizationId}/agences`;
+  }
+  return null;
 }
 
 function MobileNavMoreMenu() {
@@ -70,7 +69,8 @@ function MobileNavMoreMenu() {
   const user = session?.user;
 
   const moreActive =
-    pathname.startsWith("/admin/account") || pathname.startsWith("/admin/settings");
+    pathname.startsWith("/admin/account") ||
+    pathname.startsWith("/admin/settings");
 
   const initials = getUserInitials(user?.name, user?.email);
 
@@ -101,14 +101,22 @@ function MobileNavMoreMenu() {
           )}
         >
           {user?.image ? (
-            <AvatarImage src={user.image} alt={getUserDisplayName(user.name, user.email)} />
+            <AvatarImage
+              src={user.image}
+              alt={getUserDisplayName(user.name, user.email)}
+            />
           ) : null}
           <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
             {initials}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="center" side="top" sideOffset={8} className="min-w-48">
+      <DropdownMenuContent
+        align="center"
+        side="top"
+        sideOffset={8}
+        className="min-w-48"
+      >
         <DropdownMenuItem
           className="min-h-10 cursor-pointer"
           onClick={() => router.push("/admin/account")}
@@ -137,22 +145,33 @@ function MobileNavMoreMenu() {
   );
 }
 
-function EcodimMobileNav() {
+function AgenceMobileNav() {
   const pathname = usePathname();
   const { data: session } = authClient.useSession();
 
-  const navItems = useMemo(() => {
-    const base = resolveEcodimBasePath(pathname, session?.organization?.id);
-    return ecodimNavItems.map((item) => ({
-      ...item,
-      href: item.href.replace("/ecodim", base),
-    }));
-  }, [pathname, session?.organization?.id]);
+  const navItems = useMemo((): NavItem[] => {
+    const activeOrgId =
+      (session as { session?: { activeOrganizationId?: string | null } } | null)
+        ?.session?.activeOrganizationId ?? null;
+    const base = resolveAgenceBasePath(pathname, activeOrgId);
+    if (!base) {
+      return [{ href: "/admin", label: "Accueil", icon: Home }];
+    }
+    return [
+      { href: base, label: "Accueil", icon: Home },
+      { href: `${base}/reservations/guichet`, label: "Guichet", icon: Ticket },
+      { href: `${base}/trajets`, label: "Trajets", icon: MapPin },
+      { href: `${base}/reservations`, label: "Ventes", icon: Ticket },
+    ];
+  }, [pathname, session]);
 
   return (
     <div className="flex flex-1 items-stretch justify-around">
       {navItems.map((item) => {
-        const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+        const isActive =
+          item.href.endsWith("/agences")
+            ? pathname === item.href
+            : pathname === item.href || pathname.startsWith(`${item.href}/`);
         const Icon = item.icon;
 
         return (
@@ -162,7 +181,9 @@ function EcodimMobileNav() {
             className={cn(
               "flex min-h-[60px] flex-1 flex-col items-center justify-center gap-1 px-2 py-3 transition-colors",
               "touch-manipulation active:bg-muted/50",
-              isActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
+              isActive
+                ? "text-primary"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             <Icon className={cn("size-5", isActive && "stroke-[2.5px]")} />
@@ -195,10 +216,14 @@ function AdminMobileNav() {
         className={cn(
           "flex min-h-[60px] flex-1 flex-col items-center justify-center gap-1 px-2 py-3 transition-colors",
           "touch-manipulation active:bg-muted/50",
-          homeActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
+          homeActive
+            ? "text-primary"
+            : "text-muted-foreground hover:text-foreground",
         )}
       >
-        <LayoutDashboard className={cn("size-5", homeActive && "stroke-[2.5px]")} />
+        <LayoutDashboard
+          className={cn("size-5", homeActive && "stroke-[2.5px]")}
+        />
         <span
           className={cn(
             "text-[10px] font-medium leading-none",
@@ -214,7 +239,9 @@ function AdminMobileNav() {
         className={cn(
           "flex min-h-[60px] flex-1 flex-col items-center justify-center gap-1 px-2 py-3 transition-colors",
           "touch-manipulation active:bg-muted/50",
-          orgActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
+          orgActive
+            ? "text-primary"
+            : "text-muted-foreground hover:text-foreground",
         )}
       >
         <Building2 className={cn("size-5", orgActive && "stroke-[2.5px]")} />
@@ -234,17 +261,19 @@ function AdminMobileNav() {
 }
 
 export function MobileNav() {
+  const pathname = usePathname();
   const { data: session, isPending } = authClient.useSession();
   const showAdminNav = isAppAdminRole(session?.user?.role);
+  const inAgence = pathname.includes("/agences");
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card md:hidden safe-area-bottom">
       {isPending ? (
         <div className="min-h-[60px] flex-1" aria-hidden />
-      ) : showAdminNav ? (
+      ) : showAdminNav && !inAgence ? (
         <AdminMobileNav />
       ) : (
-        <EcodimMobileNav />
+        <AgenceMobileNav />
       )}
     </nav>
   );

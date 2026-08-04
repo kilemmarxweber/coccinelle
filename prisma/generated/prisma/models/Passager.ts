@@ -655,14 +655,6 @@ export type EnumTypePassagerFieldUpdateOperationsInput = {
   set?: $Enums.TypePassager
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type PassagerCreateNestedManyWithoutReservationInput = {
   create?: Prisma.XOR<Prisma.PassagerCreateWithoutReservationInput, Prisma.PassagerUncheckedCreateWithoutReservationInput> | Prisma.PassagerCreateWithoutReservationInput[] | Prisma.PassagerUncheckedCreateWithoutReservationInput[]
   connectOrCreate?: Prisma.PassagerCreateOrConnectWithoutReservationInput | Prisma.PassagerCreateOrConnectWithoutReservationInput[]

@@ -18,6 +18,10 @@ export const reservationListInclude = {
       organizationId: true,
       villeDepart: true,
       villeArrivee: true,
+      modeTransport: true,
+      organization: {
+        select: { id: true, name: true, logo: true, slug: true },
+      },
     },
   },
   trajetDepart: true,
@@ -63,6 +67,12 @@ export async function assertTrajetScope(
     throw new ReservationScopeError("Ce départ n’est plus disponible.");
   }
 
+  if (depart.statut !== "OUVERT") {
+    throw new ReservationScopeError(
+      "Ce départ n’est pas encore ouvert à la réservation.",
+    );
+  }
+
   return { trajetDepartId: depart.id, statut: depart.statut };
 }
 
@@ -70,11 +80,23 @@ export async function findReservationForOrganization(
   organizationId: string,
   reservationId: string,
 ) {
-  return prisma.reservation.findFirst({
+  const reservation = await prisma.reservation.findFirst({
     where: {
       id: reservationId,
       trajet: { organizationId },
     },
     include: reservationListInclude,
   });
+  if (!reservation) return null;
+
+  const colis = await prisma.colis.findMany({
+    where: {
+      clientId: reservation.clientId,
+      trajetId: reservation.trajetId,
+      trajetDepartId: reservation.trajetDepartId,
+    },
+    orderBy: { createdAt: "asc" },
+  });
+
+  return { ...reservation, colis };
 }

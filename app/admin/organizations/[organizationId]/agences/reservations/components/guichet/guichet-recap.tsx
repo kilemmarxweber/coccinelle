@@ -10,27 +10,41 @@ import type { GuichetFormState } from "./use-guichet-form";
 type Props = { form: GuichetFormState };
 
 export function GuichetRecap({ form }: Props) {
-  const { voyage, passagers, pricing, paiement, submitting } = form;
-  const { selectedTrajet, selectedDepart } = voyage;
+  const {
+    voyage,
+    passagers,
+    pricing,
+    paiement,
+    submitting,
+    step,
+    setStep,
+    handleSubmit,
+  } = form;
+  const depart = voyage.selectedDepart;
 
   return (
-    <aside className="space-y-4 md:sticky md:top-20 md:self-start">
+    <aside className="flex flex-col gap-4 md:sticky md:top-20 md:self-start">
       <Card className="border-primary/20">
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Récapitulatif</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3 text-sm">
-          {selectedTrajet && selectedDepart ? (
+        <CardContent className="flex flex-col gap-3 text-sm">
+          {depart ? (
             <>
               <p className="font-medium">
-                {selectedTrajet.villeDepart} → {selectedTrajet.villeArrivee}
+                {depart.villeDepart} → {depart.villeArrivee}
               </p>
               <p className="text-muted-foreground">
-                {formatDateFr(selectedDepart.dateDepart)} · {selectedDepart.heureDepart}
+                {formatDateFr(depart.dateDepart)} · {depart.heureDepart}
+              </p>
+              <p className="text-muted-foreground">
+                {depart.complet
+                  ? "Complet"
+                  : `${depart.placesRestantes} place${depart.placesRestantes !== 1 ? "s" : ""} restante${depart.placesRestantes !== 1 ? "s" : ""}`}
               </p>
             </>
           ) : (
-            <p className="text-muted-foreground">Sélectionnez trajet et départ</p>
+            <p className="text-muted-foreground">Sélectionnez un départ</p>
           )}
           <Separator />
           {pricing ? (
@@ -52,21 +66,40 @@ export function GuichetRecap({ form }: Props) {
             <p className="text-muted-foreground">—</p>
           )}
           <Separator />
-          <GuichetPaiementSelect
-            variant="desktop"
-            value={paiement.mode}
-            onChange={paiement.setMode}
-          />
-          <p className="text-xs text-muted-foreground">
-            Politique de report : modifiable après création. Espèces → paiement marqué payé.
-          </p>
-          <Button
-            type="submit"
-            className="h-11 w-full touch-manipulation"
-            disabled={submitting || !pricing}
-          >
-            {submitting ? "Création…" : "Confirmer la réservation"}
-          </Button>
+          {step === "paiement" ? (
+            <GuichetPaiementSelect
+              variant="desktop"
+              value={paiement.mode}
+              onChange={paiement.setMode}
+            />
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Paiement à l’étape finale · espèces → payé au guichet.
+            </p>
+          )}
+          {step === "paiement" ? (
+            <Button
+              type="button"
+              className="h-11 w-full touch-manipulation"
+              disabled={submitting || !pricing || Boolean(depart?.complet)}
+              onClick={() => handleSubmit()}
+            >
+              {submitting ? "Création…" : "Confirmer la réservation"}
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="secondary"
+              className="h-11 w-full"
+              disabled={!depart}
+              onClick={() => {
+                if (!depart) return;
+                if (step === "recherche") setStep("client");
+              }}
+            >
+              {depart ? "Départ sélectionné" : "Choisir un départ"}
+            </Button>
+          )}
         </CardContent>
       </Card>
     </aside>

@@ -161,6 +161,13 @@ export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
 }
 
+export type EnumModeTransportFilter<$PrismaModel = never> = {
+  equals?: $Enums.ModeTransport | Prisma.EnumModeTransportFieldRefInput<$PrismaModel>
+  in?: $Enums.ModeTransport[] | Prisma.ListEnumModeTransportFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ModeTransport[] | Prisma.ListEnumModeTransportFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumModeTransportFilter<$PrismaModel> | $Enums.ModeTransport
+}
+
 export type FloatFilter<$PrismaModel = never> = {
   equals?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
@@ -181,6 +188,16 @@ export type IntNullableFilter<$PrismaModel = never> = {
   gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
   gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
   not?: Prisma.NestedIntNullableFilter<$PrismaModel> | number | null
+}
+
+export type EnumModeTransportWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ModeTransport | Prisma.EnumModeTransportFieldRefInput<$PrismaModel>
+  in?: $Enums.ModeTransport[] | Prisma.ListEnumModeTransportFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ModeTransport[] | Prisma.ListEnumModeTransportFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumModeTransportWithAggregatesFilter<$PrismaModel> | $Enums.ModeTransport
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumModeTransportFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumModeTransportFilter<$PrismaModel>
 }
 
 export type FloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -239,6 +256,17 @@ export type EnumStatutTrajetDepartFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumStatutTrajetDepartFilter<$PrismaModel> | $Enums.StatutTrajetDepart
 }
 
+export type IntFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntFilter<$PrismaModel> | number
+}
+
 export type EnumStatutTrajetDepartWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.StatutTrajetDepart | Prisma.EnumStatutTrajetDepartFieldRefInput<$PrismaModel>
   in?: $Enums.StatutTrajetDepart[] | Prisma.ListEnumStatutTrajetDepartFieldRefInput<$PrismaModel>
@@ -247,6 +275,22 @@ export type EnumStatutTrajetDepartWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumStatutTrajetDepartFilter<$PrismaModel>
   _max?: Prisma.NestedEnumStatutTrajetDepartFilter<$PrismaModel>
+}
+
+export type IntWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntWithAggregatesFilter<$PrismaModel> | number
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatFilter<$PrismaModel>
+  _sum?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedIntFilter<$PrismaModel>
+  _max?: Prisma.NestedIntFilter<$PrismaModel>
 }
 
 export type EnumTypeSexeFilter<$PrismaModel = never> = {
@@ -268,17 +312,6 @@ export type EnumTypePassagerFilter<$PrismaModel = never> = {
   in?: $Enums.TypePassager[] | Prisma.ListEnumTypePassagerFieldRefInput<$PrismaModel>
   notIn?: $Enums.TypePassager[] | Prisma.ListEnumTypePassagerFieldRefInput<$PrismaModel>
   not?: Prisma.NestedEnumTypePassagerFilter<$PrismaModel> | $Enums.TypePassager
-}
-
-export type IntFilter<$PrismaModel = never> = {
-  equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
-  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
-  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedIntFilter<$PrismaModel> | number
 }
 
 export type EnumTypeSexeWithAggregatesFilter<$PrismaModel = never> = {
@@ -309,22 +342,6 @@ export type EnumTypePassagerWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumTypePassagerFilter<$PrismaModel>
   _max?: Prisma.NestedEnumTypePassagerFilter<$PrismaModel>
-}
-
-export type IntWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
-  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
-  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedIntWithAggregatesFilter<$PrismaModel> | number
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _avg?: Prisma.NestedFloatFilter<$PrismaModel>
-  _sum?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedIntFilter<$PrismaModel>
-  _max?: Prisma.NestedIntFilter<$PrismaModel>
 }
 
 export type EnumStatutReservationFilter<$PrismaModel = never> = {
@@ -667,6 +684,13 @@ export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
 }
 
+export type NestedEnumModeTransportFilter<$PrismaModel = never> = {
+  equals?: $Enums.ModeTransport | Prisma.EnumModeTransportFieldRefInput<$PrismaModel>
+  in?: $Enums.ModeTransport[] | Prisma.ListEnumModeTransportFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ModeTransport[] | Prisma.ListEnumModeTransportFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumModeTransportFilter<$PrismaModel> | $Enums.ModeTransport
+}
+
 export type NestedFloatFilter<$PrismaModel = never> = {
   equals?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
@@ -676,6 +700,16 @@ export type NestedFloatFilter<$PrismaModel = never> = {
   gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   not?: Prisma.NestedFloatFilter<$PrismaModel> | number
+}
+
+export type NestedEnumModeTransportWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ModeTransport | Prisma.EnumModeTransportFieldRefInput<$PrismaModel>
+  in?: $Enums.ModeTransport[] | Prisma.ListEnumModeTransportFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ModeTransport[] | Prisma.ListEnumModeTransportFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumModeTransportWithAggregatesFilter<$PrismaModel> | $Enums.ModeTransport
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumModeTransportFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumModeTransportFilter<$PrismaModel>
 }
 
 export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -755,6 +789,22 @@ export type NestedEnumStatutTrajetDepartWithAggregatesFilter<$PrismaModel = neve
   _max?: Prisma.NestedEnumStatutTrajetDepartFilter<$PrismaModel>
 }
 
+export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntWithAggregatesFilter<$PrismaModel> | number
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatFilter<$PrismaModel>
+  _sum?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedIntFilter<$PrismaModel>
+  _max?: Prisma.NestedIntFilter<$PrismaModel>
+}
+
 export type NestedEnumTypeSexeFilter<$PrismaModel = never> = {
   equals?: $Enums.TypeSexe | Prisma.EnumTypeSexeFieldRefInput<$PrismaModel>
   in?: $Enums.TypeSexe[] | Prisma.ListEnumTypeSexeFieldRefInput<$PrismaModel>
@@ -804,22 +854,6 @@ export type NestedEnumTypePassagerWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumTypePassagerFilter<$PrismaModel>
   _max?: Prisma.NestedEnumTypePassagerFilter<$PrismaModel>
-}
-
-export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
-  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
-  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedIntWithAggregatesFilter<$PrismaModel> | number
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _avg?: Prisma.NestedFloatFilter<$PrismaModel>
-  _sum?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedIntFilter<$PrismaModel>
-  _max?: Prisma.NestedIntFilter<$PrismaModel>
 }
 
 export type NestedEnumStatutReservationFilter<$PrismaModel = never> = {

@@ -221,6 +221,7 @@ export const TrajetScalarFieldEnum = {
   organizationId: 'organizationId',
   villeDepart: 'villeDepart',
   villeArrivee: 'villeArrivee',
+  modeTransport: 'modeTransport',
   kilosGratuits: 'kilosGratuits',
   prixParKilo: 'prixParKilo',
   prixBase: 'prixBase',
@@ -248,7 +249,8 @@ export const TrajetDepartScalarFieldEnum = {
   trajetId: 'trajetId',
   dateDepart: 'dateDepart',
   heureDepart: 'heureDepart',
-  statut: 'statut'
+  statut: 'statut',
+  capacitePlaces: 'capacitePlaces'
 } as const
 
 export type TrajetDepartScalarFieldEnum = (typeof TrajetDepartScalarFieldEnum)[keyof typeof TrajetDepartScalarFieldEnum]
@@ -314,6 +316,9 @@ export const ColisScalarFieldEnum = {
   type: 'type',
   montantFixe: 'montantFixe',
   commentaire: 'commentaire',
+  destinataireNom: 'destinataireNom',
+  destinataireTel: 'destinataireTel',
+  destinataireId: 'destinataireId',
   statut: 'statut',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

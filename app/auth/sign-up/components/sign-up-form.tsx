@@ -26,7 +26,12 @@ import { cn } from "@/lib/utils";
 
 const fieldClass =
   "h-11 rounded-xl border-border bg-input pl-10 text-foreground placeholder:text-muted-foreground focus-visible:border-primary/60 focus-visible:ring-primary/25";
-export function SignUpForm() {
+
+type SignUpFormProps = {
+  callbackUrl?: string;
+};
+
+export function SignUpForm({ callbackUrl }: SignUpFormProps) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -63,7 +68,10 @@ export function SignUpForm() {
       }
 
       toast.success("Compte créé. Connectez-vous avec votre email.");
-      router.push("/auth/sign-in");
+      const signInHref = callbackUrl
+        ? `/auth/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`
+        : "/auth/sign-in";
+      router.push(signInHref);
     } catch (cause) {
       const message =
         cause instanceof Error
@@ -246,7 +254,11 @@ export function SignUpForm() {
           <p className="text-center text-sm text-muted-foreground">
             Déjà inscrit ?{" "}
             <Link
-              href="/auth/sign-in"
+              href={
+                callbackUrl
+                  ? `/auth/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                  : "/auth/sign-in"
+              }
               className="font-semibold text-primary transition hover:text-primary/80"
             >
               Se connecter

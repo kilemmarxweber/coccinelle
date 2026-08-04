@@ -117,3 +117,11 @@ export const SourceReservation = {
 } as const
 
 export type SourceReservation = (typeof SourceReservation)[keyof typeof SourceReservation]
+
+
+export const ModeTransport = {
+  BUS: 'BUS',
+  AVION: 'AVION'
+} as const
+
+export type ModeTransport = (typeof ModeTransport)[keyof typeof ModeTransport]

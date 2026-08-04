@@ -112,7 +112,7 @@ export function CreateOrganizationForm() {
                   {...field}
                   type="text"
                   autoComplete="organization"
-                  placeholder="Église locale"
+                  placeholder="Agence Coccinelle"
                   className="h-11"
                   disabled={isSubmitting}
                   onBlur={(e) => {
@@ -147,7 +147,7 @@ export function CreateOrganizationForm() {
                   autoCapitalize="none"
                   autoCorrect="off"
                   spellCheck={false}
-                  placeholder="mon-eglise"
+                  placeholder="mon-agence"
                   className="h-11 font-mono text-sm"
                   disabled={isSubmitting}
                   onChange={(e) => {

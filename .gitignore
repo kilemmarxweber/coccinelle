@@ -53,4 +53,5 @@ skills-lock.json
 /doc/
 
 /vscode/
-/cursor/
+/.cursor/
+/.agents/

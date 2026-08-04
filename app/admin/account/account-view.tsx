@@ -52,7 +52,7 @@ import {
 } from "./schema";
 
 const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? "0.1.0";
-const SUPPORT_EMAIL = "support@eglisemanager.example";
+const SUPPORT_EMAIL = "support@coccinelle.example";
 
 type AccountViewProps = {
   memberSince: string | null;
@@ -310,14 +310,14 @@ export function AccountView({
         />
         <ListItem
           title="Version"
-          subtitle={`EgliseManager v${APP_VERSION}`}
+          subtitle={`Coccinelle v${APP_VERSION}`}
           showChevron={false}
         />
         <ListItem
           title="Signaler un souci"
           subtitle="Contactez le support"
           leading={<MessageCircleWarning className="size-5 text-muted-foreground" />}
-          href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Signalement EgliseManager")}`}
+          href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Signalement Coccinelle")}`}
         />
       </ListGroup>
 

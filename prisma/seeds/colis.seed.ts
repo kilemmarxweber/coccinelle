@@ -9,7 +9,11 @@ export async function seedColis() {
   for (let i = 0; i < 2; i++) {
     await prisma.colis.upsert({
       where: { codeUnique: `COL-${i}` },
-      update: {},
+      update: {
+        destinataireNom: `Destinataire ${i + 1}`,
+        destinataireTel: `+24390000000${i}`,
+        destinataireId: `ID-SEED-${i + 1}`,
+      },
       create: {
         id: `colis-${i}`,
         codeUnique: `COL-${i}`,
@@ -20,6 +24,9 @@ export async function seedColis() {
         surplusKilos: 5,
         montantAPayer: 40,
         type: "ORDINAIRE",
+        destinataireNom: `Destinataire ${i + 1}`,
+        destinataireTel: `+24390000000${i}`,
+        destinataireId: `ID-SEED-${i + 1}`,
       },
     });
   }

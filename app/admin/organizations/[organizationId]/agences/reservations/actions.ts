@@ -8,6 +8,7 @@ import { auth } from "@/lib/auth";
 import { assertInscriptionPermission } from "@/lib/auth/inscription-permission";
 import { ORG_ROLE } from "@/lib/permissions";
 import { generateSecurePassword } from "@/lib/generate-password";
+import { CapaciteInsuffisanteError } from "@/lib/reservation/capacite";
 import { createReservationInDatabase } from "@/lib/reservation/create-reservation";
 import {
   findReservationForOrganization,
@@ -44,6 +45,7 @@ function zodFirstMessage(err: ZodError): string {
 }
 
 function errMessage(err: unknown): string {
+  if (err instanceof CapaciteInsuffisanteError) return err.message;
   if (err instanceof ReservationScopeError) return err.message;
   if (
     typeof err === "object" &&
@@ -62,6 +64,9 @@ function reservationsPath(organizationId: string) {
 
 function revalidateReservations(organizationId: string) {
   revalidatePath(reservationsPath(organizationId), "page");
+  revalidatePath(`${reservationsPath(organizationId)}/guichet`, "page");
+  revalidatePath(`${reservationsPath(organizationId)}/guichet/vendre`, "page");
+  revalidatePath(`/admin/organizations/${organizationId}/agences/trajets`, "page");
 }
 
 /** Création client au guichet (compte + profil + membre agence, sans OTP). */
@@ -102,7 +107,7 @@ export async function createGuichetClientAction(
     if (existing?.client) {
       if (!existing.members.length) {
         await auth.api.addMember({
-          body: { userId: existing.id, role: ORG_ROLE.PARENT, organizationId },
+          body: { userId: existing.id, role: ORG_ROLE.PARENT as "owner", organizationId },
           headers: h,
         });
       }
@@ -149,7 +154,7 @@ export async function createGuichetClientAction(
     });
 
     await auth.api.addMember({
-      body: { userId: user.id, role: ORG_ROLE.PARENT, organizationId },
+      body: { userId: user.id, role: ORG_ROLE.PARENT as "owner", organizationId },
       headers: h,
     });
 

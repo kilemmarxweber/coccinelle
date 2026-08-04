@@ -1,6 +1,12 @@
 /**
  * Slugs de rôles, presets Better Auth (`adminAc`, `ownerAc`, …),
- * premières grilles métier pour les rôles d’organisation, et AC partagée pour `betterAuth`.
+ * grilles métier pour les rôles d’organisation, et AC partagée pour `betterAuth`.
+ *
+ * Mapping produit → Better Auth :
+ * - Owner → `owner` (crée / supervise l’org)
+ * - Gérant → `gestionnaire` (agence ; ne crée pas d’org)
+ * - Guichetier → `guichetier` (vente comptoir)
+ * - Client → `parent` (self-service)
  */
 
 import { createAccessControl } from "better-auth/plugins/access";
@@ -28,25 +34,27 @@ export function isAppAdminRole(role: string | null | undefined): boolean {
 export const ORG_ROLE = {
   OWNER: "owner",
   GESTIONNAIRE: "gestionnaire",
+  GUICHETIER: "guichetier",
   PARENT: "parent",
-  MONITEUR: "moniteur",
-  RESPONSABLE: "responsable",
-  SURVEILLANT: "surveillant",
 } as const;
 
 export const ALL_ORG_ROLE_SLUGS = [
   ORG_ROLE.OWNER,
   ORG_ROLE.GESTIONNAIRE,
+  ORG_ROLE.GUICHETIER,
   ORG_ROLE.PARENT,
-  ORG_ROLE.MONITEUR,
-  ORG_ROLE.RESPONSABLE,
-  ORG_ROLE.SURVEILLANT,
 ] as const;
 
+/** Statements AC — resources métier + presets plugins admin / organization. */
 export const accessControlStatements = {
   ...adminPluginSchemaStatements,
   ...organizationPluginSchemaStatements,
   inscription: ["create", "share", "update", "delete"],
+  trajet: ["create", "update", "delete", "read"],
+  depart: ["create", "update", "cancel", "read"],
+  embarquement: ["scan", "update", "read"],
+  rapport: ["read"],
+  equipe: ["manage", "read"],
 } as const;
 
 type StatementShape = {
@@ -66,20 +74,37 @@ export const applicationRoleStatements: Record<string, StatementShape> = {
   },
 };
 
-/** Preset `ownerAc` pour le créateur ; autres rôles = grille métier initiale partagée. */
+/**
+ * Grille organisation (source de vérité U04).
+ * La permission décide ; le slug alimente uniquement cette matrice.
+ */
 export const organizationRoleStatements: Record<string, StatementShape> = {
   [ORG_ROLE.OWNER]: {
     ...ownerAc.statements,
     inscription: ["create", "share", "update", "delete"],
+    trajet: ["create", "update", "delete", "read"],
+    depart: ["create", "update", "cancel", "read"],
+    embarquement: ["scan", "update", "read"],
+    rapport: ["read"],
+    equipe: ["manage", "read"],
   },
   [ORG_ROLE.GESTIONNAIRE]: {
     ...organizationPluginMemberAc.statements,
     ...organizationPluginAdminAc.statements,
+    // Supervision réservations (pas vente quotidienne → guichetier)
+    inscription: ["share", "update"],
+    trajet: ["create", "update", "delete", "read"],
+    depart: ["create", "update", "cancel", "read"],
+    rapport: ["read"],
+    equipe: ["manage", "read"],
+  },
+  [ORG_ROLE.GUICHETIER]: {
+    ...organizationPluginMemberAc.statements,
+    inscription: ["create", "share", "update"],
+    depart: ["read"],
+    embarquement: ["scan", "update", "read"],
   },
   [ORG_ROLE.PARENT]: { ...organizationPluginMemberAc.statements },
-  [ORG_ROLE.MONITEUR]: { ...organizationPluginMemberAc.statements },
-  [ORG_ROLE.RESPONSABLE]: { ...organizationPluginMemberAc.statements },
-  [ORG_ROLE.SURVEILLANT]: { ...organizationPluginMemberAc.statements },
 };
 
 const authAccessControl = createAccessControl(accessControlStatements);
@@ -91,7 +116,7 @@ function rolesFromStatements(defs: Record<string, StatementShape>) {
     Object.entries(defs).map(([role, statements]) => [
       role,
       authAccessControl.newRole(statements as NewPluginRoleArg),
-    ])
+    ]),
   );
 }
 

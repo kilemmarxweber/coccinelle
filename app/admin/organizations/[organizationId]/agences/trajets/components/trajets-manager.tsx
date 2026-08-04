@@ -3,26 +3,32 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Bus, Plane, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/layout/page-header";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ListGroup, ListItem } from "@/components/ui/list-item";
 import { EmptyState } from "@/components/ui/empty-state";
-import { formatDateFr, formatMontantFc } from "@/lib/reservation/labels";
+import { Select } from "@/components/ui/select";
+import { formatDateFr, formatMontantFc, MODE_TRANSPORT_LABELS } from "@/lib/reservation/labels";
 import {
   createTrajetAction,
   createTrajetDepartAction,
   provisionDemoTrajetsAction,
 } from "../actions";
+import { SearchDepartsSmoke } from "./search-departs-smoke";
+
+export type ModeTransport = "BUS" | "AVION";
 
 export type TrajetRow = {
   id: string;
   villeDepart: string;
   villeArrivee: string;
+  modeTransport: ModeTransport;
   prixBase: number;
   prixParKilo: number;
   kilosGratuits: number;
@@ -32,8 +38,12 @@ export type TrajetRow = {
     dateDepart: string;
     heureDepart: string;
     statut: string;
+    capacitePlaces: number;
+    placesRestantes: number;
   }>;
 };
+
+type FilterMode = "TOUS" | ModeTransport;
 
 type Props = {
   organizationId: string;
@@ -45,13 +55,20 @@ export function TrajetsManager({ organizationId, trajets, guichetHref }: Props) 
   const router = useRouter();
   const [showForm, setShowForm] = React.useState(false);
   const [pending, setPending] = React.useState(false);
+  const [filterMode, setFilterMode] = React.useState<FilterMode>("TOUS");
   const [form, setForm] = React.useState({
     villeDepart: "",
     villeArrivee: "",
+    modeTransport: "BUS" as ModeTransport,
     prixBase: "120000",
     prixParKilo: "8",
     kilosGratuits: "30",
   });
+
+  const filteredTrajets =
+    filterMode === "TOUS"
+      ? trajets
+      : trajets.filter((t) => t.modeTransport === filterMode);
 
   async function handleCreateTrajet(e: React.FormEvent) {
     e.preventDefault();
@@ -60,6 +77,7 @@ export function TrajetsManager({ organizationId, trajets, guichetHref }: Props) 
       organizationId,
       villeDepart: form.villeDepart,
       villeArrivee: form.villeArrivee,
+      modeTransport: form.modeTransport,
       prixBase: form.prixBase,
       prixParKilo: form.prixParKilo,
       kilosGratuits: form.kilosGratuits,
@@ -118,7 +136,9 @@ export function TrajetsManager({ organizationId, trajets, guichetHref }: Props) 
         ]}
       />
 
-      <div className="mx-auto max-w-2xl space-y-6 px-4 py-4 md:max-w-4xl md:px-6">
+      <div className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-4 md:max-w-4xl md:px-6">
+        <SearchDepartsSmoke organizationId={organizationId} />
+
         {showForm && (
           <Card>
             <CardHeader className="pb-3">
@@ -141,6 +161,22 @@ export function TrajetsManager({ organizationId, trajets, guichetHref }: Props) 
                     onChange={(e) => setForm((s) => ({ ...s, villeArrivee: e.target.value }))}
                     required
                   />
+                </Field>
+                <Field label="Mode de transport">
+                  <Select
+                    className="h-11"
+                    value={form.modeTransport}
+                    onChange={(e) =>
+                      setForm((s) => ({
+                        ...s,
+                        modeTransport: e.target.value as ModeTransport,
+                      }))
+                    }
+                    required
+                  >
+                    <option value="BUS">Bus</option>
+                    <option value="AVION">Avion</option>
+                  </Select>
                 </Field>
                 <Field label="Prix base (FC)">
                   <Input
@@ -192,48 +228,78 @@ export function TrajetsManager({ organizationId, trajets, guichetHref }: Props) 
             }
           />
         ) : (
-          <div className="space-y-4">
-            {trajets.map((t) => (
-              <Card key={t.id}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">
-                    {t.villeDepart} → {t.villeArrivee}
-                  </CardTitle>
-                  <CardDescription>
-                    {formatMontantFc(t.prixBase)} · {t.kilosGratuits} kg gratuits ·{" "}
-                    {formatMontantFc(t.prixParKilo)}/kg
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleAddDepart(t.id)}
-                    >
-                      + Départ (J+7)
-                    </Button>
-                  </div>
-                  {t.departs.length > 0 ? (
-                    <ListGroup title="Départs à venir">
-                      {t.departs.map((d) => (
-                        <ListItem
-                          key={d.id}
-                          title={formatDateFr(d.dateDepart)}
-                          description={`${d.heureDepart} · ${d.statut}`}
-                          showChevron={false}
-                        />
-                      ))}
-                    </ListGroup>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      Aucun départ à venir — ajoutez-en un pour le guichet.
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrer par mode">
+              {(
+                [
+                  { value: "TOUS", label: "Tous" },
+                  { value: "BUS", label: "Bus" },
+                  { value: "AVION", label: "Avion" },
+                ] as const
+              ).map((opt) => (
+                <Button
+                  key={opt.value}
+                  type="button"
+                  size="sm"
+                  variant={filterMode === opt.value ? "default" : "outline"}
+                  onClick={() => setFilterMode(opt.value)}
+                >
+                  {opt.label}
+                </Button>
+              ))}
+            </div>
+
+            {filteredTrajets.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Aucun trajet {filterMode === "TOUS" ? "" : MODE_TRANSPORT_LABELS[filterMode].toLowerCase()}{" "}
+                pour ce filtre.
+              </p>
+            ) : (
+              filteredTrajets.map((t) => (
+                <Card key={t.id}>
+                  <CardHeader className="pb-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <CardTitle className="text-base">
+                        {t.villeDepart} → {t.villeArrivee}
+                      </CardTitle>
+                      <ModeTransportBadge mode={t.modeTransport} />
+                    </div>
+                    <CardDescription>
+                      {formatMontantFc(t.prixBase)} · {t.kilosGratuits} kg gratuits ·{" "}
+                      {formatMontantFc(t.prixParKilo)}/kg
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-3">
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleAddDepart(t.id)}
+                      >
+                        + Départ (J+7)
+                      </Button>
+                    </div>
+                    {t.departs.length > 0 ? (
+                      <ListGroup title="Départs à venir">
+                        {t.departs.map((d) => (
+                          <ListItem
+                            key={d.id}
+                            title={formatDateFr(d.dateDepart)}
+                            description={`${d.heureDepart} · ${d.statut} · ${d.placesRestantes} place${d.placesRestantes !== 1 ? "s" : ""} restante${d.placesRestantes !== 1 ? "s" : ""}`}
+                            showChevron={false}
+                          />
+                        ))}
+                      </ListGroup>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        Aucun départ à venir — ajoutez-en un pour le guichet.
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
         )}
 
@@ -245,6 +311,16 @@ export function TrajetsManager({ organizationId, trajets, guichetHref }: Props) 
   );
 }
 
+function ModeTransportBadge({ mode }: { mode: ModeTransport }) {
+  const Icon = mode === "AVION" ? Plane : Bus;
+  return (
+    <Badge variant="secondary">
+      <Icon data-icon="inline-start" aria-hidden />
+      {MODE_TRANSPORT_LABELS[mode]}
+    </Badge>
+  );
+}
+
 function Field({
   label,
   children,
@@ -253,7 +329,7 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-1.5">
+    <div className="flex flex-col gap-1.5">
       <Label>{label}</Label>
       {children}
     </div>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-import { ALL_ORG_ROLE_SLUGS } from "@/lib/permissions";
+import { ALL_ORG_ROLE_SLUGS, ORG_ROLE } from "@/lib/permissions";
 import { orgRoleLabel } from "@/lib/org-role-labels";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -24,7 +24,7 @@ type Props = { organizationId: string; memberId: string };
 export function EditMemberForm({ organizationId, memberId }: Props) {
   const router = useRouter();
   const [member, setMember] = useState<MemberRow | null | undefined>(undefined);
-  const [role, setRole] = useState<string>(ALL_ORG_ROLE_SLUGS[2]);
+  const [role, setRole] = useState<string>(ORG_ROLE.PARENT);
   const [pending, startTransition] = useTransition();
   const [pendingRemove, startRemove] = useTransition();
 
@@ -43,9 +43,9 @@ export function EditMemberForm({ organizationId, memberId }: Props) {
       const found = list.find((m) => m.id === memberId) ?? null;
       setMember(found);
       if (found) {
-        const primary = found.role.split(",")[0]?.trim() ?? ALL_ORG_ROLE_SLUGS[2];
+        const primary = found.role.split(",")[0]?.trim() ?? ORG_ROLE.PARENT;
         setRole(
-          (ALL_ORG_ROLE_SLUGS as readonly string[]).includes(primary) ? primary : ALL_ORG_ROLE_SLUGS[2],
+          (ALL_ORG_ROLE_SLUGS as readonly string[]).includes(primary) ? primary : ORG_ROLE.PARENT,
         );
       }
     } catch {

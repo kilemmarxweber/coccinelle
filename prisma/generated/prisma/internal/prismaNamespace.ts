@@ -1926,6 +1926,7 @@ export const TrajetScalarFieldEnum = {
   organizationId: 'organizationId',
   villeDepart: 'villeDepart',
   villeArrivee: 'villeArrivee',
+  modeTransport: 'modeTransport',
   kilosGratuits: 'kilosGratuits',
   prixParKilo: 'prixParKilo',
   prixBase: 'prixBase',
@@ -1953,7 +1954,8 @@ export const TrajetDepartScalarFieldEnum = {
   trajetId: 'trajetId',
   dateDepart: 'dateDepart',
   heureDepart: 'heureDepart',
-  statut: 'statut'
+  statut: 'statut',
+  capacitePlaces: 'capacitePlaces'
 } as const
 
 export type TrajetDepartScalarFieldEnum = (typeof TrajetDepartScalarFieldEnum)[keyof typeof TrajetDepartScalarFieldEnum]
@@ -2019,6 +2021,9 @@ export const ColisScalarFieldEnum = {
   type: 'type',
   montantFixe: 'montantFixe',
   commentaire: 'commentaire',
+  destinataireNom: 'destinataireNom',
+  destinataireTel: 'destinataireTel',
+  destinataireId: 'destinataireId',
   statut: 'statut',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -2147,6 +2152,20 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ModeTransport'
+ */
+export type EnumModeTransportFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ModeTransport'>
+    
+
+
+/**
+ * Reference to a field of type 'ModeTransport[]'
+ */
+export type ListEnumModeTransportFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ModeTransport[]'>
     
 
 

@@ -17,7 +17,12 @@ function isAuthPage(pathname: string): boolean {
 }
 
 function isProtectedPage(pathname: string): boolean {
-  return pathname === "/admin" || pathname.startsWith("/admin/");
+  return (
+    pathname === "/admin" ||
+    pathname.startsWith("/admin/") ||
+    pathname === "/agence" ||
+    pathname.startsWith("/agence/")
+  );
 }
 
 function isProtectedApi(pathname: string): boolean {
@@ -88,8 +93,18 @@ export async function proxy(request: NextRequest) {
           return NextResponse.redirect(new URL(homePath, request.url));
         }
       }
+
+      const agenceRoute = pathname.match(/^\/agence\/([^/]+)/);
+      if (agenceRoute) {
+        const requestedOrgId = agenceRoute[1];
+        const membership = await getUserOrganizationMembership(session.user.id);
+        if (membership && membership.organizationId !== requestedOrgId) {
+          return NextResponse.redirect(new URL(homePath, request.url));
+        }
+      }
     }
 
+    // Création d’org : admin plateforme uniquement (gestionnaire / guichetier exclus)
     if (!isAppAdminRole(role) && pathname.startsWith("/admin/organizations/new")) {
       const homePath = await resolvePostLoginPath(request.headers);
       return NextResponse.redirect(new URL(homePath, request.url));
@@ -109,6 +124,8 @@ export const config = {
     "/sign-up/:path*",
     "/admin",
     "/admin/:path*",
+    "/agence",
+    "/agence/:path*",
     "/api/admin/:path*",
     "/api/auth/:path*",
   ],

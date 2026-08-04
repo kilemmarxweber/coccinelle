@@ -15,7 +15,7 @@ export const createOrganizationFormSchema = z.object({
     .max(64, "Le slug est trop long.")
     .regex(
       slugRegex,
-      "Utilisez des minuscules, des chiffres et des tirets (ex. mon-eglise).",
+      "Utilisez des minuscules, des chiffres et des tirets (ex. mon-agence).",
     ),
 });
 

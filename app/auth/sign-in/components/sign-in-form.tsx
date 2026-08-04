@@ -23,7 +23,13 @@ import { cn } from "@/lib/utils";
 
 const fieldClass =
   "h-11 rounded-xl border-border bg-input pl-10 text-foreground placeholder:text-muted-foreground focus-visible:border-primary/60 focus-visible:ring-primary/25";
-export function SignInForm() {
+
+type SignInFormProps = {
+  /** Retour PWA (checkout / confirmation) — chemin relatif validé côté page. */
+  callbackUrl?: string;
+};
+
+export function SignInForm({ callbackUrl }: SignInFormProps) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
@@ -62,12 +68,15 @@ export function SignInForm() {
 
       toast.success("Bienvenue !");
 
-      const redirectRes = await fetch("/api/auth/post-login-redirect", {
-        credentials: "include",
-      });
-      const redirectBody = (await redirectRes.json()) as { path?: string };
-      const destination =
-        redirectRes.ok && redirectBody.path ? redirectBody.path : "/admin";
+      let destination = callbackUrl;
+      if (!destination) {
+        const redirectRes = await fetch("/api/auth/post-login-redirect", {
+          credentials: "include",
+        });
+        const redirectBody = (await redirectRes.json()) as { path?: string };
+        destination =
+          redirectRes.ok && redirectBody.path ? redirectBody.path : "/admin";
+      }
 
       router.refresh();
       router.push(destination);
@@ -248,7 +257,11 @@ export function SignInForm() {
           <p className="text-center text-sm text-muted-foreground">
             Nouveau membre ?{" "}
             <Link
-              href="/auth/sign-up"
+              href={
+                callbackUrl
+                  ? `/auth/sign-up?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                  : "/auth/sign-up"
+              }
               className="font-semibold text-primary transition hover:text-primary/80"
             >
               Créer un compte

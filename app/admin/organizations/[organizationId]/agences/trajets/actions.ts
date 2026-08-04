@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import type { ZodError } from "zod";
-import { assertInscriptionPermission } from "@/lib/auth/inscription-permission";
+import { assertOrganizationPermission } from "@/lib/auth/organization-permission";
+import { capaciteDefautPourMode } from "@/lib/reservation/capacite";
 import { organizationIdSchema } from "@/lib/reservation/schema";
 import prisma from "@/lib/prisma";
 
@@ -27,8 +28,12 @@ function revalidateTrajets(organizationId: string) {
   );
 }
 
+const modeTransportSchema = z.enum(["BUS", "AVION"]);
+
 export async function getTrajetsForOrganizationAction(organizationId: string) {
-  const perm = await assertInscriptionPermission(organizationId, "share");
+  const perm = await assertOrganizationPermission(organizationId, {
+    depart: ["read"],
+  });
   if (!perm.ok) return { ok: false as const, message: perm.message };
 
   const now = new Date();
@@ -41,6 +46,17 @@ export async function getTrajetsForOrganizationAction(organizationId: string) {
           dateDepart: { gte: now },
         },
         orderBy: { dateDepart: "asc" },
+        include: {
+          reservations: {
+            where: { statut: { not: "ANNULE" } },
+            select: {
+              passagers: {
+                where: { occupePlace: true },
+                select: { id: true },
+              },
+            },
+          },
+        },
       },
       _count: { select: { trajetDepart: true } },
     },
@@ -53,17 +69,26 @@ export async function getTrajetsForOrganizationAction(organizationId: string) {
       id: t.id,
       villeDepart: t.villeDepart,
       villeArrivee: t.villeArrivee,
+      modeTransport: t.modeTransport,
       prixBase: t.prixBase,
       prixParKilo: t.prixParKilo,
       kilosGratuits: t.kilosGratuits,
       dureeEstimee: t.dureeEstimee,
       departsCount: t._count.trajetDepart,
-      departs: t.trajetDepart.map((d) => ({
-        id: d.id,
-        dateDepart: d.dateDepart.toISOString(),
-        heureDepart: d.heureDepart,
-        statut: d.statut,
-      })),
+      departs: t.trajetDepart.map((d) => {
+        const placesOccupees = d.reservations.reduce(
+          (sum, r) => sum + r.passagers.length,
+          0,
+        );
+        return {
+          id: d.id,
+          dateDepart: d.dateDepart.toISOString(),
+          heureDepart: d.heureDepart,
+          statut: d.statut,
+          capacitePlaces: d.capacitePlaces,
+          placesRestantes: Math.max(0, d.capacitePlaces - placesOccupees),
+        };
+      }),
     })),
   };
 }
@@ -72,6 +97,7 @@ const createTrajetSchema = z.object({
   organizationId: organizationIdSchema,
   villeDepart: z.string().trim().min(1, "Ville de départ requise."),
   villeArrivee: z.string().trim().min(1, "Ville d'arrivée requise."),
+  modeTransport: modeTransportSchema,
   prixBase: z.coerce.number().min(0),
   prixParKilo: z.coerce.number().min(0),
   kilosGratuits: z.coerce.number().min(0),
@@ -82,7 +108,9 @@ export async function createTrajetAction(input: unknown): Promise<ActionResult<{
   const parsed = createTrajetSchema.safeParse(input);
   if (!parsed.success) return { ok: false, message: zodFirstMessage(parsed.error) };
 
-  const perm = await assertInscriptionPermission(parsed.data.organizationId, "create");
+  const perm = await assertOrganizationPermission(parsed.data.organizationId, {
+    trajet: ["create"],
+  });
   if (!perm.ok) return { ok: false, message: perm.message };
 
   const trajet = await prisma.trajet.create({
@@ -90,6 +118,7 @@ export async function createTrajetAction(input: unknown): Promise<ActionResult<{
       organizationId: parsed.data.organizationId,
       villeDepart: parsed.data.villeDepart,
       villeArrivee: parsed.data.villeArrivee,
+      modeTransport: parsed.data.modeTransport,
       prixBase: parsed.data.prixBase,
       prixParKilo: parsed.data.prixParKilo,
       kilosGratuits: parsed.data.kilosGratuits,
@@ -114,7 +143,9 @@ export async function createTrajetDepartAction(
   const parsed = createDepartSchema.safeParse(input);
   if (!parsed.success) return { ok: false, message: zodFirstMessage(parsed.error) };
 
-  const perm = await assertInscriptionPermission(parsed.data.organizationId, "create");
+  const perm = await assertOrganizationPermission(parsed.data.organizationId, {
+    depart: ["create"],
+  });
   if (!perm.ok) return { ok: false, message: perm.message };
 
   const trajet = await prisma.trajet.findFirst({
@@ -131,6 +162,7 @@ export async function createTrajetDepartAction(
       dateDepart: parsed.data.dateDepart,
       heureDepart: parsed.data.heureDepart,
       statut: "OUVERT",
+      capacitePlaces: capaciteDefautPourMode(trajet.modeTransport),
     },
   });
 
@@ -145,7 +177,9 @@ export async function provisionDemoTrajetsAction(
   const parsed = organizationIdSchema.safeParse(organizationId);
   if (!parsed.success) return { ok: false, message: zodFirstMessage(parsed.error) };
 
-  const perm = await assertInscriptionPermission(parsed.data, "create");
+  const perm = await assertOrganizationPermission(parsed.data, {
+    trajet: ["create"],
+  });
   if (!perm.ok) return { ok: false, message: perm.message };
 
   const existing = await prisma.trajet.count({
@@ -159,6 +193,7 @@ export async function provisionDemoTrajetsAction(
     {
       villeDepart: "Kinshasa",
       villeArrivee: "Paris",
+      modeTransport: "AVION" as const,
       kilosGratuits: 30,
       prixParKilo: 8,
       prixBase: 120_000,
@@ -166,10 +201,11 @@ export async function provisionDemoTrajetsAction(
     },
     {
       villeDepart: "Kinshasa",
-      villeArrivee: "Bruxelles",
-      kilosGratuits: 25,
-      prixParKilo: 7,
-      prixBase: 100_000,
+      villeArrivee: "Matadi",
+      modeTransport: "BUS" as const,
+      kilosGratuits: 20,
+      prixParKilo: 2,
+      prixBase: 35_000,
       heureDepart: "10:00",
     },
   ];
@@ -181,6 +217,7 @@ export async function provisionDemoTrajetsAction(
           organizationId: parsed.data,
           villeDepart: tpl.villeDepart,
           villeArrivee: tpl.villeArrivee,
+          modeTransport: tpl.modeTransport,
           kilosGratuits: tpl.kilosGratuits,
           prixParKilo: tpl.prixParKilo,
           prixBase: tpl.prixBase,
@@ -197,6 +234,7 @@ export async function provisionDemoTrajetsAction(
             dateDepart: date,
             heureDepart: tpl.heureDepart,
             statut: i === 1 ? "OUVERT" : "PLANIFIE",
+            capacitePlaces: capaciteDefautPourMode(tpl.modeTransport),
           },
         });
       }

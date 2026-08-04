@@ -8,7 +8,7 @@ export async function seedTrajetProgramme() {
   const data: Array<{
     id: string;
     trajetId: string;
-    jourSemaine: "LUNDI" | "MARDI" | "JEUDI";
+    jourSemaine: "LUNDI" | "MARDI" | "MERCREDI" | "JEUDI" | "VENDREDI" | "SAMEDI";
     heureDepart: string;
     actif: boolean;
   }> = [];
@@ -38,6 +38,33 @@ export async function seedTrajetProgramme() {
         trajetId: trajet.id,
         jourSemaine: "MARDI",
         heureDepart: "10:00",
+        actif: true,
+      });
+    }
+    if (trajet.villeArrivee === "Lubumbashi" && trajet.modeTransport === "BUS") {
+      data.push(
+        {
+          id: `prog-${trajet.id}-mer`,
+          trajetId: trajet.id,
+          jourSemaine: "MERCREDI",
+          heureDepart: "07:00",
+          actif: true,
+        },
+        {
+          id: `prog-${trajet.id}-sam`,
+          trajetId: trajet.id,
+          jourSemaine: "SAMEDI",
+          heureDepart: "07:00",
+          actif: true,
+        },
+      );
+    }
+    if (trajet.villeArrivee === "Lubumbashi" && trajet.modeTransport === "AVION") {
+      data.push({
+        id: `prog-${trajet.id}-ven`,
+        trajetId: trajet.id,
+        jourSemaine: "VENDREDI",
+        heureDepart: "14:00",
         actif: true,
       });
     }

@@ -55,6 +55,9 @@ export type ColisMinAggregateOutputType = {
   type: $Enums.TypeColis | null
   montantFixe: number | null
   commentaire: string | null
+  destinataireNom: string | null
+  destinataireTel: string | null
+  destinataireId: string | null
   statut: $Enums.StatutColis | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -74,6 +77,9 @@ export type ColisMaxAggregateOutputType = {
   type: $Enums.TypeColis | null
   montantFixe: number | null
   commentaire: string | null
+  destinataireNom: string | null
+  destinataireTel: string | null
+  destinataireId: string | null
   statut: $Enums.StatutColis | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -93,6 +99,9 @@ export type ColisCountAggregateOutputType = {
   type: number
   montantFixe: number
   commentaire: number
+  destinataireNom: number
+  destinataireTel: number
+  destinataireId: number
   statut: number
   createdAt: number
   updatedAt: number
@@ -130,6 +139,9 @@ export type ColisMinAggregateInputType = {
   type?: true
   montantFixe?: true
   commentaire?: true
+  destinataireNom?: true
+  destinataireTel?: true
+  destinataireId?: true
   statut?: true
   createdAt?: true
   updatedAt?: true
@@ -149,6 +161,9 @@ export type ColisMaxAggregateInputType = {
   type?: true
   montantFixe?: true
   commentaire?: true
+  destinataireNom?: true
+  destinataireTel?: true
+  destinataireId?: true
   statut?: true
   createdAt?: true
   updatedAt?: true
@@ -168,6 +183,9 @@ export type ColisCountAggregateInputType = {
   type?: true
   montantFixe?: true
   commentaire?: true
+  destinataireNom?: true
+  destinataireTel?: true
+  destinataireId?: true
   statut?: true
   createdAt?: true
   updatedAt?: true
@@ -274,6 +292,9 @@ export type ColisGroupByOutputType = {
   type: $Enums.TypeColis
   montantFixe: number | null
   commentaire: string | null
+  destinataireNom: string | null
+  destinataireTel: string | null
+  destinataireId: string | null
   statut: $Enums.StatutColis
   createdAt: Date
   updatedAt: Date
@@ -316,6 +337,9 @@ export type ColisWhereInput = {
   type?: Prisma.EnumTypeColisFilter<"Colis"> | $Enums.TypeColis
   montantFixe?: Prisma.FloatNullableFilter<"Colis"> | number | null
   commentaire?: Prisma.StringNullableFilter<"Colis"> | string | null
+  destinataireNom?: Prisma.StringNullableFilter<"Colis"> | string | null
+  destinataireTel?: Prisma.StringNullableFilter<"Colis"> | string | null
+  destinataireId?: Prisma.StringNullableFilter<"Colis"> | string | null
   statut?: Prisma.EnumStatutColisFilter<"Colis"> | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFilter<"Colis"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Colis"> | Date | string
@@ -339,6 +363,9 @@ export type ColisOrderByWithRelationInput = {
   type?: Prisma.SortOrder
   montantFixe?: Prisma.SortOrderInput | Prisma.SortOrder
   commentaire?: Prisma.SortOrderInput | Prisma.SortOrder
+  destinataireNom?: Prisma.SortOrderInput | Prisma.SortOrder
+  destinataireTel?: Prisma.SortOrderInput | Prisma.SortOrder
+  destinataireId?: Prisma.SortOrderInput | Prisma.SortOrder
   statut?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -365,6 +392,9 @@ export type ColisWhereUniqueInput = Prisma.AtLeast<{
   type?: Prisma.EnumTypeColisFilter<"Colis"> | $Enums.TypeColis
   montantFixe?: Prisma.FloatNullableFilter<"Colis"> | number | null
   commentaire?: Prisma.StringNullableFilter<"Colis"> | string | null
+  destinataireNom?: Prisma.StringNullableFilter<"Colis"> | string | null
+  destinataireTel?: Prisma.StringNullableFilter<"Colis"> | string | null
+  destinataireId?: Prisma.StringNullableFilter<"Colis"> | string | null
   statut?: Prisma.EnumStatutColisFilter<"Colis"> | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFilter<"Colis"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Colis"> | Date | string
@@ -388,6 +418,9 @@ export type ColisOrderByWithAggregationInput = {
   type?: Prisma.SortOrder
   montantFixe?: Prisma.SortOrderInput | Prisma.SortOrder
   commentaire?: Prisma.SortOrderInput | Prisma.SortOrder
+  destinataireNom?: Prisma.SortOrderInput | Prisma.SortOrder
+  destinataireTel?: Prisma.SortOrderInput | Prisma.SortOrder
+  destinataireId?: Prisma.SortOrderInput | Prisma.SortOrder
   statut?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -415,6 +448,9 @@ export type ColisScalarWhereWithAggregatesInput = {
   type?: Prisma.EnumTypeColisWithAggregatesFilter<"Colis"> | $Enums.TypeColis
   montantFixe?: Prisma.FloatNullableWithAggregatesFilter<"Colis"> | number | null
   commentaire?: Prisma.StringNullableWithAggregatesFilter<"Colis"> | string | null
+  destinataireNom?: Prisma.StringNullableWithAggregatesFilter<"Colis"> | string | null
+  destinataireTel?: Prisma.StringNullableWithAggregatesFilter<"Colis"> | string | null
+  destinataireId?: Prisma.StringNullableWithAggregatesFilter<"Colis"> | string | null
   statut?: Prisma.EnumStatutColisWithAggregatesFilter<"Colis"> | $Enums.StatutColis
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Colis"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Colis"> | Date | string
@@ -431,6 +467,9 @@ export type ColisCreateInput = {
   type: $Enums.TypeColis
   montantFixe?: number | null
   commentaire?: string | null
+  destinataireNom?: string | null
+  destinataireTel?: string | null
+  destinataireId?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -453,6 +492,9 @@ export type ColisUncheckedCreateInput = {
   type: $Enums.TypeColis
   montantFixe?: number | null
   commentaire?: string | null
+  destinataireNom?: string | null
+  destinataireTel?: string | null
+  destinataireId?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -469,6 +511,9 @@ export type ColisUpdateInput = {
   type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
   montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireTel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -491,6 +536,9 @@ export type ColisUncheckedUpdateInput = {
   type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
   montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireTel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -510,6 +558,9 @@ export type ColisCreateManyInput = {
   type: $Enums.TypeColis
   montantFixe?: number | null
   commentaire?: string | null
+  destinataireNom?: string | null
+  destinataireTel?: string | null
+  destinataireId?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -526,6 +577,9 @@ export type ColisUpdateManyMutationInput = {
   type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
   montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireTel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -544,6 +598,9 @@ export type ColisUncheckedUpdateManyInput = {
   type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
   montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireTel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -573,6 +630,9 @@ export type ColisCountOrderByAggregateInput = {
   type?: Prisma.SortOrder
   montantFixe?: Prisma.SortOrder
   commentaire?: Prisma.SortOrder
+  destinataireNom?: Prisma.SortOrder
+  destinataireTel?: Prisma.SortOrder
+  destinataireId?: Prisma.SortOrder
   statut?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -600,6 +660,9 @@ export type ColisMaxOrderByAggregateInput = {
   type?: Prisma.SortOrder
   montantFixe?: Prisma.SortOrder
   commentaire?: Prisma.SortOrder
+  destinataireNom?: Prisma.SortOrder
+  destinataireTel?: Prisma.SortOrder
+  destinataireId?: Prisma.SortOrder
   statut?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -619,6 +682,9 @@ export type ColisMinOrderByAggregateInput = {
   type?: Prisma.SortOrder
   montantFixe?: Prisma.SortOrder
   commentaire?: Prisma.SortOrder
+  destinataireNom?: Prisma.SortOrder
+  destinataireTel?: Prisma.SortOrder
+  destinataireId?: Prisma.SortOrder
   statut?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -819,6 +885,9 @@ export type ColisCreateWithoutClientInput = {
   type: $Enums.TypeColis
   montantFixe?: number | null
   commentaire?: string | null
+  destinataireNom?: string | null
+  destinataireTel?: string | null
+  destinataireId?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -839,6 +908,9 @@ export type ColisUncheckedCreateWithoutClientInput = {
   type: $Enums.TypeColis
   montantFixe?: number | null
   commentaire?: string | null
+  destinataireNom?: string | null
+  destinataireTel?: string | null
+  destinataireId?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -887,6 +959,9 @@ export type ColisScalarWhereInput = {
   type?: Prisma.EnumTypeColisFilter<"Colis"> | $Enums.TypeColis
   montantFixe?: Prisma.FloatNullableFilter<"Colis"> | number | null
   commentaire?: Prisma.StringNullableFilter<"Colis"> | string | null
+  destinataireNom?: Prisma.StringNullableFilter<"Colis"> | string | null
+  destinataireTel?: Prisma.StringNullableFilter<"Colis"> | string | null
+  destinataireId?: Prisma.StringNullableFilter<"Colis"> | string | null
   statut?: Prisma.EnumStatutColisFilter<"Colis"> | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFilter<"Colis"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Colis"> | Date | string
@@ -903,6 +978,9 @@ export type ColisCreateWithoutTrajetInput = {
   type: $Enums.TypeColis
   montantFixe?: number | null
   commentaire?: string | null
+  destinataireNom?: string | null
+  destinataireTel?: string | null
+  destinataireId?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -923,6 +1001,9 @@ export type ColisUncheckedCreateWithoutTrajetInput = {
   type: $Enums.TypeColis
   montantFixe?: number | null
   commentaire?: string | null
+  destinataireNom?: string | null
+  destinataireTel?: string | null
+  destinataireId?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -965,6 +1046,9 @@ export type ColisCreateWithoutTrajetDepartInput = {
   type: $Enums.TypeColis
   montantFixe?: number | null
   commentaire?: string | null
+  destinataireNom?: string | null
+  destinataireTel?: string | null
+  destinataireId?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -986,6 +1070,9 @@ export type ColisUncheckedCreateWithoutTrajetDepartInput = {
   type: $Enums.TypeColis
   montantFixe?: number | null
   commentaire?: string | null
+  destinataireNom?: string | null
+  destinataireTel?: string | null
+  destinataireId?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1027,6 +1114,9 @@ export type ColisCreateWithoutPassagerInput = {
   type: $Enums.TypeColis
   montantFixe?: number | null
   commentaire?: string | null
+  destinataireNom?: string | null
+  destinataireTel?: string | null
+  destinataireId?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1047,6 +1137,9 @@ export type ColisUncheckedCreateWithoutPassagerInput = {
   type: $Enums.TypeColis
   montantFixe?: number | null
   commentaire?: string | null
+  destinataireNom?: string | null
+  destinataireTel?: string | null
+  destinataireId?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1091,6 +1184,9 @@ export type ColisCreateManyClientInput = {
   type: $Enums.TypeColis
   montantFixe?: number | null
   commentaire?: string | null
+  destinataireNom?: string | null
+  destinataireTel?: string | null
+  destinataireId?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1107,6 +1203,9 @@ export type ColisUpdateWithoutClientInput = {
   type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
   montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireTel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1127,6 +1226,9 @@ export type ColisUncheckedUpdateWithoutClientInput = {
   type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
   montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireTel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1145,6 +1247,9 @@ export type ColisUncheckedUpdateManyWithoutClientInput = {
   type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
   montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireTel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1163,6 +1268,9 @@ export type ColisCreateManyTrajetInput = {
   type: $Enums.TypeColis
   montantFixe?: number | null
   commentaire?: string | null
+  destinataireNom?: string | null
+  destinataireTel?: string | null
+  destinataireId?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1179,6 +1287,9 @@ export type ColisUpdateWithoutTrajetInput = {
   type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
   montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireTel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1199,6 +1310,9 @@ export type ColisUncheckedUpdateWithoutTrajetInput = {
   type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
   montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireTel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1217,6 +1331,9 @@ export type ColisUncheckedUpdateManyWithoutTrajetInput = {
   type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
   montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireTel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1236,6 +1353,9 @@ export type ColisCreateManyTrajetDepartInput = {
   type: $Enums.TypeColis
   montantFixe?: number | null
   commentaire?: string | null
+  destinataireNom?: string | null
+  destinataireTel?: string | null
+  destinataireId?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1251,6 +1371,9 @@ export type ColisUpdateWithoutTrajetDepartInput = {
   type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
   montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireTel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1272,6 +1395,9 @@ export type ColisUncheckedUpdateWithoutTrajetDepartInput = {
   type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
   montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireTel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1290,6 +1416,9 @@ export type ColisUncheckedUpdateManyWithoutTrajetDepartInput = {
   type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
   montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireTel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1307,6 +1436,9 @@ export type ColisCreateManyPassagerInput = {
   type: $Enums.TypeColis
   montantFixe?: number | null
   commentaire?: string | null
+  destinataireNom?: string | null
+  destinataireTel?: string | null
+  destinataireId?: string | null
   statut?: $Enums.StatutColis
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1323,6 +1455,9 @@ export type ColisUpdateWithoutPassagerInput = {
   type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
   montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireTel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1343,6 +1478,9 @@ export type ColisUncheckedUpdateWithoutPassagerInput = {
   type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
   montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireTel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1361,6 +1499,9 @@ export type ColisUncheckedUpdateManyWithoutPassagerInput = {
   type?: Prisma.EnumTypeColisFieldUpdateOperationsInput | $Enums.TypeColis
   montantFixe?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireTel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destinataireId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statut?: Prisma.EnumStatutColisFieldUpdateOperationsInput | $Enums.StatutColis
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1382,6 +1523,9 @@ export type ColisSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   type?: boolean
   montantFixe?: boolean
   commentaire?: boolean
+  destinataireNom?: boolean
+  destinataireTel?: boolean
+  destinataireId?: boolean
   statut?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1405,6 +1549,9 @@ export type ColisSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   type?: boolean
   montantFixe?: boolean
   commentaire?: boolean
+  destinataireNom?: boolean
+  destinataireTel?: boolean
+  destinataireId?: boolean
   statut?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1428,6 +1575,9 @@ export type ColisSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   type?: boolean
   montantFixe?: boolean
   commentaire?: boolean
+  destinataireNom?: boolean
+  destinataireTel?: boolean
+  destinataireId?: boolean
   statut?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1451,13 +1601,16 @@ export type ColisSelectScalar = {
   type?: boolean
   montantFixe?: boolean
   commentaire?: boolean
+  destinataireNom?: boolean
+  destinataireTel?: boolean
+  destinataireId?: boolean
   statut?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   trajetDepartId?: boolean
 }
 
-export type ColisOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "codeUnique" | "clientId" | "trajetId" | "poids" | "kilosGratuits" | "surplusKilos" | "montantAPayer" | "passagerId" | "type" | "montantFixe" | "commentaire" | "statut" | "createdAt" | "updatedAt" | "trajetDepartId", ExtArgs["result"]["colis"]>
+export type ColisOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "codeUnique" | "clientId" | "trajetId" | "poids" | "kilosGratuits" | "surplusKilos" | "montantAPayer" | "passagerId" | "type" | "montantFixe" | "commentaire" | "destinataireNom" | "destinataireTel" | "destinataireId" | "statut" | "createdAt" | "updatedAt" | "trajetDepartId", ExtArgs["result"]["colis"]>
 export type ColisInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
   trajet?: boolean | Prisma.TrajetDefaultArgs<ExtArgs>
@@ -1498,6 +1651,9 @@ export type $ColisPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     type: $Enums.TypeColis
     montantFixe: number | null
     commentaire: string | null
+    destinataireNom: string | null
+    destinataireTel: string | null
+    destinataireId: string | null
     statut: $Enums.StatutColis
     createdAt: Date
     updatedAt: Date
@@ -1941,6 +2097,9 @@ export interface ColisFieldRefs {
   readonly type: Prisma.FieldRef<"Colis", 'TypeColis'>
   readonly montantFixe: Prisma.FieldRef<"Colis", 'Float'>
   readonly commentaire: Prisma.FieldRef<"Colis", 'String'>
+  readonly destinataireNom: Prisma.FieldRef<"Colis", 'String'>
+  readonly destinataireTel: Prisma.FieldRef<"Colis", 'String'>
+  readonly destinataireId: Prisma.FieldRef<"Colis", 'String'>
   readonly statut: Prisma.FieldRef<"Colis", 'StatutColis'>
   readonly createdAt: Prisma.FieldRef<"Colis", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Colis", 'DateTime'>

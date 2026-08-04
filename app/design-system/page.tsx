@@ -57,7 +57,7 @@ export default function DesignSystemPage() {
         title="Design System" 
         subtitle="Mobile-First UI"
         actions={[
-          { label: "Demo Ecodim", onClick: () => router.push("/ecodim"), icon: <ArrowRight className="size-4" /> }
+          { label: "Funnel airline", onClick: () => router.push("/design-system/funnel"), icon: <ArrowRight className="size-4" /> },
         ]}
       />
 
@@ -125,20 +125,20 @@ export default function DesignSystemPage() {
             <CardContent className="pt-5 space-y-5">
               <div>
                 <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Titre Page</span>
-                <h1 className="text-xl font-bold tracking-tight mt-1">Ecole du Dimanche</h1>
+                <h1 className="text-xl font-bold tracking-tight mt-1">Coccinelle Voyage</h1>
               </div>
               <div>
                 <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Titre Section</span>
-                <h2 className="text-lg font-semibold mt-1">Liste des Classes</h2>
+                <h2 className="text-lg font-semibold mt-1">Liste des trajets</h2>
               </div>
               <div>
                 <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Sous-titre</span>
-                <h3 className="text-base font-medium mt-1">Classe des Petits</h3>
+                <h3 className="text-base font-medium mt-1">Kinshasa → Lubumbashi</h3>
               </div>
               <div>
                 <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Corps</span>
                 <p className="text-sm leading-relaxed text-muted-foreground mt-1">
-                  Application de gestion pour l&apos;ecole du dimanche. Gerez les enfants, classes et presences.
+                  Application de réservation bus et avion. Gérez trajets, départs, guichet et colis.
                 </p>
               </div>
             </CardContent>
@@ -209,13 +209,13 @@ export default function DesignSystemPage() {
                 <SearchInput 
                   value={searchValue} 
                   onChange={setSearchValue}
-                  placeholder="Rechercher un enfant..."
+                  placeholder="Rechercher une réservation…"
                 />
               </div>
               
               <div className="space-y-2">
                 <Label className="text-xs uppercase tracking-wider text-muted-foreground">Champ texte</Label>
-                <Input placeholder="Nom de l'enfant" className="h-11" />
+                <Input placeholder="Nom du passager" className="h-11" />
               </div>
 
               <div className="space-y-3 border-t pt-4">
@@ -248,9 +248,9 @@ export default function DesignSystemPage() {
                 <Badge>Nouveau</Badge>
                 <Badge variant="secondary">En cours</Badge>
                 <Badge variant="outline">Inactif</Badge>
-                <Badge variant="destructive">Absent</Badge>
-                <Badge className="bg-success text-success-foreground">Present</Badge>
-                <Badge className="bg-warning text-warning-foreground">Retard</Badge>
+                <Badge variant="destructive">Annulé</Badge>
+                <Badge className="bg-success text-success-foreground">Payé</Badge>
+                <Badge className="bg-warning text-warning-foreground">En attente</Badge>
               </div>
             </CardContent>
           </Card>
@@ -261,26 +261,26 @@ export default function DesignSystemPage() {
           <h2 className="text-lg font-semibold mb-4">Cartes Statistiques</h2>
           <StatGrid>
             <StatCard 
-              title="Enfants" 
+              title="Clients" 
               value={156} 
               icon={Users}
               subtitle="Total"
             />
             <StatCard 
-              title="Classes" 
+              title="Trajets" 
               value={8} 
               icon={BookOpen}
               variant="primary"
             />
             <StatCard 
-              title="Presence" 
+              title="Remplissage" 
               value="89%"
               icon={ClipboardList}
               trend={{ value: 5, isPositive: true }}
               variant="success"
             />
             <StatCard 
-              title="Nouveaux" 
+              title="Ventes" 
               value={12}
               icon={UserPlus}
               subtitle="Ce mois"
@@ -292,32 +292,32 @@ export default function DesignSystemPage() {
         {/* List Items - Touch Optimized */}
         <section>
           <h2 className="text-lg font-semibold mb-4">Listes Tactiles (56px min)</h2>
-          <ListGroup title="Enfants recents">
+          <ListGroup title="Ventes récentes">
             <ListItem
               title="Marie Dupont"
-              description="Classe des Moyens - 8 ans"
+              description="Kinshasa → Lubumbashi · Bus"
               leading={
                 <Avatar className="size-10">
                   <AvatarFallback className="bg-primary/10 text-primary text-sm">MD</AvatarFallback>
                 </Avatar>
               }
-              trailing={<Badge className="bg-success text-success-foreground">Present</Badge>}
+              trailing={<Badge className="bg-success text-success-foreground">Payé</Badge>}
               href="#"
             />
             <ListItem
               title="Paul Martin"
-              description="Classe des Grands - 11 ans"
+              description="Kinshasa → Paris · Avion"
               leading={
                 <Avatar className="size-10">
                   <AvatarFallback className="bg-accent/20 text-accent text-sm">PM</AvatarFallback>
                 </Avatar>
               }
-              trailing={<Badge variant="outline">Absent</Badge>}
+              trailing={<Badge variant="outline">En attente</Badge>}
               href="#"
             />
             <ListItem
               title="Sophie Bernard"
-              description="Classe des Petits - 5 ans"
+              description="Kinshasa → Matadi · Bus"
               leading={
                 <Avatar className="size-10">
                   <AvatarFallback className="bg-warning/20 text-warning-foreground text-sm">SB</AvatarFallback>
@@ -339,16 +339,16 @@ export default function DesignSystemPage() {
                     <BookOpen className="size-5 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <CardTitle className="text-base">Classe des Moyens</CardTitle>
-                    <CardDescription>7-9 ans</CardDescription>
+                    <CardTitle className="text-base">Kinshasa → Lubumbashi</CardTitle>
+                    <CardDescription>Bus · 45 FC</CardDescription>
                   </div>
                   <ChevronRight className="size-5 text-muted-foreground" />
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">24 enfants inscrits</span>
-                  <Badge variant="secondary">Actif</Badge>
+                  <span className="text-muted-foreground">24 places restantes</span>
+                  <Badge variant="secondary">Ouvert</Badge>
                 </div>
               </CardContent>
             </Card>
@@ -360,13 +360,13 @@ export default function DesignSystemPage() {
                     <Calendar className="size-5 text-accent" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <CardTitle className="text-base">Prochain cours</CardTitle>
-                    <CardDescription>Dimanche 15 Dec</CardDescription>
+                    <CardTitle className="text-base">Prochain départ</CardTitle>
+                    <CardDescription>Mercredi 15:00</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
-                <p className="text-sm text-muted-foreground">L&apos;histoire de Noel</p>
+                <p className="text-sm text-muted-foreground">Kinshasa → Matadi</p>
               </CardContent>
             </Card>
           </div>
@@ -379,18 +379,18 @@ export default function DesignSystemPage() {
             <CardContent className="pt-5">
               <Tabs defaultValue="all">
                 <TabsList className="w-full h-11 p-1">
-                  <TabsTrigger value="all" className="flex-1 h-9 text-sm">Tous</TabsTrigger>
-                  <TabsTrigger value="present" className="flex-1 h-9 text-sm">Presents</TabsTrigger>
-                  <TabsTrigger value="absent" className="flex-1 h-9 text-sm">Absents</TabsTrigger>
+                  <TabsTrigger value="all" className="flex-1 h-9 text-sm">Toutes</TabsTrigger>
+                  <TabsTrigger value="present" className="flex-1 h-9 text-sm">Payées</TabsTrigger>
+                  <TabsTrigger value="absent" className="flex-1 h-9 text-sm">En attente</TabsTrigger>
                 </TabsList>
                 <TabsContent value="all" className="mt-4">
-                  <p className="text-sm text-muted-foreground text-center py-4">156 enfants au total</p>
+                  <p className="text-sm text-muted-foreground text-center py-4">156 réservations au total</p>
                 </TabsContent>
                 <TabsContent value="present" className="mt-4">
-                  <p className="text-sm text-muted-foreground text-center py-4">139 enfants presents</p>
+                  <p className="text-sm text-muted-foreground text-center py-4">139 réservations payées</p>
                 </TabsContent>
                 <TabsContent value="absent" className="mt-4">
-                  <p className="text-sm text-muted-foreground text-center py-4">17 enfants absents</p>
+                  <p className="text-sm text-muted-foreground text-center py-4">17 paiements en attente</p>
                 </TabsContent>
               </Tabs>
             </CardContent>
@@ -444,7 +444,7 @@ export default function DesignSystemPage() {
               <Check className="size-5 text-success shrink-0 mt-0.5" />
               <div>
                 <p className="font-medium text-sm">Succes</p>
-                <p className="text-sm text-muted-foreground mt-0.5">Enfant inscrit avec succes.</p>
+                <p className="text-sm text-muted-foreground mt-0.5">Réservation créée avec succès.</p>
               </div>
             </div>
             <div className="flex items-start gap-3 p-4 rounded-xl bg-warning/10 border border-warning/20">
@@ -472,7 +472,7 @@ export default function DesignSystemPage() {
               <EmptyState
                 icon={Search}
                 title="Aucun resultat"
-                description="Aucun enfant ne correspond a votre recherche."
+                description="Aucune réservation ne correspond à votre recherche."
                 action={
                   <Button variant="outline">
                     Effacer les filtres
@@ -510,16 +510,16 @@ export default function DesignSystemPage() {
         <section>
           <Card className="bg-primary text-primary-foreground overflow-hidden">
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-2">Voir la demo</h3>
+              <h3 className="font-semibold text-lg mb-2">Voir le funnel</h3>
               <p className="text-sm opacity-90 mb-5">
-                Explorez l&apos;application Ecodim complete avec ce design system.
+                Démo des composants airline (recherche, résultats, checkout).
               </p>
               <Button
                 variant="secondary"
-                render={<Link href="/ecodim" />}
+                render={<Link href="/design-system/funnel" />}
                 className="w-full gap-2"
               >
-                Ouvrir Ecodim
+                Ouvrir le funnel
                 <ArrowRight className="size-4" />
               </Button>
             </CardContent>
