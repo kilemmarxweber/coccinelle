@@ -62,8 +62,48 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* Coccinelle — thème noir / orange (primary d'origine) */
-:root,
+/* Coccinelle — light : fond clair + primary orange */
+:root {
+  --background: oklch(0.985 0.005 85);
+  --foreground: oklch(0.18 0.02 45);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.02 45);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.02 45);
+  --primary: oklch(0.705 0.191 47.6);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.96 0.01 85);
+  --secondary-foreground: oklch(0.28 0.02 45);
+  --muted: oklch(0.95 0.01 85);
+  --muted-foreground: oklch(0.5 0.02 45);
+  --accent: oklch(0.96 0.03 70);
+  --accent-foreground: oklch(0.28 0.05 50);
+  --destructive: oklch(0.55 0.22 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.9 0.01 85);
+  --input: oklch(0.92 0.01 85);
+  --ring: oklch(0.705 0.191 47.6);
+  --chart-1: oklch(0.705 0.191 47.6);
+  --chart-2: oklch(0.75 0.15 85);
+  --chart-3: oklch(0.65 0.18 145);
+  --chart-4: oklch(0.65 0.15 250);
+  --chart-5: oklch(0.7 0.18 30);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.98 0.005 85);
+  --sidebar-foreground: oklch(0.2 0.02 45);
+  --sidebar-primary: oklch(0.705 0.191 47.6);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.95 0.02 70);
+  --sidebar-accent-foreground: oklch(0.25 0.04 50);
+  --sidebar-border: oklch(0.9 0.01 85);
+  --sidebar-ring: oklch(0.705 0.191 47.6);
+  --success: oklch(0.65 0.18 145);
+  --success-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.78 0.15 85);
+  --warning-foreground: oklch(0.25 0.02 45);
+}
+
+/* Coccinelle — dark : noir / orange */
 .dark {
   --background: oklch(0.12 0 0);
   --foreground: oklch(0.98 0 0);
@@ -89,7 +129,6 @@
   --chart-3: oklch(0.65 0.18 145);
   --chart-4: oklch(0.65 0.15 250);
   --chart-5: oklch(0.7 0.18 30);
-  --radius: 0.75rem;
   --sidebar: oklch(0.1 0 0);
   --sidebar-foreground: oklch(0.96 0 0);
   --sidebar-primary: oklch(0.7686 0.1647 70.0804);

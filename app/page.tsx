@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { APP_ROLE } from "@/lib/permissions";
 
 type MenuItem = {
@@ -270,6 +271,8 @@ export default function HomePage() {
             <div className="hidden rounded-full bg-muted px-3 py-1.5 text-xs text-muted-foreground tabular-nums md:block md:text-sm">
               {now ? formatDateTime(now) : "\u00A0"}
             </div>
+
+            <ThemeToggle />
 
             {isAuthenticated ? (
               <div className="flex max-w-[9rem] items-center gap-2 sm:max-w-none">

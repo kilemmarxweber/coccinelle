@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +50,7 @@ export function AdminTopBar() {
     >
       <h1 className="min-w-0 truncate text-lg font-semibold leading-tight">{title}</h1>
       <div className="flex shrink-0 items-center gap-1">
+        <ThemeToggle className="size-10" />
         <Button
           type="button"
           variant="ghost"
