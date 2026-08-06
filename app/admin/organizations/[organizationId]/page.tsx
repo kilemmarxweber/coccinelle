@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { CirclePile, Shield, Users, School } from "lucide-react";
+import { CirclePile, GitBranch, Shield, Users, School } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 
@@ -40,15 +40,29 @@ export default function AdminOrganizationHomePage() {
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Button
+              render={<Link href={`${base}/branches`} />}
+              variant="outline"
+              className="h-auto min-h-22 w-full touch-manipulation justify-start gap-0 p-4 text-left sm:min-h-24"
+            >
+              <div className="flex min-w-0 flex-col gap-2 text-left">
+                <GitBranch className="size-7 shrink-0 text-primary sm:size-6" aria-hidden />
+                <span className="text-base font-semibold leading-snug">Branches</span>
+                <span className="text-pretty text-sm font-normal leading-relaxed text-muted-foreground">
+                  Agence, Hôtel ou Boutique — créer et charger les modules.
+                </span>
+              </div>
+            </Button>
+
+            <Button
               render={<Link href={`${base}/agences`} />}
               variant="outline"
               className="h-auto min-h-22 w-full touch-manipulation justify-start gap-0 p-4 text-left sm:min-h-24"
             >
               <div className="flex min-w-0 flex-col gap-2 text-left">
                 <School className="size-7 shrink-0 text-primary sm:size-6" aria-hidden />
-                <span className="text-base font-semibold leading-snug">Agences</span>
+                <span className="text-base font-semibold leading-snug">Espace voyage</span>
                 <span className="text-pretty text-sm font-normal leading-relaxed text-muted-foreground">
-                  Gérer la reservation des clients.
+                  Guichet, trajets et réservations (branches AGENCE).
                 </span>
               </div>
             </Button>

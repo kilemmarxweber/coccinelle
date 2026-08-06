@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | E — Ops terrain |
-| **Status** | `todo` |
+| **Status** | `done` |
 | **Dépend de** | U08, U04 |
 | **Débloque** | — |
 
@@ -53,8 +53,10 @@ L’agent d’embarquement **scanne** (ou saisit) le QR passager : si réservati
 - Actions verify + update statut
 - Consommation token U08
 
-## Comment tester
+## Livré
 
-1. Imprimer billet U08 → scanner depuis page embarquement.
-2. Rescanner → refus « déjà embarqué ».
-3. Code manuel équivalent.
+- Domaine : `lib/reservation/boarding.ts` (+ parse QR U08)
+- Schéma : `Passager.embarqueAt`
+- Page : `/admin/organizations/[organizationId]/agences/passages` (scan caméra / saisie / pointage manuel)
+- Gate : `embarquement:scan` via Better Auth
+- Liens : dashboard agence + home guichet

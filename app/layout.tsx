@@ -9,8 +9,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { IdleLogout } from "@/lib/idle-logout";
 
 export const metadata: Metadata = {
-  title: "Coccinelle flying",
-  description: "Application de gestion de voyages.",
+  title: "Coccinelle",
+  description: "Réservation de voyages bus et avion — Coccinelle.",
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

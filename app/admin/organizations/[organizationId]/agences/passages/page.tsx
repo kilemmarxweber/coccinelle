@@ -1,36 +1,39 @@
-import Link from "next/link";
-import { QrCode } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
-import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/ui/empty-state";
+import { assertOrganizationPermission } from "@/lib/auth/organization-permission";
+import { todayIsoLocal } from "@/lib/search-departs/day-bounds";
+import { EmbarquementClient } from "./components/embarquement-client";
+import { listBoardingDepartsAction } from "./actions";
 
 type PageProps = { params: Promise<{ organizationId: string }> };
 
-export default async function EmbarquementPlaceholderPage({
-  params,
-}: PageProps) {
+export default async function EmbarquementPage({ params }: PageProps) {
   const { organizationId } = await params;
-  const base = `/admin/organizations/${organizationId}/agences`;
+
+  const perm = await assertOrganizationPermission(organizationId, {
+    embarquement: ["scan"],
+  });
+
+  const date = todayIsoLocal();
+  const departsResult = perm.ok
+    ? await listBoardingDepartsAction(organizationId, date)
+    : null;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-10">
       <PageHeader
         title="Embarquement"
         subtitle="Scan QR et contrôle des passagers"
         showBack
       />
-      <div className="mx-auto max-w-2xl px-4 py-8">
-        <EmptyState
-          icon={QrCode}
-          title="Embarquement à venir"
-          description="Le scan QR pour l’embarquement arrivera bientôt. En attendant, gérez les réservations depuis le guichet."
-          action={
-            <Button render={<Link href={`${base}/reservations`} />}>
-              Voir les réservations
-            </Button>
-          }
-        />
-      </div>
+      <EmbarquementClient
+        organizationId={organizationId}
+        canScan={perm.ok}
+        denyMessage={perm.ok ? undefined : perm.message}
+        initialDate={date}
+        initialDeparts={
+          departsResult?.ok ? departsResult.data : []
+        }
+      />
     </div>
   );
 }

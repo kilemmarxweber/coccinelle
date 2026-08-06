@@ -4,7 +4,7 @@ type PageProps = {
   params: Promise<{ organizationId: string; id: string }>;
 };
 
-/** Ancienne fiche « enfant » Écodim — redirige vers la liste clients. */
+/** Ancienne fiche client — redirige vers la liste. */
 export default async function ClientDetailRedirect({ params }: PageProps) {
   const { organizationId } = await params;
   redirect(

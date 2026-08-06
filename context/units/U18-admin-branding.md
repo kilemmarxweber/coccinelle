@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | F — Polish |
-| **Status** | `todo` |
+| **Status** | `done` |
 | **Dépend de** | U09 |
 | **Débloque** | — |
 
@@ -57,3 +57,21 @@ L’**admin application** est clairement séparé du back-office agence ; la mar
 1. Recherche globale UI « Smart Church » / Écodim → 0 dans shells.
 2. 4 logins → 4 landing corrects.
 3. Checklist UAT cochée dans un commentaire PR / bas de cette unit.
+
+## Livré
+
+- Metadata app : Coccinelle
+- `/admin` : hub plateforme (orgs + compte), pas de métier transport
+- Sidebar plateforme FR : Vue d’ensemble / Organisations / Rôles globaux
+- Redirects déjà en place (`lib/auth/post-login-redirect.ts`)
+- Labels rôles : `lib/org-role-labels.ts`
+
+## Checklist UAT multi-rôles
+
+| Persona | Compte seed (indicatif) | Landing attendu |
+|---------|-------------------------|-----------------|
+| Super-admin | rôle app `admin` | `/admin` |
+| Owner | `owner@test.com` | `/agence/{orgId}/gerant` |
+| Gérant | `gerant@test.com` | `/agence/{orgId}/gerant` |
+| Guichetier | `guichetier@test.com` | `/admin/organizations/{orgId}/agences/reservations/guichet` |
+| Client | `client@test.com` (`parent`) | `/{orgSlug}/mes-reservations` |

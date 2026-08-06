@@ -10,7 +10,11 @@ type ThemeToggleProps = {
   className?: string;
 };
 
-/** Bascule light / dark dans la navbar. */
+/**
+ * Bascule light / dark.
+ * Un seul arbre DOM avant/après hydratation (pas de `disabled` Base UI,
+ * qui diverge SSR `null` vs client `true`).
+ */
 export function ThemeToggle({ className }: ThemeToggleProps) {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -19,7 +23,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
     setMounted(true);
   }, []);
 
-  const isDark = resolvedTheme === "dark";
+  const isDark = mounted && resolvedTheme === "dark";
 
   return (
     <Button
@@ -27,12 +31,20 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
       variant="ghost"
       size="icon"
       className={cn("size-9 shrink-0", className)}
-      aria-label={isDark ? "Passer en mode clair" : "Passer en mode sombre"}
-      title={isDark ? "Mode clair" : "Mode sombre"}
-      disabled={!mounted}
-      onClick={() => setTheme(isDark ? "light" : "dark")}
+      aria-label={
+        !mounted
+          ? "Changer le thème"
+          : isDark
+            ? "Passer en mode clair"
+            : "Passer en mode sombre"
+      }
+      title={!mounted ? "Thème" : isDark ? "Mode clair" : "Mode sombre"}
+      onClick={() => {
+        if (!mounted) return;
+        setTheme(isDark ? "light" : "dark");
+      }}
     >
-      {mounted && isDark ? (
+      {isDark ? (
         <Sun className="size-4 text-primary" />
       ) : (
         <Moon className="size-4" />

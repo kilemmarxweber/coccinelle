@@ -125,3 +125,39 @@ export const ModeTransport = {
 } as const
 
 export type ModeTransport = (typeof ModeTransport)[keyof typeof ModeTransport]
+
+
+export const BranchType = {
+  AGENCE: 'AGENCE',
+  HOTEL: 'HOTEL',
+  BOUTIQUE: 'BOUTIQUE'
+} as const
+
+export type BranchType = (typeof BranchType)[keyof typeof BranchType]
+
+
+export const BranchStatus = {
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  CLOSED: 'CLOSED'
+} as const
+
+export type BranchStatus = (typeof BranchStatus)[keyof typeof BranchStatus]
+
+
+export const BranchMemberStatus = {
+  ACTIVE: 'ACTIVE',
+  REVOKED: 'REVOKED'
+} as const
+
+export type BranchMemberStatus = (typeof BranchMemberStatus)[keyof typeof BranchMemberStatus]
+
+
+export const HotelRoomStatus = {
+  AVAILABLE: 'AVAILABLE',
+  OCCUPIED: 'OCCUPIED',
+  CLEANING: 'CLEANING',
+  OUT_OF_ORDER: 'OUT_OF_ORDER'
+} as const
+
+export type HotelRoomStatus = (typeof HotelRoomStatus)[keyof typeof HotelRoomStatus]

@@ -51,6 +51,7 @@ export type PassagerMinAggregateOutputType = {
   statut: $Enums.TypePassager | null
   ordre: number | null
   occupePlace: boolean | null
+  embarqueAt: Date | null
   createdAt: Date | null
 }
 
@@ -69,6 +70,7 @@ export type PassagerMaxAggregateOutputType = {
   statut: $Enums.TypePassager | null
   ordre: number | null
   occupePlace: boolean | null
+  embarqueAt: Date | null
   createdAt: Date | null
 }
 
@@ -87,6 +89,7 @@ export type PassagerCountAggregateOutputType = {
   statut: number
   ordre: number
   occupePlace: number
+  embarqueAt: number
   createdAt: number
   _all: number
 }
@@ -117,6 +120,7 @@ export type PassagerMinAggregateInputType = {
   statut?: true
   ordre?: true
   occupePlace?: true
+  embarqueAt?: true
   createdAt?: true
 }
 
@@ -135,6 +139,7 @@ export type PassagerMaxAggregateInputType = {
   statut?: true
   ordre?: true
   occupePlace?: true
+  embarqueAt?: true
   createdAt?: true
 }
 
@@ -153,6 +158,7 @@ export type PassagerCountAggregateInputType = {
   statut?: true
   ordre?: true
   occupePlace?: true
+  embarqueAt?: true
   createdAt?: true
   _all?: true
 }
@@ -258,6 +264,7 @@ export type PassagerGroupByOutputType = {
   statut: $Enums.TypePassager
   ordre: number
   occupePlace: boolean
+  embarqueAt: Date | null
   createdAt: Date
   _count: PassagerCountAggregateOutputType | null
   _avg: PassagerAvgAggregateOutputType | null
@@ -299,6 +306,7 @@ export type PassagerWhereInput = {
   statut?: Prisma.EnumTypePassagerFilter<"Passager"> | $Enums.TypePassager
   ordre?: Prisma.IntFilter<"Passager"> | number
   occupePlace?: Prisma.BoolFilter<"Passager"> | boolean
+  embarqueAt?: Prisma.DateTimeNullableFilter<"Passager"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Passager"> | Date | string
   colis?: Prisma.ColisListRelationFilter
   client?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
@@ -320,6 +328,7 @@ export type PassagerOrderByWithRelationInput = {
   statut?: Prisma.SortOrder
   ordre?: Prisma.SortOrder
   occupePlace?: Prisma.SortOrder
+  embarqueAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   colis?: Prisma.ColisOrderByRelationAggregateInput
   client?: Prisma.ClientOrderByWithRelationInput
@@ -344,6 +353,7 @@ export type PassagerWhereUniqueInput = Prisma.AtLeast<{
   statut?: Prisma.EnumTypePassagerFilter<"Passager"> | $Enums.TypePassager
   ordre?: Prisma.IntFilter<"Passager"> | number
   occupePlace?: Prisma.BoolFilter<"Passager"> | boolean
+  embarqueAt?: Prisma.DateTimeNullableFilter<"Passager"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Passager"> | Date | string
   colis?: Prisma.ColisListRelationFilter
   client?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
@@ -365,6 +375,7 @@ export type PassagerOrderByWithAggregationInput = {
   statut?: Prisma.SortOrder
   ordre?: Prisma.SortOrder
   occupePlace?: Prisma.SortOrder
+  embarqueAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.PassagerCountOrderByAggregateInput
   _avg?: Prisma.PassagerAvgOrderByAggregateInput
@@ -391,6 +402,7 @@ export type PassagerScalarWhereWithAggregatesInput = {
   statut?: Prisma.EnumTypePassagerWithAggregatesFilter<"Passager"> | $Enums.TypePassager
   ordre?: Prisma.IntWithAggregatesFilter<"Passager"> | number
   occupePlace?: Prisma.BoolWithAggregatesFilter<"Passager"> | boolean
+  embarqueAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Passager"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Passager"> | Date | string
 }
 
@@ -407,6 +419,7 @@ export type PassagerCreateInput = {
   statut: $Enums.TypePassager
   ordre: number
   occupePlace?: boolean
+  embarqueAt?: Date | string | null
   createdAt?: Date | string
   colis?: Prisma.ColisCreateNestedManyWithoutPassagerInput
   client?: Prisma.ClientCreateNestedOneWithoutPassagersInput
@@ -428,6 +441,7 @@ export type PassagerUncheckedCreateInput = {
   statut: $Enums.TypePassager
   ordre: number
   occupePlace?: boolean
+  embarqueAt?: Date | string | null
   createdAt?: Date | string
   colis?: Prisma.ColisUncheckedCreateNestedManyWithoutPassagerInput
 }
@@ -445,6 +459,7 @@ export type PassagerUpdateInput = {
   statut?: Prisma.EnumTypePassagerFieldUpdateOperationsInput | $Enums.TypePassager
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  embarqueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   colis?: Prisma.ColisUpdateManyWithoutPassagerNestedInput
   client?: Prisma.ClientUpdateOneWithoutPassagersNestedInput
@@ -466,6 +481,7 @@ export type PassagerUncheckedUpdateInput = {
   statut?: Prisma.EnumTypePassagerFieldUpdateOperationsInput | $Enums.TypePassager
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  embarqueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   colis?: Prisma.ColisUncheckedUpdateManyWithoutPassagerNestedInput
 }
@@ -485,6 +501,7 @@ export type PassagerCreateManyInput = {
   statut: $Enums.TypePassager
   ordre: number
   occupePlace?: boolean
+  embarqueAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -501,6 +518,7 @@ export type PassagerUpdateManyMutationInput = {
   statut?: Prisma.EnumTypePassagerFieldUpdateOperationsInput | $Enums.TypePassager
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  embarqueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -519,6 +537,7 @@ export type PassagerUncheckedUpdateManyInput = {
   statut?: Prisma.EnumTypePassagerFieldUpdateOperationsInput | $Enums.TypePassager
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  embarqueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -547,6 +566,7 @@ export type PassagerCountOrderByAggregateInput = {
   statut?: Prisma.SortOrder
   ordre?: Prisma.SortOrder
   occupePlace?: Prisma.SortOrder
+  embarqueAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -570,6 +590,7 @@ export type PassagerMaxOrderByAggregateInput = {
   statut?: Prisma.SortOrder
   ordre?: Prisma.SortOrder
   occupePlace?: Prisma.SortOrder
+  embarqueAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -588,6 +609,7 @@ export type PassagerMinOrderByAggregateInput = {
   statut?: Prisma.SortOrder
   ordre?: Prisma.SortOrder
   occupePlace?: Prisma.SortOrder
+  embarqueAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -726,6 +748,7 @@ export type PassagerCreateWithoutClientInput = {
   statut: $Enums.TypePassager
   ordre: number
   occupePlace?: boolean
+  embarqueAt?: Date | string | null
   createdAt?: Date | string
   colis?: Prisma.ColisCreateNestedManyWithoutPassagerInput
   reservation: Prisma.ReservationCreateNestedOneWithoutPassagersInput
@@ -745,6 +768,7 @@ export type PassagerUncheckedCreateWithoutClientInput = {
   statut: $Enums.TypePassager
   ordre: number
   occupePlace?: boolean
+  embarqueAt?: Date | string | null
   createdAt?: Date | string
   colis?: Prisma.ColisUncheckedCreateNestedManyWithoutPassagerInput
 }
@@ -793,6 +817,7 @@ export type PassagerScalarWhereInput = {
   statut?: Prisma.EnumTypePassagerFilter<"Passager"> | $Enums.TypePassager
   ordre?: Prisma.IntFilter<"Passager"> | number
   occupePlace?: Prisma.BoolFilter<"Passager"> | boolean
+  embarqueAt?: Prisma.DateTimeNullableFilter<"Passager"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Passager"> | Date | string
 }
 
@@ -809,6 +834,7 @@ export type PassagerCreateWithoutReservationInput = {
   statut: $Enums.TypePassager
   ordre: number
   occupePlace?: boolean
+  embarqueAt?: Date | string | null
   createdAt?: Date | string
   colis?: Prisma.ColisCreateNestedManyWithoutPassagerInput
   client?: Prisma.ClientCreateNestedOneWithoutPassagersInput
@@ -828,6 +854,7 @@ export type PassagerUncheckedCreateWithoutReservationInput = {
   statut: $Enums.TypePassager
   ordre: number
   occupePlace?: boolean
+  embarqueAt?: Date | string | null
   createdAt?: Date | string
   colis?: Prisma.ColisUncheckedCreateNestedManyWithoutPassagerInput
 }
@@ -871,6 +898,7 @@ export type PassagerCreateWithoutColisInput = {
   statut: $Enums.TypePassager
   ordre: number
   occupePlace?: boolean
+  embarqueAt?: Date | string | null
   createdAt?: Date | string
   client?: Prisma.ClientCreateNestedOneWithoutPassagersInput
   reservation: Prisma.ReservationCreateNestedOneWithoutPassagersInput
@@ -891,6 +919,7 @@ export type PassagerUncheckedCreateWithoutColisInput = {
   statut: $Enums.TypePassager
   ordre: number
   occupePlace?: boolean
+  embarqueAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -923,6 +952,7 @@ export type PassagerUpdateWithoutColisInput = {
   statut?: Prisma.EnumTypePassagerFieldUpdateOperationsInput | $Enums.TypePassager
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  embarqueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ClientUpdateOneWithoutPassagersNestedInput
   reservation?: Prisma.ReservationUpdateOneRequiredWithoutPassagersNestedInput
@@ -943,6 +973,7 @@ export type PassagerUncheckedUpdateWithoutColisInput = {
   statut?: Prisma.EnumTypePassagerFieldUpdateOperationsInput | $Enums.TypePassager
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  embarqueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -960,6 +991,7 @@ export type PassagerCreateManyClientInput = {
   statut: $Enums.TypePassager
   ordre: number
   occupePlace?: boolean
+  embarqueAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -976,6 +1008,7 @@ export type PassagerUpdateWithoutClientInput = {
   statut?: Prisma.EnumTypePassagerFieldUpdateOperationsInput | $Enums.TypePassager
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  embarqueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   colis?: Prisma.ColisUpdateManyWithoutPassagerNestedInput
   reservation?: Prisma.ReservationUpdateOneRequiredWithoutPassagersNestedInput
@@ -995,6 +1028,7 @@ export type PassagerUncheckedUpdateWithoutClientInput = {
   statut?: Prisma.EnumTypePassagerFieldUpdateOperationsInput | $Enums.TypePassager
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  embarqueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   colis?: Prisma.ColisUncheckedUpdateManyWithoutPassagerNestedInput
 }
@@ -1013,6 +1047,7 @@ export type PassagerUncheckedUpdateManyWithoutClientInput = {
   statut?: Prisma.EnumTypePassagerFieldUpdateOperationsInput | $Enums.TypePassager
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  embarqueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1030,6 +1065,7 @@ export type PassagerCreateManyReservationInput = {
   statut: $Enums.TypePassager
   ordre: number
   occupePlace?: boolean
+  embarqueAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -1046,6 +1082,7 @@ export type PassagerUpdateWithoutReservationInput = {
   statut?: Prisma.EnumTypePassagerFieldUpdateOperationsInput | $Enums.TypePassager
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  embarqueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   colis?: Prisma.ColisUpdateManyWithoutPassagerNestedInput
   client?: Prisma.ClientUpdateOneWithoutPassagersNestedInput
@@ -1065,6 +1102,7 @@ export type PassagerUncheckedUpdateWithoutReservationInput = {
   statut?: Prisma.EnumTypePassagerFieldUpdateOperationsInput | $Enums.TypePassager
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  embarqueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   colis?: Prisma.ColisUncheckedUpdateManyWithoutPassagerNestedInput
 }
@@ -1083,6 +1121,7 @@ export type PassagerUncheckedUpdateManyWithoutReservationInput = {
   statut?: Prisma.EnumTypePassagerFieldUpdateOperationsInput | $Enums.TypePassager
   ordre?: Prisma.IntFieldUpdateOperationsInput | number
   occupePlace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  embarqueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1132,6 +1171,7 @@ export type PassagerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   statut?: boolean
   ordre?: boolean
   occupePlace?: boolean
+  embarqueAt?: boolean
   createdAt?: boolean
   colis?: boolean | Prisma.Passager$colisArgs<ExtArgs>
   client?: boolean | Prisma.Passager$clientArgs<ExtArgs>
@@ -1154,6 +1194,7 @@ export type PassagerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   statut?: boolean
   ordre?: boolean
   occupePlace?: boolean
+  embarqueAt?: boolean
   createdAt?: boolean
   client?: boolean | Prisma.Passager$clientArgs<ExtArgs>
   reservation?: boolean | Prisma.ReservationDefaultArgs<ExtArgs>
@@ -1174,6 +1215,7 @@ export type PassagerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   statut?: boolean
   ordre?: boolean
   occupePlace?: boolean
+  embarqueAt?: boolean
   createdAt?: boolean
   client?: boolean | Prisma.Passager$clientArgs<ExtArgs>
   reservation?: boolean | Prisma.ReservationDefaultArgs<ExtArgs>
@@ -1194,10 +1236,11 @@ export type PassagerSelectScalar = {
   statut?: boolean
   ordre?: boolean
   occupePlace?: boolean
+  embarqueAt?: boolean
   createdAt?: boolean
 }
 
-export type PassagerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reservationId" | "codeUnique" | "clientId" | "nom" | "prenom" | "sexe" | "dateNaissance" | "categorie" | "prix" | "type" | "statut" | "ordre" | "occupePlace" | "createdAt", ExtArgs["result"]["passager"]>
+export type PassagerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reservationId" | "codeUnique" | "clientId" | "nom" | "prenom" | "sexe" | "dateNaissance" | "categorie" | "prix" | "type" | "statut" | "ordre" | "occupePlace" | "embarqueAt" | "createdAt", ExtArgs["result"]["passager"]>
 export type PassagerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   colis?: boolean | Prisma.Passager$colisArgs<ExtArgs>
   client?: boolean | Prisma.Passager$clientArgs<ExtArgs>
@@ -1235,6 +1278,7 @@ export type $PassagerPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     statut: $Enums.TypePassager
     ordre: number
     occupePlace: boolean
+    embarqueAt: Date | null
     createdAt: Date
   }, ExtArgs["result"]["passager"]>
   composites: {}
@@ -1676,6 +1720,7 @@ export interface PassagerFieldRefs {
   readonly statut: Prisma.FieldRef<"Passager", 'TypePassager'>
   readonly ordre: Prisma.FieldRef<"Passager", 'Int'>
   readonly occupePlace: Prisma.FieldRef<"Passager", 'Boolean'>
+  readonly embarqueAt: Prisma.FieldRef<"Passager", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Passager", 'DateTime'>
 }
     

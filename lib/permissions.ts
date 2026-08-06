@@ -55,6 +55,7 @@ export const accessControlStatements = {
   embarquement: ["scan", "update", "read"],
   rapport: ["read"],
   equipe: ["manage", "read"],
+  branch: ["create", "update", "delete", "read", "assign"],
 } as const;
 
 type StatementShape = {
@@ -87,6 +88,7 @@ export const organizationRoleStatements: Record<string, StatementShape> = {
     embarquement: ["scan", "update", "read"],
     rapport: ["read"],
     equipe: ["manage", "read"],
+    branch: ["create", "update", "delete", "read", "assign"],
   },
   [ORG_ROLE.GESTIONNAIRE]: {
     ...organizationPluginMemberAc.statements,
@@ -97,6 +99,7 @@ export const organizationRoleStatements: Record<string, StatementShape> = {
     depart: ["create", "update", "cancel", "read"],
     rapport: ["read"],
     equipe: ["manage", "read"],
+    branch: ["create", "update", "read", "assign"],
   },
   [ORG_ROLE.GUICHETIER]: {
     ...organizationPluginMemberAc.statements,

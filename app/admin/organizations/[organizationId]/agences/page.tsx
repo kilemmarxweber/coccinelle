@@ -6,6 +6,7 @@ import {
   ArrowRight,
   MapPin,
   Package,
+  QrCode,
   Ticket,
   Users,
 } from "lucide-react";
@@ -38,9 +39,15 @@ export default function AgencesDashboard() {
       icon: MapPin,
     },
     {
+      href: `${base}/passages`,
+      title: "Embarquement",
+      description: "Scan QR et pointage des passagers",
+      icon: QrCode,
+    },
+    {
       href: `${base}/colis`,
       title: "Colis",
-      description: "Suivi des envois (à venir)",
+      description: "Suivi des envois et destinataires",
       icon: Package,
     },
   ] as const;

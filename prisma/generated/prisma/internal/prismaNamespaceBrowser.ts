@@ -68,7 +68,13 @@ export const ModelName = {
   Colis: 'Colis',
   ReservationDraft: 'ReservationDraft',
   Paiement: 'Paiement',
-  Penalite: 'Penalite'
+  Penalite: 'Penalite',
+  Branch: 'Branch',
+  BranchMember: 'BranchMember',
+  HotelRoomType: 'HotelRoomType',
+  HotelRoom: 'HotelRoom',
+  ShopCategory: 'ShopCategory',
+  ShopProduct: 'ShopProduct'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -219,6 +225,7 @@ export type ClientScalarFieldEnum = (typeof ClientScalarFieldEnum)[keyof typeof 
 export const TrajetScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
+  branchId: 'branchId',
   villeDepart: 'villeDepart',
   villeArrivee: 'villeArrivee',
   modeTransport: 'modeTransport',
@@ -271,6 +278,7 @@ export const PassagerScalarFieldEnum = {
   statut: 'statut',
   ordre: 'ordre',
   occupePlace: 'occupePlace',
+  embarqueAt: 'embarqueAt',
   createdAt: 'createdAt'
 } as const
 
@@ -369,6 +377,93 @@ export const PenaliteScalarFieldEnum = {
 export type PenaliteScalarFieldEnum = (typeof PenaliteScalarFieldEnum)[keyof typeof PenaliteScalarFieldEnum]
 
 
+export const BranchScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  type: 'type',
+  name: 'name',
+  code: 'code',
+  slug: 'slug',
+  status: 'status',
+  address: 'address',
+  city: 'city',
+  phone: 'phone',
+  timezone: 'timezone',
+  settings: 'settings',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BranchScalarFieldEnum = (typeof BranchScalarFieldEnum)[keyof typeof BranchScalarFieldEnum]
+
+
+export const BranchMemberScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  memberId: 'memberId',
+  role: 'role',
+  isPrimary: 'isPrimary',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BranchMemberScalarFieldEnum = (typeof BranchMemberScalarFieldEnum)[keyof typeof BranchMemberScalarFieldEnum]
+
+
+export const HotelRoomTypeScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  name: 'name',
+  description: 'description',
+  capacity: 'capacity',
+  priceNight: 'priceNight',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelRoomTypeScalarFieldEnum = (typeof HotelRoomTypeScalarFieldEnum)[keyof typeof HotelRoomTypeScalarFieldEnum]
+
+
+export const HotelRoomScalarFieldEnum = {
+  id: 'id',
+  roomTypeId: 'roomTypeId',
+  number: 'number',
+  floor: 'floor',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelRoomScalarFieldEnum = (typeof HotelRoomScalarFieldEnum)[keyof typeof HotelRoomScalarFieldEnum]
+
+
+export const ShopCategoryScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ShopCategoryScalarFieldEnum = (typeof ShopCategoryScalarFieldEnum)[keyof typeof ShopCategoryScalarFieldEnum]
+
+
+export const ShopProductScalarFieldEnum = {
+  id: 'id',
+  categoryId: 'categoryId',
+  name: 'name',
+  sku: 'sku',
+  price: 'price',
+  stockQty: 'stockQty',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ShopProductScalarFieldEnum = (typeof ShopProductScalarFieldEnum)[keyof typeof ShopProductScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -382,6 +477,14 @@ export const JsonNullValueInput = {
 } as const
 
 export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {

@@ -21,7 +21,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, ShieldCheck, Users } from "lucide-react";
+import { Building2, LayoutDashboard, ShieldCheck, Users } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { APP_ROLE } from "@/lib/permissions";
 
@@ -34,10 +34,11 @@ type NavItem = {
 };
 
 const navMain: NavItem[] = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin", label: "Vue d’ensemble", icon: LayoutDashboard },
+  { href: "/admin/organizations", label: "Organisations", icon: Building2 },
   {
     href: "/admin/role-management",
-    label: "Role Management",
+    label: "Rôles globaux",
     icon: Users,
     requiresGlobalUserList: true,
   },
@@ -63,6 +64,9 @@ export function AppSidebar() {
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">Coccinelle</span>
+                <span className="truncate text-xs text-muted-foreground">
+                  Admin plateforme
+                </span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -71,7 +75,7 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>Plateforme</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {visibleNav.map((item) => {

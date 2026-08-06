@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | E — Ops terrain |
-| **Status** | `todo` |
+| **Status** | `done` |
 | **Dépend de** | U03 |
 | **Débloque** | — |
 
@@ -57,3 +57,10 @@ La page **colis** affiche les vrais colis Prisma ; l’agent fait évoluer les s
 1. Créer réservation + colis → page colis.
 2. Changer statuts → refresh OK.
 3. Vérifier destinataire affiché.
+
+## Livré
+
+- Liste réelle Prisma : `/admin/organizations/[organizationId]/agences/colis`
+- Filtres statut + avance `EN_ATTENTE` → `EXPEDIE` → `LIVRE`
+- Destinataire (U03) + lien réservation
+- Gates : `inscription:share` (liste) / `inscription:update` (statuts) via Better Auth

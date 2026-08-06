@@ -1,38 +1,42 @@
-import Link from "next/link";
-import { Package } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
-import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/ui/empty-state";
+import { assertOrganizationPermission } from "@/lib/auth/organization-permission";
+import { ColisManager } from "./components/colis-manager";
+import { listColisAction } from "./actions";
 
-type PageProps = { params: Promise<{ organizationId: string }> };
+type PageProps = {
+  params: Promise<{ organizationId: string }>;
+  searchParams: Promise<{ statut?: string }>;
+};
 
-export default async function ColisPage({ params }: PageProps) {
+export default async function ColisPage({ params, searchParams }: PageProps) {
   const { organizationId } = await params;
-  const base = `/admin/organizations/${organizationId}/agences`;
+  const { statut } = await searchParams;
+
+  const readPerm = await assertOrganizationPermission(organizationId, {
+    inscription: ["share"],
+  });
+  const updatePerm = await assertOrganizationPermission(organizationId, {
+    inscription: ["update"],
+  });
+
+  const list = readPerm.ok
+    ? await listColisAction(organizationId, { statut })
+    : null;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-10">
       <PageHeader
         title="Colis"
-        subtitle="Envois et destinataires"
+        subtitle="Suivi des envois et destinataires"
         showBack
       />
-      <div className="mx-auto max-w-2xl px-4 py-8">
-        <EmptyState
-          icon={Package}
-          title="Gestion colis à venir"
-          description="Les colis se créent déjà au guichet (avec destinataire). Le suivi des statuts arrivera dans une prochaine unit."
-          action={
-            <Button
-              render={
-                <Link href={`${base}/reservations/guichet/vendre`} />
-              }
-            >
-              Vendre au guichet
-            </Button>
-          }
-        />
-      </div>
+      <ColisManager
+        organizationId={organizationId}
+        canRead={readPerm.ok}
+        canUpdate={updatePerm.ok}
+        denyMessage={readPerm.ok ? undefined : readPerm.message}
+        initialItems={list?.ok ? list.data : []}
+      />
     </div>
   );
 }

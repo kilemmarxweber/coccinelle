@@ -89,6 +89,30 @@ enum ModeTransport {
   AVION
 }
 
+enum BranchType {
+  AGENCE
+  HOTEL
+  BOUTIQUE
+}
+
+enum BranchStatus {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+
+enum BranchMemberStatus {
+  ACTIVE
+  REVOKED
+}
+
+enum HotelRoomStatus {
+  AVAILABLE
+  OCCUPIED
+  CLEANING
+  OUT_OF_ORDER
+}
+
 
 model User {
   id            String       @id
@@ -173,6 +197,7 @@ model Organization {
   organizationroles OrganizationRole[]
   trajets           Trajet[]
   reservationDrafts ReservationDraft[]
+  branches          Branch[]
 
   @@map("organization")
 }
@@ -192,13 +217,14 @@ model OrganizationRole {
 }
 
 model Member {
-  id             String       @id
+  id             String         @id
   organizationId String
   userId         String
-  role           String       @default("member")
+  role           String         @default("member")
   createdAt      DateTime
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  branchMembers  BranchMember[]
 
   @@index([organizationId])
   @@index([userId])
@@ -242,6 +268,7 @@ model Client {
 model Trajet {
   id              String            @id @default(uuid())
   organizationId  String
+  branchId        String?
   villeDepart     String
   villeArrivee    String
   modeTransport   ModeTransport     @default(BUS)
@@ -252,6 +279,7 @@ model Trajet {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   organization    Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch          Branch?           @relation(fields: [branchId], references: [id], onDelete: SetNull)
   trajetProgramme TrajetProgramme[]
   trajetDepart    TrajetDepart[]
   reservations    Reservation[]
@@ -259,6 +287,7 @@ model Trajet {
 
   @@index([organizationId, villeDepart, villeArrivee])
   @@index([organizationId, modeTransport])
+  @@index([branchId])
 }
 
 model TrajetProgramme {
@@ -305,6 +334,7 @@ model Passager {
   statut        TypePassager
   ordre         Int
   occupePlace   Boolean           @default(true)
+  embarqueAt    DateTime?
   createdAt     DateTime          @default(now())
   colis         Colis[]
   client        Client?           @relation(fields: [clientId], references: [id])
@@ -423,5 +453,107 @@ model Penalite {
   reservation   Reservation @relation(fields: [reservationId], references: [id])
 
   @@index([reservationId])
+}
+
+/** Point d’exploitation typé (Agence / Hôtel / Boutique). */
+model Branch {
+  id             String        @id @default(uuid())
+  organizationId String
+  type           BranchType
+  name           String
+  code           String
+  slug           String?
+  status         BranchStatus  @default(ACTIVE)
+  address        String?
+  city           String?
+  phone          String?
+  timezone       String        @default("Africa/Kinshasa")
+  settings       Json?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  members        BranchMember[]
+  trajets        Trajet[]
+  hotelRoomTypes HotelRoomType[]
+  shopCategories ShopCategory[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId, type])
+  @@index([organizationId, status])
+}
+
+model BranchMember {
+  id        String             @id @default(uuid())
+  branchId  String
+  memberId  String
+  role      String             @default("branch_manager")
+  isPrimary Boolean            @default(false)
+  status    BranchMemberStatus @default(ACTIVE)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  branch    Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  member    Member             @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, memberId])
+  @@index([memberId])
+  @@index([branchId, status])
+}
+
+model HotelRoomType {
+  id          String      @id @default(uuid())
+  branchId    String
+  name        String
+  description String?
+  capacity    Int         @default(2)
+  priceNight  Float
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  branch      Branch      @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  rooms       HotelRoom[]
+
+  @@index([branchId])
+}
+
+model HotelRoom {
+  id         String          @id @default(uuid())
+  roomTypeId String
+  number     String
+  floor      String?
+  status     HotelRoomStatus @default(AVAILABLE)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  roomType   HotelRoomType   @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([roomTypeId, number])
+  @@index([roomTypeId])
+}
+
+model ShopCategory {
+  id        String        @id @default(uuid())
+  branchId  String
+  name      String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  branch    Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  products  ShopProduct[]
+
+  @@unique([branchId, name])
+  @@index([branchId])
+}
+
+model ShopProduct {
+  id         String       @id @default(uuid())
+  categoryId String
+  name       String
+  sku        String
+  price      Float
+  stockQty   Int          @default(0)
+  active     Boolean      @default(true)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  category   ShopCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, sku])
+  @@index([categoryId])
 }
 

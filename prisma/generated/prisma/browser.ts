@@ -107,3 +107,33 @@ export type Paiement = Prisma.PaiementModel
  * 
  */
 export type Penalite = Prisma.PenaliteModel
+/**
+ * Model Branch
+ * * Point d’exploitation typé (Agence / Hôtel / Boutique).
+ */
+export type Branch = Prisma.BranchModel
+/**
+ * Model BranchMember
+ * 
+ */
+export type BranchMember = Prisma.BranchMemberModel
+/**
+ * Model HotelRoomType
+ * 
+ */
+export type HotelRoomType = Prisma.HotelRoomTypeModel
+/**
+ * Model HotelRoom
+ * 
+ */
+export type HotelRoom = Prisma.HotelRoomModel
+/**
+ * Model ShopCategory
+ * 
+ */
+export type ShopCategory = Prisma.ShopCategoryModel
+/**
+ * Model ShopProduct
+ * 
+ */
+export type ShopProduct = Prisma.ShopProductModel

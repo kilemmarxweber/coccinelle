@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Ticket, Zap } from "lucide-react";
+import { QrCode, Ticket, Zap } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import {
@@ -50,8 +50,10 @@ export function GuichetHome({
   lastSales,
 }: Props) {
   const base = `/admin/organizations/${organizationId}/agences/reservations`;
+  const agenceBase = `/admin/organizations/${organizationId}/agences`;
   const vendreHref = `${base}/guichet/vendre`;
   const expressHref = `${base}/guichet/vendre?express=1`;
+  const embarquementHref = `${agenceBase}/passages`;
 
   return (
     <div className="min-h-screen pb-10">
@@ -91,6 +93,14 @@ export function GuichetHome({
           >
             <Zap data-icon="inline-start" aria-hidden />
             Vente express
+          </Button>
+          <Button
+            className="h-12 flex-1"
+            variant="outline"
+            render={<Link href={embarquementHref} />}
+          >
+            <QrCode data-icon="inline-start" aria-hidden />
+            Embarquement
           </Button>
         </div>
 

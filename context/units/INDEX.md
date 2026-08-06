@@ -79,13 +79,13 @@ Toute autorisation passe par **Better Auth** (plugin **organization** + access c
 | 09 | [Shell navigation gérant](./U09-shell-gerant.md) | C | U04 | Espace `/…/gerant` distinct `done` |
 | 10 | [Dashboard gérant KPI](./U10-dashboard-gerant.md) | C | U09, U02 | KPI réels (plus de mock) `done` |
 | 11 | [Planning départs gérant](./U11-planning-departs.md) | C | U09, U02 | Ouvrir/fermer/capacité visibles `done` |
-| 12 | [Réservations & rapports gérant](./U12-reservations-rapports-gerant.md) | C | U09 | Filtres + CA basique |
+| 12 | [Réservations & rapports gérant](./U12-reservations-rapports-gerant.md) | C | U09 | Filtres + CA basique `done` |
 | 13 | [PWA recherche & résultats](./U13-pwa-recherche-resultats.md) | D | U05, U06 | `/[orgSlug]` recherche publique `done` |
-| 14 | [PWA checkout draft](./U14-pwa-checkout-draft.md) | D | U13, U03 | Draft + passagers + colis |
-| 15 | [PWA paiement & mes billets](./U15-pwa-paiement-mes-billets.md) | D | U14, U08 | Confirmation + historique client |
-| 16 | [Embarquement QR](./U16-embarquement-qr.md) | E | U08, U04 | Scan → statut EMBARQUE |
-| 17 | [Gestion colis réelle](./U17-gestion-colis.md) | E | U03 | Statuts colis non mock |
-| 18 | [Admin plateforme & branding](./U18-admin-branding.md) | F | U09 | Admin ≠ agence ; marque Coccinelle |
+| 14 | [PWA checkout draft](./U14-pwa-checkout-draft.md) | D | U13, U03 | Draft + passagers + colis `done` |
+| 15 | [PWA paiement & mes billets](./U15-pwa-paiement-mes-billets.md) | D | U14, U08 | Confirmation + historique client `done` |
+| 16 | [Embarquement QR](./U16-embarquement-qr.md) | E | U08, U04 | Scan → statut EMBARQUE `done` |
+| 17 | [Gestion colis réelle](./U17-gestion-colis.md) | E | U03 | Statuts colis non mock `done` |
+| 18 | [Admin plateforme & branding](./U18-admin-branding.md) | F | U09 | Admin ≠ agence ; marque Coccinelle `done` |
 
 ```mermaid
 flowchart TD

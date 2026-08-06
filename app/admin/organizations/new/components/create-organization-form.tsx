@@ -75,7 +75,7 @@ export function CreateOrganizationForm() {
 
       toast.success("Organisation créée.");
       if (orgId) {
-        router.push(`/admin/organizations/${orgId}`);
+        router.push(`/admin/organizations/${orgId}/branches/new`);
       } else {
         router.push("/admin/organizations");
       }

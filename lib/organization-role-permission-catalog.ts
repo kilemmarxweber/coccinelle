@@ -27,6 +27,7 @@ export const ORGANIZATION_BUSINESS_RESOURCES = [
   "embarquement",
   "rapport",
   "equipe",
+  "branch",
 ] as const satisfies ReadonlyArray<keyof typeof accessControlStatements>;
 
 /** Catalogue complet : un entrée par slug org connu de l’app. */
