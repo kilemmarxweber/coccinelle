@@ -35,3 +35,7 @@ Ne **pas** mélanger voyage + hôtel + boutique dans le même menu : le hub n’
 ## Prochaine étape
 
 Migrer progressivement le guichet / réservations de `.../agences/` → `.../branches/[branchId]/agence/`, en filtrant toujours `organizationId` + `branchId`.
+
+## Hôtel
+
+Les sous-routes `hotel/chambres|sejours|restauration` restent la coquille URL. Le **produit hôtel** se construit via `context/specs/UH01`…`UH07` (B10 obsolete).

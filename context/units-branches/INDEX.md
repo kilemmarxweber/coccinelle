@@ -37,7 +37,7 @@ Chaque unit = livrable **visible** + **testable**. Suivre l’ordre strict.
 | B07 | [Scoper voyage sur branchId](./B07-voyage-branch-scope.md) | B1 | B01, B05 | Guichet/gérant filtrés par branche | `todo` |
 | B08 | [CashSession](./B08-cash-session.md) | B2 | B01 | Ouvrir / clôturer caisse | `todo` |
 | B09 | [Payment unifié](./B09-payment-core.md) | B2 | B08 | Encaisser sur docs métier | `todo` |
-| B10 | [Hôtel MVP](./B10-hotel-mvp.md) | B3 | B02, B09 | Chambres + séjour + paye | `todo` |
+| B10 | [Hôtel MVP](./B10-hotel-mvp.md) | B3 | — | **OBSOLETE** — voir `context/specs/00-build-plan.md` (UH01–UH07) | `obsolete` |
 | B11 | [Boutique MVP](./B11-boutique-mvp.md) | B4 | B02, B09 | POS + stock | `todo` |
 | B12 | [Rapports multi-branches](./B12-rapports-consolides.md) | B5 | B07–B11 | CA consolidé owner | `todo` |
 
@@ -72,8 +72,9 @@ flowchart TD
 4. Vérifier liste branches + compteurs ; bouton **Dashboard** →  
    `/admin/organizations/[orgId]/branches/[branchId]`.
 
-**Prochaine unit :** [B04](./B04-branch-member-permissions.md) (affectations + `branch:*`).  
-**Dashboard dynamique :** [PLAN-dashboard-dynamique.md](./PLAN-dashboard-dynamique.md) (D01–D02 livrés côté nav ; D03–D06 = B08–B11).
+**Prochaine unit branches (hors hôtel) :** [B04](./B04-branch-member-permissions.md) (affectations + `branch:*`).  
+**Hôtel :** ne pas suivre B10 — build actif dans [`../specs/00-build-plan.md`](../specs/00-build-plan.md).  
+**Dashboard dynamique :** [PLAN-dashboard-dynamique.md](./PLAN-dashboard-dynamique.md) (D01–D02 livrés ; D06 hôtel obsolete → UH*).
 
 ---
 

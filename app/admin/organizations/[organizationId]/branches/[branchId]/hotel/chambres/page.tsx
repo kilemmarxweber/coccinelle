@@ -1,5 +1,6 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
-import { BranchModulePlaceholder } from "../../_components/branch-module-placeholder";
+import { listRoomsBoard } from "@/lib/hotel/list-rooms-board";
+import { HotelRoomBoard } from "@/components/hotel/hotel-room-board";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
@@ -12,13 +13,14 @@ export default async function HotelChambresPage({ params }: PageProps) {
     branchId,
     requireModule: "hotel",
   });
+  const board = await listRoomsBoard(branch.id);
+
   return (
-    <BranchModulePlaceholder
+    <HotelRoomBoard
       organizationId={organizationId}
-      branchId={branchId}
+      branchId={branch.id}
       branchName={branch.name}
-      title="Chambres"
-      description="Types de chambres et inventaire (HotelRoomType / HotelRoom)."
+      initial={board}
     />
   );
 }

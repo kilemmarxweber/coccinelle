@@ -98,7 +98,7 @@ flowchart LR
 | **D03** | Session caisse (ouvrir / clôturer) — B08 | D02 | État caisse visible |
 | **D04** | Brancher vente AGENCE (migrer guichet legacy → `agence/…`) — B07 | D02 | Vente réelle depuis CTA |
 | **D05** | Brancher vente BOUTIQUE POS — B11 | D02, D03 | Ticket depuis CTA |
-| **D06** | Brancher vente HOTEL — B10 | D02, D03 | Encaissement séjour |
+| **D06** | Brancher vente HOTEL — **obsolete (B10)** ; suivre `context/specs/UH*` | — | Remplacé par UH01–UH06 |
 
 > **D01 + D02** = ce sprint (navigation dynamique).  
 > **D03–D06** = métier cashpaye + modules (déjà dans INDEX B07–B11).
