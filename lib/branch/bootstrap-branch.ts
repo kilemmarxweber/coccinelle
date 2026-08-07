@@ -119,6 +119,55 @@ export async function bootstrapBranchByType(
     });
     result.roomTypesCreated = 2;
     result.roomsCreated = standard.rooms.length + suite.rooms.length;
+
+    await db.hotelMenuItem.createMany({
+      data: [
+        {
+          branchId: input.branchId,
+          name: "Petit-déjeuner",
+          category: "Restauration",
+          price: 12,
+          needsKitchen: true,
+        },
+        {
+          branchId: input.branchId,
+          name: "Plat du jour",
+          category: "Restauration",
+          price: 18,
+          needsKitchen: true,
+        },
+        {
+          branchId: input.branchId,
+          name: "Eau minérale",
+          category: "Boissons",
+          price: 1.5,
+          needsKitchen: false,
+        },
+        {
+          branchId: input.branchId,
+          name: "Jus local",
+          category: "Boissons",
+          price: 2.5,
+          needsKitchen: false,
+        },
+        {
+          branchId: input.branchId,
+          name: "Bière locale",
+          category: "Boissons",
+          price: 3,
+          needsKitchen: false,
+        },
+      ],
+    });
+
+    await db.exchangeRate.create({
+      data: {
+        branchId: input.branchId,
+        fromCurrency: "USD",
+        toCurrency: "CDF",
+        rate: 2850,
+      },
+    });
   }
 
   if (input.type === "BOUTIQUE") {

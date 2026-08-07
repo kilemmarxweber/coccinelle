@@ -1,5 +1,5 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
-import { BranchModulePlaceholder } from "../../_components/branch-module-placeholder";
+import { BranchModulePlaceholder } from "../_components/branch-module-placeholder";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;

@@ -1,24 +1,44 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
-import { BranchModulePlaceholder } from "../../_components/branch-module-placeholder";
+import {
+  listRoomsWithTypesAction,
+  listStaysForMonthAction,
+  listStaysForYearAction,
+} from "@/lib/hotel/actions";
+import { SejoursClient } from "./sejours-client";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
+  searchParams: Promise<{ year?: string; month?: string }>;
 };
 
-export default async function HotelSejoursPage({ params }: PageProps) {
+export default async function SejoursPage({ params, searchParams }: PageProps) {
   const { organizationId, branchId } = await params;
-  const branch = await requireBranchContext({
+  const sp = await searchParams;
+  await requireBranchContext({
     organizationId,
     branchId,
     requireModule: "hotel",
   });
+
+  const now = new Date();
+  const year = Number(sp.year) || now.getFullYear();
+  const month = Number(sp.month) || now.getMonth() + 1;
+
+  const [rooms, stays, yearStays] = await Promise.all([
+    listRoomsWithTypesAction(organizationId, branchId),
+    listStaysForMonthAction(organizationId, branchId, year, month),
+    listStaysForYearAction(organizationId, branchId, year),
+  ]);
+
   return (
-    <BranchModulePlaceholder
+    <SejoursClient
       organizationId={organizationId}
       branchId={branchId}
-      branchName={branch.name}
-      title="Séjours"
-      description="Réservations hébergement, check-in / check-out."
+      rooms={rooms}
+      stays={stays}
+      yearStays={yearStays}
+      initialYear={year}
+      initialMonth={month}
     />
   );
 }

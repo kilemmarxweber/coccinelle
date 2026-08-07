@@ -1,5 +1,6 @@
+import { redirect } from "next/navigation";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
-import { BranchModulePlaceholder } from "../_components/branch-module-placeholder";
+import { hotelRoutes } from "@/lib/branch/paths";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
@@ -7,18 +8,10 @@ type PageProps = {
 
 export default async function HotelHubPage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
-  const branch = await requireBranchContext({
+  await requireBranchContext({
     organizationId,
     branchId,
     requireModule: "hotel",
   });
-  return (
-    <BranchModulePlaceholder
-      organizationId={organizationId}
-      branchId={branchId}
-      branchName={branch.name}
-      title="Module Hôtel"
-      description="Hébergement, séjours et restauration F&B."
-    />
-  );
+  redirect(hotelRoutes.sejours(organizationId, branchId));
 }

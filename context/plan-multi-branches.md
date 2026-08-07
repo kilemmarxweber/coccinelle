@@ -8,6 +8,7 @@
 **Liens :**
 - Plan voyage déjà livré : [`plan-restructuration-reservation.md`](./plan-restructuration-reservation.md)
 - Units voyage : [`units/INDEX.md`](./units/INDEX.md)
+- **Hôtel caisse / séjours / resto :** [`plan-hotel-caisse-sejours-restauration.md`](./plan-hotel-caisse-sejours-restauration.md)
 - Schéma actuel : `prisma/schema.prisma` (`Organization`, `Member` Better Auth — **pas encore** de `Branch`)
 - Permissions : `lib/permissions.ts` (Better Auth access control)
 

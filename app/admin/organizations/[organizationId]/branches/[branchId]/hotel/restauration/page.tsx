@@ -1,24 +1,40 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
-import { BranchModulePlaceholder } from "../../_components/branch-module-placeholder";
+import {
+  ensureHotelMenuSeedAction,
+  listMenuItemsAction,
+  listOrdersByStatusAction,
+} from "@/lib/hotel/actions";
+import { RestaurationClient } from "./restauration-client";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
 };
 
-export default async function HotelRestaurationPage({ params }: PageProps) {
+export default async function RestaurationPage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
-  const branch = await requireBranchContext({
+  await requireBranchContext({
     organizationId,
     branchId,
     requireModule: "hotel",
   });
+  await ensureHotelMenuSeedAction(organizationId, branchId);
+  const [menuItems, orders] = await Promise.all([
+    listMenuItemsAction(organizationId, branchId),
+    listOrdersByStatusAction(organizationId, branchId, [
+      "ENVOYEE",
+      "EN_PREPARATION",
+      "PRETE",
+      "EN_CAISSE",
+      "PAYEE",
+      "LIVREE",
+    ]),
+  ]);
   return (
-    <BranchModulePlaceholder
+    <RestaurationClient
       organizationId={organizationId}
       branchId={branchId}
-      branchName={branch.name}
-      title="Restauration"
-      description="Commandes F&B et additions chambre / salle."
+      menuItems={menuItems}
+      orders={orders}
     />
   );
 }

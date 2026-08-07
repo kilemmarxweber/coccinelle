@@ -113,6 +113,44 @@ enum HotelRoomStatus {
   OUT_OF_ORDER
 }
 
+enum CashSessionStatus {
+  OPEN
+  CLOSED
+}
+
+enum PaymentMethod {
+  CASH
+  MOBILE_MONEY
+  CARTE
+}
+
+enum HotelStayStatus {
+  RESERVED
+  CHECKED_IN
+  CHECKED_OUT
+  CANCELLED
+  NO_SHOW
+}
+
+enum FolioLineKind {
+  NIGHT
+  FNB
+  PRODUCT
+  TAX
+  OTHER
+}
+
+enum HotelOrderStatus {
+  BROUILLON
+  ENVOYEE
+  EN_PREPARATION
+  PRETE
+  EN_CAISSE
+  PAYEE
+  LIVREE
+  ANNULEE
+}
+
 
 model User {
   id            String       @id
@@ -476,6 +514,14 @@ model Branch {
   trajets        Trajet[]
   hotelRoomTypes HotelRoomType[]
   shopCategories ShopCategory[]
+  cashSessions   CashSession[]
+  exchangeRates  ExchangeRate[]
+  hotelStays     HotelStay[]
+  folios         Folio[]
+  hotelOrders    HotelOrder[]
+  payments       Payment[]
+  notifications  BranchNotification[]
+  menuItems      HotelMenuItem[]
 
   @@unique([organizationId, code])
   @@index([organizationId, type])
@@ -523,6 +569,7 @@ model HotelRoom {
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
   roomType   HotelRoomType   @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+  stays      HotelStay[]
 
   @@unique([roomTypeId, number])
   @@index([roomTypeId])
@@ -555,5 +602,192 @@ model ShopProduct {
 
   @@unique([categoryId, sku])
   @@index([categoryId])
+}
+
+/** Taux de change par branche (ex. USD → CDF). */
+model ExchangeRate {
+  id        String   @id @default(uuid())
+  branchId  String
+  fromCurrency String @default("USD")
+  toCurrency   String @default("CDF")
+  rate      Float
+  validFrom DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, validFrom])
+}
+
+model CashSession {
+  id           String            @id @default(uuid())
+  branchId     String
+  openedByUserId String
+  closedByUserId String?
+  status       CashSessionStatus @default(OPEN)
+  openingFloat Float             @default(0)
+  closingCash  Float?
+  openedAt     DateTime          @default(now())
+  closedAt     DateTime?
+  notes        String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  branch       Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  payments     Payment[]
+
+  @@index([branchId, status])
+}
+
+model HotelStay {
+  id           String          @id @default(uuid())
+  branchId     String
+  roomId       String
+  guestName    String
+  guestPhone   String?
+  guestEmail   String?
+  checkInDate  DateTime        @db.Date
+  checkOutDate DateTime        @db.Date
+  status       HotelStayStatus @default(RESERVED)
+  adults       Int             @default(1)
+  notes        String?
+  checkedInAt  DateTime?
+  checkedOutAt DateTime?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  branch       Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  room         HotelRoom       @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  folio        Folio?
+  orders       HotelOrder[]
+
+  @@index([branchId, checkInDate, checkOutDate])
+  @@index([roomId, status])
+}
+
+model Folio {
+  id        String      @id @default(uuid())
+  branchId  String
+  stayId    String?     @unique
+  label     String?
+  closed    Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  branch    Branch      @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  stay      HotelStay?  @relation(fields: [stayId], references: [id], onDelete: SetNull)
+  lines     FolioLine[]
+  payments  Payment[]
+  orders    HotelOrder[]
+
+  @@index([branchId, closed])
+}
+
+model FolioLine {
+  id          String        @id @default(uuid())
+  folioId     String
+  kind        FolioLineKind @default(OTHER)
+  description String
+  quantity    Float         @default(1)
+  unitPrice   Float
+  amount      Float
+  createdAt   DateTime      @default(now())
+  folio       Folio         @relation(fields: [folioId], references: [id], onDelete: Cascade)
+
+  @@index([folioId])
+}
+
+model Payment {
+  id               String        @id @default(uuid())
+  branchId         String
+  cashSessionId    String?
+  folioId          String?
+  orderId          String?
+  receiptNumber    String
+  method           PaymentMethod @default(CASH)
+  amountCdf        Float
+  amountForeign    Float?
+  foreignCurrency  String?
+  exchangeRateUsed Float?
+  paidAt           DateTime      @default(now())
+  cashierUserId    String
+  note             String?
+  createdAt        DateTime      @default(now())
+  branch           Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  cashSession      CashSession?  @relation(fields: [cashSessionId], references: [id], onDelete: SetNull)
+  folio            Folio?        @relation(fields: [folioId], references: [id], onDelete: SetNull)
+  order            HotelOrder?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@unique([branchId, receiptNumber])
+  @@index([branchId, paidAt])
+  @@index([folioId])
+  @@index([orderId])
+}
+
+/** Catalogue F&B / vente rapide hôtel. */
+model HotelMenuItem {
+  id           String   @id @default(uuid())
+  branchId     String
+  name         String
+  category     String   @default("Divers")
+  price        Float
+  needsKitchen Boolean  @default(true)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  branch       Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  orderItems   HotelOrderItem[]
+
+  @@index([branchId, active])
+}
+
+model HotelOrder {
+  id          String           @id @default(uuid())
+  branchId    String
+  stayId      String?
+  folioId     String?
+  tableLabel  String?
+  status      HotelOrderStatus @default(BROUILLON)
+  serverNote  String?
+  createdByUserId String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  sentAt      DateTime?
+  readyAt     DateTime?
+  paidAt      DateTime?
+  deliveredAt DateTime?
+  branch      Branch           @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  stay        HotelStay?       @relation(fields: [stayId], references: [id], onDelete: SetNull)
+  folio       Folio?           @relation(fields: [folioId], references: [id], onDelete: SetNull)
+  items       HotelOrderItem[]
+  payments    Payment[]
+
+  @@index([branchId, status])
+}
+
+model HotelOrderItem {
+  id         String        @id @default(uuid())
+  orderId    String
+  menuItemId String?
+  name       String
+  quantity   Int           @default(1)
+  unitPrice  Float
+  amount     Float
+  needsKitchen Boolean     @default(true)
+  order      HotelOrder    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem   HotelMenuItem? @relation(fields: [menuItemId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+}
+
+model BranchNotification {
+  id        String   @id @default(uuid())
+  branchId  String
+  title     String
+  body      String
+  kind      String   @default("info")
+  href      String?
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, createdAt])
 }
 

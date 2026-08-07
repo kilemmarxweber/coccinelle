@@ -73,7 +73,8 @@ flowchart TD
    `/admin/organizations/[orgId]/branches/[branchId]`.
 
 **Prochaine unit :** [B04](./B04-branch-member-permissions.md) (affectations + `branch:*`).  
-**Dashboard dynamique :** [PLAN-dashboard-dynamique.md](./PLAN-dashboard-dynamique.md) (D01–D02 livrés côté nav ; D03–D06 = B08–B11).
+**Dashboard dynamique :** [PLAN-dashboard-dynamique.md](./PLAN-dashboard-dynamique.md) (D01–D02 livrés côté nav ; D03–D06 = B08–B11).  
+**Hôtel (caisse · séjours · resto) :** [`../plan-hotel-caisse-sejours-restauration.md`](../plan-hotel-caisse-sejours-restauration.md) — phases H0→H5, cartes Dashboard only.
 
 ---
 

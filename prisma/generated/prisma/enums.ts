@@ -161,3 +161,56 @@ export const HotelRoomStatus = {
 } as const
 
 export type HotelRoomStatus = (typeof HotelRoomStatus)[keyof typeof HotelRoomStatus]
+
+
+export const CashSessionStatus = {
+  OPEN: 'OPEN',
+  CLOSED: 'CLOSED'
+} as const
+
+export type CashSessionStatus = (typeof CashSessionStatus)[keyof typeof CashSessionStatus]
+
+
+export const PaymentMethod = {
+  CASH: 'CASH',
+  MOBILE_MONEY: 'MOBILE_MONEY',
+  CARTE: 'CARTE'
+} as const
+
+export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
+
+
+export const HotelStayStatus = {
+  RESERVED: 'RESERVED',
+  CHECKED_IN: 'CHECKED_IN',
+  CHECKED_OUT: 'CHECKED_OUT',
+  CANCELLED: 'CANCELLED',
+  NO_SHOW: 'NO_SHOW'
+} as const
+
+export type HotelStayStatus = (typeof HotelStayStatus)[keyof typeof HotelStayStatus]
+
+
+export const FolioLineKind = {
+  NIGHT: 'NIGHT',
+  FNB: 'FNB',
+  PRODUCT: 'PRODUCT',
+  TAX: 'TAX',
+  OTHER: 'OTHER'
+} as const
+
+export type FolioLineKind = (typeof FolioLineKind)[keyof typeof FolioLineKind]
+
+
+export const HotelOrderStatus = {
+  BROUILLON: 'BROUILLON',
+  ENVOYEE: 'ENVOYEE',
+  EN_PREPARATION: 'EN_PREPARATION',
+  PRETE: 'PRETE',
+  EN_CAISSE: 'EN_CAISSE',
+  PAYEE: 'PAYEE',
+  LIVREE: 'LIVREE',
+  ANNULEE: 'ANNULEE'
+} as const
+
+export type HotelOrderStatus = (typeof HotelOrderStatus)[keyof typeof HotelOrderStatus]

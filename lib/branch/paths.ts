@@ -99,6 +99,14 @@ export const hotelRoutes = {
     `${branchModulePath(orgId, branchId, "hotel")}/sejours`,
   restauration: (orgId: string, branchId: string) =>
     `${branchModulePath(orgId, branchId, "hotel")}/restauration`,
+  cuisine: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "hotel")}/cuisine`,
+} as const;
+
+export const caisseRoutes = {
+  root: (orgId: string, branchId: string) => branchCaissePath(orgId, branchId),
+  receipt: (orgId: string, branchId: string, paymentId: string) =>
+    `${branchCaissePath(orgId, branchId)}/recu/${paymentId}`,
 } as const;
 
 /** Sous-routes BOUTIQUE. */

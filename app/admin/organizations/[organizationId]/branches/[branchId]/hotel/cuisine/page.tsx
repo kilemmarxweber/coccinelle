@@ -1,24 +1,27 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
-import { listRoomsWithTypesAction } from "@/lib/hotel/actions";
-import { ChambresClient } from "./chambres-client";
+import { listOrdersByStatusAction } from "@/lib/hotel/actions";
+import { CuisineClient } from "./cuisine-client";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
 };
 
-export default async function ChambresPage({ params }: PageProps) {
+export default async function CuisinePage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
   await requireBranchContext({
     organizationId,
     branchId,
     requireModule: "hotel",
   });
-  const rooms = await listRoomsWithTypesAction(organizationId, branchId);
+  const orders = await listOrdersByStatusAction(organizationId, branchId, [
+    "ENVOYEE",
+    "EN_PREPARATION",
+  ]);
   return (
-    <ChambresClient
+    <CuisineClient
       organizationId={organizationId}
       branchId={branchId}
-      rooms={rooms}
+      orders={orders}
     />
   );
 }

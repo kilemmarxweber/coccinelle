@@ -161,3 +161,53 @@ export type ShopCategory = Prisma.ShopCategoryModel
  * 
  */
 export type ShopProduct = Prisma.ShopProductModel
+/**
+ * Model ExchangeRate
+ * * Taux de change par branche (ex. USD → CDF).
+ */
+export type ExchangeRate = Prisma.ExchangeRateModel
+/**
+ * Model CashSession
+ * 
+ */
+export type CashSession = Prisma.CashSessionModel
+/**
+ * Model HotelStay
+ * 
+ */
+export type HotelStay = Prisma.HotelStayModel
+/**
+ * Model Folio
+ * 
+ */
+export type Folio = Prisma.FolioModel
+/**
+ * Model FolioLine
+ * 
+ */
+export type FolioLine = Prisma.FolioLineModel
+/**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel
+/**
+ * Model HotelMenuItem
+ * * Catalogue F&B / vente rapide hôtel.
+ */
+export type HotelMenuItem = Prisma.HotelMenuItemModel
+/**
+ * Model HotelOrder
+ * 
+ */
+export type HotelOrder = Prisma.HotelOrderModel
+/**
+ * Model HotelOrderItem
+ * 
+ */
+export type HotelOrderItem = Prisma.HotelOrderItemModel
+/**
+ * Model BranchNotification
+ * 
+ */
+export type BranchNotification = Prisma.BranchNotificationModel

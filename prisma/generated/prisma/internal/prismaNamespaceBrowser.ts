@@ -74,7 +74,17 @@ export const ModelName = {
   HotelRoomType: 'HotelRoomType',
   HotelRoom: 'HotelRoom',
   ShopCategory: 'ShopCategory',
-  ShopProduct: 'ShopProduct'
+  ShopProduct: 'ShopProduct',
+  ExchangeRate: 'ExchangeRate',
+  CashSession: 'CashSession',
+  HotelStay: 'HotelStay',
+  Folio: 'Folio',
+  FolioLine: 'FolioLine',
+  Payment: 'Payment',
+  HotelMenuItem: 'HotelMenuItem',
+  HotelOrder: 'HotelOrder',
+  HotelOrderItem: 'HotelOrderItem',
+  BranchNotification: 'BranchNotification'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -462,6 +472,170 @@ export const ShopProductScalarFieldEnum = {
 } as const
 
 export type ShopProductScalarFieldEnum = (typeof ShopProductScalarFieldEnum)[keyof typeof ShopProductScalarFieldEnum]
+
+
+export const ExchangeRateScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  fromCurrency: 'fromCurrency',
+  toCurrency: 'toCurrency',
+  rate: 'rate',
+  validFrom: 'validFrom',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ExchangeRateScalarFieldEnum = (typeof ExchangeRateScalarFieldEnum)[keyof typeof ExchangeRateScalarFieldEnum]
+
+
+export const CashSessionScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  openedByUserId: 'openedByUserId',
+  closedByUserId: 'closedByUserId',
+  status: 'status',
+  openingFloat: 'openingFloat',
+  closingCash: 'closingCash',
+  openedAt: 'openedAt',
+  closedAt: 'closedAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CashSessionScalarFieldEnum = (typeof CashSessionScalarFieldEnum)[keyof typeof CashSessionScalarFieldEnum]
+
+
+export const HotelStayScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  roomId: 'roomId',
+  guestName: 'guestName',
+  guestPhone: 'guestPhone',
+  guestEmail: 'guestEmail',
+  checkInDate: 'checkInDate',
+  checkOutDate: 'checkOutDate',
+  status: 'status',
+  adults: 'adults',
+  notes: 'notes',
+  checkedInAt: 'checkedInAt',
+  checkedOutAt: 'checkedOutAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelStayScalarFieldEnum = (typeof HotelStayScalarFieldEnum)[keyof typeof HotelStayScalarFieldEnum]
+
+
+export const FolioScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  stayId: 'stayId',
+  label: 'label',
+  closed: 'closed',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FolioScalarFieldEnum = (typeof FolioScalarFieldEnum)[keyof typeof FolioScalarFieldEnum]
+
+
+export const FolioLineScalarFieldEnum = {
+  id: 'id',
+  folioId: 'folioId',
+  kind: 'kind',
+  description: 'description',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  amount: 'amount',
+  createdAt: 'createdAt'
+} as const
+
+export type FolioLineScalarFieldEnum = (typeof FolioLineScalarFieldEnum)[keyof typeof FolioLineScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  cashSessionId: 'cashSessionId',
+  folioId: 'folioId',
+  orderId: 'orderId',
+  receiptNumber: 'receiptNumber',
+  method: 'method',
+  amountCdf: 'amountCdf',
+  amountForeign: 'amountForeign',
+  foreignCurrency: 'foreignCurrency',
+  exchangeRateUsed: 'exchangeRateUsed',
+  paidAt: 'paidAt',
+  cashierUserId: 'cashierUserId',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const HotelMenuItemScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  name: 'name',
+  category: 'category',
+  price: 'price',
+  needsKitchen: 'needsKitchen',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelMenuItemScalarFieldEnum = (typeof HotelMenuItemScalarFieldEnum)[keyof typeof HotelMenuItemScalarFieldEnum]
+
+
+export const HotelOrderScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  stayId: 'stayId',
+  folioId: 'folioId',
+  tableLabel: 'tableLabel',
+  status: 'status',
+  serverNote: 'serverNote',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  sentAt: 'sentAt',
+  readyAt: 'readyAt',
+  paidAt: 'paidAt',
+  deliveredAt: 'deliveredAt'
+} as const
+
+export type HotelOrderScalarFieldEnum = (typeof HotelOrderScalarFieldEnum)[keyof typeof HotelOrderScalarFieldEnum]
+
+
+export const HotelOrderItemScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  menuItemId: 'menuItemId',
+  name: 'name',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  amount: 'amount',
+  needsKitchen: 'needsKitchen'
+} as const
+
+export type HotelOrderItemScalarFieldEnum = (typeof HotelOrderItemScalarFieldEnum)[keyof typeof HotelOrderItemScalarFieldEnum]
+
+
+export const BranchNotificationScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  title: 'title',
+  body: 'body',
+  kind: 'kind',
+  href: 'href',
+  readAt: 'readAt',
+  createdAt: 'createdAt'
+} as const
+
+export type BranchNotificationScalarFieldEnum = (typeof BranchNotificationScalarFieldEnum)[keyof typeof BranchNotificationScalarFieldEnum]
 
 
 export const SortOrder = {
