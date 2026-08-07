@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Building2, Plus } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { APP_ROLE } from "@/lib/permissions";
 import { Button } from "@/components/ui/button";
-import { ListGroup, ListItem } from "@/components/ui/list-item";
 import { EmptyState } from "@/components/ui/empty-state";
+import {
+  DashboardMenuCard,
+  DashboardSection,
+} from "@/components/ui/dashboard-menu-card";
 
 export default function AdminOrganizationsPage() {
   const { data: session } = authClient.useSession();
@@ -15,45 +18,71 @@ export default function AdminOrganizationsPage() {
   const canCreateOrganization = session?.user?.role === APP_ROLE.ADMIN;
 
   return (
-    <div className="mx-auto flex w-full min-w-0 max-w-2xl flex-col gap-4 px-[max(1rem,env(safe-area-inset-left))] py-5 pr-[max(1rem,env(safe-area-inset-right))] md:max-w-4xl md:px-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">
-          {isPending ? "Chargement…" : `${orgs.length} organisation${orgs.length > 1 ? "s" : ""}`}
-        </p>
-        {canCreateOrganization ? (
-          <Button
-            size="sm"
-            className="h-11 min-h-[44px] gap-1.5 touch-manipulation sm:h-9 sm:min-h-0"
-            render={<Link href="/admin/organizations/new" />}
-          >
-            <Plus className="size-4" />
-            Créer
-          </Button>
-        ) : null}
-      </div>
+    <div className="mx-auto max-w-7xl space-y-8 px-4 py-6 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden rounded-2xl bg-primary px-6 py-7 shadow-sm shadow-primary/20 sm:px-8">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="pr-4">
+            <h2 className="text-2xl font-bold text-primary-foreground sm:text-3xl">
+              Organisations
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm text-primary-foreground/85 sm:text-base">
+              Sélectionnez une organisation pour gérer branches, membres et
+              modules.
+            </p>
+            <p className="mt-3 text-xs text-primary-foreground/70">
+              {isPending
+                ? "Chargement…"
+                : `${orgs.length} organisation${orgs.length > 1 ? "s" : ""}`}
+            </p>
+          </div>
+          {canCreateOrganization ? (
+            <Button
+              variant="secondary"
+              className="gap-1.5 bg-background text-primary hover:bg-background/90"
+              render={<Link href="/admin/organizations/new" />}
+            >
+              <Plus className="size-4" />
+              Créer
+            </Button>
+          ) : null}
+        </div>
+      </section>
 
       {orgs.length === 0 && !isPending ? (
         <EmptyState
+          icon={Building2}
           title="Aucune organisation"
           description="Créez votre premier espace pour inviter des membres et centraliser la gestion."
           action={
             canCreateOrganization ? (
-              <Button render={<Link href="/admin/organizations/new" />}>Créer une organisation</Button>
+              <Button render={<Link href="/admin/organizations/new" />}>
+                Créer une organisation
+              </Button>
             ) : undefined
           }
         />
       ) : (
-        <ListGroup>
-          {orgs.map((org) => (
-            <ListItem
-              key={org.id}
-              title={org.name}
-              subtitle={org.slug}
-              href={`/admin/organizations/${org.id}`}
-              showChevron
-            />
-          ))}
-        </ListGroup>
+        <DashboardSection
+          title="VOS ORGANISATIONS"
+          titleColor="text-emerald-400"
+          icon={Building2}
+          iconColor="text-emerald-400"
+        >
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {orgs.map((org) => (
+              <DashboardMenuCard
+                key={org.id}
+                href={`/admin/organizations/${org.id}`}
+                title={org.name}
+                description={`Slug · ${org.slug}`}
+                icon={Building2}
+                iconBg="bg-primary/15"
+                iconColor="text-primary"
+                primary
+              />
+            ))}
+          </div>
+        </DashboardSection>
       )}
     </div>
   );

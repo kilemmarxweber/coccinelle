@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { GitBranch, LogOut, Plane, UserCircle } from "lucide-react";
+import { GitBranch } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { DashboardNavbar } from "@/components/layout/dashboard-navbar";
+import {
+  DashboardMenuCard,
+  DashboardSection,
+} from "@/components/ui/dashboard-menu-card";
 import { menuSectionsForBranch } from "@/lib/branch/branch-menus";
 import {
   branchDashboardPath,
@@ -16,11 +19,6 @@ import { APP_ROLE } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 
 const WELCOME_MS = 30_000;
-
-function formatDateTime(date: Date) {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} - ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-}
 
 function roleLabel(role: string | null | undefined) {
   if (role === APP_ROLE.ADMIN) return "Administrateur";
@@ -52,10 +50,7 @@ export function BranchDashboard({
   branchType,
   organizationName,
 }: BranchDashboardProps) {
-  const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
-  const [now, setNow] = useState<Date | null>(null);
-  const [signingOut, setSigningOut] = useState(false);
+  const { data: session } = authClient.useSession();
   const [showWelcome, setShowWelcome] = useState(true);
 
   const user = session?.user;
@@ -64,88 +59,31 @@ export function BranchDashboard({
   const hubHref = branchDashboardPath(organizationId, branchId);
 
   useEffect(() => {
-    setNow(new Date());
-    const id = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(id);
-  }, []);
-
-  useEffect(() => {
     const t = setTimeout(() => setShowWelcome(false), WELCOME_MS);
     return () => clearTimeout(t);
   }, []);
 
-  async function handleSignOut() {
-    setSigningOut(true);
-    try {
-      await authClient.signOut();
-      router.replace("/auth/sign-in");
-      router.refresh();
-    } finally {
-      setSigningOut(false);
-    }
-  }
-
   return (
     <div className="min-h-svh bg-background">
-      <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-backdrop-filter:bg-card/80">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:h-16 sm:px-6 lg:px-8">
-          <Link href={hubHref} className="flex min-w-0 items-center gap-2.5">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground sm:size-9">
-              <Plane className="size-4" aria-hidden />
-            </span>
-            <span className="min-w-0">
-              <span className="block truncate text-base font-bold tracking-tight text-primary sm:text-lg">
-                {branchName}
-              </span>
-              <span className="hidden truncate text-[10px] tracking-wide text-muted-foreground uppercase sm:block">
-                {organizationName} · {branchTypeLabel(branchType)} · {branchCode}
-              </span>
-            </span>
-          </Link>
-
-          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-            <div className="hidden rounded-full bg-muted px-3 py-1.5 text-xs text-muted-foreground tabular-nums md:block md:text-sm">
-              {now ? formatDateTime(now) : "\u00A0"}
-            </div>
-
-            <ThemeToggle />
-
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="hidden gap-1.5 sm:inline-flex"
-              render={
-                <Link href={organizationBranchesPath(organizationId)} />
-              }
-            >
-              <GitBranch className="size-3.5" />
-              Branches
-            </Button>
-
-            <div className="flex max-w-[9rem] items-center gap-2 sm:max-w-none">
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                <UserCircle className="size-5" />
-              </div>
-              <span className="truncate text-sm font-medium text-foreground">
-                {isPending ? "…" : userName}
-              </span>
-            </div>
-
-            <Button
-              type="button"
-              variant="destructive"
-              size="sm"
-              disabled={signingOut}
-              onClick={handleSignOut}
-              className="gap-1.5"
-            >
-              <LogOut className="size-3.5" />
-              <span>{signingOut ? "…" : "Déconnexion"}</span>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <DashboardNavbar
+        title={branchName}
+        subtitle={`${organizationName} · ${branchTypeLabel(branchType)} · ${branchCode}`}
+        titleHref={hubHref}
+        actions={
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="hidden gap-1.5 sm:inline-flex"
+            render={
+              <Link href={organizationBranchesPath(organizationId)} />
+            }
+          >
+            <GitBranch className="size-3.5" />
+            Branches
+          </Button>
+        }
+      />
 
       <main className="mx-auto max-w-7xl space-y-8 px-4 py-6 sm:px-6 lg:px-8">
         <div
@@ -164,8 +102,8 @@ export function BranchDashboard({
                   Bonjour, {userName} 👋
                 </h2>
                 <p className="mt-2 max-w-2xl text-sm text-primary-foreground/85 sm:text-base">
-                  Bienvenue sur votre espace de gestion d&apos;activité. Sélectionnez
-                  une option pour commencer.
+                  Bienvenue sur votre espace de gestion d&apos;activité.
+                  Sélectionnez une option pour commencer.
                 </p>
                 <p className="mt-3 text-xs text-primary-foreground/70">
                   {branchTypeLabel(branchType)} · {branchName}
@@ -178,53 +116,30 @@ export function BranchDashboard({
           </div>
         </div>
 
-        {sections.map((section) => {
-          const SectionIcon = section.icon;
-          return (
-            <section key={section.title} className="space-y-4">
-              <div className="flex items-center gap-2">
-                <SectionIcon className={`size-5 ${section.iconColor}`} />
-                <h3
-                  className={`text-sm font-bold tracking-wide uppercase ${section.titleColor}`}
-                >
-                  {section.title}
-                </h3>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {section.items.map((item) => {
-                  const ItemIcon = item.icon;
-                  return (
-                    <Link
-                      key={item.title}
-                      href={item.href}
-                      className={cn(
-                        "group flex items-start gap-3.5 rounded-xl border bg-card p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",
-                        item.primary
-                          ? "border-primary/50 hover:border-primary hover:shadow-primary/15"
-                          : "border-border hover:border-primary/40 hover:shadow-primary/10",
-                      )}
-                    >
-                      <div
-                        className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${item.iconBg}`}
-                      >
-                        <ItemIcon className={`size-5 ${item.iconColor}`} />
-                      </div>
-                      <div className="min-w-0 pt-0.5">
-                        <p className="font-semibold text-foreground group-hover:text-primary">
-                          {item.title}
-                        </p>
-                        <p className="mt-0.5 text-sm leading-snug text-muted-foreground">
-                          {item.description}
-                        </p>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </section>
-          );
-        })}
+        {sections.map((section) => (
+          <DashboardSection
+            key={section.title}
+            title={section.title}
+            titleColor={section.titleColor}
+            icon={section.icon}
+            iconColor={section.iconColor}
+          >
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {section.items.map((item) => (
+                <DashboardMenuCard
+                  key={item.title}
+                  href={item.href}
+                  title={item.title}
+                  description={item.description}
+                  icon={item.icon}
+                  iconBg={item.iconBg}
+                  iconColor={item.iconColor}
+                  primary={item.primary}
+                />
+              ))}
+            </div>
+          </DashboardSection>
+        ))}
       </main>
     </div>
   );
