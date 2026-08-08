@@ -47,7 +47,7 @@ type Stay = {
   folio: {
     id: string;
     lines: { amount: number; description?: string }[];
-    payments?: { amountCdf: number }[];
+    payments?: { amountCdf: number; amountForeign?: number | null }[];
   } | null;
 };
 
@@ -266,7 +266,7 @@ export function SejoursClient(props: {
           stayId,
         });
         if (!res.ok && res.needsPayment) {
-          toast.message(`Solde ${res.balance.toFixed(2)} — allez à la caisse`);
+          toast.message(`Solde ${res.balance.toFixed(2)} $ — allez à la caisse`);
           router.push(branchCaissePath(props.organizationId, props.branchId));
           return;
         }
@@ -297,7 +297,7 @@ export function SejoursClient(props: {
           newCheckOutDate: extendDate,
         });
         toast.success(
-          `Prolongé · +${res.extraNights} nuit(s) · ${res.amount.toFixed(2)}`,
+          `Prolongé · +${res.extraNights} nuit(s) · ${res.amount.toFixed(2)} $`,
         );
         setExtendStayId(null);
         router.refresh();
@@ -508,7 +508,8 @@ export function SejoursClient(props: {
             >
               {props.rooms.map((r) => (
                 <option key={r.id} value={r.id}>
-                  {r.number} · {r.roomType.name} ({r.roomType.priceNight}/nuit)
+                  {r.number} · {r.roomType.name} (
+                  {r.roomType.priceNight.toFixed(2)} $/nuit)
                 </option>
               ))}
             </select>
@@ -588,7 +589,14 @@ export function SejoursClient(props: {
                 const charges =
                   s.folio?.lines.reduce((a, l) => a + l.amount, 0) ?? 0;
                 const paid =
-                  s.folio?.payments?.reduce((a, p) => a + p.amountCdf, 0) ?? 0;
+                  s.folio?.payments?.reduce(
+                    (a, p) =>
+                      a +
+                      (p.amountForeign != null && p.amountForeign > 0
+                        ? p.amountForeign
+                        : p.amountCdf),
+                    0,
+                  ) ?? 0;
                 const balance = charges - paid;
                 return (
                   <li
@@ -639,8 +647,8 @@ export function SejoursClient(props: {
                             ? ` · ${m.elapsed} nuit(s) écoulée(s)`
                             : ""}
                           {" · "}
-                          solde {balance.toFixed(2)} ·{" "}
-                          {s.room.roomType.priceNight}/nuit
+                          solde {balance.toFixed(2)} $ ·{" "}
+                          {s.room.roomType.priceNight.toFixed(2)} $/nuit
                         </p>
                       </div>
                       <div className="flex flex-wrap gap-2">
@@ -742,7 +750,7 @@ export function SejoursClient(props: {
                     asUtcDay(extendDate),
                   ) * extendTarget.room.roomType.priceNight
                 ).toFixed(2)}{" "}
-                à facturer
+                $ à facturer
               </p>
             ) : null}
           </div>

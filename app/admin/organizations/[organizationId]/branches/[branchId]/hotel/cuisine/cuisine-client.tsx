@@ -8,11 +8,22 @@ import {
   Clock3,
   Flame,
   RefreshCw,
+  Timer,
   UtensilsCrossed,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Sheet,
   SheetContent,
@@ -22,7 +33,15 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { advanceHotelOrderAction } from "@/lib/hotel/actions";
+import {
+  elapsedLabel,
+  formatCountdownBanner,
+  prepCountdown,
+  urgencyTone,
+} from "@/lib/hotel/order-time";
 import { cn } from "@/lib/utils";
+
+const ESTIMATE_PRESETS = [5, 10, 15, 20, 30, 45];
 
 type OrderItem = {
   name: string;
@@ -38,30 +57,13 @@ type Order = {
   status: string;
   serverNote: string | null;
   sentAt: string | Date | null;
+  prepStartedAt?: string | Date | null;
+  estimatedMinutes?: number | null;
   createdAt: string | Date;
   updatedAt: string | Date;
   items: OrderItem[];
   stay?: { guestName: string; room?: { number: string } | null } | null;
 };
-
-function elapsedLabel(from: string | Date | null | undefined, now: number) {
-  if (!from) return "—";
-  const ms = Math.max(0, now - new Date(from).getTime());
-  const mins = Math.floor(ms / 60000);
-  if (mins < 1) return "< 1 min";
-  if (mins < 60) return `${mins} min`;
-  const h = Math.floor(mins / 60);
-  const m = mins % 60;
-  return `${h} h ${m} min`;
-}
-
-function urgencyTone(from: string | Date | null | undefined, now: number) {
-  if (!from) return "normal" as const;
-  const mins = (now - new Date(from).getTime()) / 60000;
-  if (mins >= 20) return "critical" as const;
-  if (mins >= 10) return "warn" as const;
-  return "normal" as const;
-}
 
 export function CuisineClient(props: {
   organizationId: string;
@@ -75,9 +77,11 @@ export function CuisineClient(props: {
   const [filter, setFilter] = useState<"all" | "ENVOYEE" | "EN_PREPARATION">(
     "all",
   );
+  const [prepOrderId, setPrepOrderId] = useState<string | null>(null);
+  const [estimateMins, setEstimateMins] = useState("15");
 
   useEffect(() => {
-    const tick = window.setInterval(() => setNow(Date.now()), 30000);
+    const tick = window.setInterval(() => setNow(Date.now()), 1000);
     const refresh = window.setInterval(() => router.refresh(), 15000);
     return () => {
       window.clearInterval(tick);
@@ -88,6 +92,10 @@ export function CuisineClient(props: {
   const selected = useMemo(
     () => props.orders.find((o) => o.id === selectedId) ?? null,
     [props.orders, selectedId],
+  );
+  const prepOrder = useMemo(
+    () => props.orders.find((o) => o.id === prepOrderId) ?? null,
+    [props.orders, prepOrderId],
   );
 
   const filtered = useMemo(() => {
@@ -112,19 +120,47 @@ export function CuisineClient(props: {
     [props.orders],
   );
 
-  function advance(orderId: string, to: "EN_PREPARATION" | "PRETE") {
+  function openPrepDialog(orderId: string) {
+    setEstimateMins("15");
+    setPrepOrderId(orderId);
+  }
+
+  function confirmPrep() {
+    if (!prepOrderId) return;
+    const mins = Math.round(Number(estimateMins));
+    if (!Number.isFinite(mins) || mins < 1 || mins > 180) {
+      toast.error("Temps estimé : entre 1 et 180 minutes");
+      return;
+    }
+    start(async () => {
+      try {
+        await advanceHotelOrderAction({
+          organizationId: props.organizationId,
+          branchId: props.branchId,
+          orderId: prepOrderId,
+          to: "EN_PREPARATION",
+          estimatedMinutes: mins,
+        });
+        toast.success(`En préparation · ~${mins} min`);
+        setPrepOrderId(null);
+        router.refresh();
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Erreur");
+      }
+    });
+  }
+
+  function markReady(orderId: string) {
     start(async () => {
       try {
         await advanceHotelOrderAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
           orderId,
-          to,
+          to: "PRETE",
         });
-        toast.success(
-          to === "PRETE" ? "Prêt — notifié caisse" : "En préparation",
-        );
-        if (to === "PRETE") setSelectedId(null);
+        toast.success("Prêt — notifié caisse");
+        setSelectedId(null);
         router.refresh();
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Erreur");
@@ -142,7 +178,8 @@ export function CuisineClient(props: {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Cuisine</h1>
             <p className="text-sm text-muted-foreground">
-              Détail des tickets — validez quand c’est prêt pour la caisse.
+              Au clic « Préparer », indiquez le temps estimé — le serveur le
+              voit en décompte.
             </p>
           </div>
         </div>
@@ -201,16 +238,21 @@ export function CuisineClient(props: {
             const started = order.sentAt ?? order.createdAt;
             const tone = urgencyTone(started, now);
             const isCooking = order.status === "EN_PREPARATION";
+            const cd = isCooking
+              ? prepCountdown(order.estimatedMinutes, order.prepStartedAt, now)
+              : null;
 
             return (
               <article
                 key={order.id}
                 className={cn(
                   "flex flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition",
-                  tone === "critical" && "border-rose-500/60 ring-1 ring-rose-500/30",
+                  tone === "critical" &&
+                    "border-rose-500/60 ring-1 ring-rose-500/30",
                   tone === "warn" && "border-amber-500/50",
                   tone === "normal" && "border-border",
                   isCooking && "bg-orange-500/[0.04]",
+                  cd?.overdue && "border-rose-500/70",
                 )}
               >
                 <button
@@ -260,6 +302,25 @@ export function CuisineClient(props: {
                     </div>
                   </header>
 
+                  {cd ? (
+                    <div
+                      className={cn(
+                        "flex items-center justify-between gap-2 border-b px-4 py-2 text-sm font-semibold tabular-nums",
+                        cd.overdue
+                          ? "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300"
+                          : "border-orange-500/20 bg-orange-500/10 text-orange-800 dark:text-orange-200",
+                      )}
+                    >
+                      <span className="inline-flex items-center gap-1.5">
+                        <Timer className="size-3.5" />
+                        {formatCountdownBanner(cd)}
+                      </span>
+                      <span className="text-xs font-medium opacity-80">
+                        ~{cd.totalMinutes} min
+                      </span>
+                    </div>
+                  ) : null}
+
                   <div className="flex-1 space-y-2 px-4 py-3">
                     {kitchenItems.length === 0 ? (
                       <p className="text-sm text-muted-foreground">
@@ -302,7 +363,7 @@ export function CuisineClient(props: {
                       className="flex-1"
                       variant="outline"
                       disabled={pending}
-                      onClick={() => advance(order.id, "EN_PREPARATION")}
+                      onClick={() => openPrepDialog(order.id)}
                     >
                       Préparer
                     </Button>
@@ -310,7 +371,7 @@ export function CuisineClient(props: {
                   <Button
                     className="flex-1 gap-1.5"
                     disabled={pending}
-                    onClick={() => advance(order.id, "PRETE")}
+                    onClick={() => markReady(order.id)}
                   >
                     <CheckCircle2 className="size-4" />
                     C’est prêt
@@ -321,6 +382,62 @@ export function CuisineClient(props: {
           })}
         </div>
       )}
+
+      <Dialog
+        open={!!prepOrder}
+        onOpenChange={(open) => {
+          if (!open) setPrepOrderId(null);
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Temps estimé</DialogTitle>
+            <DialogDescription>
+              {prepOrder
+                ? `${prepOrder.tableLabel ?? "Salle"} — combien de minutes pour cette commande ? Le serveur verra le décompte.`
+                : null}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-3 py-2">
+            <div className="flex flex-wrap gap-2">
+              {ESTIMATE_PRESETS.map((m) => (
+                <Button
+                  key={m}
+                  type="button"
+                  size="sm"
+                  variant={estimateMins === String(m) ? "default" : "outline"}
+                  onClick={() => setEstimateMins(String(m))}
+                >
+                  {m} min
+                </Button>
+              ))}
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="estimate-mins">Minutes</Label>
+              <Input
+                id="estimate-mins"
+                type="number"
+                min={1}
+                max={180}
+                value={estimateMins}
+                onChange={(e) => setEstimateMins(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setPrepOrderId(null)}
+              disabled={pending}
+            >
+              Annuler
+            </Button>
+            <Button disabled={pending} onClick={confirmPrep}>
+              Démarrer · {estimateMins || "?"} min
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Sheet
         open={!!selected}
@@ -345,6 +462,34 @@ export function CuisineClient(props: {
               </SheetHeader>
 
               <div className="flex-1 space-y-4 overflow-auto px-4 pb-2">
+                {selected.status === "EN_PREPARATION"
+                  ? (() => {
+                      const cd = prepCountdown(
+                        selected.estimatedMinutes,
+                        selected.prepStartedAt,
+                        now,
+                      );
+                      if (!cd) return null;
+                      return (
+                        <div
+                          className={cn(
+                            "rounded-xl px-3 py-3 text-center",
+                            cd.overdue
+                              ? "bg-rose-500/10 text-rose-700 dark:text-rose-300"
+                              : "bg-orange-500/10 text-orange-800 dark:text-orange-200",
+                          )}
+                        >
+                          <p className="text-xs font-semibold tracking-wide uppercase opacity-80">
+                            Temps estimé {cd.totalMinutes} min
+                          </p>
+                          <p className="mt-1 text-3xl font-bold tabular-nums">
+                            {formatCountdownBanner(cd)}
+                          </p>
+                        </div>
+                      );
+                    })()
+                  : null}
+
                 {selected.stay ? (
                   <div className="rounded-xl border border-border bg-muted/20 px-3 py-2 text-sm">
                     <p className="font-medium">{selected.stay.guestName}</p>
@@ -423,9 +568,7 @@ export function CuisineClient(props: {
                     variant="outline"
                     className="w-full"
                     disabled={pending}
-                    onClick={() =>
-                      advance(selected.id, "EN_PREPARATION")
-                    }
+                    onClick={() => openPrepDialog(selected.id)}
                   >
                     Commencer la préparation
                   </Button>
@@ -434,7 +577,7 @@ export function CuisineClient(props: {
                   size="lg"
                   className="w-full gap-2"
                   disabled={pending}
-                  onClick={() => advance(selected.id, "PRETE")}
+                  onClick={() => markReady(selected.id)}
                 >
                   <CheckCircle2 className="size-5" />
                   Valider — c’est prêt

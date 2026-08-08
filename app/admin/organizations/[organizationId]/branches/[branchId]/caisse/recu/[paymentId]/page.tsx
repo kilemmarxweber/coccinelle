@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { getPaymentByIdAction } from "@/lib/cash/actions";
 import { branchCaissePath } from "@/lib/branch/paths";
+import { paymentAmountUsd } from "@/lib/hotel/money";
 import { PrintButton } from "./print-button";
 
 type PageProps = {
@@ -52,6 +53,12 @@ export default async function ReceiptPage({ params }: PageProps) {
   const guestLabel = payment.folio?.stay
     ? `${payment.folio.stay.guestName} · ch. ${payment.folio.stay.room.number}`
     : payment.folio?.label ?? payment.order?.tableLabel ?? null;
+  const isHotel = branch.type === "HOTEL";
+  const paidUsd = paymentAmountUsd(payment);
+  const paidCdf =
+    isHotel && payment.amountForeign != null && payment.amountForeign > 0
+      ? payment.amountCdf
+      : payment.amountCdf;
 
   return (
     <div className="mx-auto max-w-md px-4 py-8">
@@ -117,6 +124,7 @@ export default async function ReceiptPage({ params }: PageProps) {
                   </p>
                   <p className="text-right font-semibold tabular-nums">
                     {line.amount.toFixed(2)}
+                    {isHotel ? " $" : ""}
                   </p>
                 </li>
               ))}
@@ -125,39 +133,71 @@ export default async function ReceiptPage({ params }: PageProps) {
               <span className="text-muted-foreground">Sous-total articles</span>
               <span className="font-medium tabular-nums">
                 {linesTotal.toFixed(2)}
+                {isHotel ? " $" : ""}
               </span>
             </div>
           </section>
         ) : null}
 
         <dl className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
-          <div className="flex justify-between gap-4 text-base">
-            <dt className="font-semibold">Montant payé CDF</dt>
-            <dd className="font-bold tabular-nums">
-              {payment.amountCdf.toFixed(2)}
-            </dd>
-          </div>
-          {payment.exchangeRateUsed != null ? (
+          {isHotel ? (
             <>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted-foreground">Taux figé</dt>
-                <dd>
-                  1 {payment.foreignCurrency ?? "USD"} ={" "}
-                  {payment.exchangeRateUsed} CDF
-                </dd>
+              <div className="flex justify-between gap-4 text-base">
+                <dt className="font-semibold">Montant payé</dt>
+                <dd className="font-bold tabular-nums">{paidUsd.toFixed(2)} $</dd>
               </div>
-              {payment.amountForeign != null ? (
-                <div className="flex justify-between gap-4">
-                  <dt className="text-muted-foreground">
-                    Équiv. {payment.foreignCurrency}
-                  </dt>
-                  <dd className="tabular-nums">
-                    {payment.amountForeign.toFixed(2)}
-                  </dd>
-                </div>
+              {payment.exchangeRateUsed != null ? (
+                <>
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-muted-foreground">Équiv. CDF</dt>
+                    <dd className="tabular-nums">
+                      {paidCdf.toLocaleString("fr-FR", {
+                        maximumFractionDigits: 0,
+                      })}{" "}
+                      CDF
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-muted-foreground">Taux figé</dt>
+                    <dd>
+                      1 {payment.foreignCurrency ?? "USD"} ={" "}
+                      {payment.exchangeRateUsed} CDF
+                    </dd>
+                  </div>
+                </>
               ) : null}
             </>
-          ) : null}
+          ) : (
+            <>
+              <div className="flex justify-between gap-4 text-base">
+                <dt className="font-semibold">Montant payé CDF</dt>
+                <dd className="font-bold tabular-nums">
+                  {payment.amountCdf.toFixed(2)}
+                </dd>
+              </div>
+              {payment.exchangeRateUsed != null ? (
+                <>
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-muted-foreground">Taux figé</dt>
+                    <dd>
+                      1 {payment.foreignCurrency ?? "USD"} ={" "}
+                      {payment.exchangeRateUsed} CDF
+                    </dd>
+                  </div>
+                  {payment.amountForeign != null ? (
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-muted-foreground">
+                        Équiv. {payment.foreignCurrency}
+                      </dt>
+                      <dd className="tabular-nums">
+                        {payment.amountForeign.toFixed(2)}
+                      </dd>
+                    </div>
+                  ) : null}
+                </>
+              ) : null}
+            </>
+          )}
           {payment.note ? (
             <div className="pt-2 text-muted-foreground">{payment.note}</div>
           ) : null}

@@ -20,8 +20,18 @@ export type HotelOrderModel = runtime.Types.Result.DefaultSelection<Prisma.$Hote
 
 export type AggregateHotelOrder = {
   _count: HotelOrderCountAggregateOutputType | null
+  _avg: HotelOrderAvgAggregateOutputType | null
+  _sum: HotelOrderSumAggregateOutputType | null
   _min: HotelOrderMinAggregateOutputType | null
   _max: HotelOrderMaxAggregateOutputType | null
+}
+
+export type HotelOrderAvgAggregateOutputType = {
+  estimatedMinutes: number | null
+}
+
+export type HotelOrderSumAggregateOutputType = {
+  estimatedMinutes: number | null
 }
 
 export type HotelOrderMinAggregateOutputType = {
@@ -36,6 +46,8 @@ export type HotelOrderMinAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   sentAt: Date | null
+  prepStartedAt: Date | null
+  estimatedMinutes: number | null
   readyAt: Date | null
   paidAt: Date | null
   deliveredAt: Date | null
@@ -53,6 +65,8 @@ export type HotelOrderMaxAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   sentAt: Date | null
+  prepStartedAt: Date | null
+  estimatedMinutes: number | null
   readyAt: Date | null
   paidAt: Date | null
   deliveredAt: Date | null
@@ -70,12 +84,22 @@ export type HotelOrderCountAggregateOutputType = {
   createdAt: number
   updatedAt: number
   sentAt: number
+  prepStartedAt: number
+  estimatedMinutes: number
   readyAt: number
   paidAt: number
   deliveredAt: number
   _all: number
 }
 
+
+export type HotelOrderAvgAggregateInputType = {
+  estimatedMinutes?: true
+}
+
+export type HotelOrderSumAggregateInputType = {
+  estimatedMinutes?: true
+}
 
 export type HotelOrderMinAggregateInputType = {
   id?: true
@@ -89,6 +113,8 @@ export type HotelOrderMinAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   sentAt?: true
+  prepStartedAt?: true
+  estimatedMinutes?: true
   readyAt?: true
   paidAt?: true
   deliveredAt?: true
@@ -106,6 +132,8 @@ export type HotelOrderMaxAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   sentAt?: true
+  prepStartedAt?: true
+  estimatedMinutes?: true
   readyAt?: true
   paidAt?: true
   deliveredAt?: true
@@ -123,6 +151,8 @@ export type HotelOrderCountAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   sentAt?: true
+  prepStartedAt?: true
+  estimatedMinutes?: true
   readyAt?: true
   paidAt?: true
   deliveredAt?: true
@@ -167,6 +197,18 @@ export type HotelOrderAggregateArgs<ExtArgs extends runtime.Types.Extensions.Int
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: HotelOrderAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: HotelOrderSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: HotelOrderMinAggregateInputType
@@ -197,6 +239,8 @@ export type HotelOrderGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   _count?: HotelOrderCountAggregateInputType | true
+  _avg?: HotelOrderAvgAggregateInputType
+  _sum?: HotelOrderSumAggregateInputType
   _min?: HotelOrderMinAggregateInputType
   _max?: HotelOrderMaxAggregateInputType
 }
@@ -213,10 +257,14 @@ export type HotelOrderGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   sentAt: Date | null
+  prepStartedAt: Date | null
+  estimatedMinutes: number | null
   readyAt: Date | null
   paidAt: Date | null
   deliveredAt: Date | null
   _count: HotelOrderCountAggregateOutputType | null
+  _avg: HotelOrderAvgAggregateOutputType | null
+  _sum: HotelOrderSumAggregateOutputType | null
   _min: HotelOrderMinAggregateOutputType | null
   _max: HotelOrderMaxAggregateOutputType | null
 }
@@ -251,6 +299,8 @@ export type HotelOrderWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"HotelOrder"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"HotelOrder"> | Date | string
   sentAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
+  prepStartedAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
+  estimatedMinutes?: Prisma.IntNullableFilter<"HotelOrder"> | number | null
   readyAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
   deliveredAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
@@ -273,6 +323,8 @@ export type HotelOrderOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   sentAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  prepStartedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  estimatedMinutes?: Prisma.SortOrderInput | Prisma.SortOrder
   readyAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
   deliveredAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -298,6 +350,8 @@ export type HotelOrderWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"HotelOrder"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"HotelOrder"> | Date | string
   sentAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
+  prepStartedAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
+  estimatedMinutes?: Prisma.IntNullableFilter<"HotelOrder"> | number | null
   readyAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
   deliveredAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
@@ -320,12 +374,16 @@ export type HotelOrderOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   sentAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  prepStartedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  estimatedMinutes?: Prisma.SortOrderInput | Prisma.SortOrder
   readyAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
   deliveredAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.HotelOrderCountOrderByAggregateInput
+  _avg?: Prisma.HotelOrderAvgOrderByAggregateInput
   _max?: Prisma.HotelOrderMaxOrderByAggregateInput
   _min?: Prisma.HotelOrderMinOrderByAggregateInput
+  _sum?: Prisma.HotelOrderSumOrderByAggregateInput
 }
 
 export type HotelOrderScalarWhereWithAggregatesInput = {
@@ -343,6 +401,8 @@ export type HotelOrderScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"HotelOrder"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"HotelOrder"> | Date | string
   sentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"HotelOrder"> | Date | string | null
+  prepStartedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"HotelOrder"> | Date | string | null
+  estimatedMinutes?: Prisma.IntNullableWithAggregatesFilter<"HotelOrder"> | number | null
   readyAt?: Prisma.DateTimeNullableWithAggregatesFilter<"HotelOrder"> | Date | string | null
   paidAt?: Prisma.DateTimeNullableWithAggregatesFilter<"HotelOrder"> | Date | string | null
   deliveredAt?: Prisma.DateTimeNullableWithAggregatesFilter<"HotelOrder"> | Date | string | null
@@ -357,6 +417,8 @@ export type HotelOrderCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sentAt?: Date | string | null
+  prepStartedAt?: Date | string | null
+  estimatedMinutes?: number | null
   readyAt?: Date | string | null
   paidAt?: Date | string | null
   deliveredAt?: Date | string | null
@@ -379,6 +441,8 @@ export type HotelOrderUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sentAt?: Date | string | null
+  prepStartedAt?: Date | string | null
+  estimatedMinutes?: number | null
   readyAt?: Date | string | null
   paidAt?: Date | string | null
   deliveredAt?: Date | string | null
@@ -395,6 +459,8 @@ export type HotelOrderUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -417,6 +483,8 @@ export type HotelOrderUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -436,6 +504,8 @@ export type HotelOrderCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sentAt?: Date | string | null
+  prepStartedAt?: Date | string | null
+  estimatedMinutes?: number | null
   readyAt?: Date | string | null
   paidAt?: Date | string | null
   deliveredAt?: Date | string | null
@@ -450,6 +520,8 @@ export type HotelOrderUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -467,6 +539,8 @@ export type HotelOrderUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -499,9 +573,15 @@ export type HotelOrderCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   sentAt?: Prisma.SortOrder
+  prepStartedAt?: Prisma.SortOrder
+  estimatedMinutes?: Prisma.SortOrder
   readyAt?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
   deliveredAt?: Prisma.SortOrder
+}
+
+export type HotelOrderAvgOrderByAggregateInput = {
+  estimatedMinutes?: Prisma.SortOrder
 }
 
 export type HotelOrderMaxOrderByAggregateInput = {
@@ -516,6 +596,8 @@ export type HotelOrderMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   sentAt?: Prisma.SortOrder
+  prepStartedAt?: Prisma.SortOrder
+  estimatedMinutes?: Prisma.SortOrder
   readyAt?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
   deliveredAt?: Prisma.SortOrder
@@ -533,9 +615,15 @@ export type HotelOrderMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   sentAt?: Prisma.SortOrder
+  prepStartedAt?: Prisma.SortOrder
+  estimatedMinutes?: Prisma.SortOrder
   readyAt?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
   deliveredAt?: Prisma.SortOrder
+}
+
+export type HotelOrderSumOrderByAggregateInput = {
+  estimatedMinutes?: Prisma.SortOrder
 }
 
 export type HotelOrderScalarRelationFilter = {
@@ -712,6 +800,8 @@ export type HotelOrderCreateWithoutBranchInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sentAt?: Date | string | null
+  prepStartedAt?: Date | string | null
+  estimatedMinutes?: number | null
   readyAt?: Date | string | null
   paidAt?: Date | string | null
   deliveredAt?: Date | string | null
@@ -732,6 +822,8 @@ export type HotelOrderUncheckedCreateWithoutBranchInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sentAt?: Date | string | null
+  prepStartedAt?: Date | string | null
+  estimatedMinutes?: number | null
   readyAt?: Date | string | null
   paidAt?: Date | string | null
   deliveredAt?: Date | string | null
@@ -780,6 +872,8 @@ export type HotelOrderScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"HotelOrder"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"HotelOrder"> | Date | string
   sentAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
+  prepStartedAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
+  estimatedMinutes?: Prisma.IntNullableFilter<"HotelOrder"> | number | null
   readyAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
   deliveredAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
@@ -794,6 +888,8 @@ export type HotelOrderCreateWithoutStayInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sentAt?: Date | string | null
+  prepStartedAt?: Date | string | null
+  estimatedMinutes?: number | null
   readyAt?: Date | string | null
   paidAt?: Date | string | null
   deliveredAt?: Date | string | null
@@ -814,6 +910,8 @@ export type HotelOrderUncheckedCreateWithoutStayInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sentAt?: Date | string | null
+  prepStartedAt?: Date | string | null
+  estimatedMinutes?: number | null
   readyAt?: Date | string | null
   paidAt?: Date | string | null
   deliveredAt?: Date | string | null
@@ -856,6 +954,8 @@ export type HotelOrderCreateWithoutFolioInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sentAt?: Date | string | null
+  prepStartedAt?: Date | string | null
+  estimatedMinutes?: number | null
   readyAt?: Date | string | null
   paidAt?: Date | string | null
   deliveredAt?: Date | string | null
@@ -876,6 +976,8 @@ export type HotelOrderUncheckedCreateWithoutFolioInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sentAt?: Date | string | null
+  prepStartedAt?: Date | string | null
+  estimatedMinutes?: number | null
   readyAt?: Date | string | null
   paidAt?: Date | string | null
   deliveredAt?: Date | string | null
@@ -918,6 +1020,8 @@ export type HotelOrderCreateWithoutPaymentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sentAt?: Date | string | null
+  prepStartedAt?: Date | string | null
+  estimatedMinutes?: number | null
   readyAt?: Date | string | null
   paidAt?: Date | string | null
   deliveredAt?: Date | string | null
@@ -939,6 +1043,8 @@ export type HotelOrderUncheckedCreateWithoutPaymentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sentAt?: Date | string | null
+  prepStartedAt?: Date | string | null
+  estimatedMinutes?: number | null
   readyAt?: Date | string | null
   paidAt?: Date | string | null
   deliveredAt?: Date | string | null
@@ -970,6 +1076,8 @@ export type HotelOrderUpdateWithoutPaymentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -991,6 +1099,8 @@ export type HotelOrderUncheckedUpdateWithoutPaymentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1006,6 +1116,8 @@ export type HotelOrderCreateWithoutItemsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sentAt?: Date | string | null
+  prepStartedAt?: Date | string | null
+  estimatedMinutes?: number | null
   readyAt?: Date | string | null
   paidAt?: Date | string | null
   deliveredAt?: Date | string | null
@@ -1027,6 +1139,8 @@ export type HotelOrderUncheckedCreateWithoutItemsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sentAt?: Date | string | null
+  prepStartedAt?: Date | string | null
+  estimatedMinutes?: number | null
   readyAt?: Date | string | null
   paidAt?: Date | string | null
   deliveredAt?: Date | string | null
@@ -1058,6 +1172,8 @@ export type HotelOrderUpdateWithoutItemsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1079,6 +1195,8 @@ export type HotelOrderUncheckedUpdateWithoutItemsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1096,6 +1214,8 @@ export type HotelOrderCreateManyBranchInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sentAt?: Date | string | null
+  prepStartedAt?: Date | string | null
+  estimatedMinutes?: number | null
   readyAt?: Date | string | null
   paidAt?: Date | string | null
   deliveredAt?: Date | string | null
@@ -1110,6 +1230,8 @@ export type HotelOrderUpdateWithoutBranchInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1130,6 +1252,8 @@ export type HotelOrderUncheckedUpdateWithoutBranchInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1148,6 +1272,8 @@ export type HotelOrderUncheckedUpdateManyWithoutBranchInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1164,6 +1290,8 @@ export type HotelOrderCreateManyStayInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sentAt?: Date | string | null
+  prepStartedAt?: Date | string | null
+  estimatedMinutes?: number | null
   readyAt?: Date | string | null
   paidAt?: Date | string | null
   deliveredAt?: Date | string | null
@@ -1178,6 +1306,8 @@ export type HotelOrderUpdateWithoutStayInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1198,6 +1328,8 @@ export type HotelOrderUncheckedUpdateWithoutStayInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1216,6 +1348,8 @@ export type HotelOrderUncheckedUpdateManyWithoutStayInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1232,6 +1366,8 @@ export type HotelOrderCreateManyFolioInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sentAt?: Date | string | null
+  prepStartedAt?: Date | string | null
+  estimatedMinutes?: number | null
   readyAt?: Date | string | null
   paidAt?: Date | string | null
   deliveredAt?: Date | string | null
@@ -1246,6 +1382,8 @@ export type HotelOrderUpdateWithoutFolioInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1266,6 +1404,8 @@ export type HotelOrderUncheckedUpdateWithoutFolioInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1284,6 +1424,8 @@ export type HotelOrderUncheckedUpdateManyWithoutFolioInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prepStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1341,6 +1483,8 @@ export type HotelOrderSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   createdAt?: boolean
   updatedAt?: boolean
   sentAt?: boolean
+  prepStartedAt?: boolean
+  estimatedMinutes?: boolean
   readyAt?: boolean
   paidAt?: boolean
   deliveredAt?: boolean
@@ -1364,6 +1508,8 @@ export type HotelOrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   createdAt?: boolean
   updatedAt?: boolean
   sentAt?: boolean
+  prepStartedAt?: boolean
+  estimatedMinutes?: boolean
   readyAt?: boolean
   paidAt?: boolean
   deliveredAt?: boolean
@@ -1384,6 +1530,8 @@ export type HotelOrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   createdAt?: boolean
   updatedAt?: boolean
   sentAt?: boolean
+  prepStartedAt?: boolean
+  estimatedMinutes?: boolean
   readyAt?: boolean
   paidAt?: boolean
   deliveredAt?: boolean
@@ -1404,12 +1552,14 @@ export type HotelOrderSelectScalar = {
   createdAt?: boolean
   updatedAt?: boolean
   sentAt?: boolean
+  prepStartedAt?: boolean
+  estimatedMinutes?: boolean
   readyAt?: boolean
   paidAt?: boolean
   deliveredAt?: boolean
 }
 
-export type HotelOrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "stayId" | "folioId" | "tableLabel" | "status" | "serverNote" | "createdByUserId" | "createdAt" | "updatedAt" | "sentAt" | "readyAt" | "paidAt" | "deliveredAt", ExtArgs["result"]["hotelOrder"]>
+export type HotelOrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "stayId" | "folioId" | "tableLabel" | "status" | "serverNote" | "createdByUserId" | "createdAt" | "updatedAt" | "sentAt" | "prepStartedAt" | "estimatedMinutes" | "readyAt" | "paidAt" | "deliveredAt", ExtArgs["result"]["hotelOrder"]>
 export type HotelOrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   stay?: boolean | Prisma.HotelOrder$stayArgs<ExtArgs>
@@ -1450,6 +1600,14 @@ export type $HotelOrderPayload<ExtArgs extends runtime.Types.Extensions.Internal
     createdAt: Date
     updatedAt: Date
     sentAt: Date | null
+    /**
+     * Début de préparation cuisine
+     */
+    prepStartedAt: Date | null
+    /**
+     * Durée estimée annoncée par la cuisine (minutes)
+     */
+    estimatedMinutes: number | null
     readyAt: Date | null
     paidAt: Date | null
     deliveredAt: Date | null
@@ -1892,6 +2050,8 @@ export interface HotelOrderFieldRefs {
   readonly createdAt: Prisma.FieldRef<"HotelOrder", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"HotelOrder", 'DateTime'>
   readonly sentAt: Prisma.FieldRef<"HotelOrder", 'DateTime'>
+  readonly prepStartedAt: Prisma.FieldRef<"HotelOrder", 'DateTime'>
+  readonly estimatedMinutes: Prisma.FieldRef<"HotelOrder", 'Int'>
   readonly readyAt: Prisma.FieldRef<"HotelOrder", 'DateTime'>
   readonly paidAt: Prisma.FieldRef<"HotelOrder", 'DateTime'>
   readonly deliveredAt: Prisma.FieldRef<"HotelOrder", 'DateTime'>

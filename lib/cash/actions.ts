@@ -176,7 +176,7 @@ export async function createPaymentAction(input: {
           title: "Commande payée",
           body: `Commande encaissée (${receiptNumber}). À livrer.`,
           kind: "order_paid",
-          href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/restauration?view=suivi`,
+          href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/restauration?view=suivi&orderId=${input.orderId}`,
         },
       });
     }
@@ -194,7 +194,12 @@ export async function getFolioBalance(folioId: string) {
     prisma.payment.findMany({ where: { folioId } }),
   ]);
   const charges = lines.reduce((s, l) => s + l.amount, 0);
-  const paid = payments.reduce((s, p) => s + p.amountCdf, 0);
+  // Folio hôtel en USD : priorité amountForeign
+  const paid = payments.reduce(
+    (s, p) =>
+      s + (p.amountForeign != null && p.amountForeign > 0 ? p.amountForeign : p.amountCdf),
+    0,
+  );
   return charges - paid;
 }
 
@@ -214,7 +219,14 @@ export async function listOpenFoliosAction(
   });
   return folios.map((f) => {
     const charges = f.lines.reduce((s, l) => s + l.amount, 0);
-    const paid = f.payments.reduce((s, p) => s + p.amountCdf, 0);
+    const paid = f.payments.reduce(
+      (s, p) =>
+        s +
+        (p.amountForeign != null && p.amountForeign > 0
+          ? p.amountForeign
+          : p.amountCdf),
+      0,
+    );
     return { ...f, balance: charges - paid };
   });
 }

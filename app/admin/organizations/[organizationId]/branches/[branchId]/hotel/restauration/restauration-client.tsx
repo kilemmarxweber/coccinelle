@@ -2,14 +2,27 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { ColumnDef } from "@tanstack/react-table";
-import { UtensilsCrossed } from "lucide-react";
+import {
+  CheckCircle2,
+  Clock3,
+  Flame,
+  RefreshCw,
+  Timer,
+  Truck,
+  UtensilsCrossed,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { ResponsiveDataTable } from "@/components/data-table/responsive-data-table";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   PosChargeButton,
   PosTerminal,
@@ -19,6 +32,11 @@ import {
   advanceHotelOrderAction,
   createHotelOrderAction,
 } from "@/lib/hotel/actions";
+import {
+  elapsedLabel,
+  formatCountdownBanner,
+  prepCountdown,
+} from "@/lib/hotel/order-time";
 import { cn } from "@/lib/utils";
 
 type MenuItem = {
@@ -29,11 +47,26 @@ type MenuItem = {
   needsKitchen: boolean;
 };
 
+type OrderItem = {
+  name: string;
+  quantity: number;
+  amount: number;
+  needsKitchen?: boolean;
+  unitPrice?: number;
+};
+
 type Order = {
   id: string;
   tableLabel: string | null;
   status: string;
-  items: { name: string; quantity: number; amount: number }[];
+  serverNote?: string | null;
+  sentAt?: string | Date | null;
+  prepStartedAt?: string | Date | null;
+  estimatedMinutes?: number | null;
+  readyAt?: string | Date | null;
+  createdAt?: string | Date;
+  items: OrderItem[];
+  stay?: { guestName: string; room?: { number: string } | null } | null;
 };
 
 const STATUS_RANK: Record<string, number> = {
@@ -43,6 +76,30 @@ const STATUS_RANK: Record<string, number> = {
   EN_PREPARATION: 3,
   ENVOYEE: 4,
   LIVREE: 5,
+};
+
+const DELIVERABLE = new Set(["PRETE", "EN_CAISSE", "PAYEE"]);
+
+function canDeliver(status: string) {
+  return DELIVERABLE.has(status);
+}
+
+const STATUS_META: Record<
+  string,
+  { label: string; tone: string }
+> = {
+  ENVOYEE: { label: "Envoyée", tone: "bg-sky-500/15 text-sky-700 dark:text-sky-300" },
+  EN_PREPARATION: {
+    label: "En cuisine",
+    tone: "bg-orange-500/15 text-orange-800 dark:text-orange-200",
+  },
+  PRETE: { label: "Prête", tone: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" },
+  EN_CAISSE: {
+    label: "En caisse",
+    tone: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+  },
+  PAYEE: { label: "À livrer", tone: "bg-primary/15 text-primary" },
+  LIVREE: { label: "Livrée", tone: "bg-muted text-muted-foreground" },
 };
 
 export function RestaurationClient(props: {
@@ -56,17 +113,19 @@ export function RestaurationClient(props: {
   const searchParams = useSearchParams();
   const [pending, start] = useTransition();
   const [tableLabel, setTableLabel] = useState("T1");
-  const toDeliverCount = props.orders.filter((o) => o.status === "PAYEE").length;
+  const [now, setNow] = useState(() => Date.now());
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const toDeliverCount = props.orders.filter((o) => canDeliver(o.status)).length;
   const [view, setView] = useState<"commande" | "suivi">(
     props.initialView === "suivi" || toDeliverCount > 0 ? "suivi" : "commande",
   );
   const [suiviFilter, setSuiviFilter] = useState<"actives" | "livrer" | "toutes">(
-    toDeliverCount > 0 ? "livrer" : "actives",
+    "actives",
   );
   const { cart, addItem, setQty, clear, toPayload } = usePosCart();
 
   const toDeliver = useMemo(
-    () => props.orders.filter((o) => o.status === "PAYEE"),
+    () => props.orders.filter((o) => canDeliver(o.status)),
     [props.orders],
   );
   const activeOrders = useMemo(
@@ -80,9 +139,25 @@ export function RestaurationClient(props: {
   useEffect(() => {
     if (searchParams.get("view") === "suivi") {
       setView("suivi");
-      if (toDeliver.length > 0) setSuiviFilter("livrer");
+      setSuiviFilter("actives");
     }
-  }, [searchParams, toDeliver.length]);
+    const orderId = searchParams.get("orderId");
+    if (orderId) {
+      setView("suivi");
+      setSuiviFilter("actives");
+      setSelectedId(orderId);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (view !== "suivi") return;
+    const tick = window.setInterval(() => setNow(Date.now()), 1000);
+    const refresh = window.setInterval(() => router.refresh(), 12000);
+    return () => {
+      window.clearInterval(tick);
+      window.clearInterval(refresh);
+    };
+  }, [view, router]);
 
   const suiviRows = useMemo(() => {
     let rows = props.orders;
@@ -96,6 +171,11 @@ export function RestaurationClient(props: {
         (STATUS_RANK[a.status] ?? 99) - (STATUS_RANK[b.status] ?? 99),
     );
   }, [props.orders, suiviFilter, activeOrders, toDeliver]);
+
+  const selected = useMemo(
+    () => props.orders.find((o) => o.id === selectedId) ?? null,
+    [props.orders, selectedId],
+  );
 
   function send() {
     const items = toPayload();
@@ -132,6 +212,7 @@ export function RestaurationClient(props: {
           to: "LIVREE",
         });
         toast.success("Livrée");
+        setSelectedId(null);
         router.refresh();
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Erreur");
@@ -139,56 +220,7 @@ export function RestaurationClient(props: {
     });
   }
 
-  const columns = useMemo<ColumnDef<Order>[]>(
-    () => [
-      {
-        accessorKey: "tableLabel",
-        header: "Table",
-        cell: ({ row }) => (
-          <span className="font-medium">
-            {row.original.tableLabel ?? "Salle"}
-          </span>
-        ),
-      },
-      {
-        id: "articles",
-        header: "Articles",
-        cell: ({ row }) =>
-          row.original.items.map((i) => `${i.quantity}× ${i.name}`).join(", "),
-      },
-      {
-        accessorKey: "status",
-        header: "Statut",
-        cell: ({ row }) => (
-          <Badge
-            variant={row.original.status === "PAYEE" ? "default" : "secondary"}
-          >
-            {row.original.status === "PAYEE"
-              ? "À livrer"
-              : row.original.status}
-          </Badge>
-        ),
-      },
-      {
-        id: "actions",
-        header: "",
-        cell: ({ row }) =>
-          row.original.status === "PAYEE" ? (
-            <Button
-              size="sm"
-              disabled={pending}
-              onClick={() => markDelivered(row.original.id)}
-            >
-              Marquer livrée
-            </Button>
-          ) : null,
-      },
-    ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [pending],
-  );
-
-  const suiviBadge = toDeliver.length > 0 ? toDeliver.length : activeOrders.length;
+  const enCoursCount = activeOrders.length;
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-5 px-3 py-5 sm:px-5 lg:px-6">
@@ -200,27 +232,31 @@ export function RestaurationClient(props: {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Restauration</h1>
             <p className="text-sm text-muted-foreground">
-              Serveur — catalogue tactile + ticket, puis suivi livraison.
+              Serveur — commande tactile + suivi avec temps cuisine.
             </p>
           </div>
         </div>
-        {toDeliver.length > 0 ? (
-          <Badge className="gap-1.5 px-3 py-1 text-sm">
-            {toDeliver.length} à livrer
-          </Badge>
-        ) : null}
+        <div className="flex items-center gap-2">
+          {view === "suivi" ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              onClick={() => router.refresh()}
+            >
+              <RefreshCw className="size-3.5" />
+              Actualiser
+            </Button>
+          ) : null}
+        </div>
       </header>
 
       <div className="flex gap-1 overflow-x-auto rounded-xl border border-border bg-card p-1">
         {(
           [
             ["commande", "Nouvelle commande"],
-            [
-              "suivi",
-              toDeliver.length > 0
-                ? `Suivi · ${toDeliver.length} à livrer`
-                : `Suivi (${activeOrders.length})`,
-            ],
+            ["suivi", `Suivi (${enCoursCount})`],
           ] as const
         ).map(([id, label]) => (
           <button
@@ -233,15 +269,15 @@ export function RestaurationClient(props: {
                 ? "bg-primary text-primary-foreground shadow-sm"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground",
               id === "suivi" &&
-                toDeliver.length > 0 &&
+                enCoursCount > 0 &&
                 view !== "suivi" &&
                 "ring-1 ring-primary/40",
             )}
           >
             {label}
-            {id === "suivi" && suiviBadge > 0 && view !== "suivi" ? (
+            {id === "suivi" && enCoursCount > 0 && view !== "suivi" ? (
               <span className="ml-1.5 inline-flex min-w-5 justify-center rounded-full bg-primary/15 px-1.5 text-xs font-bold text-primary">
-                {suiviBadge}
+                {enCoursCount}
               </span>
             ) : null}
           </button>
@@ -278,14 +314,14 @@ export function RestaurationClient(props: {
           }
         />
       ) : (
-        <section className="space-y-4 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
+        <section className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-semibold">Suivi des commandes</h2>
             <div className="flex gap-1 rounded-lg border border-border bg-muted/20 p-1">
               {(
                 [
-                  ["livrer", `À livrer (${toDeliver.length})`],
                   ["actives", `En cours (${activeOrders.length})`],
+                  ["livrer", `À livrer (${toDeliver.length})`],
                   ["toutes", "Toutes"],
                 ] as const
               ).map(([id, label]) => (
@@ -305,38 +341,297 @@ export function RestaurationClient(props: {
               ))}
             </div>
           </div>
-          <ResponsiveDataTable
-            columns={columns}
-            data={suiviRows}
-            emptyText={
-              suiviFilter === "livrer"
-                ? "Aucune commande à livrer."
-                : "Aucune commande pour le moment."
-            }
-            mobileCardTitle={(row) => row.tableLabel ?? "Salle"}
-            mobileCardSubtitle={(row) =>
-              row.items.map((i) => `${i.quantity}× ${i.name}`).join(", ")
-            }
-            mobileCardBadges={(row) => [
-              {
-                label: row.status === "PAYEE" ? "À livrer" : row.status,
-                variant: row.status === "PAYEE" ? "default" : "secondary",
-              },
-            ]}
-            mobileCardActions={(row) =>
-              row.status === "PAYEE" ? (
-                <Button
-                  size="sm"
-                  disabled={pending}
-                  onClick={() => markDelivered(row.id)}
-                >
-                  Marquer livrée
-                </Button>
-              ) : null
-            }
-          />
+
+          {suiviRows.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 px-6 py-16 text-center">
+              <UtensilsCrossed className="mb-3 size-10 text-muted-foreground/50" />
+              <p className="font-medium">
+                {suiviFilter === "livrer"
+                  ? "Aucune commande à livrer"
+                  : "Aucune commande pour le moment"}
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Les tickets envoyés apparaîtront ici avec le temps cuisine.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {suiviRows.map((order) => {
+                const meta = STATUS_META[order.status] ?? {
+                  label: order.status,
+                  tone: "bg-muted text-muted-foreground",
+                };
+                const isCooking = order.status === "EN_PREPARATION";
+                const isDeliver = canDeliver(order.status);
+                const cd = isCooking
+                  ? prepCountdown(
+                      order.estimatedMinutes,
+                      order.prepStartedAt,
+                      now,
+                    )
+                  : null;
+                const started = order.sentAt ?? order.createdAt;
+
+                return (
+                  <article
+                    key={order.id}
+                    className={cn(
+                      "flex flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition",
+                      isDeliver && "border-primary/50 ring-1 ring-primary/20",
+                      cd?.overdue && "border-rose-500/60",
+                      isCooking && !cd?.overdue && "border-orange-500/40",
+                      !isDeliver && !isCooking && "border-border",
+                    )}
+                  >
+                    <button
+                      type="button"
+                      className="flex flex-1 flex-col text-left"
+                      onClick={() => setSelectedId(order.id)}
+                    >
+                      <header className="flex items-start justify-between gap-3 border-b border-border/80 px-4 py-3">
+                        <div className="min-w-0">
+                          <p className="truncate text-xl font-bold tracking-tight">
+                            {order.tableLabel ?? "Salle"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            #{order.id.slice(0, 8)}
+                            {order.stay
+                              ? ` · ${order.stay.guestName}${
+                                  order.stay.room
+                                    ? ` · ch. ${order.stay.room.number}`
+                                    : ""
+                                }`
+                              : ""}
+                          </p>
+                        </div>
+                        <div className="flex flex-col items-end gap-1.5">
+                          <span
+                            className={cn(
+                              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold",
+                              meta.tone,
+                            )}
+                          >
+                            {isCooking ? (
+                              <Flame className="size-3" />
+                            ) : isDeliver ? (
+                              <Truck className="size-3" />
+                            ) : null}
+                            {meta.label}
+                          </span>
+                          {started ? (
+                            <span className="inline-flex items-center gap-1 text-xs font-semibold tabular-nums text-muted-foreground">
+                              <Clock3 className="size-3.5" />
+                              {elapsedLabel(started, now)}
+                            </span>
+                          ) : null}
+                        </div>
+                      </header>
+
+                      {cd ? (
+                        <div
+                          className={cn(
+                            "flex items-center justify-between gap-2 border-b px-4 py-2.5 text-sm font-semibold tabular-nums",
+                            cd.overdue
+                              ? "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300"
+                              : "border-orange-500/20 bg-orange-500/10 text-orange-800 dark:text-orange-200",
+                          )}
+                        >
+                          <span className="inline-flex items-center gap-1.5">
+                            <Timer className="size-3.5" />
+                            {formatCountdownBanner(cd)}
+                          </span>
+                          <span className="text-xs font-medium opacity-80">
+                            estimé {cd.totalMinutes} min
+                          </span>
+                        </div>
+                      ) : order.status === "ENVOYEE" ? (
+                        <div className="border-b border-sky-500/20 bg-sky-500/10 px-4 py-2 text-xs font-medium text-sky-800 dark:text-sky-200">
+                          En attente cuisine — pas encore de temps estimé
+                        </div>
+                      ) : null}
+
+                      <div className="flex-1 space-y-2 px-4 py-3">
+                        {order.items.map((item, idx) => (
+                          <div
+                            key={`${order.id}-${item.name}-${idx}`}
+                            className="flex items-center gap-3 rounded-xl bg-muted/35 px-3 py-2.5"
+                          >
+                            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/15 text-base font-bold text-violet-700 tabular-nums dark:text-violet-300">
+                              {item.quantity}
+                            </span>
+                            <span className="min-w-0 flex-1 text-sm font-semibold leading-snug">
+                              {item.name}
+                            </span>
+                            <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
+                              {item.amount.toFixed(2)} $
+                            </span>
+                          </div>
+                        ))}
+                        {order.serverNote ? (
+                          <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-2 text-xs text-amber-800 dark:text-amber-200">
+                            Note : {order.serverNote}
+                          </p>
+                        ) : null}
+                      </div>
+                    </button>
+
+                    {isDeliver ? (
+                      <footer className="border-t border-border p-3">
+                        <Button
+                          className="w-full gap-1.5"
+                          disabled={pending}
+                          onClick={() => markDelivered(order.id)}
+                        >
+                          <CheckCircle2 className="size-4" />
+                          Marquer livrée
+                        </Button>
+                      </footer>
+                    ) : null}
+                  </article>
+                );
+              })}
+            </div>
+          )}
         </section>
       )}
+
+      <Sheet
+        open={!!selected}
+        onOpenChange={(open) => {
+          if (!open) setSelectedId(null);
+        }}
+      >
+        <SheetContent className="flex w-full flex-col sm:max-w-md">
+          {selected ? (
+            <>
+              <SheetHeader>
+                <SheetTitle className="text-2xl">
+                  {selected.tableLabel ?? "Salle"}
+                </SheetTitle>
+                <SheetDescription>
+                  Ticket #{selected.id.slice(0, 8)} ·{" "}
+                  {STATUS_META[selected.status]?.label ?? selected.status}
+                </SheetDescription>
+              </SheetHeader>
+
+              <div className="flex-1 space-y-4 overflow-auto px-4 pb-2">
+                {selected.status === "EN_PREPARATION"
+                  ? (() => {
+                      const cd = prepCountdown(
+                        selected.estimatedMinutes,
+                        selected.prepStartedAt,
+                        now,
+                      );
+                      if (!cd) {
+                        return (
+                          <p className="rounded-xl bg-muted/30 px-3 py-3 text-sm text-muted-foreground">
+                            Cuisine en cours — temps estimé non renseigné.
+                          </p>
+                        );
+                      }
+                      return (
+                        <div
+                          className={cn(
+                            "rounded-xl px-3 py-4 text-center",
+                            cd.overdue
+                              ? "bg-rose-500/10 text-rose-700 dark:text-rose-300"
+                              : "bg-orange-500/10 text-orange-800 dark:text-orange-200",
+                          )}
+                        >
+                          <p className="text-xs font-semibold tracking-wide uppercase opacity-80">
+                            Temps cuisine · {cd.totalMinutes} min
+                          </p>
+                          <p className="mt-1 text-4xl font-bold tabular-nums tracking-tight">
+                            {cd.remainingLabel}
+                          </p>
+                          <p className="mt-1 text-sm font-medium">
+                            {cd.overdue ? "En retard" : "Restant"}
+                          </p>
+                          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+                            <div
+                              className={cn(
+                                "h-full rounded-full transition-all",
+                                cd.overdue ? "bg-rose-500" : "bg-orange-500",
+                              )}
+                              style={{
+                                width: `${Math.min(100, cd.progress * 100)}%`,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })()
+                  : null}
+
+                {selected.stay ? (
+                  <div className="rounded-xl border border-border bg-muted/20 px-3 py-2 text-sm">
+                    <p className="font-medium">{selected.stay.guestName}</p>
+                    {selected.stay.room ? (
+                      <p className="text-muted-foreground">
+                        Chambre {selected.stay.room.number}
+                      </p>
+                    ) : null}
+                  </div>
+                ) : null}
+
+                <div>
+                  <h3 className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                    Articles
+                  </h3>
+                  <ul className="space-y-2">
+                    {selected.items.map((item, idx) => (
+                      <li
+                        key={`suivi-detail-${idx}`}
+                        className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-3"
+                      >
+                        <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-violet-500/15 text-lg font-bold text-violet-700 tabular-nums dark:text-violet-300">
+                          {item.quantity}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-semibold">{item.name}</p>
+                          <p className="text-xs text-muted-foreground tabular-nums">
+                            {(
+                              item.unitPrice ??
+                              item.amount / Math.max(1, item.quantity)
+                            ).toFixed(2)}{" "}
+                            $ / u.
+                          </p>
+                        </div>
+                        <span className="font-semibold tabular-nums">
+                          {item.amount.toFixed(2)} $
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {selected.serverNote ? (
+                  <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-3 text-sm">
+                    <p className="text-xs font-semibold tracking-wide text-amber-700 uppercase dark:text-amber-300">
+                      Note
+                    </p>
+                    <p className="mt-1">{selected.serverNote}</p>
+                  </div>
+                ) : null}
+              </div>
+
+              {canDeliver(selected.status) ? (
+                <SheetFooter className="border-t border-border">
+                  <Button
+                    size="lg"
+                    className="w-full gap-2"
+                    disabled={pending}
+                    onClick={() => markDelivered(selected.id)}
+                  >
+                    <CheckCircle2 className="size-5" />
+                    Marquer livrée
+                  </Button>
+                </SheetFooter>
+              ) : null}
+            </>
+          ) : null}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

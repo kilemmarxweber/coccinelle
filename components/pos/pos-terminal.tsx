@@ -136,7 +136,7 @@ export function PosTerminal({
                 >
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.22),transparent_55%)]" />
                   <div className="absolute top-2 right-2 rounded-md bg-black/35 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-white uppercase backdrop-blur-sm">
-                    {item.price.toFixed(2)}
+                    {item.price.toFixed(2)} $
                   </div>
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/45 to-transparent px-2.5 pt-8 pb-2.5">
                     <p className="line-clamp-2 text-sm font-semibold text-white drop-shadow">
@@ -223,11 +223,11 @@ export function PosTerminal({
                         </span>
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {line.price.toFixed(2)} / u.
+                        {line.price.toFixed(2)} $ / u.
                       </p>
                     </div>
                     <p className="shrink-0 text-sm font-semibold tabular-nums">
-                      {(line.price * line.quantity).toFixed(2)}
+                      {(line.price * line.quantity).toFixed(2)} $
                     </p>
                   </div>
                   <div className="mt-2 flex items-center gap-1.5">
@@ -273,7 +273,7 @@ export function PosTerminal({
           <div className="flex items-end justify-between gap-3">
             <span className="text-sm text-muted-foreground">Total</span>
             <span className="text-2xl font-bold tracking-tight tabular-nums">
-              {total.toFixed(2)}
+              {total.toFixed(2)} $
             </span>
           </div>
           {actions}

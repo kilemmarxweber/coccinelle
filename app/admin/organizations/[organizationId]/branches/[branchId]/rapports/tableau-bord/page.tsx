@@ -34,7 +34,7 @@ export default async function TableauBordPage({ params }: PageProps) {
           {[
             { label: "Occupation", value: `${kpis.occupancyPct}%` },
             { label: "Chambres occupées", value: `${kpis.occupied}/${kpis.rooms}` },
-            { label: "CA caisse (jour)", value: kpis.caJour.toFixed(2) },
+            { label: "CA caisse (jour)", value: `${kpis.caJour.toFixed(2)} $` },
             { label: "Tickets F&B (jour)", value: String(kpis.ticketsFnbJour) },
           ].map((k) => (
             <div

@@ -750,6 +750,10 @@ model HotelOrder {
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   sentAt      DateTime?
+  /// Début de préparation cuisine
+  prepStartedAt DateTime?
+  /// Durée estimée annoncée par la cuisine (minutes)
+  estimatedMinutes Int?
   readyAt     DateTime?
   paidAt      DateTime?
   deliveredAt DateTime?

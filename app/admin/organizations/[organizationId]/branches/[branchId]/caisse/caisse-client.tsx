@@ -156,10 +156,6 @@ export function CaisseClient(props: Props) {
     };
   }, [router]);
 
-  const drinks = useMemo(
-    () => props.menuItems.filter((m) => !m.needsKitchen),
-    [props.menuItems],
-  );
   const openFolios = useMemo(
     () => props.folios.filter((f) => f.balance > 0.01),
     [props.folios],
@@ -171,7 +167,6 @@ export function CaisseClient(props: Props) {
           acc.usd += p.amountForeign;
           acc.cdf += p.amountCdf;
         } else if (props.rate && props.rate.rate > 0) {
-          // Montants caisse / vente rapide saisis en $
           acc.usd += p.amountCdf;
           acc.cdf += p.amountCdf * props.rate.rate;
         } else {
@@ -229,16 +224,19 @@ export function CaisseClient(props: Props) {
     });
   }
 
-  function payFolio(folioId: string, balance: number) {
+  function payFolio(folioId: string, balanceUsd: number) {
     start(async () => {
       try {
+        const amountCdf = props.rate
+          ? balanceUsd * props.rate.rate
+          : balanceUsd;
         const p = await createPaymentAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
           folioId,
-          amountCdf: balance,
+          amountCdf,
+          amountForeign: balanceUsd,
           method,
-          amountForeign: props.rate ? balance / props.rate.rate : undefined,
         });
         toast.success(`Payé · ${p.receiptNumber}`);
         router.push(
@@ -323,12 +321,14 @@ export function CaisseClient(props: Props) {
           return (
             <div className="text-right">
               <div className="font-semibold tabular-nums">
-                {bal.toFixed(2)} CDF
+                {bal.toFixed(2)} $
               </div>
               {props.rate ? (
                 <div className="text-xs text-muted-foreground tabular-nums">
-                  ≈ {(bal / props.rate.rate).toFixed(2)}{" "}
-                  {props.rate.fromCurrency}
+                  ≈ {(bal * props.rate.rate).toLocaleString("fr-FR", {
+                    maximumFractionDigits: 0,
+                  })}{" "}
+                  {props.rate.toCurrency}
                 </div>
               ) : null}
             </div>
@@ -369,11 +369,26 @@ export function CaisseClient(props: Props) {
       {
         accessorKey: "amountCdf",
         header: "Montant",
-        cell: ({ row }) => (
-          <span className="tabular-nums">
-            {row.original.amountCdf.toFixed(2)} CDF
-          </span>
-        ),
+        cell: ({ row }) => {
+          const usd =
+            row.original.amountForeign != null && row.original.amountForeign > 0
+              ? row.original.amountForeign
+              : row.original.amountCdf;
+          const cdf =
+            row.original.amountForeign != null &&
+            row.original.amountForeign > 0 &&
+            props.rate
+              ? row.original.amountForeign * props.rate.rate
+              : row.original.amountCdf;
+          return (
+            <div className="text-right">
+              <span className="font-medium tabular-nums">{usd.toFixed(2)} $</span>
+              <span className="block text-xs text-muted-foreground tabular-nums">
+                {cdf.toLocaleString("fr-FR", { maximumFractionDigits: 0 })} CDF
+              </span>
+            </div>
+          );
+        },
       },
       {
         accessorKey: "method",
@@ -438,7 +453,9 @@ export function CaisseClient(props: Props) {
       label: "CA du jour",
       value: `${caJour.usd.toFixed(2)} $`,
       sub: props.rate
-        ? `${caJour.cdf.toLocaleString("fr-FR", { maximumFractionDigits: 0 })} CDF`
+        ? `${caJour.cdf.toLocaleString("fr-FR", {
+            maximumFractionDigits: 0,
+          })} CDF`
         : null,
       tone: "text-foreground",
     },
@@ -692,7 +709,7 @@ export function CaisseClient(props: Props) {
                               {item.name}
                             </span>
                             <span className="shrink-0 text-sm font-medium tabular-nums text-muted-foreground">
-                              {item.amount.toFixed(2)}
+                              {item.amount.toFixed(2)} $
                             </span>
                           </div>
                         ))}
@@ -706,7 +723,7 @@ export function CaisseClient(props: Props) {
                       <div className="flex items-center justify-between gap-2 border-t border-dashed border-border px-4 py-2.5">
                         <span className="text-sm text-muted-foreground">Total</span>
                         <span className="text-lg font-bold tabular-nums">
-                          {total.toFixed(2)} CDF
+                          {total.toFixed(2)} $
                         </span>
                       </div>
                     </button>
@@ -786,11 +803,11 @@ export function CaisseClient(props: Props) {
                                 {(item.unitPrice ?? item.amount / item.quantity).toFixed(
                                   2,
                                 )}{" "}
-                                / u.
+                                $ / u.
                               </p>
                             </div>
                             <span className="font-semibold tabular-nums">
-                              {item.amount.toFixed(2)}
+                              {item.amount.toFixed(2)} $
                             </span>
                           </li>
                         ))}
@@ -809,7 +826,7 @@ export function CaisseClient(props: Props) {
                     <div className="flex items-center justify-between rounded-xl bg-muted/30 px-3 py-3">
                       <span className="font-medium">Total à encaisser</span>
                       <span className="text-xl font-bold tabular-nums">
-                        {orderTotal(selectedOrder).toFixed(2)} CDF
+                        {orderTotal(selectedOrder).toFixed(2)} $
                       </span>
                     </div>
 
@@ -840,10 +857,10 @@ export function CaisseClient(props: Props) {
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <ShoppingBag className="size-4 text-primary" />
-            <h2 className="font-semibold">Vente rapide — boissons / hors cuisine</h2>
+            <h2 className="font-semibold">Vente rapide — tous les produits</h2>
           </div>
           <PosTerminal
-            items={drinks}
+            items={props.menuItems}
             cart={cart}
             onAdd={addItem}
             onSetQty={setQty}
@@ -882,7 +899,7 @@ export function CaisseClient(props: Props) {
             data={openFolios}
             emptyText="Aucun solde ouvert."
             mobileCardTitle={(row) => folioLabel(row)}
-            mobileCardSubtitle={(row) => `${row.balance.toFixed(2)} CDF`}
+            mobileCardSubtitle={(row) => `${row.balance.toFixed(2)} $`}
             mobileCardActions={(row) => (
               <Button
                 size="sm"
@@ -904,9 +921,13 @@ export function CaisseClient(props: Props) {
             data={props.todayPayments}
             emptyText="Aucun paiement aujourd’hui."
             mobileCardTitle={(row) => row.receiptNumber}
-            mobileCardSubtitle={(row) =>
-              `${row.amountCdf.toFixed(2)} CDF · ${row.method}`
-            }
+            mobileCardSubtitle={(row) => {
+              const usd =
+                row.amountForeign != null && row.amountForeign > 0
+                  ? row.amountForeign
+                  : row.amountCdf;
+              return `${usd.toFixed(2)} $ · ${row.method}`;
+            }}
             mobileCardActions={(row) => (
               <Button
                 size="sm"

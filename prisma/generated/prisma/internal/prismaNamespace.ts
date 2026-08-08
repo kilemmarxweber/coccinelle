@@ -3491,6 +3491,8 @@ export const HotelOrderScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   sentAt: 'sentAt',
+  prepStartedAt: 'prepStartedAt',
+  estimatedMinutes: 'estimatedMinutes',
   readyAt: 'readyAt',
   paidAt: 'paidAt',
   deliveredAt: 'deliveredAt'

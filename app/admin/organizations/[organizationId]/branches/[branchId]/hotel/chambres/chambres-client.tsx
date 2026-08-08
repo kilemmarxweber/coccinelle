@@ -94,7 +94,7 @@ export function ChambresClient(props: {
         header: "Tarif",
         cell: ({ row }) => (
           <span className="tabular-nums">
-            {row.original.roomType.priceNight}/nuit
+            {row.original.roomType.priceNight.toFixed(2)} $/nuit
           </span>
         ),
       },
@@ -163,7 +163,7 @@ export function ChambresClient(props: {
           pageSize={20}
           mobileCardTitle={(row) => `Chambre ${row.number}`}
           mobileCardSubtitle={(row) =>
-            `${row.roomType.name} · ${row.roomType.priceNight}/nuit`
+            `${row.roomType.name} · ${row.roomType.priceNight.toFixed(2)} $/nuit`
           }
           mobileCardBadges={(row) => {
             const meta =

@@ -161,7 +161,7 @@ export function BranchNotificationsBell(props: {
             >
               <CircleDollarSign className="size-4 text-emerald-500" />
               <span className="min-w-0">
-                <span className="block text-xs text-muted-foreground">F&B prêts</span>
+                <span className="block text-xs text-muted-foreground">F&B</span>
                 <span className="font-semibold tabular-nums">
                   {ops.readyOrders}
                 </span>

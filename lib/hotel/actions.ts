@@ -140,8 +140,8 @@ export async function createStayAction(input: {
   notes?: string;
 }) {
   await ctx(input.organizationId, input.branchId);
-  const checkIn = new Date(input.checkInDate);
-  const checkOut = new Date(input.checkOutDate);
+  const checkIn = parseDateOnly(input.checkInDate);
+  const checkOut = parseDateOnly(input.checkOutDate);
   if (!(checkOut > checkIn)) throw new Error("Dates invalides.");
 
   const room = await prisma.hotelRoom.findFirst({
@@ -262,14 +262,22 @@ export async function checkOutStayAction(input: {
   if (stay.status !== "CHECKED_IN") throw new Error("Check-out impossible.");
 
   const charges = stay.folio?.lines.reduce((s, l) => s + l.amount, 0) ?? 0;
-  const paid = stay.folio?.payments.reduce((s, p) => s + p.amountCdf, 0) ?? 0;
+  const paid =
+    stay.folio?.payments.reduce(
+      (s, p) =>
+        s +
+        (p.amountForeign != null && p.amountForeign > 0
+          ? p.amountForeign
+          : p.amountCdf),
+      0,
+    ) ?? 0;
   const balance = charges - paid;
   if (balance > 0.01) {
     await prisma.branchNotification.create({
       data: {
         branchId: input.branchId,
         title: "Check-out — solde à encaisser",
-        body: `${stay.guestName} · solde ${balance.toFixed(2)}`,
+        body: `${stay.guestName} · solde ${balance.toFixed(2)} $`,
         kind: "stay_checkout_due",
         href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/caisse`,
       },
@@ -485,7 +493,7 @@ export async function applyLateCheckoutFeesAction(
           data: {
             branchId,
             title: "Nuitée retard checkout",
-            body: `${stay.guestName} · ch. ${stay.room.number} · +1 nuit (${unit})`,
+            body: `${stay.guestName} · ch. ${stay.room.number} · +1 nuit (${unit.toFixed(2)} $)`,
             kind: "stay_late_checkout",
             href: `/admin/organizations/${organizationId}/branches/${branchId}/caisse`,
           },
@@ -517,7 +525,7 @@ export async function ensureHotelMenuSeedAction(
   await ctx(organizationId, branchId);
   const existing = await prisma.hotelMenuItem.findMany({
     where: { branchId },
-    select: { name: true },
+    select: { id: true, name: true, needsKitchen: true, category: true },
   });
   const known = new Set(existing.map((e) => e.name));
   const missing = DEFAULT_HOTEL_MENU.filter((item) => !known.has(item.name));
@@ -526,6 +534,30 @@ export async function ensureHotelMenuSeedAction(
       data: missing.map((item) => ({ branchId, ...item })),
     });
   }
+  // Aligne desserts / articles seed sur needsKitchen (ex. desserts → cuisine)
+  const byName = new Map(DEFAULT_HOTEL_MENU.map((i) => [i.name, i]));
+  for (const row of existing) {
+    const def = byName.get(row.name);
+    if (!def) continue;
+    if (row.needsKitchen !== def.needsKitchen || row.category !== def.category) {
+      await prisma.hotelMenuItem.update({
+        where: { id: row.id },
+        data: {
+          needsKitchen: def.needsKitchen,
+          category: def.category,
+        },
+      });
+    }
+  }
+  // Tout dessert hors seed → cuisine
+  await prisma.hotelMenuItem.updateMany({
+    where: {
+      branchId,
+      category: { equals: "Desserts", mode: "insensitive" },
+      needsKitchen: false,
+    },
+    data: { needsKitchen: true },
+  });
   const rate = await prisma.exchangeRate.count({ where: { branchId } });
   if (rate === 0) {
     await prisma.exchangeRate.create({
@@ -594,8 +626,8 @@ export async function createHotelOrderAction(input: {
         body: `${o.tableLabel ?? "Salle"} · ${o.items.length} article(s)`,
         kind: needsKitchen ? "order_sent" : "order_ready",
         href: needsKitchen
-          ? `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/cuisine`
-          : `/admin/organizations/${input.organizationId}/branches/${input.branchId}/caisse`,
+          ? `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/cuisine?orderId=${o.id}`
+          : `/admin/organizations/${input.organizationId}/branches/${input.branchId}/caisse?orderId=${o.id}`,
       },
     });
 
@@ -616,6 +648,8 @@ export async function advanceHotelOrderAction(input: {
     | "EN_CAISSE"
     | "LIVREE"
     | "ANNULEE";
+  /** Minutes estimées — obligatoire pour démarrer la préparation. */
+  estimatedMinutes?: number;
 }) {
   await ctx(input.organizationId, input.branchId);
   const order = await prisma.hotelOrder.findFirst({
@@ -623,29 +657,78 @@ export async function advanceHotelOrderAction(input: {
   });
   if (!order) throw new Error("Commande introuvable.");
 
+  if (input.to === "EN_PREPARATION") {
+    const mins = Math.round(Number(input.estimatedMinutes));
+    if (!Number.isFinite(mins) || mins < 1 || mins > 180) {
+      throw new Error("Indiquez un temps estimé entre 1 et 180 minutes.");
+    }
+  }
+
   const data: {
     status: typeof input.to;
     readyAt?: Date;
     deliveredAt?: Date;
+    prepStartedAt?: Date;
+    estimatedMinutes?: number;
   } = { status: input.to };
+
+  if (input.to === "EN_PREPARATION") {
+    data.prepStartedAt = new Date();
+    data.estimatedMinutes = Math.round(Number(input.estimatedMinutes));
+  }
   if (input.to === "PRETE") data.readyAt = new Date();
   if (input.to === "LIVREE") data.deliveredAt = new Date();
 
-  await prisma.$transaction([
-    prisma.hotelOrder.update({ where: { id: order.id }, data }),
-    prisma.branchNotification.create({
+  await prisma.$transaction(async (tx) => {
+    await tx.hotelOrder.update({ where: { id: order.id }, data });
+
+    if (input.to === "LIVREE") {
+      // Masque les notifs liées à cette commande (déjà livrée)
+      await tx.branchNotification.updateMany({
+        where: {
+          branchId: input.branchId,
+          readAt: null,
+          OR: [
+            { href: { contains: `orderId=${order.id}` } },
+            { body: { contains: order.id.slice(0, 8) } },
+            ...(order.tableLabel
+              ? [
+                  {
+                    kind: "order_paid" as const,
+                    body: { contains: order.tableLabel },
+                  },
+                ]
+              : []),
+          ],
+        },
+        data: { readAt: new Date() },
+      });
+      return;
+    }
+
+    const href =
+      input.to === "PRETE" || input.to === "EN_CAISSE"
+        ? `/admin/organizations/${input.organizationId}/branches/${input.branchId}/caisse?orderId=${order.id}`
+        : `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/restauration?view=suivi&orderId=${order.id}`;
+
+    const estimateHint =
+      input.to === "EN_PREPARATION" && data.estimatedMinutes
+        ? ` · ~${data.estimatedMinutes} min`
+        : "";
+
+    await tx.branchNotification.create({
       data: {
         branchId: input.branchId,
-        title: `Commande ${input.to}`,
-        body: `Commande ${order.id.slice(0, 8)}… → ${input.to}`,
+        title:
+          input.to === "EN_PREPARATION"
+            ? "Cuisine — en préparation"
+            : `Commande ${input.to}`,
+        body: `${order.tableLabel ?? "Salle"} · ${order.id.slice(0, 8)}… → ${input.to}${estimateHint}`,
         kind: `order_${input.to.toLowerCase()}`,
-        href:
-          input.to === "PRETE" || input.to === "EN_CAISSE"
-            ? `/admin/organizations/${input.organizationId}/branches/${input.branchId}/caisse`
-            : `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/restauration?view=suivi`,
+        href,
       },
-    }),
-  ]);
+    });
+  });
 
   revalidateHotel(input.organizationId, input.branchId);
 }
@@ -709,51 +792,111 @@ export async function getBranchAlertFeedAction(
   branchId: string,
 ) {
   await ctx(organizationId, branchId);
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
+  // Jour calendaire local → bornes UTC (colonnes @db.Date)
+  const now = new Date();
+  const start = new Date(
+    Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()),
+  );
   const end = new Date(start);
-  end.setDate(end.getDate() + 1);
+  end.setUTCDate(end.getUTCDate() + 1);
 
-  const [notifications, unreadCount, kitchenOrders, readyOrders, toDeliver, arrivals, departures] =
-    await Promise.all([
-      prisma.branchNotification.findMany({
-        where: { branchId },
-        orderBy: { createdAt: "desc" },
-        take: 25,
-      }),
-      prisma.branchNotification.count({
-        where: { branchId, readAt: null },
-      }),
-      prisma.hotelOrder.count({
-        where: {
-          branchId,
-          status: { in: ["ENVOYEE", "EN_PREPARATION"] },
-        },
-      }),
-      prisma.hotelOrder.count({
-        where: { branchId, status: { in: ["PRETE", "EN_CAISSE"] } },
-      }),
-      prisma.hotelOrder.count({
-        where: { branchId, status: "PAYEE" },
-      }),
-      prisma.hotelStay.count({
-        where: {
-          branchId,
-          status: "RESERVED",
-          checkInDate: { gte: start, lt: end },
-        },
-      }),
-      prisma.hotelStay.count({
-        where: {
-          branchId,
-          status: "CHECKED_IN",
-          checkOutDate: { gte: start, lt: end },
-        },
-      }),
-    ]);
+  const [
+    rawNotifications,
+    kitchenOrders,
+    readyOrders,
+    toDeliver,
+    arrivals,
+    departures,
+    deliveredOrders,
+  ] = await Promise.all([
+    prisma.branchNotification.findMany({
+      where: { branchId },
+      orderBy: { createdAt: "desc" },
+      take: 40,
+    }),
+    prisma.hotelOrder.count({
+      where: {
+        branchId,
+        status: { in: ["ENVOYEE", "EN_PREPARATION"] },
+      },
+    }),
+    prisma.hotelOrder.count({
+      where: { branchId, status: { in: ["PRETE", "EN_CAISSE"] } },
+    }),
+    prisma.hotelOrder.count({
+      where: { branchId, status: "PAYEE" },
+    }),
+    // Arrivées : check-in dû (réservé ≤ aujourd’hui) + déjà arrivés aujourd’hui
+    prisma.hotelStay.count({
+      where: {
+        branchId,
+        OR: [
+          {
+            status: "RESERVED",
+            checkInDate: { lt: end },
+          },
+          {
+            status: "CHECKED_IN",
+            checkInDate: { gte: start, lt: end },
+          },
+        ],
+      },
+    }),
+    // Départs dus : checkout prévu aujourd’hui ou en retard, encore en chambre
+    prisma.hotelStay.count({
+      where: {
+        branchId,
+        status: "CHECKED_IN",
+        checkOutDate: { lt: end },
+      },
+    }),
+    prisma.hotelOrder.findMany({
+      where: { branchId, status: "LIVREE" },
+      select: { id: true, tableLabel: true },
+      orderBy: { updatedAt: "desc" },
+      take: 100,
+    }),
+  ]);
 
+  const deliveredIds = new Set(deliveredOrders.map((o) => o.id));
+  const deliveredTables = new Set(
+    deliveredOrders
+      .map((o) => o.tableLabel)
+      .filter((t): t is string => Boolean(t)),
+  );
+
+  const notifications = rawNotifications.filter((n) => {
+    const kind = n.kind.toLowerCase();
+    // Ne plus afficher les notifs de livraison / commandes déjà livrées
+    if (kind === "order_livree" || kind.endsWith("_livree")) return false;
+
+    const fromHref = n.href?.match(/orderId=([0-9a-f-]{8,})/i)?.[1];
+    if (fromHref && deliveredIds.has(fromHref)) return false;
+
+    for (const id of deliveredIds) {
+      if (n.href?.includes(id) || n.body.includes(id.slice(0, 8))) return false;
+    }
+
+    // « À livrer » : masquer s’il n’y a plus de commandes PAYEE,
+    // ou si la notif pointe une table déjà livrée sans orderId.
+    if (kind === "order_paid") {
+      if (toDeliver === 0) return false;
+      if (
+        n.body.includes("À livrer") &&
+        [...deliveredTables].some((t) => n.body.includes(t)) &&
+        !fromHref
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  }).slice(0, 25);
+
+  const unreadCount = notifications.filter((n) => !n.readAt).length;
+  const fnbPending = readyOrders + toDeliver;
   const attention =
-    kitchenOrders + readyOrders + toDeliver + arrivals + departures + unreadCount;
+    kitchenOrders + fnbPending + arrivals + departures + unreadCount;
 
   return {
     notifications,
@@ -761,7 +904,7 @@ export async function getBranchAlertFeedAction(
     attention,
     ops: {
       kitchenOrders,
-      readyOrders,
+      readyOrders: fnbPending,
       toDeliver,
       arrivals,
       departures,
@@ -782,11 +925,18 @@ export async function getHotelDashboardKpisAction(
   const occupied = await prisma.hotelStay.count({
     where: { branchId, status: "CHECKED_IN" },
   });
-  const payments = await prisma.payment.aggregate({
+  const payments = await prisma.payment.findMany({
     where: { branchId, paidAt: { gte: start } },
-    _sum: { amountCdf: true },
-    _count: true,
+    select: { amountCdf: true, amountForeign: true },
   });
+  const caJourUsd = payments.reduce(
+    (s, p) =>
+      s +
+      (p.amountForeign != null && p.amountForeign > 0
+        ? p.amountForeign
+        : p.amountCdf),
+    0,
+  );
   const fnbTickets = await prisma.hotelOrder.count({
     where: { branchId, paidAt: { gte: start }, status: { in: ["PAYEE", "LIVREE"] } },
   });
@@ -794,8 +944,8 @@ export async function getHotelDashboardKpisAction(
     rooms,
     occupied,
     occupancyPct: rooms ? Math.round((occupied / rooms) * 100) : 0,
-    caJour: payments._sum.amountCdf ?? 0,
-    paiementsJour: payments._count,
+    caJour: caJourUsd,
+    paiementsJour: payments.length,
     ticketsFnbJour: fnbTickets,
   };
 }

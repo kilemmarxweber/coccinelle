@@ -69,6 +69,6 @@ export const DEFAULT_HOTEL_MENU = [
     name: "Fruit de saison",
     category: "Desserts",
     price: 3,
-    needsKitchen: false,
+    needsKitchen: true,
   },
 ] as const;
