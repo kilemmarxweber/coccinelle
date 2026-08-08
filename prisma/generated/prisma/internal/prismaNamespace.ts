@@ -406,6 +406,16 @@ export const ModelName = {
   BranchMember: 'BranchMember',
   HotelRoomType: 'HotelRoomType',
   HotelRoom: 'HotelRoom',
+  HotelStay: 'HotelStay',
+  HotelStayDraft: 'HotelStayDraft',
+  HotelFolioLine: 'HotelFolioLine',
+  HotelMenuCategory: 'HotelMenuCategory',
+  HotelMenuItem: 'HotelMenuItem',
+  HotelRestaurantTable: 'HotelRestaurantTable',
+  HotelTableReservation: 'HotelTableReservation',
+  HotelFoodOrder: 'HotelFoodOrder',
+  HotelPayment: 'HotelPayment',
+  HotelFoodOrderLine: 'HotelFoodOrderLine',
   ShopCategory: 'ShopCategory',
   ShopProduct: 'ShopProduct'
 } as const
@@ -423,7 +433,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationRole" | "member" | "invitation" | "client" | "trajet" | "trajetProgramme" | "trajetDepart" | "passager" | "reservation" | "colis" | "reservationDraft" | "paiement" | "penalite" | "branch" | "branchMember" | "hotelRoomType" | "hotelRoom" | "shopCategory" | "shopProduct"
+    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationRole" | "member" | "invitation" | "client" | "trajet" | "trajetProgramme" | "trajetDepart" | "passager" | "reservation" | "colis" | "reservationDraft" | "paiement" | "penalite" | "branch" | "branchMember" | "hotelRoomType" | "hotelRoom" | "hotelStay" | "hotelStayDraft" | "hotelFolioLine" | "hotelMenuCategory" | "hotelMenuItem" | "hotelRestaurantTable" | "hotelTableReservation" | "hotelFoodOrder" | "hotelPayment" | "hotelFoodOrderLine" | "shopCategory" | "shopProduct"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2055,6 +2065,746 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    HotelStay: {
+      payload: Prisma.$HotelStayPayload<ExtArgs>
+      fields: Prisma.HotelStayFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HotelStayFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HotelStayFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayPayload>
+        }
+        findFirst: {
+          args: Prisma.HotelStayFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HotelStayFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayPayload>
+        }
+        findMany: {
+          args: Prisma.HotelStayFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayPayload>[]
+        }
+        create: {
+          args: Prisma.HotelStayCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayPayload>
+        }
+        createMany: {
+          args: Prisma.HotelStayCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HotelStayCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayPayload>[]
+        }
+        delete: {
+          args: Prisma.HotelStayDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayPayload>
+        }
+        update: {
+          args: Prisma.HotelStayUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayPayload>
+        }
+        deleteMany: {
+          args: Prisma.HotelStayDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HotelStayUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HotelStayUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayPayload>[]
+        }
+        upsert: {
+          args: Prisma.HotelStayUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayPayload>
+        }
+        aggregate: {
+          args: Prisma.HotelStayAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHotelStay>
+        }
+        groupBy: {
+          args: Prisma.HotelStayGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelStayGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HotelStayCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelStayCountAggregateOutputType> | number
+        }
+      }
+    }
+    HotelStayDraft: {
+      payload: Prisma.$HotelStayDraftPayload<ExtArgs>
+      fields: Prisma.HotelStayDraftFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HotelStayDraftFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayDraftPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HotelStayDraftFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayDraftPayload>
+        }
+        findFirst: {
+          args: Prisma.HotelStayDraftFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayDraftPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HotelStayDraftFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayDraftPayload>
+        }
+        findMany: {
+          args: Prisma.HotelStayDraftFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayDraftPayload>[]
+        }
+        create: {
+          args: Prisma.HotelStayDraftCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayDraftPayload>
+        }
+        createMany: {
+          args: Prisma.HotelStayDraftCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HotelStayDraftCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayDraftPayload>[]
+        }
+        delete: {
+          args: Prisma.HotelStayDraftDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayDraftPayload>
+        }
+        update: {
+          args: Prisma.HotelStayDraftUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayDraftPayload>
+        }
+        deleteMany: {
+          args: Prisma.HotelStayDraftDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HotelStayDraftUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HotelStayDraftUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayDraftPayload>[]
+        }
+        upsert: {
+          args: Prisma.HotelStayDraftUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStayDraftPayload>
+        }
+        aggregate: {
+          args: Prisma.HotelStayDraftAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHotelStayDraft>
+        }
+        groupBy: {
+          args: Prisma.HotelStayDraftGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelStayDraftGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HotelStayDraftCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelStayDraftCountAggregateOutputType> | number
+        }
+      }
+    }
+    HotelFolioLine: {
+      payload: Prisma.$HotelFolioLinePayload<ExtArgs>
+      fields: Prisma.HotelFolioLineFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HotelFolioLineFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFolioLinePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HotelFolioLineFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFolioLinePayload>
+        }
+        findFirst: {
+          args: Prisma.HotelFolioLineFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFolioLinePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HotelFolioLineFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFolioLinePayload>
+        }
+        findMany: {
+          args: Prisma.HotelFolioLineFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFolioLinePayload>[]
+        }
+        create: {
+          args: Prisma.HotelFolioLineCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFolioLinePayload>
+        }
+        createMany: {
+          args: Prisma.HotelFolioLineCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HotelFolioLineCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFolioLinePayload>[]
+        }
+        delete: {
+          args: Prisma.HotelFolioLineDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFolioLinePayload>
+        }
+        update: {
+          args: Prisma.HotelFolioLineUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFolioLinePayload>
+        }
+        deleteMany: {
+          args: Prisma.HotelFolioLineDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HotelFolioLineUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HotelFolioLineUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFolioLinePayload>[]
+        }
+        upsert: {
+          args: Prisma.HotelFolioLineUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFolioLinePayload>
+        }
+        aggregate: {
+          args: Prisma.HotelFolioLineAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHotelFolioLine>
+        }
+        groupBy: {
+          args: Prisma.HotelFolioLineGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelFolioLineGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HotelFolioLineCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelFolioLineCountAggregateOutputType> | number
+        }
+      }
+    }
+    HotelMenuCategory: {
+      payload: Prisma.$HotelMenuCategoryPayload<ExtArgs>
+      fields: Prisma.HotelMenuCategoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HotelMenuCategoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuCategoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HotelMenuCategoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuCategoryPayload>
+        }
+        findFirst: {
+          args: Prisma.HotelMenuCategoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuCategoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HotelMenuCategoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuCategoryPayload>
+        }
+        findMany: {
+          args: Prisma.HotelMenuCategoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuCategoryPayload>[]
+        }
+        create: {
+          args: Prisma.HotelMenuCategoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuCategoryPayload>
+        }
+        createMany: {
+          args: Prisma.HotelMenuCategoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HotelMenuCategoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuCategoryPayload>[]
+        }
+        delete: {
+          args: Prisma.HotelMenuCategoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuCategoryPayload>
+        }
+        update: {
+          args: Prisma.HotelMenuCategoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuCategoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.HotelMenuCategoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HotelMenuCategoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HotelMenuCategoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuCategoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.HotelMenuCategoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuCategoryPayload>
+        }
+        aggregate: {
+          args: Prisma.HotelMenuCategoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHotelMenuCategory>
+        }
+        groupBy: {
+          args: Prisma.HotelMenuCategoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelMenuCategoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HotelMenuCategoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelMenuCategoryCountAggregateOutputType> | number
+        }
+      }
+    }
+    HotelMenuItem: {
+      payload: Prisma.$HotelMenuItemPayload<ExtArgs>
+      fields: Prisma.HotelMenuItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HotelMenuItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HotelMenuItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuItemPayload>
+        }
+        findFirst: {
+          args: Prisma.HotelMenuItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HotelMenuItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuItemPayload>
+        }
+        findMany: {
+          args: Prisma.HotelMenuItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuItemPayload>[]
+        }
+        create: {
+          args: Prisma.HotelMenuItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuItemPayload>
+        }
+        createMany: {
+          args: Prisma.HotelMenuItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HotelMenuItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuItemPayload>[]
+        }
+        delete: {
+          args: Prisma.HotelMenuItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuItemPayload>
+        }
+        update: {
+          args: Prisma.HotelMenuItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.HotelMenuItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HotelMenuItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HotelMenuItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.HotelMenuItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelMenuItemPayload>
+        }
+        aggregate: {
+          args: Prisma.HotelMenuItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHotelMenuItem>
+        }
+        groupBy: {
+          args: Prisma.HotelMenuItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelMenuItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HotelMenuItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelMenuItemCountAggregateOutputType> | number
+        }
+      }
+    }
+    HotelRestaurantTable: {
+      payload: Prisma.$HotelRestaurantTablePayload<ExtArgs>
+      fields: Prisma.HotelRestaurantTableFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HotelRestaurantTableFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelRestaurantTablePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HotelRestaurantTableFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelRestaurantTablePayload>
+        }
+        findFirst: {
+          args: Prisma.HotelRestaurantTableFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelRestaurantTablePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HotelRestaurantTableFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelRestaurantTablePayload>
+        }
+        findMany: {
+          args: Prisma.HotelRestaurantTableFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelRestaurantTablePayload>[]
+        }
+        create: {
+          args: Prisma.HotelRestaurantTableCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelRestaurantTablePayload>
+        }
+        createMany: {
+          args: Prisma.HotelRestaurantTableCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HotelRestaurantTableCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelRestaurantTablePayload>[]
+        }
+        delete: {
+          args: Prisma.HotelRestaurantTableDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelRestaurantTablePayload>
+        }
+        update: {
+          args: Prisma.HotelRestaurantTableUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelRestaurantTablePayload>
+        }
+        deleteMany: {
+          args: Prisma.HotelRestaurantTableDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HotelRestaurantTableUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HotelRestaurantTableUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelRestaurantTablePayload>[]
+        }
+        upsert: {
+          args: Prisma.HotelRestaurantTableUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelRestaurantTablePayload>
+        }
+        aggregate: {
+          args: Prisma.HotelRestaurantTableAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHotelRestaurantTable>
+        }
+        groupBy: {
+          args: Prisma.HotelRestaurantTableGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelRestaurantTableGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HotelRestaurantTableCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelRestaurantTableCountAggregateOutputType> | number
+        }
+      }
+    }
+    HotelTableReservation: {
+      payload: Prisma.$HotelTableReservationPayload<ExtArgs>
+      fields: Prisma.HotelTableReservationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HotelTableReservationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelTableReservationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HotelTableReservationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelTableReservationPayload>
+        }
+        findFirst: {
+          args: Prisma.HotelTableReservationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelTableReservationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HotelTableReservationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelTableReservationPayload>
+        }
+        findMany: {
+          args: Prisma.HotelTableReservationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelTableReservationPayload>[]
+        }
+        create: {
+          args: Prisma.HotelTableReservationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelTableReservationPayload>
+        }
+        createMany: {
+          args: Prisma.HotelTableReservationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HotelTableReservationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelTableReservationPayload>[]
+        }
+        delete: {
+          args: Prisma.HotelTableReservationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelTableReservationPayload>
+        }
+        update: {
+          args: Prisma.HotelTableReservationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelTableReservationPayload>
+        }
+        deleteMany: {
+          args: Prisma.HotelTableReservationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HotelTableReservationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HotelTableReservationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelTableReservationPayload>[]
+        }
+        upsert: {
+          args: Prisma.HotelTableReservationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelTableReservationPayload>
+        }
+        aggregate: {
+          args: Prisma.HotelTableReservationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHotelTableReservation>
+        }
+        groupBy: {
+          args: Prisma.HotelTableReservationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelTableReservationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HotelTableReservationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelTableReservationCountAggregateOutputType> | number
+        }
+      }
+    }
+    HotelFoodOrder: {
+      payload: Prisma.$HotelFoodOrderPayload<ExtArgs>
+      fields: Prisma.HotelFoodOrderFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HotelFoodOrderFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HotelFoodOrderFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderPayload>
+        }
+        findFirst: {
+          args: Prisma.HotelFoodOrderFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HotelFoodOrderFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderPayload>
+        }
+        findMany: {
+          args: Prisma.HotelFoodOrderFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderPayload>[]
+        }
+        create: {
+          args: Prisma.HotelFoodOrderCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderPayload>
+        }
+        createMany: {
+          args: Prisma.HotelFoodOrderCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HotelFoodOrderCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderPayload>[]
+        }
+        delete: {
+          args: Prisma.HotelFoodOrderDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderPayload>
+        }
+        update: {
+          args: Prisma.HotelFoodOrderUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderPayload>
+        }
+        deleteMany: {
+          args: Prisma.HotelFoodOrderDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HotelFoodOrderUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HotelFoodOrderUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderPayload>[]
+        }
+        upsert: {
+          args: Prisma.HotelFoodOrderUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderPayload>
+        }
+        aggregate: {
+          args: Prisma.HotelFoodOrderAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHotelFoodOrder>
+        }
+        groupBy: {
+          args: Prisma.HotelFoodOrderGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelFoodOrderGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HotelFoodOrderCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelFoodOrderCountAggregateOutputType> | number
+        }
+      }
+    }
+    HotelPayment: {
+      payload: Prisma.$HotelPaymentPayload<ExtArgs>
+      fields: Prisma.HotelPaymentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HotelPaymentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelPaymentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HotelPaymentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelPaymentPayload>
+        }
+        findFirst: {
+          args: Prisma.HotelPaymentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelPaymentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HotelPaymentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelPaymentPayload>
+        }
+        findMany: {
+          args: Prisma.HotelPaymentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelPaymentPayload>[]
+        }
+        create: {
+          args: Prisma.HotelPaymentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelPaymentPayload>
+        }
+        createMany: {
+          args: Prisma.HotelPaymentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HotelPaymentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelPaymentPayload>[]
+        }
+        delete: {
+          args: Prisma.HotelPaymentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelPaymentPayload>
+        }
+        update: {
+          args: Prisma.HotelPaymentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelPaymentPayload>
+        }
+        deleteMany: {
+          args: Prisma.HotelPaymentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HotelPaymentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HotelPaymentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelPaymentPayload>[]
+        }
+        upsert: {
+          args: Prisma.HotelPaymentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelPaymentPayload>
+        }
+        aggregate: {
+          args: Prisma.HotelPaymentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHotelPayment>
+        }
+        groupBy: {
+          args: Prisma.HotelPaymentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelPaymentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HotelPaymentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelPaymentCountAggregateOutputType> | number
+        }
+      }
+    }
+    HotelFoodOrderLine: {
+      payload: Prisma.$HotelFoodOrderLinePayload<ExtArgs>
+      fields: Prisma.HotelFoodOrderLineFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HotelFoodOrderLineFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderLinePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HotelFoodOrderLineFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderLinePayload>
+        }
+        findFirst: {
+          args: Prisma.HotelFoodOrderLineFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderLinePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HotelFoodOrderLineFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderLinePayload>
+        }
+        findMany: {
+          args: Prisma.HotelFoodOrderLineFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderLinePayload>[]
+        }
+        create: {
+          args: Prisma.HotelFoodOrderLineCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderLinePayload>
+        }
+        createMany: {
+          args: Prisma.HotelFoodOrderLineCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HotelFoodOrderLineCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderLinePayload>[]
+        }
+        delete: {
+          args: Prisma.HotelFoodOrderLineDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderLinePayload>
+        }
+        update: {
+          args: Prisma.HotelFoodOrderLineUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderLinePayload>
+        }
+        deleteMany: {
+          args: Prisma.HotelFoodOrderLineDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HotelFoodOrderLineUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HotelFoodOrderLineUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderLinePayload>[]
+        }
+        upsert: {
+          args: Prisma.HotelFoodOrderLineUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelFoodOrderLinePayload>
+        }
+        aggregate: {
+          args: Prisma.HotelFoodOrderLineAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHotelFoodOrderLine>
+        }
+        groupBy: {
+          args: Prisma.HotelFoodOrderLineGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelFoodOrderLineGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HotelFoodOrderLineCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelFoodOrderLineCountAggregateOutputType> | number
+        }
+      }
+    }
     ShopCategory: {
       payload: Prisma.$ShopCategoryPayload<ExtArgs>
       fields: Prisma.ShopCategoryFieldRefs
@@ -2587,6 +3337,159 @@ export const HotelRoomScalarFieldEnum = {
 export type HotelRoomScalarFieldEnum = (typeof HotelRoomScalarFieldEnum)[keyof typeof HotelRoomScalarFieldEnum]
 
 
+export const HotelStayScalarFieldEnum = {
+  id: 'id',
+  codeUnique: 'codeUnique',
+  branchId: 'branchId',
+  roomTypeId: 'roomTypeId',
+  roomId: 'roomId',
+  userId: 'userId',
+  guestPrenom: 'guestPrenom',
+  guestNom: 'guestNom',
+  guestPhone: 'guestPhone',
+  checkInDate: 'checkInDate',
+  checkOutDate: 'checkOutDate',
+  status: 'status',
+  priceNight: 'priceNight',
+  totalAmount: 'totalAmount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelStayScalarFieldEnum = (typeof HotelStayScalarFieldEnum)[keyof typeof HotelStayScalarFieldEnum]
+
+
+export const HotelStayDraftScalarFieldEnum = {
+  id: 'id',
+  draftToken: 'draftToken',
+  organizationId: 'organizationId',
+  branchId: 'branchId',
+  userId: 'userId',
+  payload: 'payload',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelStayDraftScalarFieldEnum = (typeof HotelStayDraftScalarFieldEnum)[keyof typeof HotelStayDraftScalarFieldEnum]
+
+
+export const HotelFolioLineScalarFieldEnum = {
+  id: 'id',
+  stayId: 'stayId',
+  label: 'label',
+  amount: 'amount',
+  kind: 'kind',
+  createdAt: 'createdAt'
+} as const
+
+export type HotelFolioLineScalarFieldEnum = (typeof HotelFolioLineScalarFieldEnum)[keyof typeof HotelFolioLineScalarFieldEnum]
+
+
+export const HotelMenuCategoryScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  name: 'name',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelMenuCategoryScalarFieldEnum = (typeof HotelMenuCategoryScalarFieldEnum)[keyof typeof HotelMenuCategoryScalarFieldEnum]
+
+
+export const HotelMenuItemScalarFieldEnum = {
+  id: 'id',
+  categoryId: 'categoryId',
+  name: 'name',
+  description: 'description',
+  price: 'price',
+  active: 'active',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelMenuItemScalarFieldEnum = (typeof HotelMenuItemScalarFieldEnum)[keyof typeof HotelMenuItemScalarFieldEnum]
+
+
+export const HotelRestaurantTableScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  number: 'number',
+  capacity: 'capacity',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelRestaurantTableScalarFieldEnum = (typeof HotelRestaurantTableScalarFieldEnum)[keyof typeof HotelRestaurantTableScalarFieldEnum]
+
+
+export const HotelTableReservationScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  tableId: 'tableId',
+  guestPrenom: 'guestPrenom',
+  guestNom: 'guestNom',
+  guestPhone: 'guestPhone',
+  startsAt: 'startsAt',
+  covers: 'covers',
+  status: 'status',
+  stayId: 'stayId',
+  clientId: 'clientId',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelTableReservationScalarFieldEnum = (typeof HotelTableReservationScalarFieldEnum)[keyof typeof HotelTableReservationScalarFieldEnum]
+
+
+export const HotelFoodOrderScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  stayId: 'stayId',
+  tableId: 'tableId',
+  tableReservationId: 'tableReservationId',
+  source: 'source',
+  status: 'status',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelFoodOrderScalarFieldEnum = (typeof HotelFoodOrderScalarFieldEnum)[keyof typeof HotelFoodOrderScalarFieldEnum]
+
+
+export const HotelPaymentScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  stayId: 'stayId',
+  foodOrderId: 'foodOrderId',
+  amount: 'amount',
+  method: 'method',
+  status: 'status',
+  reference: 'reference',
+  createdAt: 'createdAt'
+} as const
+
+export type HotelPaymentScalarFieldEnum = (typeof HotelPaymentScalarFieldEnum)[keyof typeof HotelPaymentScalarFieldEnum]
+
+
+export const HotelFoodOrderLineScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  menuItemId: 'menuItemId',
+  name: 'name',
+  unitPrice: 'unitPrice',
+  quantity: 'quantity',
+  createdAt: 'createdAt'
+} as const
+
+export type HotelFoodOrderLineScalarFieldEnum = (typeof HotelFoodOrderLineScalarFieldEnum)[keyof typeof HotelFoodOrderLineScalarFieldEnum]
+
+
 export const ShopCategoryScalarFieldEnum = {
   id: 'id',
   branchId: 'branchId',
@@ -2967,6 +3870,90 @@ export type EnumHotelRoomStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$
 export type ListEnumHotelRoomStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelRoomStatus[]'>
     
 
+
+/**
+ * Reference to a field of type 'HotelStayStatus'
+ */
+export type EnumHotelStayStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelStayStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'HotelStayStatus[]'
+ */
+export type ListEnumHotelStayStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelStayStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'HotelFolioLineKind'
+ */
+export type EnumHotelFolioLineKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelFolioLineKind'>
+    
+
+
+/**
+ * Reference to a field of type 'HotelFolioLineKind[]'
+ */
+export type ListEnumHotelFolioLineKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelFolioLineKind[]'>
+    
+
+
+/**
+ * Reference to a field of type 'HotelRestaurantTableStatus'
+ */
+export type EnumHotelRestaurantTableStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelRestaurantTableStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'HotelRestaurantTableStatus[]'
+ */
+export type ListEnumHotelRestaurantTableStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelRestaurantTableStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'HotelTableReservationStatus'
+ */
+export type EnumHotelTableReservationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelTableReservationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'HotelTableReservationStatus[]'
+ */
+export type ListEnumHotelTableReservationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelTableReservationStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'HotelFoodOrderSource'
+ */
+export type EnumHotelFoodOrderSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelFoodOrderSource'>
+    
+
+
+/**
+ * Reference to a field of type 'HotelFoodOrderSource[]'
+ */
+export type ListEnumHotelFoodOrderSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelFoodOrderSource[]'>
+    
+
+
+/**
+ * Reference to a field of type 'HotelFoodOrderStatus'
+ */
+export type EnumHotelFoodOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelFoodOrderStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'HotelFoodOrderStatus[]'
+ */
+export type ListEnumHotelFoodOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelFoodOrderStatus[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -3099,6 +4086,16 @@ export type GlobalOmitConfig = {
   branchMember?: Prisma.BranchMemberOmit
   hotelRoomType?: Prisma.HotelRoomTypeOmit
   hotelRoom?: Prisma.HotelRoomOmit
+  hotelStay?: Prisma.HotelStayOmit
+  hotelStayDraft?: Prisma.HotelStayDraftOmit
+  hotelFolioLine?: Prisma.HotelFolioLineOmit
+  hotelMenuCategory?: Prisma.HotelMenuCategoryOmit
+  hotelMenuItem?: Prisma.HotelMenuItemOmit
+  hotelRestaurantTable?: Prisma.HotelRestaurantTableOmit
+  hotelTableReservation?: Prisma.HotelTableReservationOmit
+  hotelFoodOrder?: Prisma.HotelFoodOrderOmit
+  hotelPayment?: Prisma.HotelPaymentOmit
+  hotelFoodOrderLine?: Prisma.HotelFoodOrderLineOmit
   shopCategory?: Prisma.ShopCategoryOmit
   shopProduct?: Prisma.ShopProductOmit
 }

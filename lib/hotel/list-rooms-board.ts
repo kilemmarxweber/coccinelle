@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import type { HotelRoomStatusValue } from "@/lib/hotel/room-status";
+import { guestDisplayName } from "@/lib/hotel/stay-status";
 
 export type RoomBoardRoom = {
   id: string;
@@ -10,6 +11,8 @@ export type RoomBoardRoom = {
   roomTypeName: string;
   priceNight: number;
   capacity: number;
+  /** Guest name when an IN_HOUSE stay occupies the room */
+  guestName: string | null;
 };
 
 export type RoomBoardType = {
@@ -67,13 +70,37 @@ function computeKpis(rooms: RoomBoardRoom[]): RoomBoardKpis {
 }
 
 export async function listRoomsBoard(branchId: string): Promise<RoomBoardData> {
-  const typesRaw = await prisma.hotelRoomType.findMany({
-    where: { branchId },
-    orderBy: { name: "asc" },
-    include: {
-      rooms: { orderBy: [{ floor: "asc" }, { number: "asc" }] },
-    },
-  });
+  const [typesRaw, inHouseStays] = await Promise.all([
+    prisma.hotelRoomType.findMany({
+      where: { branchId },
+      orderBy: { name: "asc" },
+      include: {
+        rooms: { orderBy: [{ floor: "asc" }, { number: "asc" }] },
+      },
+    }),
+    prisma.hotelStay.findMany({
+      where: {
+        branchId,
+        status: "IN_HOUSE",
+        roomId: { not: null },
+      },
+      select: {
+        roomId: true,
+        guestPrenom: true,
+        guestNom: true,
+      },
+    }),
+  ]);
+
+  const guestByRoomId = new Map<string, string>();
+  for (const stay of inHouseStays) {
+    if (stay.roomId) {
+      guestByRoomId.set(
+        stay.roomId,
+        guestDisplayName(stay.guestPrenom, stay.guestNom),
+      );
+    }
+  }
 
   const types: RoomBoardType[] = typesRaw.map((t) => ({
     id: t.id,
@@ -94,6 +121,7 @@ export async function listRoomsBoard(branchId: string): Promise<RoomBoardData> {
       roomTypeName: t.name,
       priceNight: t.priceNight,
       capacity: t.capacity,
+      guestName: guestByRoomId.get(r.id) ?? null,
     })),
   );
 

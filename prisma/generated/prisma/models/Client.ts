@@ -226,6 +226,7 @@ export type ClientWhereInput = {
   colis?: Prisma.ColisListRelationFilter
   passagers?: Prisma.PassagerListRelationFilter
   reservations?: Prisma.ReservationListRelationFilter
+  hotelTableReservations?: Prisma.HotelTableReservationListRelationFilter
 }
 
 export type ClientOrderByWithRelationInput = {
@@ -243,6 +244,7 @@ export type ClientOrderByWithRelationInput = {
   colis?: Prisma.ColisOrderByRelationAggregateInput
   passagers?: Prisma.PassagerOrderByRelationAggregateInput
   reservations?: Prisma.ReservationOrderByRelationAggregateInput
+  hotelTableReservations?: Prisma.HotelTableReservationOrderByRelationAggregateInput
 }
 
 export type ClientWhereUniqueInput = Prisma.AtLeast<{
@@ -263,6 +265,7 @@ export type ClientWhereUniqueInput = Prisma.AtLeast<{
   colis?: Prisma.ColisListRelationFilter
   passagers?: Prisma.PassagerListRelationFilter
   reservations?: Prisma.ReservationListRelationFilter
+  hotelTableReservations?: Prisma.HotelTableReservationListRelationFilter
 }, "id" | "userId">
 
 export type ClientOrderByWithAggregationInput = {
@@ -311,6 +314,7 @@ export type ClientCreateInput = {
   colis?: Prisma.ColisCreateNestedManyWithoutClientInput
   passagers?: Prisma.PassagerCreateNestedManyWithoutClientInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutClientInput
+  hotelTableReservations?: Prisma.HotelTableReservationCreateNestedManyWithoutClientInput
 }
 
 export type ClientUncheckedCreateInput = {
@@ -327,6 +331,7 @@ export type ClientUncheckedCreateInput = {
   colis?: Prisma.ColisUncheckedCreateNestedManyWithoutClientInput
   passagers?: Prisma.PassagerUncheckedCreateNestedManyWithoutClientInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutClientInput
+  hotelTableReservations?: Prisma.HotelTableReservationUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ClientUpdateInput = {
@@ -343,6 +348,7 @@ export type ClientUpdateInput = {
   colis?: Prisma.ColisUpdateManyWithoutClientNestedInput
   passagers?: Prisma.PassagerUpdateManyWithoutClientNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutClientNestedInput
+  hotelTableReservations?: Prisma.HotelTableReservationUpdateManyWithoutClientNestedInput
 }
 
 export type ClientUncheckedUpdateInput = {
@@ -359,6 +365,7 @@ export type ClientUncheckedUpdateInput = {
   colis?: Prisma.ColisUncheckedUpdateManyWithoutClientNestedInput
   passagers?: Prisma.PassagerUncheckedUpdateManyWithoutClientNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutClientNestedInput
+  hotelTableReservations?: Prisma.HotelTableReservationUncheckedUpdateManyWithoutClientNestedInput
 }
 
 export type ClientCreateManyInput = {
@@ -524,6 +531,22 @@ export type ClientUpdateOneRequiredWithoutColisNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ClientUpdateToOneWithWhereWithoutColisInput, Prisma.ClientUpdateWithoutColisInput>, Prisma.ClientUncheckedUpdateWithoutColisInput>
 }
 
+export type ClientCreateNestedOneWithoutHotelTableReservationsInput = {
+  create?: Prisma.XOR<Prisma.ClientCreateWithoutHotelTableReservationsInput, Prisma.ClientUncheckedCreateWithoutHotelTableReservationsInput>
+  connectOrCreate?: Prisma.ClientCreateOrConnectWithoutHotelTableReservationsInput
+  connect?: Prisma.ClientWhereUniqueInput
+}
+
+export type ClientUpdateOneWithoutHotelTableReservationsNestedInput = {
+  create?: Prisma.XOR<Prisma.ClientCreateWithoutHotelTableReservationsInput, Prisma.ClientUncheckedCreateWithoutHotelTableReservationsInput>
+  connectOrCreate?: Prisma.ClientCreateOrConnectWithoutHotelTableReservationsInput
+  upsert?: Prisma.ClientUpsertWithoutHotelTableReservationsInput
+  disconnect?: Prisma.ClientWhereInput | boolean
+  delete?: Prisma.ClientWhereInput | boolean
+  connect?: Prisma.ClientWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ClientUpdateToOneWithWhereWithoutHotelTableReservationsInput, Prisma.ClientUpdateWithoutHotelTableReservationsInput>, Prisma.ClientUncheckedUpdateWithoutHotelTableReservationsInput>
+}
+
 export type ClientCreateWithoutUserInput = {
   id?: string
   dateInscription?: Date | string
@@ -537,6 +560,7 @@ export type ClientCreateWithoutUserInput = {
   colis?: Prisma.ColisCreateNestedManyWithoutClientInput
   passagers?: Prisma.PassagerCreateNestedManyWithoutClientInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutClientInput
+  hotelTableReservations?: Prisma.HotelTableReservationCreateNestedManyWithoutClientInput
 }
 
 export type ClientUncheckedCreateWithoutUserInput = {
@@ -552,6 +576,7 @@ export type ClientUncheckedCreateWithoutUserInput = {
   colis?: Prisma.ColisUncheckedCreateNestedManyWithoutClientInput
   passagers?: Prisma.PassagerUncheckedCreateNestedManyWithoutClientInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutClientInput
+  hotelTableReservations?: Prisma.HotelTableReservationUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ClientCreateOrConnectWithoutUserInput = {
@@ -583,6 +608,7 @@ export type ClientUpdateWithoutUserInput = {
   colis?: Prisma.ColisUpdateManyWithoutClientNestedInput
   passagers?: Prisma.PassagerUpdateManyWithoutClientNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutClientNestedInput
+  hotelTableReservations?: Prisma.HotelTableReservationUpdateManyWithoutClientNestedInput
 }
 
 export type ClientUncheckedUpdateWithoutUserInput = {
@@ -598,6 +624,7 @@ export type ClientUncheckedUpdateWithoutUserInput = {
   colis?: Prisma.ColisUncheckedUpdateManyWithoutClientNestedInput
   passagers?: Prisma.PassagerUncheckedUpdateManyWithoutClientNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutClientNestedInput
+  hotelTableReservations?: Prisma.HotelTableReservationUncheckedUpdateManyWithoutClientNestedInput
 }
 
 export type ClientCreateWithoutPassagersInput = {
@@ -613,6 +640,7 @@ export type ClientCreateWithoutPassagersInput = {
   user: Prisma.UserCreateNestedOneWithoutClientInput
   colis?: Prisma.ColisCreateNestedManyWithoutClientInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutClientInput
+  hotelTableReservations?: Prisma.HotelTableReservationCreateNestedManyWithoutClientInput
 }
 
 export type ClientUncheckedCreateWithoutPassagersInput = {
@@ -628,6 +656,7 @@ export type ClientUncheckedCreateWithoutPassagersInput = {
   updatedAt?: Date | string
   colis?: Prisma.ColisUncheckedCreateNestedManyWithoutClientInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutClientInput
+  hotelTableReservations?: Prisma.HotelTableReservationUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ClientCreateOrConnectWithoutPassagersInput = {
@@ -659,6 +688,7 @@ export type ClientUpdateWithoutPassagersInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutClientNestedInput
   colis?: Prisma.ColisUpdateManyWithoutClientNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutClientNestedInput
+  hotelTableReservations?: Prisma.HotelTableReservationUpdateManyWithoutClientNestedInput
 }
 
 export type ClientUncheckedUpdateWithoutPassagersInput = {
@@ -674,6 +704,7 @@ export type ClientUncheckedUpdateWithoutPassagersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   colis?: Prisma.ColisUncheckedUpdateManyWithoutClientNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutClientNestedInput
+  hotelTableReservations?: Prisma.HotelTableReservationUncheckedUpdateManyWithoutClientNestedInput
 }
 
 export type ClientCreateWithoutReservationsInput = {
@@ -689,6 +720,7 @@ export type ClientCreateWithoutReservationsInput = {
   user: Prisma.UserCreateNestedOneWithoutClientInput
   colis?: Prisma.ColisCreateNestedManyWithoutClientInput
   passagers?: Prisma.PassagerCreateNestedManyWithoutClientInput
+  hotelTableReservations?: Prisma.HotelTableReservationCreateNestedManyWithoutClientInput
 }
 
 export type ClientUncheckedCreateWithoutReservationsInput = {
@@ -704,6 +736,7 @@ export type ClientUncheckedCreateWithoutReservationsInput = {
   updatedAt?: Date | string
   colis?: Prisma.ColisUncheckedCreateNestedManyWithoutClientInput
   passagers?: Prisma.PassagerUncheckedCreateNestedManyWithoutClientInput
+  hotelTableReservations?: Prisma.HotelTableReservationUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ClientCreateOrConnectWithoutReservationsInput = {
@@ -735,6 +768,7 @@ export type ClientUpdateWithoutReservationsInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutClientNestedInput
   colis?: Prisma.ColisUpdateManyWithoutClientNestedInput
   passagers?: Prisma.PassagerUpdateManyWithoutClientNestedInput
+  hotelTableReservations?: Prisma.HotelTableReservationUpdateManyWithoutClientNestedInput
 }
 
 export type ClientUncheckedUpdateWithoutReservationsInput = {
@@ -750,6 +784,7 @@ export type ClientUncheckedUpdateWithoutReservationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   colis?: Prisma.ColisUncheckedUpdateManyWithoutClientNestedInput
   passagers?: Prisma.PassagerUncheckedUpdateManyWithoutClientNestedInput
+  hotelTableReservations?: Prisma.HotelTableReservationUncheckedUpdateManyWithoutClientNestedInput
 }
 
 export type ClientCreateWithoutColisInput = {
@@ -765,6 +800,7 @@ export type ClientCreateWithoutColisInput = {
   user: Prisma.UserCreateNestedOneWithoutClientInput
   passagers?: Prisma.PassagerCreateNestedManyWithoutClientInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutClientInput
+  hotelTableReservations?: Prisma.HotelTableReservationCreateNestedManyWithoutClientInput
 }
 
 export type ClientUncheckedCreateWithoutColisInput = {
@@ -780,6 +816,7 @@ export type ClientUncheckedCreateWithoutColisInput = {
   updatedAt?: Date | string
   passagers?: Prisma.PassagerUncheckedCreateNestedManyWithoutClientInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutClientInput
+  hotelTableReservations?: Prisma.HotelTableReservationUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ClientCreateOrConnectWithoutColisInput = {
@@ -811,6 +848,7 @@ export type ClientUpdateWithoutColisInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutClientNestedInput
   passagers?: Prisma.PassagerUpdateManyWithoutClientNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutClientNestedInput
+  hotelTableReservations?: Prisma.HotelTableReservationUpdateManyWithoutClientNestedInput
 }
 
 export type ClientUncheckedUpdateWithoutColisInput = {
@@ -826,6 +864,87 @@ export type ClientUncheckedUpdateWithoutColisInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   passagers?: Prisma.PassagerUncheckedUpdateManyWithoutClientNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutClientNestedInput
+  hotelTableReservations?: Prisma.HotelTableReservationUncheckedUpdateManyWithoutClientNestedInput
+}
+
+export type ClientCreateWithoutHotelTableReservationsInput = {
+  id?: string
+  dateInscription?: Date | string
+  telephone: string
+  societe?: string | null
+  adresse?: string | null
+  prenom?: string | null
+  postnom?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutClientInput
+  colis?: Prisma.ColisCreateNestedManyWithoutClientInput
+  passagers?: Prisma.PassagerCreateNestedManyWithoutClientInput
+  reservations?: Prisma.ReservationCreateNestedManyWithoutClientInput
+}
+
+export type ClientUncheckedCreateWithoutHotelTableReservationsInput = {
+  id?: string
+  userId: string
+  dateInscription?: Date | string
+  telephone: string
+  societe?: string | null
+  adresse?: string | null
+  prenom?: string | null
+  postnom?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  colis?: Prisma.ColisUncheckedCreateNestedManyWithoutClientInput
+  passagers?: Prisma.PassagerUncheckedCreateNestedManyWithoutClientInput
+  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutClientInput
+}
+
+export type ClientCreateOrConnectWithoutHotelTableReservationsInput = {
+  where: Prisma.ClientWhereUniqueInput
+  create: Prisma.XOR<Prisma.ClientCreateWithoutHotelTableReservationsInput, Prisma.ClientUncheckedCreateWithoutHotelTableReservationsInput>
+}
+
+export type ClientUpsertWithoutHotelTableReservationsInput = {
+  update: Prisma.XOR<Prisma.ClientUpdateWithoutHotelTableReservationsInput, Prisma.ClientUncheckedUpdateWithoutHotelTableReservationsInput>
+  create: Prisma.XOR<Prisma.ClientCreateWithoutHotelTableReservationsInput, Prisma.ClientUncheckedCreateWithoutHotelTableReservationsInput>
+  where?: Prisma.ClientWhereInput
+}
+
+export type ClientUpdateToOneWithWhereWithoutHotelTableReservationsInput = {
+  where?: Prisma.ClientWhereInput
+  data: Prisma.XOR<Prisma.ClientUpdateWithoutHotelTableReservationsInput, Prisma.ClientUncheckedUpdateWithoutHotelTableReservationsInput>
+}
+
+export type ClientUpdateWithoutHotelTableReservationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  dateInscription?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  telephone?: Prisma.StringFieldUpdateOperationsInput | string
+  societe?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresse?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prenom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postnom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutClientNestedInput
+  colis?: Prisma.ColisUpdateManyWithoutClientNestedInput
+  passagers?: Prisma.PassagerUpdateManyWithoutClientNestedInput
+  reservations?: Prisma.ReservationUpdateManyWithoutClientNestedInput
+}
+
+export type ClientUncheckedUpdateWithoutHotelTableReservationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  dateInscription?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  telephone?: Prisma.StringFieldUpdateOperationsInput | string
+  societe?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresse?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prenom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postnom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  colis?: Prisma.ColisUncheckedUpdateManyWithoutClientNestedInput
+  passagers?: Prisma.PassagerUncheckedUpdateManyWithoutClientNestedInput
+  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutClientNestedInput
 }
 
 
@@ -837,12 +956,14 @@ export type ClientCountOutputType = {
   colis: number
   passagers: number
   reservations: number
+  hotelTableReservations: number
 }
 
 export type ClientCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   colis?: boolean | ClientCountOutputTypeCountColisArgs
   passagers?: boolean | ClientCountOutputTypeCountPassagersArgs
   reservations?: boolean | ClientCountOutputTypeCountReservationsArgs
+  hotelTableReservations?: boolean | ClientCountOutputTypeCountHotelTableReservationsArgs
 }
 
 /**
@@ -876,6 +997,13 @@ export type ClientCountOutputTypeCountReservationsArgs<ExtArgs extends runtime.T
   where?: Prisma.ReservationWhereInput
 }
 
+/**
+ * ClientCountOutputType without action
+ */
+export type ClientCountOutputTypeCountHotelTableReservationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.HotelTableReservationWhereInput
+}
+
 
 export type ClientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -892,6 +1020,7 @@ export type ClientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   colis?: boolean | Prisma.Client$colisArgs<ExtArgs>
   passagers?: boolean | Prisma.Client$passagersArgs<ExtArgs>
   reservations?: boolean | Prisma.Client$reservationsArgs<ExtArgs>
+  hotelTableReservations?: boolean | Prisma.Client$hotelTableReservationsArgs<ExtArgs>
   _count?: boolean | Prisma.ClientCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["client"]>
 
@@ -942,6 +1071,7 @@ export type ClientInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   colis?: boolean | Prisma.Client$colisArgs<ExtArgs>
   passagers?: boolean | Prisma.Client$passagersArgs<ExtArgs>
   reservations?: boolean | Prisma.Client$reservationsArgs<ExtArgs>
+  hotelTableReservations?: boolean | Prisma.Client$hotelTableReservationsArgs<ExtArgs>
   _count?: boolean | Prisma.ClientCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ClientIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -958,6 +1088,7 @@ export type $ClientPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     colis: Prisma.$ColisPayload<ExtArgs>[]
     passagers: Prisma.$PassagerPayload<ExtArgs>[]
     reservations: Prisma.$ReservationPayload<ExtArgs>[]
+    hotelTableReservations: Prisma.$HotelTableReservationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1368,6 +1499,7 @@ export interface Prisma__ClientClient<T, Null = never, ExtArgs extends runtime.T
   colis<T extends Prisma.Client$colisArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$colisArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ColisPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   passagers<T extends Prisma.Client$passagersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$passagersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PassagerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reservations<T extends Prisma.Client$reservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$reservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  hotelTableReservations<T extends Prisma.Client$hotelTableReservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$hotelTableReservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HotelTableReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1877,6 +2009,30 @@ export type Client$reservationsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.ReservationScalarFieldEnum | Prisma.ReservationScalarFieldEnum[]
+}
+
+/**
+ * Client.hotelTableReservations
+ */
+export type Client$hotelTableReservationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HotelTableReservation
+   */
+  select?: Prisma.HotelTableReservationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HotelTableReservation
+   */
+  omit?: Prisma.HotelTableReservationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HotelTableReservationInclude<ExtArgs> | null
+  where?: Prisma.HotelTableReservationWhereInput
+  orderBy?: Prisma.HotelTableReservationOrderByWithRelationInput | Prisma.HotelTableReservationOrderByWithRelationInput[]
+  cursor?: Prisma.HotelTableReservationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.HotelTableReservationScalarFieldEnum | Prisma.HotelTableReservationScalarFieldEnum[]
 }
 
 /**

@@ -3,7 +3,9 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import { resolveBranchMenuSections } from "@/lib/branch/resolve-branch-menu";
 import { BranchDashboard } from "./branch-dashboard";
+import { BranchMenuSections } from "./branch-menu-sections";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
@@ -32,6 +34,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function BranchDashboardPage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
   const branch = await requireBranchContext({ organizationId, branchId });
+  const menuSections = await resolveBranchMenuSections(
+    branch.organizationId,
+    branch.id,
+    branch.type,
+  );
 
   return (
     <BranchDashboard
@@ -41,6 +48,8 @@ export default async function BranchDashboardPage({ params }: PageProps) {
       branchCode={branch.code}
       branchType={branch.type}
       organizationName={branch.organizationName}
-    />
+    >
+      <BranchMenuSections sections={menuSections} />
+    </BranchDashboard>
   );
 }

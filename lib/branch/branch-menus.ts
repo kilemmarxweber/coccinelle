@@ -2,6 +2,7 @@
  * Menus du hub branche — 100 % liés aux routes module (pas de #).
  * Carte primaire : « Caisse & Ventes » → hub caisse (puis CTA vente selon type).
  * Commun à tous les types : Taux de change + Rapports.
+ * Hôtel : visibilité filtrée par permissions (`permission` sur chaque item).
  */
 
 import type { ComponentType } from "react";
@@ -21,6 +22,7 @@ import {
   UtensilsCrossed,
   Wallet,
 } from "lucide-react";
+import type { OrganizationPermissionMap } from "@/lib/auth/organization-permission";
 import {
   agenceRoutes,
   boutiqueRoutes,
@@ -38,6 +40,11 @@ export type BranchMenuItem = {
   iconColor: string;
   /** Mise en avant (ex. Caisse & Ventes). */
   primary?: boolean;
+  /**
+   * Permission Better Auth requise pour afficher la carte (hub hôtel).
+   * Absente = toujours visible pour ce type de branche.
+   */
+  permission?: OrganizationPermissionMap;
 };
 
 export type BranchMenuSection = {
@@ -82,7 +89,12 @@ function tauxChangeCard(
 function rapportsSections(
   organizationId: string,
   branchId: string,
+  opts?: { hotelPermissionGate?: boolean },
 ): BranchMenuSection[] {
+  const rapportPerm = opts?.hotelPermissionGate
+    ? ({ rapport: ["read"] } as const)
+    : undefined;
+
   return [
     {
       title: "ANALYSES & RAPPORTS",
@@ -97,6 +109,7 @@ function rapportsSections(
           icon: LayoutDashboard,
           iconBg: "bg-violet-500/15",
           iconColor: "text-violet-400",
+          permission: rapportPerm,
         },
         {
           title: "Rapport Ventes",
@@ -105,6 +118,7 @@ function rapportsSections(
           icon: FileBarChart,
           iconBg: "bg-sky-500/15",
           iconColor: "text-sky-400",
+          permission: rapportPerm,
         },
         {
           title: "Rapport Achats",
@@ -113,6 +127,7 @@ function rapportsSections(
           icon: Package,
           iconBg: "bg-primary/15",
           iconColor: "text-primary",
+          permission: rapportPerm,
         },
         {
           title: "Rapport Financier",
@@ -121,6 +136,7 @@ function rapportsSections(
           icon: FileText,
           iconBg: "bg-sky-500/15",
           iconColor: "text-sky-400",
+          permission: rapportPerm,
         },
         {
           title: "Rapport Article",
@@ -129,6 +145,7 @@ function rapportsSections(
           icon: FileBarChart,
           iconBg: "bg-primary/15",
           iconColor: "text-primary",
+          permission: rapportPerm,
         },
       ],
     },
@@ -141,8 +158,6 @@ export function menuSectionsForBranch(
   branchId: string,
   type: "AGENCE" | "HOTEL" | "BOUTIQUE" | string,
 ): BranchMenuSection[] {
-  const shared = rapportsSections(organizationId, branchId);
-
   if (type === "HOTEL") {
     return [
       {
@@ -151,11 +166,15 @@ export function menuSectionsForBranch(
         icon: Wallet,
         iconColor: "text-emerald-400",
         items: [
-          caisseVentesCard(
-            organizationId,
-            branchId,
-            "Ouvrir la caisse et encaisser séjours / F&B.",
-          ),
+          {
+            ...caisseVentesCard(
+              organizationId,
+              branchId,
+              "Ouvrir la caisse et encaisser séjours / F&B.",
+            ),
+            // Réception / gérant / owner — pas le serveur F&B seul
+            permission: { hotel_stay: ["update"] },
+          },
           {
             title: "Séjours",
             description: "Réservations, check-in / check-out.",
@@ -163,6 +182,7 @@ export function menuSectionsForBranch(
             icon: ClipboardList,
             iconBg: "bg-emerald-500/15",
             iconColor: "text-emerald-400",
+            permission: { hotel_stay: ["read"] },
           },
           {
             title: "Restauration",
@@ -171,8 +191,12 @@ export function menuSectionsForBranch(
             icon: UtensilsCrossed,
             iconBg: "bg-violet-500/15",
             iconColor: "text-violet-400",
+            permission: { hotel_fnb: ["read"] },
           },
-          tauxChangeCard(organizationId, branchId),
+          {
+            ...tauxChangeCard(organizationId, branchId),
+            permission: { rapport: ["read"] },
+          },
         ],
       },
       {
@@ -188,12 +212,17 @@ export function menuSectionsForBranch(
             icon: BedDouble,
             iconBg: "bg-sky-500/15",
             iconColor: "text-sky-400",
+            permission: { hotel_room: ["read"] },
           },
         ],
       },
-      ...shared,
+      ...rapportsSections(organizationId, branchId, {
+        hotelPermissionGate: true,
+      }),
     ];
   }
+
+  const shared = rapportsSections(organizationId, branchId);
 
   if (type === "BOUTIQUE") {
     return [

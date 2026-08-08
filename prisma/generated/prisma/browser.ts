@@ -128,6 +128,56 @@ export type HotelRoomType = Prisma.HotelRoomTypeModel
  */
 export type HotelRoom = Prisma.HotelRoomModel
 /**
+ * Model HotelStay
+ * 
+ */
+export type HotelStay = Prisma.HotelStayModel
+/**
+ * Model HotelStayDraft
+ * * Brouillon réservation chambre client (peut exister avant auth).
+ */
+export type HotelStayDraft = Prisma.HotelStayDraftModel
+/**
+ * Model HotelFolioLine
+ * 
+ */
+export type HotelFolioLine = Prisma.HotelFolioLineModel
+/**
+ * Model HotelMenuCategory
+ * 
+ */
+export type HotelMenuCategory = Prisma.HotelMenuCategoryModel
+/**
+ * Model HotelMenuItem
+ * 
+ */
+export type HotelMenuItem = Prisma.HotelMenuItemModel
+/**
+ * Model HotelRestaurantTable
+ * 
+ */
+export type HotelRestaurantTable = Prisma.HotelRestaurantTableModel
+/**
+ * Model HotelTableReservation
+ * * Réservation de table à heure précise (seule ou avec précommande plats).
+ */
+export type HotelTableReservation = Prisma.HotelTableReservationModel
+/**
+ * Model HotelFoodOrder
+ * 
+ */
+export type HotelFoodOrder = Prisma.HotelFoodOrderModel
+/**
+ * Model HotelPayment
+ * * Encaissement hôtel (séjour / F&B) — distinct du voyage `Paiement`.
+ */
+export type HotelPayment = Prisma.HotelPaymentModel
+/**
+ * Model HotelFoodOrderLine
+ * 
+ */
+export type HotelFoodOrderLine = Prisma.HotelFoodOrderLineModel
+/**
  * Model ShopCategory
  * 
  */

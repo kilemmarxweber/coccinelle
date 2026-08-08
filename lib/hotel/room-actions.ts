@@ -4,9 +4,9 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { z } from "zod";
 import type { ZodError } from "zod";
-import { assertOrganizationPermission } from "@/lib/auth/organization-permission";
 import { hotelRoutes } from "@/lib/branch/paths";
 import { canAccessBranch } from "@/lib/branch/user-branches";
+import { assertHotelRoomPermission } from "@/lib/hotel/hotel-permission";
 import {
   HOTEL_ROOM_STATUSES,
   isHotelRoomStatus,
@@ -93,9 +93,7 @@ export async function updateHotelRoomStatusAction(
   }
   const { organizationId, branchId, roomId, status } = parsed.data;
 
-  const perm = await assertOrganizationPermission(organizationId, {
-    branch: ["update"],
-  });
+  const perm = await assertHotelRoomPermission(organizationId, "update");
   if (!perm.ok) return { ok: false, message: perm.message };
 
   const access = await assertHotelBranchAccess(organizationId, branchId);
@@ -134,9 +132,7 @@ export async function createHotelRoomTypeAction(
   const { organizationId, branchId, name, description, capacity, priceNight } =
     parsed.data;
 
-  const perm = await assertOrganizationPermission(organizationId, {
-    branch: ["update"],
-  });
+  const perm = await assertHotelRoomPermission(organizationId, "create");
   if (!perm.ok) return { ok: false, message: perm.message };
 
   const access = await assertHotelBranchAccess(organizationId, branchId);
@@ -174,9 +170,7 @@ export async function updateHotelRoomTypeAction(
     priceNight,
   } = parsed.data;
 
-  const perm = await assertOrganizationPermission(organizationId, {
-    branch: ["update"],
-  });
+  const perm = await assertHotelRoomPermission(organizationId, "create");
   if (!perm.ok) return { ok: false, message: perm.message };
 
   const access = await assertHotelBranchAccess(organizationId, branchId);
@@ -213,9 +207,7 @@ export async function createHotelRoomAction(
   }
   const { organizationId, branchId, roomTypeId, number, floor } = parsed.data;
 
-  const perm = await assertOrganizationPermission(organizationId, {
-    branch: ["update"],
-  });
+  const perm = await assertHotelRoomPermission(organizationId, "create");
   if (!perm.ok) return { ok: false, message: perm.message };
 
   const access = await assertHotelBranchAccess(organizationId, branchId);
@@ -259,9 +251,7 @@ export async function updateHotelRoomAction(
   const { organizationId, branchId, roomId, roomTypeId, number, floor } =
     parsed.data;
 
-  const perm = await assertOrganizationPermission(organizationId, {
-    branch: ["update"],
-  });
+  const perm = await assertHotelRoomPermission(organizationId, "create");
   if (!perm.ok) return { ok: false, message: perm.message };
 
   const access = await assertHotelBranchAccess(organizationId, branchId);

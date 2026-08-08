@@ -26,6 +26,12 @@ const ORG_MEMBERS = [
     role: ORG_ROLE.GUICHETIER,
   },
   {
+    id: "user-serveur-1",
+    name: "Serveur Restauration",
+    email: "serveur@test.com",
+    role: ORG_ROLE.SERVEUR,
+  },
+  {
     id: "user-client-1",
     name: "Client Demo",
     email: "client@test.com",
@@ -33,9 +39,15 @@ const ORG_MEMBERS = [
   },
 ] as const;
 
-/** Seeds les 4 rôles produit (owner / gérant / guichetier / client) pour org-1. */
+const BRANCH_STAFF_ROLES = new Set<string>([
+  ORG_ROLE.GUICHETIER,
+  ORG_ROLE.SERVEUR,
+]);
+
+/** Seeds les rôles produit (owner / gérant / guichetier / serveur / client) pour org-1. */
 export async function seedOrgMembers() {
   const passwordHash = await hashPassword(SEED_PASSWORD);
+  const branchStaffMemberIds: string[] = [];
 
   for (const m of ORG_MEMBERS) {
     const user = await prisma.user.upsert({
@@ -62,7 +74,7 @@ export async function seedOrgMembers() {
       },
     });
 
-    await prisma.member.upsert({
+    const member = await prisma.member.upsert({
       where: { id: `${user.id}-member` },
       update: { role: m.role },
       create: {
@@ -73,6 +85,10 @@ export async function seedOrgMembers() {
         createdAt: new Date(),
       },
     });
+
+    if (BRANCH_STAFF_ROLES.has(m.role)) {
+      branchStaffMemberIds.push(member.id);
+    }
 
     if (m.role === ORG_ROLE.PARENT) {
       await prisma.client.upsert({
@@ -88,7 +104,45 @@ export async function seedOrgMembers() {
     }
   }
 
+  const hotelBranch = await prisma.branch.findFirst({
+    where: {
+      organizationId: "org-1",
+      type: "HOTEL",
+      status: "ACTIVE",
+    },
+    orderBy: { createdAt: "asc" },
+    select: { id: true, name: true },
+  });
+
+  if (hotelBranch) {
+    for (const memberId of branchStaffMemberIds) {
+      await prisma.branchMember.upsert({
+        where: {
+          branchId_memberId: {
+            branchId: hotelBranch.id,
+            memberId,
+          },
+        },
+        update: { status: "ACTIVE" },
+        create: {
+          id: `bm-${memberId}`,
+          branchId: hotelBranch.id,
+          memberId,
+          role: "staff",
+          status: "ACTIVE",
+        },
+      });
+    }
+    console.log(
+      `✅ BranchMember HOTEL: guichetier + serveur → ${hotelBranch.name} (${hotelBranch.id})`,
+    );
+  } else {
+    console.log(
+      "⚠️ Aucune branche HOTEL active sur org-1 — créez-en une en gérant, puis re-seed les membres pour rattacher guichetier/serveur.",
+    );
+  }
+
   console.log(
-    `✅ Org members seeded (password: ${SEED_PASSWORD}) — owner / gerant / guichetier / client @test.com`,
+    `✅ Org members seeded (password: ${SEED_PASSWORD}) — owner / gerant / guichetier / serveur / client @test.com`,
   );
 }

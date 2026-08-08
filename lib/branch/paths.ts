@@ -97,8 +97,29 @@ export const hotelRoutes = {
     `${branchModulePath(orgId, branchId, "hotel")}/chambres`,
   sejours: (orgId: string, branchId: string) =>
     `${branchModulePath(orgId, branchId, "hotel")}/sejours`,
+  sejour: (orgId: string, branchId: string, stayId: string) =>
+    `${branchModulePath(orgId, branchId, "hotel")}/sejours/${stayId}`,
   restauration: (orgId: string, branchId: string) =>
     `${branchModulePath(orgId, branchId, "hotel")}/restauration`,
+} as const;
+
+/** Espace Client hôtel (`/{orgSlug}/hotel/…`). */
+export const clientHotelRoutes = {
+  root: (orgSlug: string) => `/${orgSlug}/hotel`,
+  recherche: (orgSlug: string) => `/${orgSlug}/hotel/recherche`,
+  checkout: (orgSlug: string, draftToken: string) =>
+    `/${orgSlug}/hotel/checkout/${draftToken}`,
+  confirmation: (orgSlug: string, code: string) =>
+    `/${orgSlug}/hotel/confirmation/${code}`,
+  mesSejours: (orgSlug: string) => `/${orgSlug}/hotel/mes-sejours`,
+  mesSejour: (orgSlug: string, stayId: string) =>
+    `/${orgSlug}/hotel/mes-sejours/${stayId}`,
+  commande: (orgSlug: string) => `/${orgSlug}/hotel/commande`,
+  commandeOrder: (orgSlug: string, orderId: string) =>
+    `/${orgSlug}/hotel/commande/${orderId}`,
+  table: (orgSlug: string) => `/${orgSlug}/hotel/table`,
+  tableReservation: (orgSlug: string, reservationId: string) =>
+    `/${orgSlug}/hotel/table/${reservationId}`,
 } as const;
 
 /** Sous-routes BOUTIQUE. */

@@ -236,6 +236,8 @@ export type UserWhereInput = {
   members?: Prisma.MemberListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
   reservationDrafts?: Prisma.ReservationDraftListRelationFilter
+  hotelStayDrafts?: Prisma.HotelStayDraftListRelationFilter
+  hotelStays?: Prisma.HotelStayListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -256,6 +258,8 @@ export type UserOrderByWithRelationInput = {
   members?: Prisma.MemberOrderByRelationAggregateInput
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   reservationDrafts?: Prisma.ReservationDraftOrderByRelationAggregateInput
+  hotelStayDrafts?: Prisma.HotelStayDraftOrderByRelationAggregateInput
+  hotelStays?: Prisma.HotelStayOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -279,6 +283,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   members?: Prisma.MemberListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
   reservationDrafts?: Prisma.ReservationDraftListRelationFilter
+  hotelStayDrafts?: Prisma.HotelStayDraftListRelationFilter
+  hotelStays?: Prisma.HotelStayListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -333,6 +339,8 @@ export type UserCreateInput = {
   members?: Prisma.MemberCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutUserInput
+  hotelStayDrafts?: Prisma.HotelStayDraftCreateNestedManyWithoutUserInput
+  hotelStays?: Prisma.HotelStayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -353,6 +361,8 @@ export type UserUncheckedCreateInput = {
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutUserInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedCreateNestedManyWithoutUserInput
+  hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -373,6 +383,8 @@ export type UserUpdateInput = {
   members?: Prisma.MemberUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutUserNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUpdateManyWithoutUserNestedInput
+  hotelStays?: Prisma.HotelStayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -393,6 +405,8 @@ export type UserUncheckedUpdateInput = {
   members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutUserNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedUpdateManyWithoutUserNestedInput
+  hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -599,6 +613,38 @@ export type UserUpdateOneWithoutReservationDraftsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReservationDraftsInput, Prisma.UserUpdateWithoutReservationDraftsInput>, Prisma.UserUncheckedUpdateWithoutReservationDraftsInput>
 }
 
+export type UserCreateNestedOneWithoutHotelStaysInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutHotelStaysInput, Prisma.UserUncheckedCreateWithoutHotelStaysInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutHotelStaysInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutHotelStaysNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutHotelStaysInput, Prisma.UserUncheckedCreateWithoutHotelStaysInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutHotelStaysInput
+  upsert?: Prisma.UserUpsertWithoutHotelStaysInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutHotelStaysInput, Prisma.UserUpdateWithoutHotelStaysInput>, Prisma.UserUncheckedUpdateWithoutHotelStaysInput>
+}
+
+export type UserCreateNestedOneWithoutHotelStayDraftsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutHotelStayDraftsInput, Prisma.UserUncheckedCreateWithoutHotelStayDraftsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutHotelStayDraftsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutHotelStayDraftsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutHotelStayDraftsInput, Prisma.UserUncheckedCreateWithoutHotelStayDraftsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutHotelStayDraftsInput
+  upsert?: Prisma.UserUpsertWithoutHotelStayDraftsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutHotelStayDraftsInput, Prisma.UserUpdateWithoutHotelStayDraftsInput>, Prisma.UserUncheckedUpdateWithoutHotelStayDraftsInput>
+}
+
 export type UserCreateWithoutSessionsInput = {
   id: string
   name: string
@@ -616,6 +662,8 @@ export type UserCreateWithoutSessionsInput = {
   invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
   members?: Prisma.MemberCreateNestedManyWithoutUserInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutUserInput
+  hotelStayDrafts?: Prisma.HotelStayDraftCreateNestedManyWithoutUserInput
+  hotelStays?: Prisma.HotelStayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -635,6 +683,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutUserInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedCreateNestedManyWithoutUserInput
+  hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -670,6 +720,8 @@ export type UserUpdateWithoutSessionsInput = {
   invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUpdateManyWithoutUserNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutUserNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUpdateManyWithoutUserNestedInput
+  hotelStays?: Prisma.HotelStayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -689,6 +741,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutUserNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedUpdateManyWithoutUserNestedInput
+  hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -708,6 +762,8 @@ export type UserCreateWithoutAccountsInput = {
   members?: Prisma.MemberCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutUserInput
+  hotelStayDrafts?: Prisma.HotelStayDraftCreateNestedManyWithoutUserInput
+  hotelStays?: Prisma.HotelStayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -727,6 +783,8 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutUserInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedCreateNestedManyWithoutUserInput
+  hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -762,6 +820,8 @@ export type UserUpdateWithoutAccountsInput = {
   members?: Prisma.MemberUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutUserNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUpdateManyWithoutUserNestedInput
+  hotelStays?: Prisma.HotelStayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -781,6 +841,8 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutUserNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedUpdateManyWithoutUserNestedInput
+  hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMembersInput = {
@@ -800,6 +862,8 @@ export type UserCreateWithoutMembersInput = {
   invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutUserInput
+  hotelStayDrafts?: Prisma.HotelStayDraftCreateNestedManyWithoutUserInput
+  hotelStays?: Prisma.HotelStayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMembersInput = {
@@ -819,6 +883,8 @@ export type UserUncheckedCreateWithoutMembersInput = {
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutUserInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedCreateNestedManyWithoutUserInput
+  hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMembersInput = {
@@ -854,6 +920,8 @@ export type UserUpdateWithoutMembersInput = {
   invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutUserNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUpdateManyWithoutUserNestedInput
+  hotelStays?: Prisma.HotelStayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMembersInput = {
@@ -873,6 +941,8 @@ export type UserUncheckedUpdateWithoutMembersInput = {
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutUserNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedUpdateManyWithoutUserNestedInput
+  hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInvitationsInput = {
@@ -892,6 +962,8 @@ export type UserCreateWithoutInvitationsInput = {
   members?: Prisma.MemberCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutUserInput
+  hotelStayDrafts?: Prisma.HotelStayDraftCreateNestedManyWithoutUserInput
+  hotelStays?: Prisma.HotelStayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvitationsInput = {
@@ -911,6 +983,8 @@ export type UserUncheckedCreateWithoutInvitationsInput = {
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutUserInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedCreateNestedManyWithoutUserInput
+  hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvitationsInput = {
@@ -946,6 +1020,8 @@ export type UserUpdateWithoutInvitationsInput = {
   members?: Prisma.MemberUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutUserNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUpdateManyWithoutUserNestedInput
+  hotelStays?: Prisma.HotelStayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvitationsInput = {
@@ -965,6 +1041,8 @@ export type UserUncheckedUpdateWithoutInvitationsInput = {
   members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutUserNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedUpdateManyWithoutUserNestedInput
+  hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutClientInput = {
@@ -984,6 +1062,8 @@ export type UserCreateWithoutClientInput = {
   members?: Prisma.MemberCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutUserInput
+  hotelStayDrafts?: Prisma.HotelStayDraftCreateNestedManyWithoutUserInput
+  hotelStays?: Prisma.HotelStayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutClientInput = {
@@ -1003,6 +1083,8 @@ export type UserUncheckedCreateWithoutClientInput = {
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutUserInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedCreateNestedManyWithoutUserInput
+  hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutClientInput = {
@@ -1038,6 +1120,8 @@ export type UserUpdateWithoutClientInput = {
   members?: Prisma.MemberUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutUserNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUpdateManyWithoutUserNestedInput
+  hotelStays?: Prisma.HotelStayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutClientInput = {
@@ -1057,6 +1141,8 @@ export type UserUncheckedUpdateWithoutClientInput = {
   members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutUserNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedUpdateManyWithoutUserNestedInput
+  hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReservationDraftsInput = {
@@ -1076,6 +1162,8 @@ export type UserCreateWithoutReservationDraftsInput = {
   invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
   members?: Prisma.MemberCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  hotelStayDrafts?: Prisma.HotelStayDraftCreateNestedManyWithoutUserInput
+  hotelStays?: Prisma.HotelStayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReservationDraftsInput = {
@@ -1095,6 +1183,8 @@ export type UserUncheckedCreateWithoutReservationDraftsInput = {
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedCreateNestedManyWithoutUserInput
+  hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReservationDraftsInput = {
@@ -1130,6 +1220,8 @@ export type UserUpdateWithoutReservationDraftsInput = {
   invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUpdateManyWithoutUserNestedInput
+  hotelStays?: Prisma.HotelStayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReservationDraftsInput = {
@@ -1149,6 +1241,208 @@ export type UserUncheckedUpdateWithoutReservationDraftsInput = {
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedUpdateManyWithoutUserNestedInput
+  hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutHotelStaysInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string | null
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  client?: Prisma.ClientCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
+  members?: Prisma.MemberCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutUserInput
+  hotelStayDrafts?: Prisma.HotelStayDraftCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutHotelStaysInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string | null
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  client?: Prisma.ClientUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutUserInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutHotelStaysInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutHotelStaysInput, Prisma.UserUncheckedCreateWithoutHotelStaysInput>
+}
+
+export type UserUpsertWithoutHotelStaysInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutHotelStaysInput, Prisma.UserUncheckedUpdateWithoutHotelStaysInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutHotelStaysInput, Prisma.UserUncheckedCreateWithoutHotelStaysInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutHotelStaysInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutHotelStaysInput, Prisma.UserUncheckedUpdateWithoutHotelStaysInput>
+}
+
+export type UserUpdateWithoutHotelStaysInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  client?: Prisma.ClientUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
+  members?: Prisma.MemberUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutUserNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutHotelStaysInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  client?: Prisma.ClientUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutUserNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutHotelStayDraftsInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string | null
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  client?: Prisma.ClientCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
+  members?: Prisma.MemberCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutUserInput
+  hotelStays?: Prisma.HotelStayCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutHotelStayDraftsInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string | null
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  client?: Prisma.ClientUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutUserInput
+  hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutHotelStayDraftsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutHotelStayDraftsInput, Prisma.UserUncheckedCreateWithoutHotelStayDraftsInput>
+}
+
+export type UserUpsertWithoutHotelStayDraftsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutHotelStayDraftsInput, Prisma.UserUncheckedUpdateWithoutHotelStayDraftsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutHotelStayDraftsInput, Prisma.UserUncheckedCreateWithoutHotelStayDraftsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutHotelStayDraftsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutHotelStayDraftsInput, Prisma.UserUncheckedUpdateWithoutHotelStayDraftsInput>
+}
+
+export type UserUpdateWithoutHotelStayDraftsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  client?: Prisma.ClientUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
+  members?: Prisma.MemberUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutUserNestedInput
+  hotelStays?: Prisma.HotelStayUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutHotelStayDraftsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  client?: Prisma.ClientUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutUserNestedInput
+  hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1162,6 +1456,8 @@ export type UserCountOutputType = {
   members: number
   sessions: number
   reservationDrafts: number
+  hotelStayDrafts: number
+  hotelStays: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1170,6 +1466,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   members?: boolean | UserCountOutputTypeCountMembersArgs
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   reservationDrafts?: boolean | UserCountOutputTypeCountReservationDraftsArgs
+  hotelStayDrafts?: boolean | UserCountOutputTypeCountHotelStayDraftsArgs
+  hotelStays?: boolean | UserCountOutputTypeCountHotelStaysArgs
 }
 
 /**
@@ -1217,6 +1515,20 @@ export type UserCountOutputTypeCountReservationDraftsArgs<ExtArgs extends runtim
   where?: Prisma.ReservationDraftWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountHotelStayDraftsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.HotelStayDraftWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountHotelStaysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.HotelStayWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1236,6 +1548,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   members?: boolean | Prisma.User$membersArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   reservationDrafts?: boolean | Prisma.User$reservationDraftsArgs<ExtArgs>
+  hotelStayDrafts?: boolean | Prisma.User$hotelStayDraftsArgs<ExtArgs>
+  hotelStays?: boolean | Prisma.User$hotelStaysArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1289,6 +1603,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   members?: boolean | Prisma.User$membersArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   reservationDrafts?: boolean | Prisma.User$reservationDraftsArgs<ExtArgs>
+  hotelStayDrafts?: boolean | Prisma.User$hotelStayDraftsArgs<ExtArgs>
+  hotelStays?: boolean | Prisma.User$hotelStaysArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1303,6 +1619,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     members: Prisma.$MemberPayload<ExtArgs>[]
     sessions: Prisma.$SessionPayload<ExtArgs>[]
     reservationDrafts: Prisma.$ReservationDraftPayload<ExtArgs>[]
+    hotelStayDrafts: Prisma.$HotelStayDraftPayload<ExtArgs>[]
+    hotelStays: Prisma.$HotelStayPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1716,6 +2034,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   members<T extends Prisma.User$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reservationDrafts<T extends Prisma.User$reservationDraftsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reservationDraftsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationDraftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  hotelStayDrafts<T extends Prisma.User$hotelStayDraftsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$hotelStayDraftsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HotelStayDraftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  hotelStays<T extends Prisma.User$hotelStaysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$hotelStaysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HotelStayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2285,6 +2605,54 @@ export type User$reservationDraftsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.ReservationDraftScalarFieldEnum | Prisma.ReservationDraftScalarFieldEnum[]
+}
+
+/**
+ * User.hotelStayDrafts
+ */
+export type User$hotelStayDraftsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HotelStayDraft
+   */
+  select?: Prisma.HotelStayDraftSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HotelStayDraft
+   */
+  omit?: Prisma.HotelStayDraftOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HotelStayDraftInclude<ExtArgs> | null
+  where?: Prisma.HotelStayDraftWhereInput
+  orderBy?: Prisma.HotelStayDraftOrderByWithRelationInput | Prisma.HotelStayDraftOrderByWithRelationInput[]
+  cursor?: Prisma.HotelStayDraftWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.HotelStayDraftScalarFieldEnum | Prisma.HotelStayDraftScalarFieldEnum[]
+}
+
+/**
+ * User.hotelStays
+ */
+export type User$hotelStaysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HotelStay
+   */
+  select?: Prisma.HotelStaySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HotelStay
+   */
+  omit?: Prisma.HotelStayOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HotelStayInclude<ExtArgs> | null
+  where?: Prisma.HotelStayWhereInput
+  orderBy?: Prisma.HotelStayOrderByWithRelationInput | Prisma.HotelStayOrderByWithRelationInput[]
+  cursor?: Prisma.HotelStayWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.HotelStayScalarFieldEnum | Prisma.HotelStayScalarFieldEnum[]
 }
 
 /**

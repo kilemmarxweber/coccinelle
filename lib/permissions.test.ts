@@ -52,4 +52,27 @@ describe("U04 — grille organizationRoleStatements", () => {
     assert.equal(allows(ORG_ROLE.GUICHETIER, "equipe", "manage"), false);
     assert.equal(allows(ORG_ROLE.GUICHETIER, "embarquement", "scan"), true);
   });
+
+  it("units-03 — hôtel : owner / gérant / réception / serveur", () => {
+    assert.equal(allows(ORG_ROLE.OWNER, "hotel_room", "create"), true);
+    assert.equal(allows(ORG_ROLE.OWNER, "hotel_stay", "create"), true);
+    assert.equal(allows(ORG_ROLE.OWNER, "hotel_fnb", "create"), true);
+
+    assert.equal(allows(ORG_ROLE.GESTIONNAIRE, "hotel_room", "create"), true);
+    assert.equal(allows(ORG_ROLE.GESTIONNAIRE, "hotel_stay", "update"), true);
+    assert.equal(allows(ORG_ROLE.GESTIONNAIRE, "hotel_fnb", "read"), true);
+
+    assert.equal(allows(ORG_ROLE.GUICHETIER, "hotel_room", "read"), true);
+    assert.equal(allows(ORG_ROLE.GUICHETIER, "hotel_room", "update"), true);
+    assert.equal(allows(ORG_ROLE.GUICHETIER, "hotel_room", "create"), false);
+    assert.equal(allows(ORG_ROLE.GUICHETIER, "hotel_stay", "create"), true);
+    assert.equal(allows(ORG_ROLE.GUICHETIER, "hotel_fnb", "read"), false);
+
+    assert.ok(organizationRoles[ORG_ROLE.SERVEUR]);
+    assert.equal(allows(ORG_ROLE.SERVEUR, "hotel_fnb", "create"), true);
+    assert.equal(allows(ORG_ROLE.SERVEUR, "hotel_stay", "read"), false);
+    assert.equal(allows(ORG_ROLE.SERVEUR, "hotel_room", "read"), false);
+
+    assert.equal(allows(ORG_ROLE.PARENT, "hotel_stay", "read"), false);
+  });
 });

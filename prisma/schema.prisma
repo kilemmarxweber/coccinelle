@@ -9,13 +9,6 @@ datasource db {
 }
 
 
-
-enum RoleFamille {
-  CHEF
-  CONJOINT
-  ENFANT
-}
-
 enum StatutReservation {
   CONFIRME
   EMBARQUE
@@ -113,6 +106,44 @@ enum HotelRoomStatus {
   OUT_OF_ORDER
 }
 
+enum HotelStayStatus {
+  BOOKED
+  IN_HOUSE
+  CHECKED_OUT
+  CANCELLED
+}
+
+enum HotelFolioLineKind {
+  NIGHT
+  OTHER
+}
+
+enum HotelFoodOrderStatus {
+  NEW
+  PREPARING
+  READY
+  SERVED
+}
+
+enum HotelFoodOrderSource {
+  STAFF_SUR_PLACE
+  CLIENT_ONLINE
+}
+
+enum HotelRestaurantTableStatus {
+  FREE
+  OCCUPIED
+  RESERVED
+  OUT_OF_SERVICE
+}
+
+enum HotelTableReservationStatus {
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
 
 model User {
   id            String       @id
@@ -132,6 +163,8 @@ model User {
   members           Member[]
   sessions          Session[]
   reservationDrafts ReservationDraft[]
+  hotelStayDrafts   HotelStayDraft[]
+  hotelStays        HotelStay[]
 
   @@map("user")
 }
@@ -197,6 +230,7 @@ model Organization {
   organizationroles OrganizationRole[]
   trajets           Trajet[]
   reservationDrafts ReservationDraft[]
+  hotelStayDrafts   HotelStayDraft[]
   branches          Branch[]
 
   @@map("organization")
@@ -259,10 +293,11 @@ model Client {
   postnom         String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  colis           Colis[]
-  passagers       Passager[]
-  reservations    Reservation[]
+  user               User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  colis              Colis[]
+  passagers          Passager[]
+  reservations       Reservation[]
+  hotelTableReservations HotelTableReservation[]
 }
 
 model Trajet {
@@ -474,8 +509,15 @@ model Branch {
   organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   members        BranchMember[]
   trajets        Trajet[]
-  hotelRoomTypes HotelRoomType[]
-  shopCategories ShopCategory[]
+  hotelRoomTypes       HotelRoomType[]
+  hotelStays           HotelStay[]
+  hotelStayDrafts      HotelStayDraft[]
+  hotelMenuCategories  HotelMenuCategory[]
+  hotelFoodOrders      HotelFoodOrder[]
+  hotelRestaurantTables HotelRestaurantTable[]
+  hotelTableReservations HotelTableReservation[]
+  hotelPayments        HotelPayment[]
+  shopCategories       ShopCategory[]
 
   @@unique([organizationId, code])
   @@index([organizationId, type])
@@ -510,6 +552,7 @@ model HotelRoomType {
   updatedAt   DateTime    @updatedAt
   branch      Branch      @relation(fields: [branchId], references: [id], onDelete: Cascade)
   rooms       HotelRoom[]
+  stays       HotelStay[]
 
   @@index([branchId])
 }
@@ -523,9 +566,211 @@ model HotelRoom {
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
   roomType   HotelRoomType   @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+  stays      HotelStay[]
 
   @@unique([roomTypeId, number])
   @@index([roomTypeId])
+}
+
+model HotelStay {
+  id           String          @id @default(uuid())
+  codeUnique   String          @unique
+  branchId     String
+  roomTypeId   String
+  roomId       String?
+  userId       String?
+  guestPrenom  String
+  guestNom     String
+  guestPhone   String
+  checkInDate  DateTime
+  checkOutDate DateTime
+  status       HotelStayStatus @default(BOOKED)
+  priceNight   Float
+  totalAmount  Float           @default(0)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  branch       Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  roomType     HotelRoomType   @relation(fields: [roomTypeId], references: [id], onDelete: Restrict)
+  room         HotelRoom?      @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  user         User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  folioLines         HotelFolioLine[]
+  foodOrders         HotelFoodOrder[]
+  payments           HotelPayment[]
+  tableReservations  HotelTableReservation[]
+
+  @@index([branchId, status])
+  @@index([branchId, checkInDate])
+  @@index([roomId])
+  @@index([roomTypeId])
+  @@index([userId])
+}
+
+/** Brouillon réservation chambre client (peut exister avant auth). */
+model HotelStayDraft {
+  id             String       @id @default(uuid())
+  draftToken     String       @unique @default(uuid())
+  organizationId String
+  branchId       String
+  userId         String?
+  payload        Json
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch         Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  user           User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, userId])
+  @@index([branchId])
+  @@index([expiresAt])
+}
+
+model HotelFolioLine {
+  id        String             @id @default(uuid())
+  stayId    String
+  label     String
+  amount    Float
+  kind      HotelFolioLineKind @default(NIGHT)
+  createdAt DateTime           @default(now())
+  stay      HotelStay          @relation(fields: [stayId], references: [id], onDelete: Cascade)
+
+  @@index([stayId])
+}
+
+model HotelMenuCategory {
+  id        String          @id @default(uuid())
+  branchId  String
+  name      String
+  sortOrder Int             @default(0)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  branch    Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  items     HotelMenuItem[]
+
+  @@unique([branchId, name])
+  @@index([branchId])
+}
+
+model HotelMenuItem {
+  id          String            @id @default(uuid())
+  categoryId  String
+  name        String
+  description String?
+  price       Float
+  active      Boolean           @default(true)
+  sortOrder   Int               @default(0)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  category    HotelMenuCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  orderLines  HotelFoodOrderLine[]
+
+  @@index([categoryId])
+}
+
+model HotelRestaurantTable {
+  id           String                     @id @default(uuid())
+  branchId     String
+  number       String
+  capacity     Int                        @default(2)
+  status       HotelRestaurantTableStatus @default(FREE)
+  createdAt    DateTime                   @default(now())
+  updatedAt    DateTime                   @updatedAt
+  branch       Branch                     @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  orders       HotelFoodOrder[]
+  reservations HotelTableReservation[]
+
+  @@unique([branchId, number])
+  @@index([branchId])
+}
+
+/** Réservation de table à heure précise (seule ou avec précommande plats). */
+model HotelTableReservation {
+  id          String                      @id @default(uuid())
+  branchId    String
+  tableId     String?
+  guestPrenom String
+  guestNom    String
+  guestPhone  String
+  startsAt    DateTime
+  covers      Int                         @default(2)
+  status      HotelTableReservationStatus @default(CONFIRMED)
+  stayId      String?
+  clientId    String?
+  notes       String?
+  createdAt   DateTime                    @default(now())
+  updatedAt   DateTime                    @updatedAt
+  branch      Branch                      @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  table       HotelRestaurantTable?       @relation(fields: [tableId], references: [id], onDelete: SetNull)
+  stay        HotelStay?                  @relation(fields: [stayId], references: [id], onDelete: SetNull)
+  client      Client?                     @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  foodOrders  HotelFoodOrder[]
+
+  @@index([branchId, startsAt])
+  @@index([branchId, status])
+  @@index([tableId])
+  @@index([stayId])
+  @@index([clientId])
+}
+
+model HotelFoodOrder {
+  id                  String                 @id @default(uuid())
+  branchId            String
+  stayId              String?
+  tableId             String?
+  tableReservationId  String?
+  source              HotelFoodOrderSource   @default(STAFF_SUR_PLACE)
+  status              HotelFoodOrderStatus   @default(NEW)
+  notes               String?
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+  branch              Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  stay                HotelStay?             @relation(fields: [stayId], references: [id], onDelete: SetNull)
+  table               HotelRestaurantTable?  @relation(fields: [tableId], references: [id], onDelete: SetNull)
+  tableReservation    HotelTableReservation? @relation(fields: [tableReservationId], references: [id], onDelete: SetNull)
+  lines               HotelFoodOrderLine[]
+  payments            HotelPayment[]
+
+  @@index([branchId, status])
+  @@index([branchId, createdAt])
+  @@index([stayId])
+  @@index([tableId])
+  @@index([tableReservationId])
+}
+
+/** Encaissement hôtel (séjour / F&B) — distinct du voyage `Paiement`. */
+model HotelPayment {
+  id          String          @id @default(uuid())
+  branchId    String
+  stayId      String?
+  foodOrderId String?
+  amount      Float
+  method      MethodePaiement
+  status      StatutPaiement  @default(PAYE)
+  reference   String?
+  createdAt   DateTime        @default(now())
+  branch      Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  stay        HotelStay?      @relation(fields: [stayId], references: [id], onDelete: SetNull)
+  foodOrder   HotelFoodOrder? @relation(fields: [foodOrderId], references: [id], onDelete: SetNull)
+
+  @@index([branchId])
+  @@index([stayId])
+  @@index([foodOrderId])
+  @@index([branchId, createdAt])
+}
+
+model HotelFoodOrderLine {
+  id         String         @id @default(uuid())
+  orderId    String
+  menuItemId String?
+  name       String
+  unitPrice  Float
+  quantity   Int            @default(1)
+  createdAt  DateTime       @default(now())
+  order      HotelFoodOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem   HotelMenuItem? @relation(fields: [menuItemId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([menuItemId])
 }
 
 model ShopCategory {

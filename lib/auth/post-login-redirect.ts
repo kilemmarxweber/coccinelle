@@ -42,7 +42,7 @@ export async function resolvePostLoginPath(requestHeaders: Headers): Promise<str
 
   const { organizationId, role } = membership;
 
-  if (role === ORG_ROLE.GUICHETIER) {
+  if (role === ORG_ROLE.GUICHETIER || role === ORG_ROLE.SERVEUR) {
     return legacyGuichetPath(organizationId);
   }
 

@@ -28,6 +28,9 @@ export const ORGANIZATION_BUSINESS_RESOURCES = [
   "rapport",
   "equipe",
   "branch",
+  "hotel_room",
+  "hotel_stay",
+  "hotel_fnb",
 ] as const satisfies ReadonlyArray<keyof typeof accessControlStatements>;
 
 /** Catalogue complet : un entrée par slug org connu de l’app. */
@@ -38,10 +41,11 @@ export const ORGANIZATION_ROLE_PERMISSION_CATALOG: OrganizationRoleCatalogEntry[
     permissions: (organizationRoleStatements[slug] ?? {}) as OrganizationRolePermissionPayload,
   }));
 
-/** Rôles produit principaux (U04). */
+/** Rôles produit principaux (U04 + hôtel units-03). */
 export const PRODUCT_ORG_ROLES = [
   ORG_ROLE.OWNER,
   ORG_ROLE.GESTIONNAIRE,
   ORG_ROLE.GUICHETIER,
+  ORG_ROLE.SERVEUR,
   ORG_ROLE.PARENT,
 ] as const;

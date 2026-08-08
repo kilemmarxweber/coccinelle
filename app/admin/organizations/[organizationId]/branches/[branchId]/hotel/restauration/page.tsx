@@ -1,5 +1,13 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
-import { BranchModulePlaceholder } from "../../_components/branch-module-placeholder";
+import { hasOrganizationPermission } from "@/lib/hotel/hotel-permission";
+import {
+  listFnbFormOptions,
+  listFoodOrders,
+  listMenuCategories,
+  listRestaurantTables,
+} from "@/lib/hotel/list-fnb";
+import { listUpcomingTableReservations } from "@/lib/hotel/list-table-reservations";
+import { HotelRestaurationPanel } from "@/components/hotel/hotel-restauration-panel";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
@@ -12,13 +20,40 @@ export default async function HotelRestaurationPage({ params }: PageProps) {
     branchId,
     requireModule: "hotel",
   });
+
+  const [
+    categories,
+    orders,
+    tables,
+    tableReservations,
+    formOptions,
+    canCreate,
+    canUpdate,
+    canDelete,
+  ] = await Promise.all([
+    listMenuCategories(branch.id),
+    listFoodOrders(branch.id),
+    listRestaurantTables(branch.id),
+    listUpcomingTableReservations(branch.id),
+    listFnbFormOptions(branch.id),
+    hasOrganizationPermission(organizationId, { hotel_fnb: ["create"] }),
+    hasOrganizationPermission(organizationId, { hotel_fnb: ["update"] }),
+    hasOrganizationPermission(organizationId, { hotel_fnb: ["delete"] }),
+  ]);
+
   return (
-    <BranchModulePlaceholder
+    <HotelRestaurationPanel
       organizationId={organizationId}
-      branchId={branchId}
+      branchId={branch.id}
       branchName={branch.name}
-      title="Restauration"
-      description="Commandes F&B et additions chambre / salle."
+      categories={categories}
+      orders={orders}
+      tables={tables}
+      tableReservations={tableReservations}
+      formOptions={formOptions}
+      canCreate={canCreate}
+      canUpdate={canUpdate}
+      canDelete={canDelete}
     />
   );
 }

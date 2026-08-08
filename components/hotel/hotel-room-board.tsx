@@ -44,6 +44,8 @@ type Props = {
   branchId: string;
   branchName: string;
   initial: RoomBoardData;
+  canManageInventory?: boolean;
+  canUpdateStatus?: boolean;
 };
 
 type TransitionStart = (fn: () => void) => void;
@@ -57,6 +59,8 @@ export function HotelRoomBoard({
   branchId,
   branchName,
   initial,
+  canManageInventory = false,
+  canUpdateStatus = false,
 }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -121,21 +125,25 @@ export function HotelRoomBoard({
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <CreateRoomTypeDialog
-            organizationId={organizationId}
-            branchId={branchId}
-            pending={pending}
-            startTransition={startTransition}
-            onDone={() => router.refresh()}
-          />
-          <CreateRoomDialog
-            organizationId={organizationId}
-            branchId={branchId}
-            types={initial.types}
-            pending={pending}
-            startTransition={startTransition}
-            onDone={() => router.refresh()}
-          />
+          {canManageInventory ? (
+            <>
+              <CreateRoomTypeDialog
+                organizationId={organizationId}
+                branchId={branchId}
+                pending={pending}
+                startTransition={startTransition}
+                onDone={() => router.refresh()}
+              />
+              <CreateRoomDialog
+                organizationId={organizationId}
+                branchId={branchId}
+                types={initial.types}
+                pending={pending}
+                startTransition={startTransition}
+                onDone={() => router.refresh()}
+              />
+            </>
+          ) : null}
         </div>
       </header>
 
@@ -219,6 +227,8 @@ export function HotelRoomBoard({
                     startTransition={startTransition}
                     onStatusChange={onStatusChange}
                     onDone={() => router.refresh()}
+                    canManageInventory={canManageInventory}
+                    canUpdateStatus={canUpdateStatus}
                   />
                 ))}
               </div>
@@ -255,14 +265,16 @@ export function HotelRoomBoard({
                   <span className="tabular-nums text-muted-foreground">
                     {formatMontantFc(t.priceNight)} / nuit
                   </span>
-                  <EditRoomTypeDialog
-                    organizationId={organizationId}
-                    branchId={branchId}
-                    roomType={t}
-                    pending={pending}
-                    startTransition={startTransition}
-                    onDone={() => router.refresh()}
-                  />
+                  {canManageInventory ? (
+                    <EditRoomTypeDialog
+                      organizationId={organizationId}
+                      branchId={branchId}
+                      roomType={t}
+                      pending={pending}
+                      startTransition={startTransition}
+                      onDone={() => router.refresh()}
+                    />
+                  ) : null}
                 </span>
               </li>
             ))}
@@ -323,6 +335,8 @@ function RoomTile({
   startTransition,
   onStatusChange,
   onDone,
+  canManageInventory,
+  canUpdateStatus,
 }: {
   room: RoomBoardRoom;
   types: RoomBoardType[];
@@ -332,6 +346,8 @@ function RoomTile({
   startTransition: TransitionStart;
   onStatusChange: (roomId: string, status: HotelRoomStatusValue) => void;
   onDone: () => void;
+  canManageInventory: boolean;
+  canUpdateStatus: boolean;
 }) {
   return (
     <article className="flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-xs">
@@ -339,17 +355,24 @@ function RoomTile({
         <div>
           <p className="text-lg font-semibold tracking-tight">{room.number}</p>
           <p className="text-xs text-muted-foreground">{room.roomTypeName}</p>
+          {room.guestName ? (
+            <p className="mt-1 text-xs font-medium text-foreground/80">
+              {room.guestName}
+            </p>
+          ) : null}
         </div>
         <div className="flex items-center gap-1">
-          <EditRoomDialog
-            organizationId={organizationId}
-            branchId={branchId}
-            room={room}
-            types={types}
-            pending={disabled}
-            startTransition={startTransition}
-            onDone={onDone}
-          />
+          {canManageInventory ? (
+            <EditRoomDialog
+              organizationId={organizationId}
+              branchId={branchId}
+              room={room}
+              types={types}
+              pending={disabled}
+              startTransition={startTransition}
+              onDone={onDone}
+            />
+          ) : null}
           <Badge
             className={cn(HOTEL_ROOM_STATUS_BADGE_CLASS[room.status])}
             variant="outline"
@@ -358,25 +381,27 @@ function RoomTile({
           </Badge>
         </div>
       </div>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor={`status-${room.id}`} className="text-xs text-muted-foreground">
-          Changer le statut
-        </Label>
-        <Select
-          id={`status-${room.id}`}
-          value={room.status}
-          disabled={disabled}
-          onChange={(e) =>
-            onStatusChange(room.id, e.target.value as HotelRoomStatusValue)
-          }
-        >
-          {HOTEL_ROOM_STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {HOTEL_ROOM_STATUS_LABELS[s]}
-            </option>
-          ))}
-        </Select>
-      </div>
+      {canUpdateStatus ? (
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor={`status-${room.id}`} className="text-xs text-muted-foreground">
+            Changer le statut
+          </Label>
+          <Select
+            id={`status-${room.id}`}
+            value={room.status}
+            disabled={disabled}
+            onChange={(e) =>
+              onStatusChange(room.id, e.target.value as HotelRoomStatusValue)
+            }
+          >
+            {HOTEL_ROOM_STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {HOTEL_ROOM_STATUS_LABELS[s]}
+              </option>
+            ))}
+          </Select>
+        </div>
+      ) : null}
     </article>
   );
 }

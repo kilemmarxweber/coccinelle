@@ -73,6 +73,16 @@ export const ModelName = {
   BranchMember: 'BranchMember',
   HotelRoomType: 'HotelRoomType',
   HotelRoom: 'HotelRoom',
+  HotelStay: 'HotelStay',
+  HotelStayDraft: 'HotelStayDraft',
+  HotelFolioLine: 'HotelFolioLine',
+  HotelMenuCategory: 'HotelMenuCategory',
+  HotelMenuItem: 'HotelMenuItem',
+  HotelRestaurantTable: 'HotelRestaurantTable',
+  HotelTableReservation: 'HotelTableReservation',
+  HotelFoodOrder: 'HotelFoodOrder',
+  HotelPayment: 'HotelPayment',
+  HotelFoodOrderLine: 'HotelFoodOrderLine',
   ShopCategory: 'ShopCategory',
   ShopProduct: 'ShopProduct'
 } as const
@@ -436,6 +446,159 @@ export const HotelRoomScalarFieldEnum = {
 } as const
 
 export type HotelRoomScalarFieldEnum = (typeof HotelRoomScalarFieldEnum)[keyof typeof HotelRoomScalarFieldEnum]
+
+
+export const HotelStayScalarFieldEnum = {
+  id: 'id',
+  codeUnique: 'codeUnique',
+  branchId: 'branchId',
+  roomTypeId: 'roomTypeId',
+  roomId: 'roomId',
+  userId: 'userId',
+  guestPrenom: 'guestPrenom',
+  guestNom: 'guestNom',
+  guestPhone: 'guestPhone',
+  checkInDate: 'checkInDate',
+  checkOutDate: 'checkOutDate',
+  status: 'status',
+  priceNight: 'priceNight',
+  totalAmount: 'totalAmount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelStayScalarFieldEnum = (typeof HotelStayScalarFieldEnum)[keyof typeof HotelStayScalarFieldEnum]
+
+
+export const HotelStayDraftScalarFieldEnum = {
+  id: 'id',
+  draftToken: 'draftToken',
+  organizationId: 'organizationId',
+  branchId: 'branchId',
+  userId: 'userId',
+  payload: 'payload',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelStayDraftScalarFieldEnum = (typeof HotelStayDraftScalarFieldEnum)[keyof typeof HotelStayDraftScalarFieldEnum]
+
+
+export const HotelFolioLineScalarFieldEnum = {
+  id: 'id',
+  stayId: 'stayId',
+  label: 'label',
+  amount: 'amount',
+  kind: 'kind',
+  createdAt: 'createdAt'
+} as const
+
+export type HotelFolioLineScalarFieldEnum = (typeof HotelFolioLineScalarFieldEnum)[keyof typeof HotelFolioLineScalarFieldEnum]
+
+
+export const HotelMenuCategoryScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  name: 'name',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelMenuCategoryScalarFieldEnum = (typeof HotelMenuCategoryScalarFieldEnum)[keyof typeof HotelMenuCategoryScalarFieldEnum]
+
+
+export const HotelMenuItemScalarFieldEnum = {
+  id: 'id',
+  categoryId: 'categoryId',
+  name: 'name',
+  description: 'description',
+  price: 'price',
+  active: 'active',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelMenuItemScalarFieldEnum = (typeof HotelMenuItemScalarFieldEnum)[keyof typeof HotelMenuItemScalarFieldEnum]
+
+
+export const HotelRestaurantTableScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  number: 'number',
+  capacity: 'capacity',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelRestaurantTableScalarFieldEnum = (typeof HotelRestaurantTableScalarFieldEnum)[keyof typeof HotelRestaurantTableScalarFieldEnum]
+
+
+export const HotelTableReservationScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  tableId: 'tableId',
+  guestPrenom: 'guestPrenom',
+  guestNom: 'guestNom',
+  guestPhone: 'guestPhone',
+  startsAt: 'startsAt',
+  covers: 'covers',
+  status: 'status',
+  stayId: 'stayId',
+  clientId: 'clientId',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelTableReservationScalarFieldEnum = (typeof HotelTableReservationScalarFieldEnum)[keyof typeof HotelTableReservationScalarFieldEnum]
+
+
+export const HotelFoodOrderScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  stayId: 'stayId',
+  tableId: 'tableId',
+  tableReservationId: 'tableReservationId',
+  source: 'source',
+  status: 'status',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelFoodOrderScalarFieldEnum = (typeof HotelFoodOrderScalarFieldEnum)[keyof typeof HotelFoodOrderScalarFieldEnum]
+
+
+export const HotelPaymentScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  stayId: 'stayId',
+  foodOrderId: 'foodOrderId',
+  amount: 'amount',
+  method: 'method',
+  status: 'status',
+  reference: 'reference',
+  createdAt: 'createdAt'
+} as const
+
+export type HotelPaymentScalarFieldEnum = (typeof HotelPaymentScalarFieldEnum)[keyof typeof HotelPaymentScalarFieldEnum]
+
+
+export const HotelFoodOrderLineScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  menuItemId: 'menuItemId',
+  name: 'name',
+  unitPrice: 'unitPrice',
+  quantity: 'quantity',
+  createdAt: 'createdAt'
+} as const
+
+export type HotelFoodOrderLineScalarFieldEnum = (typeof HotelFoodOrderLineScalarFieldEnum)[keyof typeof HotelFoodOrderLineScalarFieldEnum]
 
 
 export const ShopCategoryScalarFieldEnum = {

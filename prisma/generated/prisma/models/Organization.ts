@@ -195,6 +195,7 @@ export type OrganizationWhereInput = {
   organizationroles?: Prisma.OrganizationRoleListRelationFilter
   trajets?: Prisma.TrajetListRelationFilter
   reservationDrafts?: Prisma.ReservationDraftListRelationFilter
+  hotelStayDrafts?: Prisma.HotelStayDraftListRelationFilter
   branches?: Prisma.BranchListRelationFilter
 }
 
@@ -210,6 +211,7 @@ export type OrganizationOrderByWithRelationInput = {
   organizationroles?: Prisma.OrganizationRoleOrderByRelationAggregateInput
   trajets?: Prisma.TrajetOrderByRelationAggregateInput
   reservationDrafts?: Prisma.ReservationDraftOrderByRelationAggregateInput
+  hotelStayDrafts?: Prisma.HotelStayDraftOrderByRelationAggregateInput
   branches?: Prisma.BranchOrderByRelationAggregateInput
 }
 
@@ -228,6 +230,7 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   organizationroles?: Prisma.OrganizationRoleListRelationFilter
   trajets?: Prisma.TrajetListRelationFilter
   reservationDrafts?: Prisma.ReservationDraftListRelationFilter
+  hotelStayDrafts?: Prisma.HotelStayDraftListRelationFilter
   branches?: Prisma.BranchListRelationFilter
 }, "id" | "slug">
 
@@ -267,6 +270,7 @@ export type OrganizationCreateInput = {
   organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
   trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
+  hotelStayDrafts?: Prisma.HotelStayDraftCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
 }
 
@@ -282,6 +286,7 @@ export type OrganizationUncheckedCreateInput = {
   organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
@@ -297,6 +302,7 @@ export type OrganizationUpdateInput = {
   organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
   trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
 }
 
@@ -312,6 +318,7 @@ export type OrganizationUncheckedUpdateInput = {
   organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
@@ -458,6 +465,20 @@ export type OrganizationUpdateOneRequiredWithoutBranchesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutBranchesInput, Prisma.OrganizationUpdateWithoutBranchesInput>, Prisma.OrganizationUncheckedUpdateWithoutBranchesInput>
 }
 
+export type OrganizationCreateNestedOneWithoutHotelStayDraftsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutHotelStayDraftsInput, Prisma.OrganizationUncheckedCreateWithoutHotelStayDraftsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutHotelStayDraftsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutHotelStayDraftsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutHotelStayDraftsInput, Prisma.OrganizationUncheckedCreateWithoutHotelStayDraftsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutHotelStayDraftsInput
+  upsert?: Prisma.OrganizationUpsertWithoutHotelStayDraftsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutHotelStayDraftsInput, Prisma.OrganizationUpdateWithoutHotelStayDraftsInput>, Prisma.OrganizationUncheckedUpdateWithoutHotelStayDraftsInput>
+}
+
 export type OrganizationCreateWithoutOrganizationrolesInput = {
   id: string
   name: string
@@ -469,6 +490,7 @@ export type OrganizationCreateWithoutOrganizationrolesInput = {
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
+  hotelStayDrafts?: Prisma.HotelStayDraftCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
 }
 
@@ -483,6 +505,7 @@ export type OrganizationUncheckedCreateWithoutOrganizationrolesInput = {
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
@@ -513,6 +536,7 @@ export type OrganizationUpdateWithoutOrganizationrolesInput = {
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
 }
 
@@ -527,6 +551,7 @@ export type OrganizationUncheckedUpdateWithoutOrganizationrolesInput = {
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
@@ -541,6 +566,7 @@ export type OrganizationCreateWithoutMembersInput = {
   organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
   trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
+  hotelStayDrafts?: Prisma.HotelStayDraftCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
 }
 
@@ -555,6 +581,7 @@ export type OrganizationUncheckedCreateWithoutMembersInput = {
   organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
@@ -585,6 +612,7 @@ export type OrganizationUpdateWithoutMembersInput = {
   organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
   trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
 }
 
@@ -599,6 +627,7 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
   organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
@@ -613,6 +642,7 @@ export type OrganizationCreateWithoutInvitationsInput = {
   organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
   trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
+  hotelStayDrafts?: Prisma.HotelStayDraftCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
 }
 
@@ -627,6 +657,7 @@ export type OrganizationUncheckedCreateWithoutInvitationsInput = {
   organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
@@ -657,6 +688,7 @@ export type OrganizationUpdateWithoutInvitationsInput = {
   organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
   trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
 }
 
@@ -671,6 +703,7 @@ export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
   organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
@@ -685,6 +718,7 @@ export type OrganizationCreateWithoutTrajetsInput = {
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
+  hotelStayDrafts?: Prisma.HotelStayDraftCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
 }
 
@@ -699,6 +733,7 @@ export type OrganizationUncheckedCreateWithoutTrajetsInput = {
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
@@ -729,6 +764,7 @@ export type OrganizationUpdateWithoutTrajetsInput = {
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
 }
 
@@ -743,6 +779,7 @@ export type OrganizationUncheckedUpdateWithoutTrajetsInput = {
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
@@ -757,6 +794,7 @@ export type OrganizationCreateWithoutReservationDraftsInput = {
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
   trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
+  hotelStayDrafts?: Prisma.HotelStayDraftCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
 }
 
@@ -771,6 +809,7 @@ export type OrganizationUncheckedCreateWithoutReservationDraftsInput = {
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
@@ -801,6 +840,7 @@ export type OrganizationUpdateWithoutReservationDraftsInput = {
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
   trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
 }
 
@@ -815,6 +855,7 @@ export type OrganizationUncheckedUpdateWithoutReservationDraftsInput = {
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
@@ -830,6 +871,7 @@ export type OrganizationCreateWithoutBranchesInput = {
   organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
   trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
+  hotelStayDrafts?: Prisma.HotelStayDraftCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutBranchesInput = {
@@ -844,6 +886,7 @@ export type OrganizationUncheckedCreateWithoutBranchesInput = {
   organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutBranchesInput = {
@@ -874,6 +917,7 @@ export type OrganizationUpdateWithoutBranchesInput = {
   organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
   trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutBranchesInput = {
@@ -888,6 +932,83 @@ export type OrganizationUncheckedUpdateWithoutBranchesInput = {
   organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotelStayDrafts?: Prisma.HotelStayDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutHotelStayDraftsInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
+  branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutHotelStayDraftsInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
+  branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutHotelStayDraftsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutHotelStayDraftsInput, Prisma.OrganizationUncheckedCreateWithoutHotelStayDraftsInput>
+}
+
+export type OrganizationUpsertWithoutHotelStayDraftsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutHotelStayDraftsInput, Prisma.OrganizationUncheckedUpdateWithoutHotelStayDraftsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutHotelStayDraftsInput, Prisma.OrganizationUncheckedCreateWithoutHotelStayDraftsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutHotelStayDraftsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutHotelStayDraftsInput, Prisma.OrganizationUncheckedUpdateWithoutHotelStayDraftsInput>
+}
+
+export type OrganizationUpdateWithoutHotelStayDraftsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
+  branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutHotelStayDraftsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+  branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 
@@ -901,6 +1022,7 @@ export type OrganizationCountOutputType = {
   organizationroles: number
   trajets: number
   reservationDrafts: number
+  hotelStayDrafts: number
   branches: number
 }
 
@@ -910,6 +1032,7 @@ export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Exte
   organizationroles?: boolean | OrganizationCountOutputTypeCountOrganizationrolesArgs
   trajets?: boolean | OrganizationCountOutputTypeCountTrajetsArgs
   reservationDrafts?: boolean | OrganizationCountOutputTypeCountReservationDraftsArgs
+  hotelStayDrafts?: boolean | OrganizationCountOutputTypeCountHotelStayDraftsArgs
   branches?: boolean | OrganizationCountOutputTypeCountBranchesArgs
 }
 
@@ -961,6 +1084,13 @@ export type OrganizationCountOutputTypeCountReservationDraftsArgs<ExtArgs extend
 /**
  * OrganizationCountOutputType without action
  */
+export type OrganizationCountOutputTypeCountHotelStayDraftsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.HotelStayDraftWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
 export type OrganizationCountOutputTypeCountBranchesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.BranchWhereInput
 }
@@ -978,6 +1108,7 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   organizationroles?: boolean | Prisma.Organization$organizationrolesArgs<ExtArgs>
   trajets?: boolean | Prisma.Organization$trajetsArgs<ExtArgs>
   reservationDrafts?: boolean | Prisma.Organization$reservationDraftsArgs<ExtArgs>
+  hotelStayDrafts?: boolean | Prisma.Organization$hotelStayDraftsArgs<ExtArgs>
   branches?: boolean | Prisma.Organization$branchesArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organization"]>
@@ -1016,6 +1147,7 @@ export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   organizationroles?: boolean | Prisma.Organization$organizationrolesArgs<ExtArgs>
   trajets?: boolean | Prisma.Organization$trajetsArgs<ExtArgs>
   reservationDrafts?: boolean | Prisma.Organization$reservationDraftsArgs<ExtArgs>
+  hotelStayDrafts?: boolean | Prisma.Organization$hotelStayDraftsArgs<ExtArgs>
   branches?: boolean | Prisma.Organization$branchesArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1030,6 +1162,7 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     organizationroles: Prisma.$OrganizationRolePayload<ExtArgs>[]
     trajets: Prisma.$TrajetPayload<ExtArgs>[]
     reservationDrafts: Prisma.$ReservationDraftPayload<ExtArgs>[]
+    hotelStayDrafts: Prisma.$HotelStayDraftPayload<ExtArgs>[]
     branches: Prisma.$BranchPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1438,6 +1571,7 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   organizationroles<T extends Prisma.Organization$organizationrolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$organizationrolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrganizationRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   trajets<T extends Prisma.Organization$trajetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$trajetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrajetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reservationDrafts<T extends Prisma.Organization$reservationDraftsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$reservationDraftsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationDraftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  hotelStayDrafts<T extends Prisma.Organization$hotelStayDraftsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$hotelStayDraftsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HotelStayDraftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   branches<T extends Prisma.Organization$branchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$branchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1984,6 +2118,30 @@ export type Organization$reservationDraftsArgs<ExtArgs extends runtime.Types.Ext
   take?: number
   skip?: number
   distinct?: Prisma.ReservationDraftScalarFieldEnum | Prisma.ReservationDraftScalarFieldEnum[]
+}
+
+/**
+ * Organization.hotelStayDrafts
+ */
+export type Organization$hotelStayDraftsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HotelStayDraft
+   */
+  select?: Prisma.HotelStayDraftSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HotelStayDraft
+   */
+  omit?: Prisma.HotelStayDraftOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HotelStayDraftInclude<ExtArgs> | null
+  where?: Prisma.HotelStayDraftWhereInput
+  orderBy?: Prisma.HotelStayDraftOrderByWithRelationInput | Prisma.HotelStayDraftOrderByWithRelationInput[]
+  cursor?: Prisma.HotelStayDraftWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.HotelStayDraftScalarFieldEnum | Prisma.HotelStayDraftScalarFieldEnum[]
 }
 
 /**

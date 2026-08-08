@@ -9,15 +9,6 @@
 * 🟢 You can import this file directly.
 */
 
-export const RoleFamille = {
-  CHEF: 'CHEF',
-  CONJOINT: 'CONJOINT',
-  ENFANT: 'ENFANT'
-} as const
-
-export type RoleFamille = (typeof RoleFamille)[keyof typeof RoleFamille]
-
-
 export const StatutReservation = {
   CONFIRME: 'CONFIRME',
   EMBARQUE: 'EMBARQUE',
@@ -161,3 +152,59 @@ export const HotelRoomStatus = {
 } as const
 
 export type HotelRoomStatus = (typeof HotelRoomStatus)[keyof typeof HotelRoomStatus]
+
+
+export const HotelStayStatus = {
+  BOOKED: 'BOOKED',
+  IN_HOUSE: 'IN_HOUSE',
+  CHECKED_OUT: 'CHECKED_OUT',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type HotelStayStatus = (typeof HotelStayStatus)[keyof typeof HotelStayStatus]
+
+
+export const HotelFolioLineKind = {
+  NIGHT: 'NIGHT',
+  OTHER: 'OTHER'
+} as const
+
+export type HotelFolioLineKind = (typeof HotelFolioLineKind)[keyof typeof HotelFolioLineKind]
+
+
+export const HotelFoodOrderStatus = {
+  NEW: 'NEW',
+  PREPARING: 'PREPARING',
+  READY: 'READY',
+  SERVED: 'SERVED'
+} as const
+
+export type HotelFoodOrderStatus = (typeof HotelFoodOrderStatus)[keyof typeof HotelFoodOrderStatus]
+
+
+export const HotelFoodOrderSource = {
+  STAFF_SUR_PLACE: 'STAFF_SUR_PLACE',
+  CLIENT_ONLINE: 'CLIENT_ONLINE'
+} as const
+
+export type HotelFoodOrderSource = (typeof HotelFoodOrderSource)[keyof typeof HotelFoodOrderSource]
+
+
+export const HotelRestaurantTableStatus = {
+  FREE: 'FREE',
+  OCCUPIED: 'OCCUPIED',
+  RESERVED: 'RESERVED',
+  OUT_OF_SERVICE: 'OUT_OF_SERVICE'
+} as const
+
+export type HotelRestaurantTableStatus = (typeof HotelRestaurantTableStatus)[keyof typeof HotelRestaurantTableStatus]
+
+
+export const HotelTableReservationStatus = {
+  CONFIRMED: 'CONFIRMED',
+  CANCELLED: 'CANCELLED',
+  COMPLETED: 'COMPLETED',
+  NO_SHOW: 'NO_SHOW'
+} as const
+
+export type HotelTableReservationStatus = (typeof HotelTableReservationStatus)[keyof typeof HotelTableReservationStatus]

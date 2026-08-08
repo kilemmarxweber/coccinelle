@@ -4,30 +4,40 @@
 
 - Product name in UI: **Coccinelle** / hotel surfaces under branch name.
 - Theme: light-first Coccinelle tokens in `app/globals.css`.
+- **Default theme is light** (`app/layout.tsx` — Admin and app shell). Users may still toggle dark via the theme control if present; do not ship Admin defaulting to dark.
 - Primary: orange (`--primary` oklch ~47.6 hue). Foreground dark warm charcoal.
 - Fonts: Geist Sans / Geist Mono via Next font variables (`--font-sans`, `--font-mono`).
 - Component library: shadcn/ui (Base UI), Lucide icons, Sonner toasts, Vaul drawers where already used.
 
 ## Layout conventions
 
-### Staff (admin branch)
+### Admin (personnel)
 
+- Lives under `/admin/…` with auth in `app/admin/layout.tsx`.
 - Hotel lives under `/admin/organizations/[organizationId]/branches/[branchId]/hotel/…`.
 - Hub dashboard uses cards from `lib/branch/branch-menus.ts` — keep hotel cards linking to real screens as units ship.
-- Pages use existing admin spacing patterns: page title, short description, primary actions top-right.
-- Prefer full-width operational boards for reception (room board), not dense card grids of metrics in the first viewport of the board itself.
-- KPI strip above the board: compact counts (libres prêtes, occupées, sales, HS, % occupation) — one job: situational awareness.
+- Pages use existing admin spacing: page title, short description, primary actions top-right.
+- Prefer full-width operational boards for reception (room board).
+- KPI strip above the board: libres prêtes, occupées, sales, HS, % occupation.
+- Restauration sur place: staff order entry + kitchen queue (serveur → enregistrement → chef). No GSAP requirement on Admin.
 
-### Client (PWA)
+### Public (espace client)
 
-- Reuse `components/pwa/` shell patterns (org brand header, funnel stepper) for hotel booking and self-order.
-- Mobile-first; CDF prices visible early.
-- Self-order: large tap targets, clear cart, confirm order — guest stands in front of staff.
+- Code under route group `app/(public)/` — **not** the static folder `public/` at repo root.
+- Landing produit Coccinelle at `/` (`app/(public)/page.tsx`).
+- Org Client routes under `/{orgSlug}/…` and hotel under `/{orgSlug}/hotel/…` (same URLs; files in `app/(public)/[orgSlug]/`).
+- Separate layout from Admin: no staff sidebar; auth where the page needs it (billets, room service, **confirmation réservation chambre**).
+- Room booking funnel: search/draft may be public; **sign-in or sign-up required before confirm/pay** (multi-night stays always tied to an account).
+- **Responsive**: desk + tablet + mobile.
+- **GSAP** for intentional motion on hotel Client surfaces (funnel transitions, entrées, micro-interactions) — 2–3 purposeful motions per major surface, not noise.
+- CDF prices visible early; French copy.
+- Surfaces: book room; book table (alone or with food at a set time); room-service food if the guest has a stay.
+- Do **not** design a “order yourself at the table instead of the serveur” flow for sur-place dining.
 
-## Room board (UH01+)
+## Room board (units-01+)
 
-- **Grid of rooms** grouped by floor or type.
-- Each cell/card shows: room number, type name, **text status label**, optional guest name if occupied (after stays).
+- Grid of rooms grouped by floor or type.
+- Each cell: room number, type name, **text status label**, optional guest name if occupied (after stays).
 - Status must not rely on color alone.
 
 ### Status presentation (V1)
@@ -39,22 +49,22 @@
 | Occupied | Occupée | primary or neutral strong |
 | Out of order | Hors service | muted / destructive muted |
 
-Exact enum mapping is defined in the UH01 spec (may extend `HotelRoomStatus`).
+Exact enum mapping: see `context/specs/units-01-room-board.md`.
 
 - Filters: étage, type, statut.
-- Empty state: explain bootstrap / create first room types.
-- Planning (room × dates): introduce when stays exist (UH02+); UH01 may ship day board only if spec says so.
+- Empty state: bootstrap / create first room types.
+- Planning (room × dates): when stays exist (units-02+).
 
-## F&B UI
+## Restauration (F&B) UI
 
-- Menu: list by category, price CDF.
-- Staff queue: chronological cards with status actions (one primary action per state).
-- Guest order: menu → cart → submit; show order status after submit.
+- **Admin:** menu by category (CDF); staff create/register orders; chronological kitchen queue with one primary action per state.
+- **Client en ligne:** table reservation funnel (± food); room-service menu → cart → submit when stay exists.
 
 ## Do / don’t
 
 - Do use existing Button, Badge, Card, Table, Select from `components/ui`.
-- Do keep French labels consistent with voyage admin (tutoiement métier already in app: “Chambres”, “Séjours”, etc.).
+- Do keep French labels; explain jargon in docs (glossaire).
 - Don’t introduce purple gradient AI-landing aesthetics.
 - Don’t overlay floating promo badges on operational boards.
 - Don’t replace placeholders with another placeholder — ship real content for the unit’s screen.
+- Don’t use GSAP on dense Admin ops boards by default.

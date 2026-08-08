@@ -34,5 +34,6 @@ standards documented in the context files, update the
 relevant file before continuing.
 
 Active hotel build plan and unit specs live under
-`context/specs/`. Do not treat `context/units-branches/B10*`
-as hotel product truth.
+`context/specs/units-NN-feature.md` (see `units-00-build-plan.md`).
+Do not treat `context/units-branches/B10*` as hotel product truth.
+Explain acronyms (glossaire in `context/project-overview.md`).

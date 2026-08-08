@@ -5,6 +5,7 @@ export const ORG_ROLE_LABEL: Record<(typeof ALL_ORG_ROLE_SLUGS)[number], string>
   [ORG_ROLE.OWNER]: "Owner",
   [ORG_ROLE.GESTIONNAIRE]: "Gérant",
   [ORG_ROLE.GUICHETIER]: "Guichetier",
+  [ORG_ROLE.SERVEUR]: "Serveur",
   [ORG_ROLE.PARENT]: "Client",
 };
 

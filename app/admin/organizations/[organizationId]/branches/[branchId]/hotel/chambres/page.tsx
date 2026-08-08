@@ -1,4 +1,5 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import { hasOrganizationPermission } from "@/lib/hotel/hotel-permission";
 import { listRoomsBoard } from "@/lib/hotel/list-rooms-board";
 import { HotelRoomBoard } from "@/components/hotel/hotel-room-board";
 
@@ -13,7 +14,12 @@ export default async function HotelChambresPage({ params }: PageProps) {
     branchId,
     requireModule: "hotel",
   });
-  const board = await listRoomsBoard(branch.id);
+
+  const [board, canManageInventory, canUpdateStatus] = await Promise.all([
+    listRoomsBoard(branch.id),
+    hasOrganizationPermission(organizationId, { hotel_room: ["create"] }),
+    hasOrganizationPermission(organizationId, { hotel_room: ["update"] }),
+  ]);
 
   return (
     <HotelRoomBoard
@@ -21,6 +27,8 @@ export default async function HotelChambresPage({ params }: PageProps) {
       branchId={branch.id}
       branchName={branch.name}
       initial={board}
+      canManageInventory={canManageInventory}
+      canUpdateStatus={canUpdateStatus}
     />
   );
 }

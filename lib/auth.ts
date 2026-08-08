@@ -89,10 +89,15 @@ const authOptions = {
       },
       roles: organizationRoles,
       organizationHooks: {
+        // Règle « une seule org » pour le personnel / clients.
+        // Les admins plateforme doivent pouvoir être owner de plusieurs orgs
+        // (création successive via /admin/organizations/new).
         beforeAddMember: async ({ user, organization }) => {
+          if (isAppAdminRole(user.role)) return;
           await assertUserCanJoinOrganization(user.id, organization.id);
         },
         beforeAcceptInvitation: async ({ user, organization }) => {
+          if (isAppAdminRole(user.role)) return;
           await assertUserCanJoinOrganization(user.id, organization.id);
         },
       },

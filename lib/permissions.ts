@@ -4,8 +4,9 @@
  *
  * Mapping produit → Better Auth :
  * - Owner → `owner` (crée / supervise l’org)
- * - Gérant → `gestionnaire` (agence ; ne crée pas d’org)
- * - Guichetier → `guichetier` (vente comptoir)
+ * - Gérant → `gestionnaire` (agence / hôtel ; ne crée pas d’org)
+ * - Guichetier → `guichetier` (vente comptoir agence ; réception / caissier hôtel)
+ * - Serveur → `serveur` (restauration F&B sur place)
  * - Client → `parent` (self-service)
  */
 
@@ -35,6 +36,7 @@ export const ORG_ROLE = {
   OWNER: "owner",
   GESTIONNAIRE: "gestionnaire",
   GUICHETIER: "guichetier",
+  SERVEUR: "serveur",
   PARENT: "parent",
 } as const;
 
@@ -42,6 +44,7 @@ export const ALL_ORG_ROLE_SLUGS = [
   ORG_ROLE.OWNER,
   ORG_ROLE.GESTIONNAIRE,
   ORG_ROLE.GUICHETIER,
+  ORG_ROLE.SERVEUR,
   ORG_ROLE.PARENT,
 ] as const;
 
@@ -56,6 +59,9 @@ export const accessControlStatements = {
   rapport: ["read"],
   equipe: ["manage", "read"],
   branch: ["create", "update", "delete", "read", "assign"],
+  hotel_room: ["create", "update", "delete", "read"],
+  hotel_stay: ["create", "update", "delete", "read"],
+  hotel_fnb: ["create", "update", "delete", "read"],
 } as const;
 
 type StatementShape = {
@@ -89,6 +95,9 @@ export const organizationRoleStatements: Record<string, StatementShape> = {
     rapport: ["read"],
     equipe: ["manage", "read"],
     branch: ["create", "update", "delete", "read", "assign"],
+    hotel_room: ["create", "update", "delete", "read"],
+    hotel_stay: ["create", "update", "delete", "read"],
+    hotel_fnb: ["create", "update", "delete", "read"],
   },
   [ORG_ROLE.GESTIONNAIRE]: {
     ...organizationPluginMemberAc.statements,
@@ -100,12 +109,24 @@ export const organizationRoleStatements: Record<string, StatementShape> = {
     rapport: ["read"],
     equipe: ["manage", "read"],
     branch: ["create", "update", "read", "assign"],
+    // Hôtel gérant : board + séjours + types/tarifs + F&B + rapports légers
+    hotel_room: ["create", "update", "delete", "read"],
+    hotel_stay: ["create", "update", "delete", "read"],
+    hotel_fnb: ["create", "update", "delete", "read"],
   },
   [ORG_ROLE.GUICHETIER]: {
     ...organizationPluginMemberAc.statements,
     inscription: ["create", "share", "update"],
     depart: ["read"],
     embarquement: ["scan", "update", "read"],
+    // Hôtel réception / caissier : board + séjours (pas types/tarifs create)
+    hotel_room: ["read", "update"],
+    hotel_stay: ["create", "update", "read"],
+  },
+  [ORG_ROLE.SERVEUR]: {
+    ...organizationPluginMemberAc.statements,
+    // Restauration sur place : saisie commande + file cuisine (units-04+)
+    hotel_fnb: ["create", "update", "read"],
   },
   [ORG_ROLE.PARENT]: { ...organizationPluginMemberAc.statements },
 };

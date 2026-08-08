@@ -7,7 +7,7 @@ import { GitBranch, LogOut, Plane, UserCircle } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { menuSectionsForBranch } from "@/lib/branch/branch-menus";
+import type { ReactNode } from "react";
 import {
   branchDashboardPath,
   organizationBranchesPath,
@@ -42,6 +42,8 @@ export type BranchDashboardProps = {
   branchCode: string;
   branchType: string;
   organizationName: string;
+  /** Menu rendu côté serveur (icônes Lucide non sérialisables). */
+  children: ReactNode;
 };
 
 export function BranchDashboard({
@@ -51,6 +53,7 @@ export function BranchDashboard({
   branchCode,
   branchType,
   organizationName,
+  children,
 }: BranchDashboardProps) {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
@@ -60,7 +63,6 @@ export function BranchDashboard({
 
   const user = session?.user;
   const userName = user?.name?.trim() || user?.email || "Visiteur";
-  const sections = menuSectionsForBranch(organizationId, branchId, branchType);
   const hubHref = branchDashboardPath(organizationId, branchId);
 
   useEffect(() => {
@@ -178,53 +180,7 @@ export function BranchDashboard({
           </div>
         </div>
 
-        {sections.map((section) => {
-          const SectionIcon = section.icon;
-          return (
-            <section key={section.title} className="space-y-4">
-              <div className="flex items-center gap-2">
-                <SectionIcon className={`size-5 ${section.iconColor}`} />
-                <h3
-                  className={`text-sm font-bold tracking-wide uppercase ${section.titleColor}`}
-                >
-                  {section.title}
-                </h3>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {section.items.map((item) => {
-                  const ItemIcon = item.icon;
-                  return (
-                    <Link
-                      key={item.title}
-                      href={item.href}
-                      className={cn(
-                        "group flex items-start gap-3.5 rounded-xl border bg-card p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",
-                        item.primary
-                          ? "border-primary/50 hover:border-primary hover:shadow-primary/15"
-                          : "border-border hover:border-primary/40 hover:shadow-primary/10",
-                      )}
-                    >
-                      <div
-                        className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${item.iconBg}`}
-                      >
-                        <ItemIcon className={`size-5 ${item.iconColor}`} />
-                      </div>
-                      <div className="min-w-0 pt-0.5">
-                        <p className="font-semibold text-foreground group-hover:text-primary">
-                          {item.title}
-                        </p>
-                        <p className="mt-0.5 text-sm leading-snug text-muted-foreground">
-                          {item.description}
-                        </p>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </section>
-          );
-        })}
+        {children}
       </main>
     </div>
   );

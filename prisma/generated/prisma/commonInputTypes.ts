@@ -643,6 +643,108 @@ export type EnumHotelRoomStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumHotelRoomStatusFilter<$PrismaModel>
 }
 
+export type EnumHotelStayStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelStayStatus | Prisma.EnumHotelStayStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelStayStatus[] | Prisma.ListEnumHotelStayStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelStayStatus[] | Prisma.ListEnumHotelStayStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelStayStatusFilter<$PrismaModel> | $Enums.HotelStayStatus
+}
+
+export type EnumHotelStayStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelStayStatus | Prisma.EnumHotelStayStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelStayStatus[] | Prisma.ListEnumHotelStayStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelStayStatus[] | Prisma.ListEnumHotelStayStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelStayStatusWithAggregatesFilter<$PrismaModel> | $Enums.HotelStayStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHotelStayStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHotelStayStatusFilter<$PrismaModel>
+}
+
+export type EnumHotelFolioLineKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelFolioLineKind | Prisma.EnumHotelFolioLineKindFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelFolioLineKind[] | Prisma.ListEnumHotelFolioLineKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelFolioLineKind[] | Prisma.ListEnumHotelFolioLineKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelFolioLineKindFilter<$PrismaModel> | $Enums.HotelFolioLineKind
+}
+
+export type EnumHotelFolioLineKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelFolioLineKind | Prisma.EnumHotelFolioLineKindFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelFolioLineKind[] | Prisma.ListEnumHotelFolioLineKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelFolioLineKind[] | Prisma.ListEnumHotelFolioLineKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelFolioLineKindWithAggregatesFilter<$PrismaModel> | $Enums.HotelFolioLineKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHotelFolioLineKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHotelFolioLineKindFilter<$PrismaModel>
+}
+
+export type EnumHotelRestaurantTableStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelRestaurantTableStatus | Prisma.EnumHotelRestaurantTableStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelRestaurantTableStatus[] | Prisma.ListEnumHotelRestaurantTableStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelRestaurantTableStatus[] | Prisma.ListEnumHotelRestaurantTableStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelRestaurantTableStatusFilter<$PrismaModel> | $Enums.HotelRestaurantTableStatus
+}
+
+export type EnumHotelRestaurantTableStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelRestaurantTableStatus | Prisma.EnumHotelRestaurantTableStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelRestaurantTableStatus[] | Prisma.ListEnumHotelRestaurantTableStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelRestaurantTableStatus[] | Prisma.ListEnumHotelRestaurantTableStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelRestaurantTableStatusWithAggregatesFilter<$PrismaModel> | $Enums.HotelRestaurantTableStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHotelRestaurantTableStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHotelRestaurantTableStatusFilter<$PrismaModel>
+}
+
+export type EnumHotelTableReservationStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelTableReservationStatus | Prisma.EnumHotelTableReservationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelTableReservationStatus[] | Prisma.ListEnumHotelTableReservationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelTableReservationStatus[] | Prisma.ListEnumHotelTableReservationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelTableReservationStatusFilter<$PrismaModel> | $Enums.HotelTableReservationStatus
+}
+
+export type EnumHotelTableReservationStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelTableReservationStatus | Prisma.EnumHotelTableReservationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelTableReservationStatus[] | Prisma.ListEnumHotelTableReservationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelTableReservationStatus[] | Prisma.ListEnumHotelTableReservationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelTableReservationStatusWithAggregatesFilter<$PrismaModel> | $Enums.HotelTableReservationStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHotelTableReservationStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHotelTableReservationStatusFilter<$PrismaModel>
+}
+
+export type EnumHotelFoodOrderSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelFoodOrderSource | Prisma.EnumHotelFoodOrderSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelFoodOrderSource[] | Prisma.ListEnumHotelFoodOrderSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelFoodOrderSource[] | Prisma.ListEnumHotelFoodOrderSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelFoodOrderSourceFilter<$PrismaModel> | $Enums.HotelFoodOrderSource
+}
+
+export type EnumHotelFoodOrderStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelFoodOrderStatus | Prisma.EnumHotelFoodOrderStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelFoodOrderStatus[] | Prisma.ListEnumHotelFoodOrderStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelFoodOrderStatus[] | Prisma.ListEnumHotelFoodOrderStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelFoodOrderStatusFilter<$PrismaModel> | $Enums.HotelFoodOrderStatus
+}
+
+export type EnumHotelFoodOrderSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelFoodOrderSource | Prisma.EnumHotelFoodOrderSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelFoodOrderSource[] | Prisma.ListEnumHotelFoodOrderSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelFoodOrderSource[] | Prisma.ListEnumHotelFoodOrderSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelFoodOrderSourceWithAggregatesFilter<$PrismaModel> | $Enums.HotelFoodOrderSource
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHotelFoodOrderSourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHotelFoodOrderSourceFilter<$PrismaModel>
+}
+
+export type EnumHotelFoodOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelFoodOrderStatus | Prisma.EnumHotelFoodOrderStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelFoodOrderStatus[] | Prisma.ListEnumHotelFoodOrderStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelFoodOrderStatus[] | Prisma.ListEnumHotelFoodOrderStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelFoodOrderStatusWithAggregatesFilter<$PrismaModel> | $Enums.HotelFoodOrderStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHotelFoodOrderStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHotelFoodOrderStatusFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -1207,6 +1309,108 @@ export type NestedEnumHotelRoomStatusWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumHotelRoomStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumHotelRoomStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumHotelStayStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelStayStatus | Prisma.EnumHotelStayStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelStayStatus[] | Prisma.ListEnumHotelStayStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelStayStatus[] | Prisma.ListEnumHotelStayStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelStayStatusFilter<$PrismaModel> | $Enums.HotelStayStatus
+}
+
+export type NestedEnumHotelStayStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelStayStatus | Prisma.EnumHotelStayStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelStayStatus[] | Prisma.ListEnumHotelStayStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelStayStatus[] | Prisma.ListEnumHotelStayStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelStayStatusWithAggregatesFilter<$PrismaModel> | $Enums.HotelStayStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHotelStayStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHotelStayStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumHotelFolioLineKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelFolioLineKind | Prisma.EnumHotelFolioLineKindFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelFolioLineKind[] | Prisma.ListEnumHotelFolioLineKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelFolioLineKind[] | Prisma.ListEnumHotelFolioLineKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelFolioLineKindFilter<$PrismaModel> | $Enums.HotelFolioLineKind
+}
+
+export type NestedEnumHotelFolioLineKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelFolioLineKind | Prisma.EnumHotelFolioLineKindFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelFolioLineKind[] | Prisma.ListEnumHotelFolioLineKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelFolioLineKind[] | Prisma.ListEnumHotelFolioLineKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelFolioLineKindWithAggregatesFilter<$PrismaModel> | $Enums.HotelFolioLineKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHotelFolioLineKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHotelFolioLineKindFilter<$PrismaModel>
+}
+
+export type NestedEnumHotelRestaurantTableStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelRestaurantTableStatus | Prisma.EnumHotelRestaurantTableStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelRestaurantTableStatus[] | Prisma.ListEnumHotelRestaurantTableStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelRestaurantTableStatus[] | Prisma.ListEnumHotelRestaurantTableStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelRestaurantTableStatusFilter<$PrismaModel> | $Enums.HotelRestaurantTableStatus
+}
+
+export type NestedEnumHotelRestaurantTableStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelRestaurantTableStatus | Prisma.EnumHotelRestaurantTableStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelRestaurantTableStatus[] | Prisma.ListEnumHotelRestaurantTableStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelRestaurantTableStatus[] | Prisma.ListEnumHotelRestaurantTableStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelRestaurantTableStatusWithAggregatesFilter<$PrismaModel> | $Enums.HotelRestaurantTableStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHotelRestaurantTableStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHotelRestaurantTableStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumHotelTableReservationStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelTableReservationStatus | Prisma.EnumHotelTableReservationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelTableReservationStatus[] | Prisma.ListEnumHotelTableReservationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelTableReservationStatus[] | Prisma.ListEnumHotelTableReservationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelTableReservationStatusFilter<$PrismaModel> | $Enums.HotelTableReservationStatus
+}
+
+export type NestedEnumHotelTableReservationStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelTableReservationStatus | Prisma.EnumHotelTableReservationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelTableReservationStatus[] | Prisma.ListEnumHotelTableReservationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelTableReservationStatus[] | Prisma.ListEnumHotelTableReservationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelTableReservationStatusWithAggregatesFilter<$PrismaModel> | $Enums.HotelTableReservationStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHotelTableReservationStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHotelTableReservationStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumHotelFoodOrderSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelFoodOrderSource | Prisma.EnumHotelFoodOrderSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelFoodOrderSource[] | Prisma.ListEnumHotelFoodOrderSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelFoodOrderSource[] | Prisma.ListEnumHotelFoodOrderSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelFoodOrderSourceFilter<$PrismaModel> | $Enums.HotelFoodOrderSource
+}
+
+export type NestedEnumHotelFoodOrderStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelFoodOrderStatus | Prisma.EnumHotelFoodOrderStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelFoodOrderStatus[] | Prisma.ListEnumHotelFoodOrderStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelFoodOrderStatus[] | Prisma.ListEnumHotelFoodOrderStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelFoodOrderStatusFilter<$PrismaModel> | $Enums.HotelFoodOrderStatus
+}
+
+export type NestedEnumHotelFoodOrderSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelFoodOrderSource | Prisma.EnumHotelFoodOrderSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelFoodOrderSource[] | Prisma.ListEnumHotelFoodOrderSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelFoodOrderSource[] | Prisma.ListEnumHotelFoodOrderSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelFoodOrderSourceWithAggregatesFilter<$PrismaModel> | $Enums.HotelFoodOrderSource
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHotelFoodOrderSourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHotelFoodOrderSourceFilter<$PrismaModel>
+}
+
+export type NestedEnumHotelFoodOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelFoodOrderStatus | Prisma.EnumHotelFoodOrderStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelFoodOrderStatus[] | Prisma.ListEnumHotelFoodOrderStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelFoodOrderStatus[] | Prisma.ListEnumHotelFoodOrderStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelFoodOrderStatusWithAggregatesFilter<$PrismaModel> | $Enums.HotelFoodOrderStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHotelFoodOrderStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHotelFoodOrderStatusFilter<$PrismaModel>
 }
 
 
