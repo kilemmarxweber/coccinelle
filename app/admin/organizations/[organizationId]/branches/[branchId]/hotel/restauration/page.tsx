@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import {
   ensureHotelMenuSeedAction,
@@ -8,10 +9,15 @@ import { RestaurationClient } from "./restauration-client";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
+  searchParams: Promise<{ view?: string }>;
 };
 
-export default async function RestaurationPage({ params }: PageProps) {
+export default async function RestaurationPage({
+  params,
+  searchParams,
+}: PageProps) {
   const { organizationId, branchId } = await params;
+  const { view } = await searchParams;
   await requireBranchContext({
     organizationId,
     branchId,
@@ -30,11 +36,14 @@ export default async function RestaurationPage({ params }: PageProps) {
     ]),
   ]);
   return (
-    <RestaurationClient
-      organizationId={organizationId}
-      branchId={branchId}
-      menuItems={menuItems}
-      orders={orders}
-    />
+    <Suspense fallback={null}>
+      <RestaurationClient
+        organizationId={organizationId}
+        branchId={branchId}
+        menuItems={menuItems}
+        orders={orders}
+        initialView={view === "suivi" ? "suivi" : undefined}
+      />
+    </Suspense>
   );
 }

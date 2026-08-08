@@ -1,5 +1,6 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import {
+  applyLateCheckoutFeesAction,
   listRoomsWithTypesAction,
   listStaysForMonthAction,
   listStaysForYearAction,
@@ -19,6 +20,9 @@ export default async function SejoursPage({ params, searchParams }: PageProps) {
     branchId,
     requireModule: "hotel",
   });
+
+  // Nuitée auto si occupant encore présent après 10h le jour de sortie
+  await applyLateCheckoutFeesAction(organizationId, branchId);
 
   const now = new Date();
   const year = Number(sp.year) || now.getFullYear();

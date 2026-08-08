@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { GitBranch } from "lucide-react";
 import { DashboardNavbar } from "@/components/layout/dashboard-navbar";
+import { BranchNotificationsBell } from "@/components/layout/branch-notifications-bell";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { canAccessBranch } from "@/lib/branch/user-branches";
@@ -49,18 +50,26 @@ export default async function BranchWorkspaceLayout({
         subtitle={`${branch.organizationName} · ${typeLabel(branch.type)} · ${branch.code}`}
         titleHref={branchDashboardPath(organizationId, branchId)}
         actions={
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="hidden gap-1.5 sm:inline-flex"
-            render={
-              <Link href={organizationBranchesPath(organizationId)} />
-            }
-          >
-            <GitBranch className="size-3.5" />
-            Branches
-          </Button>
+          <div className="flex items-center gap-2">
+            {branch.type === "HOTEL" ? (
+              <BranchNotificationsBell
+                organizationId={organizationId}
+                branchId={branchId}
+              />
+            ) : null}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="hidden gap-1.5 sm:inline-flex"
+              render={
+                <Link href={organizationBranchesPath(organizationId)} />
+              }
+            >
+              <GitBranch className="size-3.5" />
+              Branches
+            </Button>
+          </div>
         }
       />
       {children}

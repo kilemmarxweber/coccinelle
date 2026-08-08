@@ -6,6 +6,8 @@ import { auth } from "@/lib/auth";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { branchBasePath } from "@/lib/branch/paths";
 import prisma from "@/lib/prisma";
+import { DEFAULT_HOTEL_MENU } from "@/lib/hotel/default-menu";
+import { HOTEL_CHECKOUT_HOUR } from "@/lib/hotel/constants";
 
 async function ctx(organizationId: string, branchId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -35,6 +37,16 @@ function revalidateHotel(organizationId: string, branchId: string) {
 function nightsBetween(checkIn: Date, checkOut: Date) {
   const ms = checkOut.getTime() - checkIn.getTime();
   return Math.max(1, Math.ceil(ms / (1000 * 60 * 60 * 24)));
+}
+
+function startOfUtcDay(d: Date) {
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+}
+
+function parseDateOnly(value: string | Date) {
+  if (value instanceof Date) return startOfUtcDay(value);
+  const [y, m, day] = value.slice(0, 10).split("-").map(Number);
+  return new Date(Date.UTC(y!, (m ?? 1) - 1, day ?? 1));
 }
 
 export async function listRoomsWithTypesAction(
@@ -79,7 +91,7 @@ export async function listStaysForMonthAction(
   return prisma.hotelStay.findMany({
     where: {
       branchId,
-      status: { notIn: ["CANCELLED"] },
+      status: { notIn: ["CANCELLED", "NO_SHOW"] },
       checkInDate: { lt: end },
       checkOutDate: { gt: start },
     },
@@ -181,6 +193,15 @@ export async function createStayAction(input: {
         },
       },
     });
+    await tx.branchNotification.create({
+      data: {
+        branchId: input.branchId,
+        title: "Nouvelle réservation",
+        body: `${input.guestName.trim()} · ch. ${room.number}`,
+        kind: "stay_reserved",
+        href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/sejours`,
+      },
+    });
     return s;
   });
 
@@ -209,6 +230,15 @@ export async function checkInStayAction(input: {
       where: { id: stay.roomId },
       data: { status: "OCCUPIED" },
     }),
+    prisma.branchNotification.create({
+      data: {
+        branchId: input.branchId,
+        title: "Check-in effectué",
+        body: `${stay.guestName} vient d’arriver`,
+        kind: "stay_checkin",
+        href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/sejours`,
+      },
+    }),
   ]);
   revalidateHotel(input.organizationId, input.branchId);
 }
@@ -219,6 +249,9 @@ export async function checkOutStayAction(input: {
   stayId: string;
 }) {
   await ctx(input.organizationId, input.branchId);
+  // Applique d’abord toute nuitée retard (>10h) avant calcul du solde
+  await applyLateCheckoutFeesAction(input.organizationId, input.branchId);
+
   const stay = await prisma.hotelStay.findFirst({
     where: { id: input.stayId, branchId: input.branchId },
     include: {
@@ -232,6 +265,15 @@ export async function checkOutStayAction(input: {
   const paid = stay.folio?.payments.reduce((s, p) => s + p.amountCdf, 0) ?? 0;
   const balance = charges - paid;
   if (balance > 0.01) {
+    await prisma.branchNotification.create({
+      data: {
+        branchId: input.branchId,
+        title: "Check-out — solde à encaisser",
+        body: `${stay.guestName} · solde ${balance.toFixed(2)}`,
+        kind: "stay_checkout_due",
+        href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/caisse`,
+      },
+    });
     return {
       ok: false as const,
       needsPayment: true,
@@ -257,9 +299,204 @@ export async function checkOutStayAction(input: {
           }),
         ]
       : []),
+    prisma.branchNotification.create({
+      data: {
+        branchId: input.branchId,
+        title: "Check-out terminé",
+        body: `${stay.guestName} a quitté l’établissement`,
+        kind: "stay_checkout",
+        href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/sejours`,
+      },
+    }),
   ]);
   revalidateHotel(input.organizationId, input.branchId);
   return { ok: true as const, needsPayment: false, balance: 0, folioId: null };
+}
+
+/**
+ * Prolongation de séjour : décale la date de sortie et facture les nuitées ajoutées.
+ */
+export async function extendStayAction(input: {
+  organizationId: string;
+  branchId: string;
+  stayId: string;
+  newCheckOutDate: string;
+}) {
+  await ctx(input.organizationId, input.branchId);
+  const stay = await prisma.hotelStay.findFirst({
+    where: { id: input.stayId, branchId: input.branchId },
+    include: {
+      room: { include: { roomType: true } },
+      folio: { include: { lines: true } },
+    },
+  });
+  if (!stay) throw new Error("Séjour introuvable.");
+  if (stay.status !== "RESERVED" && stay.status !== "CHECKED_IN") {
+    throw new Error("Séjour non prolongeable.");
+  }
+
+  const currentOut = parseDateOnly(stay.checkOutDate);
+  const newOut = parseDateOnly(input.newCheckOutDate);
+  if (!(newOut > currentOut)) {
+    throw new Error("La nouvelle date de sortie doit être après la sortie actuelle.");
+  }
+
+  const overlap = await prisma.hotelStay.findFirst({
+    where: {
+      roomId: stay.roomId,
+      id: { not: stay.id },
+      status: { in: ["RESERVED", "CHECKED_IN"] },
+      checkInDate: { lt: newOut },
+      checkOutDate: { gt: currentOut },
+    },
+  });
+  if (overlap) {
+    throw new Error("Chambre déjà réservée sur la période de prolongation.");
+  }
+
+  const extraNights = nightsBetween(currentOut, newOut);
+  const unit = stay.room.roomType.priceNight;
+  const amount = extraNights * unit;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.hotelStay.update({
+      where: { id: stay.id },
+      data: { checkOutDate: newOut },
+    });
+    if (stay.folio) {
+      await tx.folioLine.create({
+        data: {
+          folioId: stay.folio.id,
+          kind: "NIGHT",
+          description: `Prolongation · ${extraNights} nuit(s) · ch. ${stay.room.number}`,
+          quantity: extraNights,
+          unitPrice: unit,
+          amount,
+        },
+      });
+      await tx.folio.update({
+        where: { id: stay.folio.id },
+        data: { closed: false },
+      });
+    }
+    await tx.branchNotification.create({
+      data: {
+        branchId: input.branchId,
+        title: "Séjour prolongé",
+        body: `${stay.guestName} · +${extraNights} nuit(s) · ch. ${stay.room.number}`,
+        kind: "stay_extended",
+        href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/sejours`,
+      },
+    });
+  });
+
+  revalidateHotel(input.organizationId, input.branchId);
+  return { extraNights, amount, newCheckOutDate: newOut.toISOString().slice(0, 10) };
+}
+
+/**
+ * Si le client est encore présent après 10h le jour de checkout,
+ * facture une nuitée supplémentaire et décale la sortie d’un jour.
+ */
+export async function applyLateCheckoutFeesAction(
+  organizationId: string,
+  branchId: string,
+) {
+  await ctx(organizationId, branchId);
+  const now = new Date();
+  if (now.getHours() < HOTEL_CHECKOUT_HOUR) {
+    return { charged: 0 };
+  }
+
+  const today = startOfUtcDay(
+    new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())),
+  );
+  const tomorrow = new Date(today);
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+
+  const stays = await prisma.hotelStay.findMany({
+    where: {
+      branchId,
+      status: "CHECKED_IN",
+      checkOutDate: { lte: today },
+    },
+    include: {
+      room: { include: { roomType: true } },
+      folio: { include: { lines: true } },
+    },
+  });
+
+  let charged = 0;
+  for (const stay of stays) {
+    if (!stay.folio) continue;
+    const marker = `Retard checkout >${HOTEL_CHECKOUT_HOUR}h · ${today.toISOString().slice(0, 10)}`;
+    const already = stay.folio.lines.some((l) => l.description.includes(marker));
+    if (already) continue;
+
+    const unit = stay.room.roomType.priceNight;
+    const newOut =
+      parseDateOnly(stay.checkOutDate) < tomorrow
+        ? tomorrow
+        : new Date(parseDateOnly(stay.checkOutDate).getTime() + 86400000);
+
+    // Évite conflit si une autre résa commence demain
+    const overlap = await prisma.hotelStay.findFirst({
+      where: {
+        roomId: stay.roomId,
+        id: { not: stay.id },
+        status: { in: ["RESERVED", "CHECKED_IN"] },
+        checkInDate: { lt: newOut },
+        checkOutDate: { gt: parseDateOnly(stay.checkOutDate) },
+      },
+    });
+    if (overlap) {
+      // Facture quand même la nuitée retard sans décaler si conflit — description seule
+      await prisma.folioLine.create({
+        data: {
+          folioId: stay.folio.id,
+          kind: "NIGHT",
+          description: `${marker} · ch. ${stay.room.number} (sans prolongation — conflit résa)`,
+          quantity: 1,
+          unitPrice: unit,
+          amount: unit,
+        },
+      });
+    } else {
+      await prisma.$transaction([
+        prisma.hotelStay.update({
+          where: { id: stay.id },
+          data: { checkOutDate: newOut },
+        }),
+        prisma.folioLine.create({
+          data: {
+            folioId: stay.folio.id,
+            kind: "NIGHT",
+            description: `${marker} · ch. ${stay.room.number}`,
+            quantity: 1,
+            unitPrice: unit,
+            amount: unit,
+          },
+        }),
+        prisma.folio.update({
+          where: { id: stay.folio.id },
+          data: { closed: false },
+        }),
+        prisma.branchNotification.create({
+          data: {
+            branchId,
+            title: "Nuitée retard checkout",
+            body: `${stay.guestName} · ch. ${stay.room.number} · +1 nuit (${unit})`,
+            kind: "stay_late_checkout",
+            href: `/admin/organizations/${organizationId}/branches/${branchId}/caisse`,
+          },
+        }),
+      ]);
+    }
+    charged += 1;
+  }
+
+  if (charged > 0) revalidateHotel(organizationId, branchId);
+  return { charged };
 }
 
 export async function listMenuItemsAction(
@@ -278,40 +515,17 @@ export async function ensureHotelMenuSeedAction(
   branchId: string,
 ) {
   await ctx(organizationId, branchId);
-  const count = await prisma.hotelMenuItem.count({ where: { branchId } });
-  if (count > 0) return;
-  await prisma.hotelMenuItem.createMany({
-    data: [
-      {
-        branchId,
-        name: "Petit-déjeuner",
-        category: "Restauration",
-        price: 12,
-        needsKitchen: true,
-      },
-      {
-        branchId,
-        name: "Plat du jour",
-        category: "Restauration",
-        price: 18,
-        needsKitchen: true,
-      },
-      {
-        branchId,
-        name: "Eau minérale",
-        category: "Boissons",
-        price: 1.5,
-        needsKitchen: false,
-      },
-      {
-        branchId,
-        name: "Jus local",
-        category: "Boissons",
-        price: 2.5,
-        needsKitchen: false,
-      },
-    ],
+  const existing = await prisma.hotelMenuItem.findMany({
+    where: { branchId },
+    select: { name: true },
   });
+  const known = new Set(existing.map((e) => e.name));
+  const missing = DEFAULT_HOTEL_MENU.filter((item) => !known.has(item.name));
+  if (missing.length > 0) {
+    await prisma.hotelMenuItem.createMany({
+      data: missing.map((item) => ({ branchId, ...item })),
+    });
+  }
   const rate = await prisma.exchangeRate.count({ where: { branchId } });
   if (rate === 0) {
     await prisma.exchangeRate.create({
@@ -428,7 +642,7 @@ export async function advanceHotelOrderAction(input: {
         href:
           input.to === "PRETE" || input.to === "EN_CAISSE"
             ? `/admin/organizations/${input.organizationId}/branches/${input.branchId}/caisse`
-            : `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/restauration`,
+            : `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/restauration?view=suivi`,
       },
     }),
   ]);
@@ -453,7 +667,10 @@ export async function listOrdersByStatusAction(
   await ctx(organizationId, branchId);
   return prisma.hotelOrder.findMany({
     where: { branchId, status: { in: statuses } },
-    include: { items: true, stay: true },
+    include: {
+      items: true,
+      stay: { include: { room: true } },
+    },
     orderBy: { updatedAt: "desc" },
     take: 80,
   });
@@ -474,13 +691,82 @@ export async function listNotificationsAction(
 export async function markNotificationsReadAction(
   organizationId: string,
   branchId: string,
+  ids?: string[],
 ) {
   await ctx(organizationId, branchId);
   await prisma.branchNotification.updateMany({
-    where: { branchId, readAt: null },
+    where: {
+      branchId,
+      readAt: null,
+      ...(ids?.length ? { id: { in: ids } } : {}),
+    },
     data: { readAt: new Date() },
   });
-  revalidateHotel(organizationId, branchId);
+}
+
+export async function getBranchAlertFeedAction(
+  organizationId: string,
+  branchId: string,
+) {
+  await ctx(organizationId, branchId);
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 1);
+
+  const [notifications, unreadCount, kitchenOrders, readyOrders, toDeliver, arrivals, departures] =
+    await Promise.all([
+      prisma.branchNotification.findMany({
+        where: { branchId },
+        orderBy: { createdAt: "desc" },
+        take: 25,
+      }),
+      prisma.branchNotification.count({
+        where: { branchId, readAt: null },
+      }),
+      prisma.hotelOrder.count({
+        where: {
+          branchId,
+          status: { in: ["ENVOYEE", "EN_PREPARATION"] },
+        },
+      }),
+      prisma.hotelOrder.count({
+        where: { branchId, status: { in: ["PRETE", "EN_CAISSE"] } },
+      }),
+      prisma.hotelOrder.count({
+        where: { branchId, status: "PAYEE" },
+      }),
+      prisma.hotelStay.count({
+        where: {
+          branchId,
+          status: "RESERVED",
+          checkInDate: { gte: start, lt: end },
+        },
+      }),
+      prisma.hotelStay.count({
+        where: {
+          branchId,
+          status: "CHECKED_IN",
+          checkOutDate: { gte: start, lt: end },
+        },
+      }),
+    ]);
+
+  const attention =
+    kitchenOrders + readyOrders + toDeliver + arrivals + departures + unreadCount;
+
+  return {
+    notifications,
+    unreadCount,
+    attention,
+    ops: {
+      kitchenOrders,
+      readyOrders,
+      toDeliver,
+      arrivals,
+      departures,
+    },
+  };
 }
 
 export async function getHotelDashboardKpisAction(
@@ -520,7 +806,9 @@ export async function createQuickSaleAction(input: {
   items: { menuItemId: string; quantity: number }[];
   method: "CASH" | "MOBILE_MONEY" | "CARTE";
 }) {
-  const { createPaymentAction } = await import("@/lib/cash/actions");
+  const { createPaymentAction, getActiveExchangeRate } = await import(
+    "@/lib/cash/actions"
+  );
   const { user } = await ctx(input.organizationId, input.branchId);
   if (!input.items.length) throw new Error("Panier vide.");
 
@@ -532,15 +820,18 @@ export async function createQuickSaleAction(input: {
     },
   });
   const byId = new Map(menu.map((m) => [m.id, m]));
-  let total = 0;
+  let totalUsd = 0;
   const lines = input.items.map((i) => {
     const m = byId.get(i.menuItemId);
     if (!m) throw new Error("Article invalide.");
     const qty = Math.max(1, i.quantity);
     const amount = m.price * qty;
-    total += amount;
+    totalUsd += amount;
     return { m, qty, amount };
   });
+
+  const rate = await getActiveExchangeRate(input.branchId);
+  const amountCdf = rate ? totalUsd * rate.rate : totalUsd;
 
   const folio = await prisma.folio.create({
     data: {
@@ -561,7 +852,8 @@ export async function createQuickSaleAction(input: {
   const payment = await createPaymentAction({
     organizationId: input.organizationId,
     branchId: input.branchId,
-    amountCdf: total,
+    amountCdf,
+    amountForeign: totalUsd,
     method: input.method,
     folioId: folio.id,
     note: `Vente rapide par ${user.name ?? user.email}`,

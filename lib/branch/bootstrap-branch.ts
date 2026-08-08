@@ -3,6 +3,7 @@
  */
 
 import type { PrismaClient, BranchType } from "../../prisma/generated/prisma/client";
+import { DEFAULT_HOTEL_MENU } from "@/lib/hotel/default-menu";
 
 type Db = PrismaClient | Parameters<Parameters<PrismaClient["$transaction"]>[0]>[0];
 
@@ -121,43 +122,10 @@ export async function bootstrapBranchByType(
     result.roomsCreated = standard.rooms.length + suite.rooms.length;
 
     await db.hotelMenuItem.createMany({
-      data: [
-        {
-          branchId: input.branchId,
-          name: "Petit-déjeuner",
-          category: "Restauration",
-          price: 12,
-          needsKitchen: true,
-        },
-        {
-          branchId: input.branchId,
-          name: "Plat du jour",
-          category: "Restauration",
-          price: 18,
-          needsKitchen: true,
-        },
-        {
-          branchId: input.branchId,
-          name: "Eau minérale",
-          category: "Boissons",
-          price: 1.5,
-          needsKitchen: false,
-        },
-        {
-          branchId: input.branchId,
-          name: "Jus local",
-          category: "Boissons",
-          price: 2.5,
-          needsKitchen: false,
-        },
-        {
-          branchId: input.branchId,
-          name: "Bière locale",
-          category: "Boissons",
-          price: 3,
-          needsKitchen: false,
-        },
-      ],
+      data: DEFAULT_HOTEL_MENU.map((item) => ({
+        branchId: input.branchId,
+        ...item,
+      })),
     });
 
     await db.exchangeRate.create({

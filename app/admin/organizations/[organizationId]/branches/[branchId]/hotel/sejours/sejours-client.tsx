@@ -7,11 +7,22 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   checkInStayAction,
   checkOutStayAction,
   createStayAction,
+  extendStayAction,
 } from "@/lib/hotel/actions";
+import { HOTEL_CHECKOUT_HOUR } from "@/lib/hotel/constants";
 import { branchCaissePath } from "@/lib/branch/paths";
 import { cn } from "@/lib/utils";
 
@@ -29,8 +40,15 @@ type Stay = {
   checkOutDate: string | Date;
   status: string;
   roomId: string;
-  room: { number: string; roomType: { name: string } };
-  folio: { id: string; lines: { amount: number }[]; payments?: { amountCdf: number }[] } | null;
+  room: {
+    number: string;
+    roomType: { name: string; priceNight: number };
+  };
+  folio: {
+    id: string;
+    lines: { amount: number; description?: string }[];
+    payments?: { amountCdf: number }[];
+  } | null;
 };
 
 type YearStay = {
@@ -56,12 +74,76 @@ const MONTHS = [
   "Décembre",
 ];
 
+const STATUS_LABEL: Record<string, string> = {
+  RESERVED: "Réservé",
+  CHECKED_IN: "Occupé",
+  CHECKED_OUT: "Terminé",
+  CANCELLED: "Annulé",
+  NO_SHOW: "No-show",
+};
+
 function toDateKey(d: Date) {
   return d.toISOString().slice(0, 10);
 }
 
+function asUtcDay(value: string | Date) {
+  if (value instanceof Date) {
+    return new Date(
+      Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()),
+    );
+  }
+  const [y, m, day] = value.slice(0, 10).split("-").map(Number);
+  return new Date(Date.UTC(y!, (m ?? 1) - 1, day ?? 1));
+}
+
+function nightsBetween(checkIn: Date, checkOut: Date) {
+  return Math.max(
+    1,
+    Math.ceil((checkOut.getTime() - checkIn.getTime()) / 86400000),
+  );
+}
+
 function daysInMonth(year: number, month: number) {
   return new Date(year, month, 0).getDate();
+}
+
+function stayMetrics(stay: Stay, now = new Date()) {
+  const checkIn = asUtcDay(stay.checkInDate);
+  const checkOut = asUtcDay(stay.checkOutDate);
+  const today = new Date(
+    Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()),
+  );
+  const totalNights = nightsBetween(checkIn, checkOut);
+  const elapsed =
+    stay.status === "CHECKED_IN" || stay.status === "CHECKED_OUT"
+      ? Math.max(
+          0,
+          Math.min(
+            totalNights,
+            Math.floor((today.getTime() - checkIn.getTime()) / 86400000),
+          ),
+        )
+      : 0;
+  const remaining = Math.max(
+    0,
+    Math.ceil((checkOut.getTime() - today.getTime()) / 86400000),
+  );
+  const isCheckoutDay = toDateKey(today) === toDateKey(checkOut);
+  const pastCheckoutDay = today.getTime() >= checkOut.getTime();
+  const lateAfter10 =
+    stay.status === "CHECKED_IN" &&
+    pastCheckoutDay &&
+    now.getHours() >= HOTEL_CHECKOUT_HOUR;
+
+  return {
+    totalNights,
+    elapsed,
+    remaining,
+    isCheckoutDay,
+    lateAfter10,
+    checkIn,
+    checkOut,
+  };
 }
 
 export function SejoursClient(props: {
@@ -85,6 +167,8 @@ export function SejoursClient(props: {
     checkInDate: "",
     checkOutDate: "",
   });
+  const [extendStayId, setExtendStayId] = useState<string | null>(null);
+  const [extendDate, setExtendDate] = useState("");
 
   const todayKey = toDateKey(new Date());
   const dim = daysInMonth(year, month);
@@ -93,12 +177,27 @@ export function SejoursClient(props: {
     [dim],
   );
 
+  const activeStays = useMemo(
+    () =>
+      props.stays
+        .filter((s) => s.status === "RESERVED" || s.status === "CHECKED_IN")
+        .sort(
+          (a, b) =>
+            asUtcDay(a.checkOutDate).getTime() -
+            asUtcDay(b.checkOutDate).getTime(),
+        ),
+    [props.stays],
+  );
+
+  const extendTarget = useMemo(
+    () => activeStays.find((s) => s.id === extendStayId) ?? null,
+    [activeStays, extendStayId],
+  );
+
   function navigate(y: number, m: number) {
     setYear(y);
     setMonth(m);
-    router.push(
-      `?year=${y}&month=${m}`,
-    );
+    router.push(`?year=${y}&month=${m}`);
     router.refresh();
   }
 
@@ -111,12 +210,15 @@ export function SejoursClient(props: {
     const key = toDateKey(cell);
     const outKey = toDateKey(end);
     const inKey = toDateKey(start);
-    const isCheckoutDay = key === outKey || (key < outKey && day === dim && end > cell);
-    // Checkout day = last night ends morning of checkout — paint checkout date cell red when cell is checkout date-1... Plan says checkout day in red. Use checkOutDate day as red marker on the day before or on checkout date. We'll mark the checkout date column as red tip.
-    const isOut = toDateKey(new Date(Date.UTC(year, month - 1, day))) === outKey;
+    const isOut = key === outKey;
     const isIn = key === inKey;
+    const isHistory = stay.status === "CHECKED_OUT";
 
     if (isOut) return "bg-red-500 text-white";
+    if (isHistory) {
+      if (isIn) return "bg-slate-400/80 text-white";
+      return "bg-slate-400/35 text-muted-foreground";
+    }
     if (isIn) return "bg-orange-500 text-white";
     if (stay.status === "CHECKED_IN") return "bg-sky-500/80 text-white";
     return "bg-sky-500/40 text-foreground";
@@ -176,6 +278,35 @@ export function SejoursClient(props: {
     });
   }
 
+  function openExtend(stay: Stay) {
+    const out = asUtcDay(stay.checkOutDate);
+    const next = new Date(out);
+    next.setUTCDate(next.getUTCDate() + 1);
+    setExtendStayId(stay.id);
+    setExtendDate(toDateKey(next));
+  }
+
+  function confirmExtend() {
+    if (!extendStayId || !extendDate) return;
+    start(async () => {
+      try {
+        const res = await extendStayAction({
+          organizationId: props.organizationId,
+          branchId: props.branchId,
+          stayId: extendStayId,
+          newCheckOutDate: extendDate,
+        });
+        toast.success(
+          `Prolongé · +${res.extraNights} nuit(s) · ${res.amount.toFixed(2)}`,
+        );
+        setExtendStayId(null);
+        router.refresh();
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Erreur");
+      }
+    });
+  }
+
   const occupancyByMonth = useMemo(() => {
     return MONTHS.map((_, mi) => {
       const start = new Date(Date.UTC(year, mi, 1));
@@ -199,8 +330,12 @@ export function SejoursClient(props: {
         <div>
           <h1 className="text-2xl font-bold">Séjours</h1>
           <p className="text-sm text-muted-foreground">
-            Planning chambres · checkout du jour en{" "}
+            Planning · checkout{" "}
             <span className="font-semibold text-red-500">rouge</span>
+            {" · "}historique{" "}
+            <span className="font-semibold text-slate-500">gris</span>
+            {" · "}libération chambre à{" "}
+            <span className="font-semibold">{HOTEL_CHECKOUT_HOUR}h</span>
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -340,7 +475,9 @@ export function SejoursClient(props: {
                                 : style,
                             )}
                           >
-                            {covering && cellKey === toDateKey(new Date(covering.checkInDate))
+                            {covering &&
+                            cellKey ===
+                              toDateKey(new Date(covering.checkInDate))
                               ? covering.guestName.slice(0, 2)
                               : isCheckoutMarker
                                 ? "OUT"
@@ -357,15 +494,17 @@ export function SejoursClient(props: {
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-3">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+        <section className="space-y-3 rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h2 className="font-semibold">Nouvelle réservation</h2>
           <div className="grid gap-1.5">
             <Label>Chambre</Label>
             <select
               className="h-10 rounded-md border border-border bg-background px-3 text-sm"
               value={form.roomId}
-              onChange={(e) => setForm((f) => ({ ...f, roomId: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, roomId: e.target.value }))
+              }
             >
               {props.rooms.map((r) => (
                 <option key={r.id} value={r.id}>
@@ -416,84 +555,211 @@ export function SejoursClient(props: {
             </div>
           </div>
           <Button
-            disabled={pending || !form.guestName || !form.checkInDate || !form.checkOutDate}
+            disabled={
+              pending ||
+              !form.guestName ||
+              !form.checkInDate ||
+              !form.checkOutDate
+            }
             onClick={create}
           >
             Réserver
           </Button>
         </section>
 
-        <section className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-3">
-          <h2 className="font-semibold">Actions du jour</h2>
-          {props.stays.filter(
-            (s) =>
-              s.status === "RESERVED" || s.status === "CHECKED_IN",
-          ).length === 0 ? (
+        <section className="space-y-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 className="font-semibold">Séjours actifs</h2>
+              <p className="text-xs text-muted-foreground">
+                Statut, durée, jours restants · libération à {HOTEL_CHECKOUT_HOUR}
+                h sinon +1 nuitée
+              </p>
+            </div>
+            <Badge variant="secondary">{activeStays.length}</Badge>
+          </div>
+
+          {activeStays.length === 0 ? (
             <p className="text-sm text-muted-foreground">Aucun séjour actif.</p>
           ) : (
-            props.stays
-              .filter((s) => s.status === "RESERVED" || s.status === "CHECKED_IN")
-              .map((s) => {
+            <ul className="space-y-3">
+              {activeStays.map((s) => {
+                const m = stayMetrics(s);
                 const charges =
                   s.folio?.lines.reduce((a, l) => a + l.amount, 0) ?? 0;
                 const paid =
                   s.folio?.payments?.reduce((a, p) => a + p.amountCdf, 0) ?? 0;
                 const balance = charges - paid;
                 return (
-                  <div
+                  <li
                     key={s.id}
-                    className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border px-3 py-2 text-sm"
+                    className={cn(
+                      "rounded-xl border px-3 py-3 text-sm",
+                      m.lateAfter10
+                        ? "border-rose-500/40 bg-rose-500/5"
+                        : m.isCheckoutDay
+                          ? "border-amber-500/40 bg-amber-500/5"
+                          : "border-border bg-muted/15",
+                    )}
                   >
-                    <div>
-                      <p className="font-medium">
-                        {s.guestName} · ch. {s.room.number}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {s.status} · solde {balance.toFixed(2)}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      {s.status === "RESERVED" ? (
-                        <Button
-                          size="sm"
-                          disabled={pending}
-                          onClick={() => checkIn(s.id)}
-                        >
-                          Check-in
-                        </Button>
-                      ) : (
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          disabled={pending}
-                          onClick={() => checkOut(s.id)}
-                        >
-                          Check-out
-                        </Button>
-                      )}
-                      {balance > 0 ? (
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="min-w-0 space-y-1">
+                        <p className="font-semibold">
+                          {s.guestName} · ch. {s.room.number}
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          <Badge
+                            variant={
+                              s.status === "CHECKED_IN" ? "default" : "secondary"
+                            }
+                          >
+                            {STATUS_LABEL[s.status] ?? s.status}
+                          </Badge>
+                          <Badge variant="outline">
+                            {m.totalNights} jour
+                            {m.totalNights > 1 ? "s" : ""}
+                          </Badge>
+                          <Badge variant="outline">
+                            {m.remaining} restant
+                            {m.remaining > 1 ? "s" : ""}
+                          </Badge>
+                          {m.lateAfter10 ? (
+                            <Badge variant="destructive">
+                              Après {HOTEL_CHECKOUT_HOUR}h · nuitée due
+                            </Badge>
+                          ) : m.isCheckoutDay ? (
+                            <Badge variant="destructive">
+                              Départ aujourd’hui · avant {HOTEL_CHECKOUT_HOUR}h
+                            </Badge>
+                          ) : null}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {toDateKey(m.checkIn)} → {toDateKey(m.checkOut)}
+                          {s.status === "CHECKED_IN"
+                            ? ` · ${m.elapsed} nuit(s) écoulée(s)`
+                            : ""}
+                          {" · "}
+                          solde {balance.toFixed(2)} ·{" "}
+                          {s.room.roomType.priceNight}/nuit
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {s.status === "RESERVED" ? (
+                          <Button
+                            size="sm"
+                            disabled={pending}
+                            onClick={() => checkIn(s.id)}
+                          >
+                            Check-in
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            disabled={pending}
+                            onClick={() => checkOut(s.id)}
+                          >
+                            Check-out
+                          </Button>
+                        )}
                         <Button
                           size="sm"
                           variant="outline"
-                          render={
-                            <Link
-                              href={branchCaissePath(
-                                props.organizationId,
-                                props.branchId,
-                              )}
-                            />
-                          }
+                          disabled={pending}
+                          onClick={() => openExtend(s)}
                         >
-                          Caisse
+                          Prolongation
                         </Button>
-                      ) : null}
+                        {balance > 0.01 ? (
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            render={
+                              <Link
+                                href={branchCaissePath(
+                                  props.organizationId,
+                                  props.branchId,
+                                )}
+                              />
+                            }
+                          >
+                            Caisse
+                          </Button>
+                        ) : null}
+                      </div>
                     </div>
-                  </div>
+                  </li>
                 );
-              })
+              })}
+            </ul>
           )}
         </section>
       </div>
+
+      <Dialog
+        open={!!extendTarget}
+        onOpenChange={(open) => {
+          if (!open) setExtendStayId(null);
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Prolonger le séjour</DialogTitle>
+            <DialogDescription>
+              {extendTarget
+                ? `${extendTarget.guestName} · ch. ${extendTarget.room.number} — les nuitées ajoutées sont facturées au folio.`
+                : null}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-2 py-2">
+            <Label htmlFor="extend-date">Nouvelle date de sortie</Label>
+            <Input
+              id="extend-date"
+              type="date"
+              value={extendDate}
+              min={
+                extendTarget
+                  ? toDateKey(
+                      new Date(
+                        asUtcDay(extendTarget.checkOutDate).getTime() + 86400000,
+                      ),
+                    )
+                  : undefined
+              }
+              onChange={(e) => setExtendDate(e.target.value)}
+            />
+            {extendTarget && extendDate ? (
+              <p className="text-xs text-muted-foreground">
+                +
+                {nightsBetween(
+                  asUtcDay(extendTarget.checkOutDate),
+                  asUtcDay(extendDate),
+                )}{" "}
+                nuit(s) ·{" "}
+                {(
+                  nightsBetween(
+                    asUtcDay(extendTarget.checkOutDate),
+                    asUtcDay(extendDate),
+                  ) * extendTarget.room.roomType.priceNight
+                ).toFixed(2)}{" "}
+                à facturer
+              </p>
+            ) : null}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setExtendStayId(null)}
+              disabled={pending}
+            >
+              Annuler
+            </Button>
+            <Button disabled={pending || !extendDate} onClick={confirmExtend}>
+              Confirmer la prolongation
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -176,7 +176,7 @@ export async function createPaymentAction(input: {
           title: "Commande payée",
           body: `Commande encaissée (${receiptNumber}). À livrer.`,
           kind: "order_paid",
-          href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/restauration`,
+          href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/restauration?view=suivi`,
         },
       });
     }
@@ -226,8 +226,11 @@ export async function listReadyOrdersAction(
   await ctx(organizationId, branchId);
   return prisma.hotelOrder.findMany({
     where: { branchId, status: { in: ["PRETE", "EN_CAISSE"] } },
-    include: { items: true },
-    orderBy: { readyAt: "asc" },
+    include: {
+      items: true,
+      stay: { include: { room: true } },
+    },
+    orderBy: [{ readyAt: "asc" }, { updatedAt: "asc" }],
   });
 }
 
@@ -253,5 +256,18 @@ export async function getPaymentByIdAction(
   await ctx(organizationId, branchId);
   return prisma.payment.findFirst({
     where: { id: paymentId, branchId },
+    include: {
+      folio: {
+        include: {
+          lines: { orderBy: { createdAt: "asc" } },
+          stay: { include: { room: true } },
+        },
+      },
+      order: {
+        include: {
+          items: { orderBy: { name: "asc" } },
+        },
+      },
+    },
   });
 }

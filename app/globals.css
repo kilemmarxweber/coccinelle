@@ -149,6 +149,29 @@
   }
 }
 
+@keyframes bell-ring {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  8%,
+  24% {
+    transform: rotate(14deg);
+  }
+  16%,
+  32% {
+    transform: rotate(-12deg);
+  }
+  40% {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-bell-ring {
+  animation: bell-ring 1.4s ease-in-out infinite;
+  transform-origin: top center;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
