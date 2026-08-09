@@ -19,6 +19,18 @@ const createBranchSchema = z.object({
     .max(32)
     .regex(/^[A-Z0-9]+(?:-[A-Z0-9]+)*$/, "Code en MAJUSCULES / chiffres / tirets."),
   city: z.string().trim().max(80).optional(),
+  address: z.string().trim().max(200).optional(),
+  phone: z.string().trim().max(40).optional(),
+  email: z
+    .string()
+    .trim()
+    .max(120)
+    .optional()
+    .refine(
+      (v) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+      "Email invalide.",
+    ),
+  imageUrl: z.string().max(700_000).optional().nullable(),
   seedDemo: z.boolean().optional().default(true),
 });
 
@@ -81,6 +93,10 @@ export async function createBranchWithBootstrapAction(raw: CreateBranchInput) {
           name: input.name,
           code,
           city: input.city?.trim() || null,
+          address: input.address?.trim() || null,
+          phone: input.phone?.trim() || null,
+          email: input.email?.trim() || null,
+          imageUrl: input.imageUrl?.trim() || null,
           status: "ACTIVE",
         },
       });

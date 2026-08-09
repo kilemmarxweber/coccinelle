@@ -553,16 +553,109 @@ export async function listConsumableItemsAction(
 export async function listStockMovementsAction(
   organizationId: string,
   branchId: string,
-  limit = 40,
+  opts?: {
+    kind?: "ENTREE" | "SORTIE" | "ALL";
+    from?: string | null;
+    to?: string | null;
+    limit?: number;
+  },
 ) {
   await ctx(organizationId, branchId);
-  return prisma.hotelStockMovement.findMany({
-    where: { branchId },
+  const kind = opts?.kind ?? "ALL";
+  const limit = Math.min(500, Math.max(1, opts?.limit ?? 100));
+
+  const createdAt: { gte?: Date; lte?: Date } = {};
+  if (opts?.from) {
+    const [y, m, d] = opts.from.slice(0, 10).split("-").map(Number);
+    createdAt.gte = new Date(Date.UTC(y!, (m ?? 1) - 1, d ?? 1, 0, 0, 0));
+  }
+  if (opts?.to) {
+    const [y, m, d] = opts.to.slice(0, 10).split("-").map(Number);
+    createdAt.lte = new Date(Date.UTC(y!, (m ?? 1) - 1, d ?? 1, 23, 59, 59, 999));
+  }
+
+  const rows = await prisma.hotelStockMovement.findMany({
+    where: {
+      branchId,
+      ...(kind === "ENTREE" || kind === "SORTIE" ? { kind } : {}),
+      ...(createdAt.gte || createdAt.lte ? { createdAt } : {}),
+    },
     include: {
-      menuItem: { select: { id: true, name: true, imageUrl: true } },
+      menuItem: {
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+          stockQty: true,
+          supplierName: true,
+          provenance: true,
+        },
+      },
     },
     orderBy: { createdAt: "desc" },
-    take: Math.min(100, Math.max(1, limit)),
+    take: limit,
+  });
+
+  return enrichMovementStocks(branchId, rows);
+}
+
+/**
+ * Recalcule stock avant / reste à partir du stock actuel du produit
+ * en rejouant tous les mouvements (du plus récent au plus ancien).
+ * Corrige les anciennes lignes restées à 0/0.
+ */
+async function enrichMovementStocks<
+  T extends {
+    id: string;
+    menuItemId: string;
+    kind: string;
+    quantity: number;
+    stockBefore: number;
+    stockAfter: number;
+  },
+>(branchId: string, rows: T[]): Promise<T[]> {
+  if (rows.length === 0) return rows;
+
+  const itemIds = [...new Set(rows.map((r) => r.menuItemId))];
+  const [items, allMoves] = await Promise.all([
+    prisma.hotelMenuItem.findMany({
+      where: { branchId, id: { in: itemIds } },
+      select: { id: true, stockQty: true },
+    }),
+    prisma.hotelStockMovement.findMany({
+      where: { branchId, menuItemId: { in: itemIds } },
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      select: {
+        id: true,
+        menuItemId: true,
+        kind: true,
+        quantity: true,
+      },
+    }),
+  ]);
+
+  const running = new Map(items.map((i) => [i.id, i.stockQty]));
+  const computed = new Map<string, { stockBefore: number; stockAfter: number }>();
+
+  for (const m of allMoves) {
+    const after = running.get(m.menuItemId) ?? 0;
+    const before =
+      m.kind === "ENTREE" ? after - m.quantity : after + m.quantity;
+    computed.set(m.id, {
+      stockBefore: Math.max(0, before),
+      stockAfter: Math.max(0, after),
+    });
+    running.set(m.menuItemId, before);
+  }
+
+  return rows.map((row) => {
+    const c = computed.get(row.id);
+    if (!c) return row;
+    return {
+      ...row,
+      stockBefore: c.stockBefore,
+      stockAfter: c.stockAfter,
+    };
   });
 }
 
@@ -757,16 +850,14 @@ export async function recordConsumableStockMoveAction(input: {
   }
 
   const note = normalizeOptionalText(input.note, 200);
+  const stockBefore = item.stockQty;
+  const stockAfter =
+    input.kind === "ENTREE" ? stockBefore + qty : stockBefore - qty;
 
   await prisma.$transaction(async (tx) => {
     await tx.hotelMenuItem.update({
       where: { id: item.id },
-      data: {
-        stockQty:
-          input.kind === "ENTREE"
-            ? { increment: qty }
-            : { decrement: qty },
-      },
+      data: { stockQty: stockAfter },
     });
     await tx.hotelStockMovement.create({
       data: {
@@ -774,6 +865,8 @@ export async function recordConsumableStockMoveAction(input: {
         menuItemId: item.id,
         kind: input.kind,
         quantity: qty,
+        stockBefore,
+        stockAfter,
         note,
         createdByUserId: user.id,
       },
@@ -972,7 +1065,7 @@ export async function advanceHotelOrderAction(input: {
   /** Minutes estimées — obligatoire pour démarrer la préparation. */
   estimatedMinutes?: number;
 }) {
-  await ctx(input.organizationId, input.branchId);
+  const { user } = await ctx(input.organizationId, input.branchId);
   const order = await prisma.hotelOrder.findFirst({
     where: { id: input.orderId, branchId: input.branchId },
   });
@@ -991,13 +1084,18 @@ export async function advanceHotelOrderAction(input: {
     deliveredAt?: Date;
     prepStartedAt?: Date;
     estimatedMinutes?: number;
+    preparedByUserId?: string;
   } = { status: input.to };
 
   if (input.to === "EN_PREPARATION") {
     data.prepStartedAt = new Date();
     data.estimatedMinutes = Math.round(Number(input.estimatedMinutes));
+    data.preparedByUserId = user.id;
   }
-  if (input.to === "PRETE") data.readyAt = new Date();
+  if (input.to === "PRETE") {
+    data.readyAt = new Date();
+    if (!order.preparedByUserId) data.preparedByUserId = user.id;
+  }
   if (input.to === "LIVREE") data.deliveredAt = new Date();
 
   await prisma.$transaction(async (tx) => {

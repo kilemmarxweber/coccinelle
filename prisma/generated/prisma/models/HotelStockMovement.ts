@@ -28,10 +28,14 @@ export type AggregateHotelStockMovement = {
 
 export type HotelStockMovementAvgAggregateOutputType = {
   quantity: number | null
+  stockBefore: number | null
+  stockAfter: number | null
 }
 
 export type HotelStockMovementSumAggregateOutputType = {
   quantity: number | null
+  stockBefore: number | null
+  stockAfter: number | null
 }
 
 export type HotelStockMovementMinAggregateOutputType = {
@@ -40,6 +44,8 @@ export type HotelStockMovementMinAggregateOutputType = {
   menuItemId: string | null
   kind: string | null
   quantity: number | null
+  stockBefore: number | null
+  stockAfter: number | null
   note: string | null
   createdByUserId: string | null
   createdAt: Date | null
@@ -51,6 +57,8 @@ export type HotelStockMovementMaxAggregateOutputType = {
   menuItemId: string | null
   kind: string | null
   quantity: number | null
+  stockBefore: number | null
+  stockAfter: number | null
   note: string | null
   createdByUserId: string | null
   createdAt: Date | null
@@ -62,6 +70,8 @@ export type HotelStockMovementCountAggregateOutputType = {
   menuItemId: number
   kind: number
   quantity: number
+  stockBefore: number
+  stockAfter: number
   note: number
   createdByUserId: number
   createdAt: number
@@ -71,10 +81,14 @@ export type HotelStockMovementCountAggregateOutputType = {
 
 export type HotelStockMovementAvgAggregateInputType = {
   quantity?: true
+  stockBefore?: true
+  stockAfter?: true
 }
 
 export type HotelStockMovementSumAggregateInputType = {
   quantity?: true
+  stockBefore?: true
+  stockAfter?: true
 }
 
 export type HotelStockMovementMinAggregateInputType = {
@@ -83,6 +97,8 @@ export type HotelStockMovementMinAggregateInputType = {
   menuItemId?: true
   kind?: true
   quantity?: true
+  stockBefore?: true
+  stockAfter?: true
   note?: true
   createdByUserId?: true
   createdAt?: true
@@ -94,6 +110,8 @@ export type HotelStockMovementMaxAggregateInputType = {
   menuItemId?: true
   kind?: true
   quantity?: true
+  stockBefore?: true
+  stockAfter?: true
   note?: true
   createdByUserId?: true
   createdAt?: true
@@ -105,6 +123,8 @@ export type HotelStockMovementCountAggregateInputType = {
   menuItemId?: true
   kind?: true
   quantity?: true
+  stockBefore?: true
+  stockAfter?: true
   note?: true
   createdByUserId?: true
   createdAt?: true
@@ -203,6 +223,8 @@ export type HotelStockMovementGroupByOutputType = {
   menuItemId: string
   kind: string
   quantity: number
+  stockBefore: number
+  stockAfter: number
   note: string | null
   createdByUserId: string
   createdAt: Date
@@ -237,6 +259,8 @@ export type HotelStockMovementWhereInput = {
   menuItemId?: Prisma.StringFilter<"HotelStockMovement"> | string
   kind?: Prisma.StringFilter<"HotelStockMovement"> | string
   quantity?: Prisma.IntFilter<"HotelStockMovement"> | number
+  stockBefore?: Prisma.IntFilter<"HotelStockMovement"> | number
+  stockAfter?: Prisma.IntFilter<"HotelStockMovement"> | number
   note?: Prisma.StringNullableFilter<"HotelStockMovement"> | string | null
   createdByUserId?: Prisma.StringFilter<"HotelStockMovement"> | string
   createdAt?: Prisma.DateTimeFilter<"HotelStockMovement"> | Date | string
@@ -250,6 +274,8 @@ export type HotelStockMovementOrderByWithRelationInput = {
   menuItemId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  stockBefore?: Prisma.SortOrder
+  stockAfter?: Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -266,6 +292,8 @@ export type HotelStockMovementWhereUniqueInput = Prisma.AtLeast<{
   menuItemId?: Prisma.StringFilter<"HotelStockMovement"> | string
   kind?: Prisma.StringFilter<"HotelStockMovement"> | string
   quantity?: Prisma.IntFilter<"HotelStockMovement"> | number
+  stockBefore?: Prisma.IntFilter<"HotelStockMovement"> | number
+  stockAfter?: Prisma.IntFilter<"HotelStockMovement"> | number
   note?: Prisma.StringNullableFilter<"HotelStockMovement"> | string | null
   createdByUserId?: Prisma.StringFilter<"HotelStockMovement"> | string
   createdAt?: Prisma.DateTimeFilter<"HotelStockMovement"> | Date | string
@@ -279,6 +307,8 @@ export type HotelStockMovementOrderByWithAggregationInput = {
   menuItemId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  stockBefore?: Prisma.SortOrder
+  stockAfter?: Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -298,6 +328,8 @@ export type HotelStockMovementScalarWhereWithAggregatesInput = {
   menuItemId?: Prisma.StringWithAggregatesFilter<"HotelStockMovement"> | string
   kind?: Prisma.StringWithAggregatesFilter<"HotelStockMovement"> | string
   quantity?: Prisma.IntWithAggregatesFilter<"HotelStockMovement"> | number
+  stockBefore?: Prisma.IntWithAggregatesFilter<"HotelStockMovement"> | number
+  stockAfter?: Prisma.IntWithAggregatesFilter<"HotelStockMovement"> | number
   note?: Prisma.StringNullableWithAggregatesFilter<"HotelStockMovement"> | string | null
   createdByUserId?: Prisma.StringWithAggregatesFilter<"HotelStockMovement"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"HotelStockMovement"> | Date | string
@@ -307,6 +339,8 @@ export type HotelStockMovementCreateInput = {
   id?: string
   kind: string
   quantity: number
+  stockBefore?: number
+  stockAfter?: number
   note?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -320,6 +354,8 @@ export type HotelStockMovementUncheckedCreateInput = {
   menuItemId: string
   kind: string
   quantity: number
+  stockBefore?: number
+  stockAfter?: number
   note?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -329,6 +365,8 @@ export type HotelStockMovementUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  stockBefore?: Prisma.IntFieldUpdateOperationsInput | number
+  stockAfter?: Prisma.IntFieldUpdateOperationsInput | number
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -342,6 +380,8 @@ export type HotelStockMovementUncheckedUpdateInput = {
   menuItemId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  stockBefore?: Prisma.IntFieldUpdateOperationsInput | number
+  stockAfter?: Prisma.IntFieldUpdateOperationsInput | number
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -353,6 +393,8 @@ export type HotelStockMovementCreateManyInput = {
   menuItemId: string
   kind: string
   quantity: number
+  stockBefore?: number
+  stockAfter?: number
   note?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -362,6 +404,8 @@ export type HotelStockMovementUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  stockBefore?: Prisma.IntFieldUpdateOperationsInput | number
+  stockAfter?: Prisma.IntFieldUpdateOperationsInput | number
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -373,6 +417,8 @@ export type HotelStockMovementUncheckedUpdateManyInput = {
   menuItemId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  stockBefore?: Prisma.IntFieldUpdateOperationsInput | number
+  stockAfter?: Prisma.IntFieldUpdateOperationsInput | number
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -394,6 +440,8 @@ export type HotelStockMovementCountOrderByAggregateInput = {
   menuItemId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  stockBefore?: Prisma.SortOrder
+  stockAfter?: Prisma.SortOrder
   note?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -401,6 +449,8 @@ export type HotelStockMovementCountOrderByAggregateInput = {
 
 export type HotelStockMovementAvgOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
+  stockBefore?: Prisma.SortOrder
+  stockAfter?: Prisma.SortOrder
 }
 
 export type HotelStockMovementMaxOrderByAggregateInput = {
@@ -409,6 +459,8 @@ export type HotelStockMovementMaxOrderByAggregateInput = {
   menuItemId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  stockBefore?: Prisma.SortOrder
+  stockAfter?: Prisma.SortOrder
   note?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -420,6 +472,8 @@ export type HotelStockMovementMinOrderByAggregateInput = {
   menuItemId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  stockBefore?: Prisma.SortOrder
+  stockAfter?: Prisma.SortOrder
   note?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -427,6 +481,8 @@ export type HotelStockMovementMinOrderByAggregateInput = {
 
 export type HotelStockMovementSumOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
+  stockBefore?: Prisma.SortOrder
+  stockAfter?: Prisma.SortOrder
 }
 
 export type HotelStockMovementCreateNestedManyWithoutBranchInput = {
@@ -517,6 +573,8 @@ export type HotelStockMovementCreateWithoutBranchInput = {
   id?: string
   kind: string
   quantity: number
+  stockBefore?: number
+  stockAfter?: number
   note?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -528,6 +586,8 @@ export type HotelStockMovementUncheckedCreateWithoutBranchInput = {
   menuItemId: string
   kind: string
   quantity: number
+  stockBefore?: number
+  stockAfter?: number
   note?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -568,6 +628,8 @@ export type HotelStockMovementScalarWhereInput = {
   menuItemId?: Prisma.StringFilter<"HotelStockMovement"> | string
   kind?: Prisma.StringFilter<"HotelStockMovement"> | string
   quantity?: Prisma.IntFilter<"HotelStockMovement"> | number
+  stockBefore?: Prisma.IntFilter<"HotelStockMovement"> | number
+  stockAfter?: Prisma.IntFilter<"HotelStockMovement"> | number
   note?: Prisma.StringNullableFilter<"HotelStockMovement"> | string | null
   createdByUserId?: Prisma.StringFilter<"HotelStockMovement"> | string
   createdAt?: Prisma.DateTimeFilter<"HotelStockMovement"> | Date | string
@@ -577,6 +639,8 @@ export type HotelStockMovementCreateWithoutMenuItemInput = {
   id?: string
   kind: string
   quantity: number
+  stockBefore?: number
+  stockAfter?: number
   note?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -588,6 +652,8 @@ export type HotelStockMovementUncheckedCreateWithoutMenuItemInput = {
   branchId: string
   kind: string
   quantity: number
+  stockBefore?: number
+  stockAfter?: number
   note?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -624,6 +690,8 @@ export type HotelStockMovementCreateManyBranchInput = {
   menuItemId: string
   kind: string
   quantity: number
+  stockBefore?: number
+  stockAfter?: number
   note?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -633,6 +701,8 @@ export type HotelStockMovementUpdateWithoutBranchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  stockBefore?: Prisma.IntFieldUpdateOperationsInput | number
+  stockAfter?: Prisma.IntFieldUpdateOperationsInput | number
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -644,6 +714,8 @@ export type HotelStockMovementUncheckedUpdateWithoutBranchInput = {
   menuItemId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  stockBefore?: Prisma.IntFieldUpdateOperationsInput | number
+  stockAfter?: Prisma.IntFieldUpdateOperationsInput | number
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -654,6 +726,8 @@ export type HotelStockMovementUncheckedUpdateManyWithoutBranchInput = {
   menuItemId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  stockBefore?: Prisma.IntFieldUpdateOperationsInput | number
+  stockAfter?: Prisma.IntFieldUpdateOperationsInput | number
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -664,6 +738,8 @@ export type HotelStockMovementCreateManyMenuItemInput = {
   branchId: string
   kind: string
   quantity: number
+  stockBefore?: number
+  stockAfter?: number
   note?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -673,6 +749,8 @@ export type HotelStockMovementUpdateWithoutMenuItemInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  stockBefore?: Prisma.IntFieldUpdateOperationsInput | number
+  stockAfter?: Prisma.IntFieldUpdateOperationsInput | number
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -684,6 +762,8 @@ export type HotelStockMovementUncheckedUpdateWithoutMenuItemInput = {
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  stockBefore?: Prisma.IntFieldUpdateOperationsInput | number
+  stockAfter?: Prisma.IntFieldUpdateOperationsInput | number
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -694,6 +774,8 @@ export type HotelStockMovementUncheckedUpdateManyWithoutMenuItemInput = {
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  stockBefore?: Prisma.IntFieldUpdateOperationsInput | number
+  stockAfter?: Prisma.IntFieldUpdateOperationsInput | number
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -707,6 +789,8 @@ export type HotelStockMovementSelect<ExtArgs extends runtime.Types.Extensions.In
   menuItemId?: boolean
   kind?: boolean
   quantity?: boolean
+  stockBefore?: boolean
+  stockAfter?: boolean
   note?: boolean
   createdByUserId?: boolean
   createdAt?: boolean
@@ -720,6 +804,8 @@ export type HotelStockMovementSelectCreateManyAndReturn<ExtArgs extends runtime.
   menuItemId?: boolean
   kind?: boolean
   quantity?: boolean
+  stockBefore?: boolean
+  stockAfter?: boolean
   note?: boolean
   createdByUserId?: boolean
   createdAt?: boolean
@@ -733,6 +819,8 @@ export type HotelStockMovementSelectUpdateManyAndReturn<ExtArgs extends runtime.
   menuItemId?: boolean
   kind?: boolean
   quantity?: boolean
+  stockBefore?: boolean
+  stockAfter?: boolean
   note?: boolean
   createdByUserId?: boolean
   createdAt?: boolean
@@ -746,12 +834,14 @@ export type HotelStockMovementSelectScalar = {
   menuItemId?: boolean
   kind?: boolean
   quantity?: boolean
+  stockBefore?: boolean
+  stockAfter?: boolean
   note?: boolean
   createdByUserId?: boolean
   createdAt?: boolean
 }
 
-export type HotelStockMovementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "menuItemId" | "kind" | "quantity" | "note" | "createdByUserId" | "createdAt", ExtArgs["result"]["hotelStockMovement"]>
+export type HotelStockMovementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "menuItemId" | "kind" | "quantity" | "stockBefore" | "stockAfter" | "note" | "createdByUserId" | "createdAt", ExtArgs["result"]["hotelStockMovement"]>
 export type HotelStockMovementInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   menuItem?: boolean | Prisma.HotelMenuItemDefaultArgs<ExtArgs>
@@ -780,6 +870,14 @@ export type $HotelStockMovementPayload<ExtArgs extends runtime.Types.Extensions.
      */
     kind: string
     quantity: number
+    /**
+     * Stock avant le mouvement
+     */
+    stockBefore: number
+    /**
+     * Stock après le mouvement (reste)
+     */
+    stockAfter: number
     note: string | null
     createdByUserId: string
     createdAt: Date
@@ -1213,6 +1311,8 @@ export interface HotelStockMovementFieldRefs {
   readonly menuItemId: Prisma.FieldRef<"HotelStockMovement", 'String'>
   readonly kind: Prisma.FieldRef<"HotelStockMovement", 'String'>
   readonly quantity: Prisma.FieldRef<"HotelStockMovement", 'Int'>
+  readonly stockBefore: Prisma.FieldRef<"HotelStockMovement", 'Int'>
+  readonly stockAfter: Prisma.FieldRef<"HotelStockMovement", 'Int'>
   readonly note: Prisma.FieldRef<"HotelStockMovement", 'String'>
   readonly createdByUserId: Prisma.FieldRef<"HotelStockMovement", 'String'>
   readonly createdAt: Prisma.FieldRef<"HotelStockMovement", 'DateTime'>

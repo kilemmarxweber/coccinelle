@@ -17,32 +17,32 @@ const LINKS = [
   {
     key: "tableauBord" as const,
     title: "Tableau de Bord",
-    description: "Statistiques et indicateurs clés.",
+    description: "Occupation, CA du jour et tickets F&B.",
     icon: LayoutDashboard,
   },
   {
     key: "ventes" as const,
     title: "Rapport Ventes",
-    description: "Analyse fine des ventes globales.",
+    description: "CA, tickets, méthodes — graphs & comparaison de période.",
     icon: FileBarChart,
   },
   {
     key: "achats" as const,
     title: "Rapport Achats",
-    description: "Statistiques des approvisionnements.",
+    description: "Entrées vs sorties stock, couverture et top produits.",
     icon: Package,
-  },
-  {
-    key: "financier" as const,
-    title: "Rapport Financier",
-    description: "Analyse des revenus et dépenses.",
-    icon: FileText,
   },
   {
     key: "articles" as const,
     title: "Rapport Article",
-    description: "Quantités vendues des articles.",
+    description: "Quantités vendues, catégories et sorties liées.",
     icon: FileBarChart,
+  },
+  {
+    key: "financier" as const,
+    title: "Rapport Financier",
+    description: "Revenus croisés aux flux d’approvisionnements / décomptes.",
+    icon: FileText,
   },
 ];
 
@@ -56,7 +56,8 @@ export default async function RapportsIndexPage({ params }: PageProps) {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Analyses & Rapports</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Branche · {branch.name}
+          Branche · {branch.name} — période, graphiques et comparaison vs
+          période précédente.
         </p>
       </div>
 

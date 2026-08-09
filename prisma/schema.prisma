@@ -502,9 +502,12 @@ model Branch {
   code           String
   slug           String?
   status         BranchStatus  @default(ACTIVE)
+  /// Logo / image de la branche (URL ou data URL), optionnel.
+  imageUrl       String?
   address        String?
   city           String?
   phone          String?
+  email          String?
   timezone       String        @default("Africa/Kinshasa")
   settings       Json?
   createdAt      DateTime      @default(now())
@@ -760,6 +763,10 @@ model HotelStockMovement {
   /// ENTREE | SORTIE
   kind            String
   quantity        Int
+  /// Stock avant le mouvement
+  stockBefore     Int      @default(0)
+  /// Stock après le mouvement (reste)
+  stockAfter      Int      @default(0)
   note            String?
   createdByUserId String
   createdAt       DateTime @default(now())
@@ -784,6 +791,8 @@ model HotelOrder {
   sentAt      DateTime?
   /// Début de préparation cuisine
   prepStartedAt DateTime?
+  /// Cuisinier qui a démarré / pris la préparation
+  preparedByUserId String?
   /// Durée estimée annoncée par la cuisine (minutes)
   estimatedMinutes Int?
   readyAt     DateTime?

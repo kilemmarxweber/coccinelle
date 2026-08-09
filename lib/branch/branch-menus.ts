@@ -102,7 +102,7 @@ function rapportsSections(
         },
         {
           title: "Rapport Ventes",
-          description: "Analyse fine des ventes globales.",
+          description: "CA, tickets, méthodes — graphs & comparaison.",
           href: sharedBranchRoutes.ventes(organizationId, branchId),
           icon: FileBarChart,
           iconBg: "bg-sky-500/15",
@@ -110,7 +110,7 @@ function rapportsSections(
         },
         {
           title: "Rapport Achats",
-          description: "Statistiques des approvisionnements.",
+          description: "Entrées vs sorties stock — période & deltas.",
           href: sharedBranchRoutes.achats(organizationId, branchId),
           icon: Package,
           iconBg: "bg-primary/15",
@@ -118,7 +118,7 @@ function rapportsSections(
         },
         {
           title: "Rapport Financier",
-          description: "Analyse des revenus et dépenses.",
+          description: "Revenus croisés aux flux d’appro / décompte.",
           href: sharedBranchRoutes.financier(organizationId, branchId),
           icon: FileText,
           iconBg: "bg-sky-500/15",
@@ -126,7 +126,7 @@ function rapportsSections(
         },
         {
           title: "Rapport Article",
-          description: "Quantités vendues des articles.",
+          description: "Top ventes, catégories et sorties liées.",
           href: sharedBranchRoutes.articles(organizationId, branchId),
           icon: FileBarChart,
           iconBg: "bg-primary/15",

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ReportsNav } from "@/components/reports/report-shell";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
@@ -39,6 +40,12 @@ export default async function TableauBordPage({ params }: PageProps) {
           <p className="text-sm text-muted-foreground">{branch.name}</p>
         </div>
       </div>
+
+      <ReportsNav
+        organizationId={organizationId}
+        branchId={branchId}
+        active="tableauBord"
+      />
 
       {kpis ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -6,7 +6,7 @@ const adapter = new PrismaPg({
 });
 
 /** Incrémenter après tout changement de modèle Prisma pour invalider le singleton HMR. */
-const PRISMA_SCHEMA_REV = 6;
+const PRISMA_SCHEMA_REV = 9;
 
 const globalForPrisma = global as unknown as {
   prisma: PrismaClient | undefined;
@@ -19,9 +19,34 @@ function createPrisma() {
   });
 }
 
+function modelHasField(
+  client: PrismaClient,
+  model: string,
+  field: string,
+): boolean {
+  const fields = (
+    client as {
+      _runtimeDataModel?: {
+        models?: Record<
+          string,
+          { fields?: Array<{ name?: string }> | Record<string, unknown> }
+        >;
+      };
+    }
+  )._runtimeDataModel?.models?.[model]?.fields;
+  if (Array.isArray(fields)) {
+    return fields.some((f) => f.name === field);
+  }
+  if (fields && typeof fields === "object") {
+    return field in fields;
+  }
+  // Si on ne peut pas inspecter, considérer à jour (évite boucle).
+  return true;
+}
+
 /**
  * Recrée le client si le singleton HMR est resté sur un schéma plus ancien
- * (ex. après ajout de champs HotelOrder.prepStartedAt).
+ * (ex. après ajout de champs HotelOrder.preparedByUserId).
  */
 function resolvePrisma(): PrismaClient {
   const existing = globalForPrisma.prisma;
@@ -31,26 +56,14 @@ function resolvePrisma(): PrismaClient {
     typeof (existing as { hotelMenuItem?: unknown }).hotelMenuItem ===
       "undefined";
 
-  let staleMenuFields = false;
-  if (existing) {
-    const fields = (
-      existing as {
-        _runtimeDataModel?: {
-          models?: Record<
-            string,
-            { fields?: Array<{ name?: string }> | Record<string, unknown> }
-          >;
-        };
-      }
-    )._runtimeDataModel?.models?.HotelMenuItem?.fields;
-    if (Array.isArray(fields)) {
-      staleMenuFields = !fields.some((f) => f.name === "isConsumable");
-    } else if (fields && typeof fields === "object") {
-      staleMenuFields = !("isConsumable" in fields);
-    }
-  }
+  const staleFields =
+    existing &&
+    (!modelHasField(existing, "HotelMenuItem", "isConsumable") ||
+      !modelHasField(existing, "HotelStockMovement", "stockBefore") ||
+      !modelHasField(existing, "HotelOrder", "preparedByUserId") ||
+      !modelHasField(existing, "Branch", "imageUrl"));
 
-  if (existing && (staleRev || staleDelegate || staleMenuFields)) {
+  if (existing && (staleRev || staleDelegate || staleFields)) {
     void existing.$disconnect().catch(() => undefined);
     globalForPrisma.prisma = undefined;
   }
