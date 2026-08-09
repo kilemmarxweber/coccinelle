@@ -522,6 +522,7 @@ model Branch {
   payments       Payment[]
   notifications  BranchNotification[]
   menuItems      HotelMenuItem[]
+  stockMovements HotelStockMovement[]
 
   @@unique([organizationId, code])
   @@index([organizationId, type])
@@ -721,21 +722,52 @@ model Payment {
   @@index([orderId])
 }
 
-/** Catalogue F&B / vente rapide hôtel. */
+/** Catalogue F&B / vente rapide / consommables hôtel. */
 model HotelMenuItem {
   id           String   @id @default(uuid())
   branchId     String
   name         String
   category     String   @default("Divers")
-  price        Float
+  /// Prix de vente (optionnel / 0 pour les consommables).
+  price        Float    @default(0)
+  /// Photo produit (URL ou data URL).
+  imageUrl     String?
+  /// Quantité en stock (signalée et décrémentée à la vente / livraison).
+  stockQty     Int      @default(50)
+  /// Consommable : non vendu (invisible resto / vente rapide).
+  isConsumable Boolean  @default(false)
+  /// Provenance (consommables, optionnel).
+  provenance   String?
+  /// Fournisseur (consommables, optionnel).
+  supplierName String?
   needsKitchen Boolean  @default(true)
   active       Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   branch       Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
   orderItems   HotelOrderItem[]
+  stockMovements HotelStockMovement[]
 
   @@index([branchId, active])
+  @@index([branchId, isConsumable])
+}
+
+/// Entrées (livraison fournisseur) / sorties (consommation) de stock.
+model HotelStockMovement {
+  id              String   @id @default(uuid())
+  branchId        String
+  menuItemId      String
+  /// ENTREE | SORTIE
+  kind            String
+  quantity        Int
+  note            String?
+  createdByUserId String
+  createdAt       DateTime @default(now())
+  branch          Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  menuItem        HotelMenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, createdAt])
+  @@index([menuItemId, createdAt])
 }
 
 model HotelOrder {

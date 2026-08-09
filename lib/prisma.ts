@@ -6,7 +6,7 @@ const adapter = new PrismaPg({
 });
 
 /** Incrémenter après tout changement de modèle Prisma pour invalider le singleton HMR. */
-const PRISMA_SCHEMA_REV = 3;
+const PRISMA_SCHEMA_REV = 6;
 
 const globalForPrisma = global as unknown as {
   prisma: PrismaClient | undefined;
@@ -31,7 +31,26 @@ function resolvePrisma(): PrismaClient {
     typeof (existing as { hotelMenuItem?: unknown }).hotelMenuItem ===
       "undefined";
 
-  if (existing && (staleRev || staleDelegate)) {
+  let staleMenuFields = false;
+  if (existing) {
+    const fields = (
+      existing as {
+        _runtimeDataModel?: {
+          models?: Record<
+            string,
+            { fields?: Array<{ name?: string }> | Record<string, unknown> }
+          >;
+        };
+      }
+    )._runtimeDataModel?.models?.HotelMenuItem?.fields;
+    if (Array.isArray(fields)) {
+      staleMenuFields = !fields.some((f) => f.name === "isConsumable");
+    } else if (fields && typeof fields === "object") {
+      staleMenuFields = !("isConsumable" in fields);
+    }
+  }
+
+  if (existing && (staleRev || staleDelegate || staleMenuFields)) {
     void existing.$disconnect().catch(() => undefined);
     globalForPrisma.prisma = undefined;
   }

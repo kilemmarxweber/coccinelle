@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model HotelMenuItem
- * * Catalogue F&B / vente rapide hôtel.
+ * * Catalogue F&B / vente rapide / consommables hôtel.
  */
 export type HotelMenuItemModel = runtime.Types.Result.DefaultSelection<Prisma.$HotelMenuItemPayload>
 
@@ -28,10 +28,12 @@ export type AggregateHotelMenuItem = {
 
 export type HotelMenuItemAvgAggregateOutputType = {
   price: number | null
+  stockQty: number | null
 }
 
 export type HotelMenuItemSumAggregateOutputType = {
   price: number | null
+  stockQty: number | null
 }
 
 export type HotelMenuItemMinAggregateOutputType = {
@@ -40,6 +42,11 @@ export type HotelMenuItemMinAggregateOutputType = {
   name: string | null
   category: string | null
   price: number | null
+  imageUrl: string | null
+  stockQty: number | null
+  isConsumable: boolean | null
+  provenance: string | null
+  supplierName: string | null
   needsKitchen: boolean | null
   active: boolean | null
   createdAt: Date | null
@@ -52,6 +59,11 @@ export type HotelMenuItemMaxAggregateOutputType = {
   name: string | null
   category: string | null
   price: number | null
+  imageUrl: string | null
+  stockQty: number | null
+  isConsumable: boolean | null
+  provenance: string | null
+  supplierName: string | null
   needsKitchen: boolean | null
   active: boolean | null
   createdAt: Date | null
@@ -64,6 +76,11 @@ export type HotelMenuItemCountAggregateOutputType = {
   name: number
   category: number
   price: number
+  imageUrl: number
+  stockQty: number
+  isConsumable: number
+  provenance: number
+  supplierName: number
   needsKitchen: number
   active: number
   createdAt: number
@@ -74,10 +91,12 @@ export type HotelMenuItemCountAggregateOutputType = {
 
 export type HotelMenuItemAvgAggregateInputType = {
   price?: true
+  stockQty?: true
 }
 
 export type HotelMenuItemSumAggregateInputType = {
   price?: true
+  stockQty?: true
 }
 
 export type HotelMenuItemMinAggregateInputType = {
@@ -86,6 +105,11 @@ export type HotelMenuItemMinAggregateInputType = {
   name?: true
   category?: true
   price?: true
+  imageUrl?: true
+  stockQty?: true
+  isConsumable?: true
+  provenance?: true
+  supplierName?: true
   needsKitchen?: true
   active?: true
   createdAt?: true
@@ -98,6 +122,11 @@ export type HotelMenuItemMaxAggregateInputType = {
   name?: true
   category?: true
   price?: true
+  imageUrl?: true
+  stockQty?: true
+  isConsumable?: true
+  provenance?: true
+  supplierName?: true
   needsKitchen?: true
   active?: true
   createdAt?: true
@@ -110,6 +139,11 @@ export type HotelMenuItemCountAggregateInputType = {
   name?: true
   category?: true
   price?: true
+  imageUrl?: true
+  stockQty?: true
+  isConsumable?: true
+  provenance?: true
+  supplierName?: true
   needsKitchen?: true
   active?: true
   createdAt?: true
@@ -209,6 +243,11 @@ export type HotelMenuItemGroupByOutputType = {
   name: string
   category: string
   price: number
+  imageUrl: string | null
+  stockQty: number
+  isConsumable: boolean
+  provenance: string | null
+  supplierName: string | null
   needsKitchen: boolean
   active: boolean
   createdAt: Date
@@ -244,12 +283,18 @@ export type HotelMenuItemWhereInput = {
   name?: Prisma.StringFilter<"HotelMenuItem"> | string
   category?: Prisma.StringFilter<"HotelMenuItem"> | string
   price?: Prisma.FloatFilter<"HotelMenuItem"> | number
+  imageUrl?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
+  stockQty?: Prisma.IntFilter<"HotelMenuItem"> | number
+  isConsumable?: Prisma.BoolFilter<"HotelMenuItem"> | boolean
+  provenance?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
+  supplierName?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
   needsKitchen?: Prisma.BoolFilter<"HotelMenuItem"> | boolean
   active?: Prisma.BoolFilter<"HotelMenuItem"> | boolean
   createdAt?: Prisma.DateTimeFilter<"HotelMenuItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"HotelMenuItem"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   orderItems?: Prisma.HotelOrderItemListRelationFilter
+  stockMovements?: Prisma.HotelStockMovementListRelationFilter
 }
 
 export type HotelMenuItemOrderByWithRelationInput = {
@@ -258,12 +303,18 @@ export type HotelMenuItemOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   category?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  stockQty?: Prisma.SortOrder
+  isConsumable?: Prisma.SortOrder
+  provenance?: Prisma.SortOrderInput | Prisma.SortOrder
+  supplierName?: Prisma.SortOrderInput | Prisma.SortOrder
   needsKitchen?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   branch?: Prisma.BranchOrderByWithRelationInput
   orderItems?: Prisma.HotelOrderItemOrderByRelationAggregateInput
+  stockMovements?: Prisma.HotelStockMovementOrderByRelationAggregateInput
 }
 
 export type HotelMenuItemWhereUniqueInput = Prisma.AtLeast<{
@@ -275,12 +326,18 @@ export type HotelMenuItemWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"HotelMenuItem"> | string
   category?: Prisma.StringFilter<"HotelMenuItem"> | string
   price?: Prisma.FloatFilter<"HotelMenuItem"> | number
+  imageUrl?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
+  stockQty?: Prisma.IntFilter<"HotelMenuItem"> | number
+  isConsumable?: Prisma.BoolFilter<"HotelMenuItem"> | boolean
+  provenance?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
+  supplierName?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
   needsKitchen?: Prisma.BoolFilter<"HotelMenuItem"> | boolean
   active?: Prisma.BoolFilter<"HotelMenuItem"> | boolean
   createdAt?: Prisma.DateTimeFilter<"HotelMenuItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"HotelMenuItem"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   orderItems?: Prisma.HotelOrderItemListRelationFilter
+  stockMovements?: Prisma.HotelStockMovementListRelationFilter
 }, "id">
 
 export type HotelMenuItemOrderByWithAggregationInput = {
@@ -289,6 +346,11 @@ export type HotelMenuItemOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   category?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  stockQty?: Prisma.SortOrder
+  isConsumable?: Prisma.SortOrder
+  provenance?: Prisma.SortOrderInput | Prisma.SortOrder
+  supplierName?: Prisma.SortOrderInput | Prisma.SortOrder
   needsKitchen?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -309,6 +371,11 @@ export type HotelMenuItemScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"HotelMenuItem"> | string
   category?: Prisma.StringWithAggregatesFilter<"HotelMenuItem"> | string
   price?: Prisma.FloatWithAggregatesFilter<"HotelMenuItem"> | number
+  imageUrl?: Prisma.StringNullableWithAggregatesFilter<"HotelMenuItem"> | string | null
+  stockQty?: Prisma.IntWithAggregatesFilter<"HotelMenuItem"> | number
+  isConsumable?: Prisma.BoolWithAggregatesFilter<"HotelMenuItem"> | boolean
+  provenance?: Prisma.StringNullableWithAggregatesFilter<"HotelMenuItem"> | string | null
+  supplierName?: Prisma.StringNullableWithAggregatesFilter<"HotelMenuItem"> | string | null
   needsKitchen?: Prisma.BoolWithAggregatesFilter<"HotelMenuItem"> | boolean
   active?: Prisma.BoolWithAggregatesFilter<"HotelMenuItem"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"HotelMenuItem"> | Date | string
@@ -319,13 +386,19 @@ export type HotelMenuItemCreateInput = {
   id?: string
   name: string
   category?: string
-  price: number
+  price?: number
+  imageUrl?: string | null
+  stockQty?: number
+  isConsumable?: boolean
+  provenance?: string | null
+  supplierName?: string | null
   needsKitchen?: boolean
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutMenuItemsInput
   orderItems?: Prisma.HotelOrderItemCreateNestedManyWithoutMenuItemInput
+  stockMovements?: Prisma.HotelStockMovementCreateNestedManyWithoutMenuItemInput
 }
 
 export type HotelMenuItemUncheckedCreateInput = {
@@ -333,12 +406,18 @@ export type HotelMenuItemUncheckedCreateInput = {
   branchId: string
   name: string
   category?: string
-  price: number
+  price?: number
+  imageUrl?: string | null
+  stockQty?: number
+  isConsumable?: boolean
+  provenance?: string | null
+  supplierName?: string | null
   needsKitchen?: boolean
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   orderItems?: Prisma.HotelOrderItemUncheckedCreateNestedManyWithoutMenuItemInput
+  stockMovements?: Prisma.HotelStockMovementUncheckedCreateNestedManyWithoutMenuItemInput
 }
 
 export type HotelMenuItemUpdateInput = {
@@ -346,12 +425,18 @@ export type HotelMenuItemUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   needsKitchen?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutMenuItemsNestedInput
   orderItems?: Prisma.HotelOrderItemUpdateManyWithoutMenuItemNestedInput
+  stockMovements?: Prisma.HotelStockMovementUpdateManyWithoutMenuItemNestedInput
 }
 
 export type HotelMenuItemUncheckedUpdateInput = {
@@ -360,11 +445,17 @@ export type HotelMenuItemUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   needsKitchen?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orderItems?: Prisma.HotelOrderItemUncheckedUpdateManyWithoutMenuItemNestedInput
+  stockMovements?: Prisma.HotelStockMovementUncheckedUpdateManyWithoutMenuItemNestedInput
 }
 
 export type HotelMenuItemCreateManyInput = {
@@ -372,7 +463,12 @@ export type HotelMenuItemCreateManyInput = {
   branchId: string
   name: string
   category?: string
-  price: number
+  price?: number
+  imageUrl?: string | null
+  stockQty?: number
+  isConsumable?: boolean
+  provenance?: string | null
+  supplierName?: string | null
   needsKitchen?: boolean
   active?: boolean
   createdAt?: Date | string
@@ -384,6 +480,11 @@ export type HotelMenuItemUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   needsKitchen?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -396,6 +497,11 @@ export type HotelMenuItemUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   needsKitchen?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -418,6 +524,11 @@ export type HotelMenuItemCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   category?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrder
+  stockQty?: Prisma.SortOrder
+  isConsumable?: Prisma.SortOrder
+  provenance?: Prisma.SortOrder
+  supplierName?: Prisma.SortOrder
   needsKitchen?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -426,6 +537,7 @@ export type HotelMenuItemCountOrderByAggregateInput = {
 
 export type HotelMenuItemAvgOrderByAggregateInput = {
   price?: Prisma.SortOrder
+  stockQty?: Prisma.SortOrder
 }
 
 export type HotelMenuItemMaxOrderByAggregateInput = {
@@ -434,6 +546,11 @@ export type HotelMenuItemMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   category?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrder
+  stockQty?: Prisma.SortOrder
+  isConsumable?: Prisma.SortOrder
+  provenance?: Prisma.SortOrder
+  supplierName?: Prisma.SortOrder
   needsKitchen?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -446,6 +563,11 @@ export type HotelMenuItemMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   category?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrder
+  stockQty?: Prisma.SortOrder
+  isConsumable?: Prisma.SortOrder
+  provenance?: Prisma.SortOrder
+  supplierName?: Prisma.SortOrder
   needsKitchen?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -454,6 +576,12 @@ export type HotelMenuItemMinOrderByAggregateInput = {
 
 export type HotelMenuItemSumOrderByAggregateInput = {
   price?: Prisma.SortOrder
+  stockQty?: Prisma.SortOrder
+}
+
+export type HotelMenuItemScalarRelationFilter = {
+  is?: Prisma.HotelMenuItemWhereInput
+  isNot?: Prisma.HotelMenuItemWhereInput
 }
 
 export type HotelMenuItemNullableScalarRelationFilter = {
@@ -503,6 +631,20 @@ export type HotelMenuItemUncheckedUpdateManyWithoutBranchNestedInput = {
   deleteMany?: Prisma.HotelMenuItemScalarWhereInput | Prisma.HotelMenuItemScalarWhereInput[]
 }
 
+export type HotelMenuItemCreateNestedOneWithoutStockMovementsInput = {
+  create?: Prisma.XOR<Prisma.HotelMenuItemCreateWithoutStockMovementsInput, Prisma.HotelMenuItemUncheckedCreateWithoutStockMovementsInput>
+  connectOrCreate?: Prisma.HotelMenuItemCreateOrConnectWithoutStockMovementsInput
+  connect?: Prisma.HotelMenuItemWhereUniqueInput
+}
+
+export type HotelMenuItemUpdateOneRequiredWithoutStockMovementsNestedInput = {
+  create?: Prisma.XOR<Prisma.HotelMenuItemCreateWithoutStockMovementsInput, Prisma.HotelMenuItemUncheckedCreateWithoutStockMovementsInput>
+  connectOrCreate?: Prisma.HotelMenuItemCreateOrConnectWithoutStockMovementsInput
+  upsert?: Prisma.HotelMenuItemUpsertWithoutStockMovementsInput
+  connect?: Prisma.HotelMenuItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HotelMenuItemUpdateToOneWithWhereWithoutStockMovementsInput, Prisma.HotelMenuItemUpdateWithoutStockMovementsInput>, Prisma.HotelMenuItemUncheckedUpdateWithoutStockMovementsInput>
+}
+
 export type HotelMenuItemCreateNestedOneWithoutOrderItemsInput = {
   create?: Prisma.XOR<Prisma.HotelMenuItemCreateWithoutOrderItemsInput, Prisma.HotelMenuItemUncheckedCreateWithoutOrderItemsInput>
   connectOrCreate?: Prisma.HotelMenuItemCreateOrConnectWithoutOrderItemsInput
@@ -523,24 +665,36 @@ export type HotelMenuItemCreateWithoutBranchInput = {
   id?: string
   name: string
   category?: string
-  price: number
+  price?: number
+  imageUrl?: string | null
+  stockQty?: number
+  isConsumable?: boolean
+  provenance?: string | null
+  supplierName?: string | null
   needsKitchen?: boolean
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   orderItems?: Prisma.HotelOrderItemCreateNestedManyWithoutMenuItemInput
+  stockMovements?: Prisma.HotelStockMovementCreateNestedManyWithoutMenuItemInput
 }
 
 export type HotelMenuItemUncheckedCreateWithoutBranchInput = {
   id?: string
   name: string
   category?: string
-  price: number
+  price?: number
+  imageUrl?: string | null
+  stockQty?: number
+  isConsumable?: boolean
+  provenance?: string | null
+  supplierName?: string | null
   needsKitchen?: boolean
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   orderItems?: Prisma.HotelOrderItemUncheckedCreateNestedManyWithoutMenuItemInput
+  stockMovements?: Prisma.HotelStockMovementUncheckedCreateNestedManyWithoutMenuItemInput
 }
 
 export type HotelMenuItemCreateOrConnectWithoutBranchInput = {
@@ -578,22 +732,121 @@ export type HotelMenuItemScalarWhereInput = {
   name?: Prisma.StringFilter<"HotelMenuItem"> | string
   category?: Prisma.StringFilter<"HotelMenuItem"> | string
   price?: Prisma.FloatFilter<"HotelMenuItem"> | number
+  imageUrl?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
+  stockQty?: Prisma.IntFilter<"HotelMenuItem"> | number
+  isConsumable?: Prisma.BoolFilter<"HotelMenuItem"> | boolean
+  provenance?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
+  supplierName?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
   needsKitchen?: Prisma.BoolFilter<"HotelMenuItem"> | boolean
   active?: Prisma.BoolFilter<"HotelMenuItem"> | boolean
   createdAt?: Prisma.DateTimeFilter<"HotelMenuItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"HotelMenuItem"> | Date | string
 }
 
-export type HotelMenuItemCreateWithoutOrderItemsInput = {
+export type HotelMenuItemCreateWithoutStockMovementsInput = {
   id?: string
   name: string
   category?: string
-  price: number
+  price?: number
+  imageUrl?: string | null
+  stockQty?: number
+  isConsumable?: boolean
+  provenance?: string | null
+  supplierName?: string | null
   needsKitchen?: boolean
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutMenuItemsInput
+  orderItems?: Prisma.HotelOrderItemCreateNestedManyWithoutMenuItemInput
+}
+
+export type HotelMenuItemUncheckedCreateWithoutStockMovementsInput = {
+  id?: string
+  branchId: string
+  name: string
+  category?: string
+  price?: number
+  imageUrl?: string | null
+  stockQty?: number
+  isConsumable?: boolean
+  provenance?: string | null
+  supplierName?: string | null
+  needsKitchen?: boolean
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  orderItems?: Prisma.HotelOrderItemUncheckedCreateNestedManyWithoutMenuItemInput
+}
+
+export type HotelMenuItemCreateOrConnectWithoutStockMovementsInput = {
+  where: Prisma.HotelMenuItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.HotelMenuItemCreateWithoutStockMovementsInput, Prisma.HotelMenuItemUncheckedCreateWithoutStockMovementsInput>
+}
+
+export type HotelMenuItemUpsertWithoutStockMovementsInput = {
+  update: Prisma.XOR<Prisma.HotelMenuItemUpdateWithoutStockMovementsInput, Prisma.HotelMenuItemUncheckedUpdateWithoutStockMovementsInput>
+  create: Prisma.XOR<Prisma.HotelMenuItemCreateWithoutStockMovementsInput, Prisma.HotelMenuItemUncheckedCreateWithoutStockMovementsInput>
+  where?: Prisma.HotelMenuItemWhereInput
+}
+
+export type HotelMenuItemUpdateToOneWithWhereWithoutStockMovementsInput = {
+  where?: Prisma.HotelMenuItemWhereInput
+  data: Prisma.XOR<Prisma.HotelMenuItemUpdateWithoutStockMovementsInput, Prisma.HotelMenuItemUncheckedUpdateWithoutStockMovementsInput>
+}
+
+export type HotelMenuItemUpdateWithoutStockMovementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  needsKitchen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutMenuItemsNestedInput
+  orderItems?: Prisma.HotelOrderItemUpdateManyWithoutMenuItemNestedInput
+}
+
+export type HotelMenuItemUncheckedUpdateWithoutStockMovementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  needsKitchen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  orderItems?: Prisma.HotelOrderItemUncheckedUpdateManyWithoutMenuItemNestedInput
+}
+
+export type HotelMenuItemCreateWithoutOrderItemsInput = {
+  id?: string
+  name: string
+  category?: string
+  price?: number
+  imageUrl?: string | null
+  stockQty?: number
+  isConsumable?: boolean
+  provenance?: string | null
+  supplierName?: string | null
+  needsKitchen?: boolean
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutMenuItemsInput
+  stockMovements?: Prisma.HotelStockMovementCreateNestedManyWithoutMenuItemInput
 }
 
 export type HotelMenuItemUncheckedCreateWithoutOrderItemsInput = {
@@ -601,11 +854,17 @@ export type HotelMenuItemUncheckedCreateWithoutOrderItemsInput = {
   branchId: string
   name: string
   category?: string
-  price: number
+  price?: number
+  imageUrl?: string | null
+  stockQty?: number
+  isConsumable?: boolean
+  provenance?: string | null
+  supplierName?: string | null
   needsKitchen?: boolean
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  stockMovements?: Prisma.HotelStockMovementUncheckedCreateNestedManyWithoutMenuItemInput
 }
 
 export type HotelMenuItemCreateOrConnectWithoutOrderItemsInput = {
@@ -629,11 +888,17 @@ export type HotelMenuItemUpdateWithoutOrderItemsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   needsKitchen?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutMenuItemsNestedInput
+  stockMovements?: Prisma.HotelStockMovementUpdateManyWithoutMenuItemNestedInput
 }
 
 export type HotelMenuItemUncheckedUpdateWithoutOrderItemsInput = {
@@ -642,17 +907,28 @@ export type HotelMenuItemUncheckedUpdateWithoutOrderItemsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   needsKitchen?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stockMovements?: Prisma.HotelStockMovementUncheckedUpdateManyWithoutMenuItemNestedInput
 }
 
 export type HotelMenuItemCreateManyBranchInput = {
   id?: string
   name: string
   category?: string
-  price: number
+  price?: number
+  imageUrl?: string | null
+  stockQty?: number
+  isConsumable?: boolean
+  provenance?: string | null
+  supplierName?: string | null
   needsKitchen?: boolean
   active?: boolean
   createdAt?: Date | string
@@ -664,11 +940,17 @@ export type HotelMenuItemUpdateWithoutBranchInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   needsKitchen?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orderItems?: Prisma.HotelOrderItemUpdateManyWithoutMenuItemNestedInput
+  stockMovements?: Prisma.HotelStockMovementUpdateManyWithoutMenuItemNestedInput
 }
 
 export type HotelMenuItemUncheckedUpdateWithoutBranchInput = {
@@ -676,11 +958,17 @@ export type HotelMenuItemUncheckedUpdateWithoutBranchInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   needsKitchen?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orderItems?: Prisma.HotelOrderItemUncheckedUpdateManyWithoutMenuItemNestedInput
+  stockMovements?: Prisma.HotelStockMovementUncheckedUpdateManyWithoutMenuItemNestedInput
 }
 
 export type HotelMenuItemUncheckedUpdateManyWithoutBranchInput = {
@@ -688,6 +976,11 @@ export type HotelMenuItemUncheckedUpdateManyWithoutBranchInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   needsKitchen?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -701,10 +994,12 @@ export type HotelMenuItemUncheckedUpdateManyWithoutBranchInput = {
 
 export type HotelMenuItemCountOutputType = {
   orderItems: number
+  stockMovements: number
 }
 
 export type HotelMenuItemCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   orderItems?: boolean | HotelMenuItemCountOutputTypeCountOrderItemsArgs
+  stockMovements?: boolean | HotelMenuItemCountOutputTypeCountStockMovementsArgs
 }
 
 /**
@@ -724,6 +1019,13 @@ export type HotelMenuItemCountOutputTypeCountOrderItemsArgs<ExtArgs extends runt
   where?: Prisma.HotelOrderItemWhereInput
 }
 
+/**
+ * HotelMenuItemCountOutputType without action
+ */
+export type HotelMenuItemCountOutputTypeCountStockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.HotelStockMovementWhereInput
+}
+
 
 export type HotelMenuItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -731,12 +1033,18 @@ export type HotelMenuItemSelect<ExtArgs extends runtime.Types.Extensions.Interna
   name?: boolean
   category?: boolean
   price?: boolean
+  imageUrl?: boolean
+  stockQty?: boolean
+  isConsumable?: boolean
+  provenance?: boolean
+  supplierName?: boolean
   needsKitchen?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   orderItems?: boolean | Prisma.HotelMenuItem$orderItemsArgs<ExtArgs>
+  stockMovements?: boolean | Prisma.HotelMenuItem$stockMovementsArgs<ExtArgs>
   _count?: boolean | Prisma.HotelMenuItemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["hotelMenuItem"]>
 
@@ -746,6 +1054,11 @@ export type HotelMenuItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   name?: boolean
   category?: boolean
   price?: boolean
+  imageUrl?: boolean
+  stockQty?: boolean
+  isConsumable?: boolean
+  provenance?: boolean
+  supplierName?: boolean
   needsKitchen?: boolean
   active?: boolean
   createdAt?: boolean
@@ -759,6 +1072,11 @@ export type HotelMenuItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   name?: boolean
   category?: boolean
   price?: boolean
+  imageUrl?: boolean
+  stockQty?: boolean
+  isConsumable?: boolean
+  provenance?: boolean
+  supplierName?: boolean
   needsKitchen?: boolean
   active?: boolean
   createdAt?: boolean
@@ -772,16 +1090,22 @@ export type HotelMenuItemSelectScalar = {
   name?: boolean
   category?: boolean
   price?: boolean
+  imageUrl?: boolean
+  stockQty?: boolean
+  isConsumable?: boolean
+  provenance?: boolean
+  supplierName?: boolean
   needsKitchen?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type HotelMenuItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "name" | "category" | "price" | "needsKitchen" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["hotelMenuItem"]>
+export type HotelMenuItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "name" | "category" | "price" | "imageUrl" | "stockQty" | "isConsumable" | "provenance" | "supplierName" | "needsKitchen" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["hotelMenuItem"]>
 export type HotelMenuItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   orderItems?: boolean | Prisma.HotelMenuItem$orderItemsArgs<ExtArgs>
+  stockMovements?: boolean | Prisma.HotelMenuItem$stockMovementsArgs<ExtArgs>
   _count?: boolean | Prisma.HotelMenuItemCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type HotelMenuItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -796,13 +1120,37 @@ export type $HotelMenuItemPayload<ExtArgs extends runtime.Types.Extensions.Inter
   objects: {
     branch: Prisma.$BranchPayload<ExtArgs>
     orderItems: Prisma.$HotelOrderItemPayload<ExtArgs>[]
+    stockMovements: Prisma.$HotelStockMovementPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     branchId: string
     name: string
     category: string
+    /**
+     * Prix de vente (optionnel / 0 pour les consommables).
+     */
     price: number
+    /**
+     * Photo produit (URL ou data URL).
+     */
+    imageUrl: string | null
+    /**
+     * Quantité en stock (signalée et décrémentée à la vente / livraison).
+     */
+    stockQty: number
+    /**
+     * Consommable : non vendu (invisible resto / vente rapide).
+     */
+    isConsumable: boolean
+    /**
+     * Provenance (consommables, optionnel).
+     */
+    provenance: string | null
+    /**
+     * Fournisseur (consommables, optionnel).
+     */
+    supplierName: string | null
     needsKitchen: boolean
     active: boolean
     createdAt: Date
@@ -1203,6 +1551,7 @@ export interface Prisma__HotelMenuItemClient<T, Null = never, ExtArgs extends ru
   readonly [Symbol.toStringTag]: "PrismaPromise"
   branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   orderItems<T extends Prisma.HotelMenuItem$orderItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.HotelMenuItem$orderItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HotelOrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  stockMovements<T extends Prisma.HotelMenuItem$stockMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.HotelMenuItem$stockMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HotelStockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1237,6 +1586,11 @@ export interface HotelMenuItemFieldRefs {
   readonly name: Prisma.FieldRef<"HotelMenuItem", 'String'>
   readonly category: Prisma.FieldRef<"HotelMenuItem", 'String'>
   readonly price: Prisma.FieldRef<"HotelMenuItem", 'Float'>
+  readonly imageUrl: Prisma.FieldRef<"HotelMenuItem", 'String'>
+  readonly stockQty: Prisma.FieldRef<"HotelMenuItem", 'Int'>
+  readonly isConsumable: Prisma.FieldRef<"HotelMenuItem", 'Boolean'>
+  readonly provenance: Prisma.FieldRef<"HotelMenuItem", 'String'>
+  readonly supplierName: Prisma.FieldRef<"HotelMenuItem", 'String'>
   readonly needsKitchen: Prisma.FieldRef<"HotelMenuItem", 'Boolean'>
   readonly active: Prisma.FieldRef<"HotelMenuItem", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"HotelMenuItem", 'DateTime'>
@@ -1663,6 +2017,30 @@ export type HotelMenuItem$orderItemsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.HotelOrderItemScalarFieldEnum | Prisma.HotelOrderItemScalarFieldEnum[]
+}
+
+/**
+ * HotelMenuItem.stockMovements
+ */
+export type HotelMenuItem$stockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HotelStockMovement
+   */
+  select?: Prisma.HotelStockMovementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HotelStockMovement
+   */
+  omit?: Prisma.HotelStockMovementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HotelStockMovementInclude<ExtArgs> | null
+  where?: Prisma.HotelStockMovementWhereInput
+  orderBy?: Prisma.HotelStockMovementOrderByWithRelationInput | Prisma.HotelStockMovementOrderByWithRelationInput[]
+  cursor?: Prisma.HotelStockMovementWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.HotelStockMovementScalarFieldEnum | Prisma.HotelStockMovementScalarFieldEnum[]
 }
 
 /**

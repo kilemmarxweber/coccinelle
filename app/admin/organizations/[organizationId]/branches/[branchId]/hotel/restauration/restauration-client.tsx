@@ -33,6 +33,10 @@ import {
   createHotelOrderAction,
 } from "@/lib/hotel/actions";
 import {
+  formatPrimaryAmount,
+  type NormalizedUsdCdfRate,
+} from "@/lib/cash/exchange";
+import {
   elapsedLabel,
   formatCountdownBanner,
   prepCountdown,
@@ -45,6 +49,8 @@ type MenuItem = {
   category: string;
   price: number;
   needsKitchen: boolean;
+  imageUrl?: string | null;
+  stockQty?: number;
 };
 
 type OrderItem = {
@@ -114,6 +120,7 @@ export function RestaurationClient(props: {
   branchId: string;
   menuItems: MenuItem[];
   orders: Order[];
+  rate?: NormalizedUsdCdfRate | null;
   initialView?: "commande" | "suivi";
 }) {
   const router = useRouter();
@@ -122,6 +129,10 @@ export function RestaurationClient(props: {
   const [tableLabel, setTableLabel] = useState("T1");
   const [now, setNow] = useState(() => Date.now());
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  function fmt(amountUsd: number) {
+    return formatPrimaryAmount(amountUsd, props.rate);
+  }
   const toDeliverCount = props.orders.filter(
     (o) => canDeliver(o.status) && !o.deliveredAt,
   ).length;
@@ -313,6 +324,7 @@ export function RestaurationClient(props: {
           onAdd={addItem}
           onSetQty={setQty}
           onClear={clear}
+          formatPrice={fmt}
           ticketTitle="Ticket serveur"
           emptyHint="Touchez un plat ou une boisson pour composer le ticket"
           ticketMeta={
@@ -485,7 +497,7 @@ export function RestaurationClient(props: {
                               {item.name}
                             </span>
                             <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
-                              {item.amount.toFixed(2)} $
+                              {fmt(item.amount)}
                             </span>
                           </div>
                         ))}
@@ -613,15 +625,15 @@ export function RestaurationClient(props: {
                         <div className="min-w-0 flex-1">
                           <p className="font-semibold">{item.name}</p>
                           <p className="text-xs text-muted-foreground tabular-nums">
-                            {(
+                            {fmt(
                               item.unitPrice ??
-                              item.amount / Math.max(1, item.quantity)
-                            ).toFixed(2)}{" "}
-                            $ / u.
+                                item.amount / Math.max(1, item.quantity),
+                            )}{" "}
+                            / u.
                           </p>
                         </div>
                         <span className="font-semibold tabular-nums">
-                          {item.amount.toFixed(2)} $
+                          {fmt(item.amount)}
                         </span>
                       </li>
                     ))}

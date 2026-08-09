@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
   ensureHotelMenuSeedAction,
   listMenuItemsAction,
@@ -24,7 +25,7 @@ export default async function RestaurationPage({
     requireModule: "hotel",
   });
   await ensureHotelMenuSeedAction(organizationId, branchId);
-  const [menuItems, orders] = await Promise.all([
+  const [menuItems, orders, rate] = await Promise.all([
     listMenuItemsAction(organizationId, branchId),
     listOrdersByStatusAction(organizationId, branchId, [
       "ENVOYEE",
@@ -34,6 +35,7 @@ export default async function RestaurationPage({
       "PAYEE",
       "LIVREE",
     ]),
+    getActiveExchangeRate(branchId),
   ]);
   return (
     <Suspense fallback={null}>
@@ -42,6 +44,7 @@ export default async function RestaurationPage({
         branchId={branchId}
         menuItems={menuItems}
         orders={orders}
+        rate={rate}
         initialView={view === "suivi" ? "suivi" : undefined}
       />
     </Suspense>

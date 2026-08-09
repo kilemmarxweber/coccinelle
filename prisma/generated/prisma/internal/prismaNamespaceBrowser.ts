@@ -82,6 +82,7 @@ export const ModelName = {
   FolioLine: 'FolioLine',
   Payment: 'Payment',
   HotelMenuItem: 'HotelMenuItem',
+  HotelStockMovement: 'HotelStockMovement',
   HotelOrder: 'HotelOrder',
   HotelOrderItem: 'HotelOrderItem',
   BranchNotification: 'BranchNotification'
@@ -581,6 +582,11 @@ export const HotelMenuItemScalarFieldEnum = {
   name: 'name',
   category: 'category',
   price: 'price',
+  imageUrl: 'imageUrl',
+  stockQty: 'stockQty',
+  isConsumable: 'isConsumable',
+  provenance: 'provenance',
+  supplierName: 'supplierName',
   needsKitchen: 'needsKitchen',
   active: 'active',
   createdAt: 'createdAt',
@@ -588,6 +594,20 @@ export const HotelMenuItemScalarFieldEnum = {
 } as const
 
 export type HotelMenuItemScalarFieldEnum = (typeof HotelMenuItemScalarFieldEnum)[keyof typeof HotelMenuItemScalarFieldEnum]
+
+
+export const HotelStockMovementScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  menuItemId: 'menuItemId',
+  kind: 'kind',
+  quantity: 'quantity',
+  note: 'note',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt'
+} as const
+
+export type HotelStockMovementScalarFieldEnum = (typeof HotelStockMovementScalarFieldEnum)[keyof typeof HotelStockMovementScalarFieldEnum]
 
 
 export const HotelOrderScalarFieldEnum = {

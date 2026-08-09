@@ -193,9 +193,14 @@ export type FolioLine = Prisma.FolioLineModel
 export type Payment = Prisma.PaymentModel
 /**
  * Model HotelMenuItem
- * * Catalogue F&B / vente rapide hôtel.
+ * * Catalogue F&B / vente rapide / consommables hôtel.
  */
 export type HotelMenuItem = Prisma.HotelMenuItemModel
+/**
+ * Model HotelStockMovement
+ * Entrées (livraison fournisseur) / sorties (consommation) de stock.
+ */
+export type HotelStockMovement = Prisma.HotelStockMovementModel
 /**
  * Model HotelOrder
  * 

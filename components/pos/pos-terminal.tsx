@@ -12,6 +12,8 @@ export type PosMenuItem = {
   category: string;
   price: number;
   needsKitchen?: boolean;
+  imageUrl?: string | null;
+  stockQty?: number;
 };
 
 export type PosCartLine = {
@@ -47,6 +49,8 @@ type Props = {
   actions: ReactNode;
   emptyHint?: string;
   className?: string;
+  /** Format d’affichage des prix (défaut : 2 décimales + $). */
+  formatPrice?: (amount: number) => string;
 };
 
 export function PosTerminal({
@@ -60,6 +64,7 @@ export function PosTerminal({
   actions,
   emptyHint = "Touchez un article pour l’ajouter",
   className,
+  formatPrice = (amount: number) => `${amount.toFixed(2)} $`,
 }: Props) {
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -86,6 +91,40 @@ export function PosTerminal({
   const total = cart.reduce((s, l) => s + l.price * l.quantity, 0);
   const linesCount = cart.reduce((s, l) => s + l.quantity, 0);
   const activeLabel = category === "Tous" ? "Catalogue" : category;
+
+  const cartQtyById = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const line of cart) {
+      map.set(line.menuItemId, (map.get(line.menuItemId) ?? 0) + line.quantity);
+    }
+    return map;
+  }, [cart]);
+
+  const itemById = useMemo(() => {
+    const map = new Map(items.map((i) => [i.id, i]));
+    return map;
+  }, [items]);
+
+  /** Stock restant — décompte panier en live (caisse / resto). */
+  function liveStock(item: PosMenuItem): number | null {
+    if (typeof item.stockQty !== "number") return null;
+    const inCart = cartQtyById.get(item.id) ?? 0;
+    return Math.max(0, item.stockQty - inCart);
+  }
+
+  function tryAdd(item: PosMenuItem) {
+    const rem = liveStock(item);
+    if (rem !== null && rem <= 0) return;
+    onAdd(item);
+  }
+
+  function trySetQty(menuItemId: string, quantity: number) {
+    const item = itemById.get(menuItemId);
+    if (item && typeof item.stockQty === "number") {
+      quantity = Math.min(quantity, item.stockQty);
+    }
+    onSetQty(menuItemId, quantity);
+  }
 
   return (
     <div
@@ -122,36 +161,79 @@ export function PosTerminal({
             </p>
           ) : (
             <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-              {filtered.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => onAdd(item)}
-                  className={cn(
-                    "group relative aspect-[4/5] overflow-hidden rounded-xl text-left shadow-sm transition",
-                    "ring-offset-background hover:scale-[1.02] hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]",
-                    "bg-gradient-to-br",
-                    toneFor(item.id + item.category),
-                  )}
-                >
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.22),transparent_55%)]" />
-                  <div className="absolute top-2 right-2 rounded-md bg-black/35 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-white uppercase backdrop-blur-sm">
-                    {item.price.toFixed(2)} $
-                  </div>
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/45 to-transparent px-2.5 pt-8 pb-2.5">
-                    <p className="line-clamp-2 text-sm font-semibold text-white drop-shadow">
-                      {item.name}
-                    </p>
-                    {item.needsKitchen ? (
-                      <p className="mt-0.5 text-[11px] text-white/75">Cuisine</p>
-                    ) : (
-                      <p className="mt-0.5 text-[11px] text-white/75">
-                        {item.category}
-                      </p>
+              {filtered.map((item) => {
+                const rem = liveStock(item);
+                const soldOut = rem === 0;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => tryAdd(item)}
+                    disabled={soldOut}
+                    aria-disabled={soldOut}
+                    className={cn(
+                      "group relative aspect-[4/5] overflow-hidden rounded-xl text-left shadow-sm transition",
+                      "ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                      "bg-gradient-to-br",
+                      toneFor(item.id + item.category),
+                      soldOut
+                        ? "cursor-not-allowed grayscale opacity-45"
+                        : "hover:scale-[1.02] hover:shadow-md active:scale-[0.98]",
                     )}
-                  </div>
-                </button>
-              ))}
+                  >
+                    {item.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={item.imageUrl}
+                        alt=""
+                        className={cn(
+                          "absolute inset-0 size-full object-cover",
+                          soldOut && "grayscale",
+                        )}
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.22),transparent_55%)]" />
+                    )}
+                    <div
+                      className={cn(
+                        "absolute inset-0",
+                        item.imageUrl ? "bg-black/25" : null,
+                        soldOut && "bg-black/40",
+                      )}
+                    />
+                    <div className="absolute top-2 right-2 rounded-md bg-black/35 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-white uppercase backdrop-blur-sm">
+                      {formatPrice(item.price)}
+                    </div>
+                    {rem !== null ? (
+                      <div
+                        className={cn(
+                          "absolute top-2 left-2 rounded-md px-1.5 py-0.5 text-[10px] font-semibold text-white backdrop-blur-sm",
+                          rem <= 0
+                            ? "bg-rose-600/90"
+                            : rem <= 5
+                              ? "bg-amber-600/85"
+                              : "bg-emerald-700/80",
+                        )}
+                      >
+                        {rem <= 0 ? "Rupture" : `Stock ${rem}`}
+                      </div>
+                    ) : null}
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/45 to-transparent px-2.5 pt-8 pb-2.5">
+                      <p className="line-clamp-2 text-sm font-semibold text-white drop-shadow">
+                        {item.name}
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-white/75">
+                        {soldOut
+                          ? "Indisponible"
+                          : item.needsKitchen
+                            ? "Cuisine"
+                            : item.category}
+                        {!soldOut && rem !== null ? ` · ${rem} dispo` : ""}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
@@ -223,11 +305,11 @@ export function PosTerminal({
                         </span>
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {line.price.toFixed(2)} $ / u.
+                        {formatPrice(line.price)} / u.
                       </p>
                     </div>
                     <p className="shrink-0 text-sm font-semibold tabular-nums">
-                      {(line.price * line.quantity).toFixed(2)} $
+                      {formatPrice(line.price * line.quantity)}
                     </p>
                   </div>
                   <div className="mt-2 flex items-center gap-1.5">
@@ -235,7 +317,7 @@ export function PosTerminal({
                       type="button"
                       className="flex size-7 items-center justify-center rounded-md border border-border bg-card hover:bg-muted"
                       onClick={() =>
-                        onSetQty(line.menuItemId, line.quantity - 1)
+                        trySetQty(line.menuItemId, line.quantity - 1)
                       }
                       aria-label="Diminuer"
                     >
@@ -246,9 +328,16 @@ export function PosTerminal({
                     </span>
                     <button
                       type="button"
-                      className="flex size-7 items-center justify-center rounded-md border border-border bg-card hover:bg-muted"
+                      className="flex size-7 items-center justify-center rounded-md border border-border bg-card hover:bg-muted disabled:opacity-40"
+                      disabled={(() => {
+                        const item = itemById.get(line.menuItemId);
+                        if (!item || typeof item.stockQty !== "number") {
+                          return false;
+                        }
+                        return line.quantity >= item.stockQty;
+                      })()}
                       onClick={() =>
-                        onSetQty(line.menuItemId, line.quantity + 1)
+                        trySetQty(line.menuItemId, line.quantity + 1)
                       }
                       aria-label="Augmenter"
                     >
@@ -257,7 +346,7 @@ export function PosTerminal({
                     <button
                       type="button"
                       className="ml-auto flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                      onClick={() => onSetQty(line.menuItemId, 0)}
+                      onClick={() => trySetQty(line.menuItemId, 0)}
                       aria-label="Retirer"
                     >
                       <X className="size-3.5" />
@@ -273,7 +362,7 @@ export function PosTerminal({
           <div className="flex items-end justify-between gap-3">
             <span className="text-sm text-muted-foreground">Total</span>
             <span className="text-2xl font-bold tracking-tight tabular-nums">
-              {total.toFixed(2)} $
+              {formatPrice(total)}
             </span>
           </div>
           {actions}
@@ -289,6 +378,10 @@ export function usePosCart() {
   function addItem(item: PosMenuItem) {
     setCart((prev) => {
       const existing = prev.find((l) => l.menuItemId === item.id);
+      const nextQty = (existing?.quantity ?? 0) + 1;
+      if (typeof item.stockQty === "number" && nextQty > item.stockQty) {
+        return prev;
+      }
       if (existing) {
         return prev.map((l) =>
           l.menuItemId === item.id

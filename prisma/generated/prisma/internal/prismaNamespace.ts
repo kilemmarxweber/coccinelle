@@ -415,6 +415,7 @@ export const ModelName = {
   FolioLine: 'FolioLine',
   Payment: 'Payment',
   HotelMenuItem: 'HotelMenuItem',
+  HotelStockMovement: 'HotelStockMovement',
   HotelOrder: 'HotelOrder',
   HotelOrderItem: 'HotelOrderItem',
   BranchNotification: 'BranchNotification'
@@ -433,7 +434,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationRole" | "member" | "invitation" | "client" | "trajet" | "trajetProgramme" | "trajetDepart" | "passager" | "reservation" | "colis" | "reservationDraft" | "paiement" | "penalite" | "branch" | "branchMember" | "hotelRoomType" | "hotelRoom" | "shopCategory" | "shopProduct" | "exchangeRate" | "cashSession" | "hotelStay" | "folio" | "folioLine" | "payment" | "hotelMenuItem" | "hotelOrder" | "hotelOrderItem" | "branchNotification"
+    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationRole" | "member" | "invitation" | "client" | "trajet" | "trajetProgramme" | "trajetDepart" | "passager" | "reservation" | "colis" | "reservationDraft" | "paiement" | "penalite" | "branch" | "branchMember" | "hotelRoomType" | "hotelRoom" | "shopCategory" | "shopProduct" | "exchangeRate" | "cashSession" | "hotelStay" | "folio" | "folioLine" | "payment" | "hotelMenuItem" | "hotelStockMovement" | "hotelOrder" | "hotelOrderItem" | "branchNotification"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2731,6 +2732,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    HotelStockMovement: {
+      payload: Prisma.$HotelStockMovementPayload<ExtArgs>
+      fields: Prisma.HotelStockMovementFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HotelStockMovementFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStockMovementPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HotelStockMovementFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStockMovementPayload>
+        }
+        findFirst: {
+          args: Prisma.HotelStockMovementFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStockMovementPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HotelStockMovementFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStockMovementPayload>
+        }
+        findMany: {
+          args: Prisma.HotelStockMovementFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStockMovementPayload>[]
+        }
+        create: {
+          args: Prisma.HotelStockMovementCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStockMovementPayload>
+        }
+        createMany: {
+          args: Prisma.HotelStockMovementCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HotelStockMovementCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStockMovementPayload>[]
+        }
+        delete: {
+          args: Prisma.HotelStockMovementDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStockMovementPayload>
+        }
+        update: {
+          args: Prisma.HotelStockMovementUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStockMovementPayload>
+        }
+        deleteMany: {
+          args: Prisma.HotelStockMovementDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HotelStockMovementUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HotelStockMovementUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStockMovementPayload>[]
+        }
+        upsert: {
+          args: Prisma.HotelStockMovementUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HotelStockMovementPayload>
+        }
+        aggregate: {
+          args: Prisma.HotelStockMovementAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHotelStockMovement>
+        }
+        groupBy: {
+          args: Prisma.HotelStockMovementGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelStockMovementGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HotelStockMovementCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HotelStockMovementCountAggregateOutputType> | number
+        }
+      }
+    }
     HotelOrder: {
       payload: Prisma.$HotelOrderPayload<ExtArgs>
       fields: Prisma.HotelOrderFieldRefs
@@ -3470,6 +3545,11 @@ export const HotelMenuItemScalarFieldEnum = {
   name: 'name',
   category: 'category',
   price: 'price',
+  imageUrl: 'imageUrl',
+  stockQty: 'stockQty',
+  isConsumable: 'isConsumable',
+  provenance: 'provenance',
+  supplierName: 'supplierName',
   needsKitchen: 'needsKitchen',
   active: 'active',
   createdAt: 'createdAt',
@@ -3477,6 +3557,20 @@ export const HotelMenuItemScalarFieldEnum = {
 } as const
 
 export type HotelMenuItemScalarFieldEnum = (typeof HotelMenuItemScalarFieldEnum)[keyof typeof HotelMenuItemScalarFieldEnum]
+
+
+export const HotelStockMovementScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  menuItemId: 'menuItemId',
+  kind: 'kind',
+  quantity: 'quantity',
+  note: 'note',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt'
+} as const
+
+export type HotelStockMovementScalarFieldEnum = (typeof HotelStockMovementScalarFieldEnum)[keyof typeof HotelStockMovementScalarFieldEnum]
 
 
 export const HotelOrderScalarFieldEnum = {
@@ -4094,6 +4188,7 @@ export type GlobalOmitConfig = {
   folioLine?: Prisma.FolioLineOmit
   payment?: Prisma.PaymentOmit
   hotelMenuItem?: Prisma.HotelMenuItemOmit
+  hotelStockMovement?: Prisma.HotelStockMovementOmit
   hotelOrder?: Prisma.HotelOrderOmit
   hotelOrderItem?: Prisma.HotelOrderItemOmit
   branchNotification?: Prisma.BranchNotificationOmit

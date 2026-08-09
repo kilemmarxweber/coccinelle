@@ -125,6 +125,7 @@ export async function bootstrapBranchByType(
       data: DEFAULT_HOTEL_MENU.map((item) => ({
         branchId: input.branchId,
         ...item,
+        stockQty: 50,
       })),
     });
 

@@ -6,8 +6,14 @@ import { auth } from "@/lib/auth";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { branchBasePath } from "@/lib/branch/paths";
 import prisma from "@/lib/prisma";
+import type { Prisma } from "@/prisma/generated/prisma/client";
 import { DEFAULT_HOTEL_MENU } from "@/lib/hotel/default-menu";
 import { HOTEL_CHECKOUT_HOUR } from "@/lib/hotel/constants";
+import {
+  defaultNeedsKitchen,
+  isConsumableCategory,
+  isHotelMenuCategory,
+} from "@/lib/hotel/menu-categories";
 
 async function ctx(organizationId: string, branchId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -27,6 +33,8 @@ function revalidateHotel(organizationId: string, branchId: string) {
   const base = branchBasePath(organizationId, branchId);
   revalidatePath(`${base}/hotel/sejours`);
   revalidatePath(`${base}/hotel/chambres`);
+  revalidatePath(`${base}/hotel/produits`);
+  revalidatePath(`${base}/hotel/livraison`);
   revalidatePath(`${base}/hotel/restauration`);
   revalidatePath(`${base}/hotel/cuisine`);
   revalidatePath(`${base}/caisse`);
@@ -513,9 +521,309 @@ export async function listMenuItemsAction(
 ) {
   await ctx(organizationId, branchId);
   return prisma.hotelMenuItem.findMany({
-    where: { branchId, active: true },
+    where: { branchId, active: true, isConsumable: false },
     orderBy: [{ category: "asc" }, { name: "asc" }],
   });
+}
+
+/** Catalogue admin (actifs + inactifs) pour la page Produits. */
+export async function listAllMenuItemsAction(
+  organizationId: string,
+  branchId: string,
+) {
+  await ctx(organizationId, branchId);
+  return prisma.hotelMenuItem.findMany({
+    where: { branchId },
+    orderBy: [{ active: "desc" }, { category: "asc" }, { name: "asc" }],
+  });
+}
+
+/** Consommables actifs pour la page Livraison. */
+export async function listConsumableItemsAction(
+  organizationId: string,
+  branchId: string,
+) {
+  await ctx(organizationId, branchId);
+  return prisma.hotelMenuItem.findMany({
+    where: { branchId, isConsumable: true, active: true },
+    orderBy: [{ name: "asc" }],
+  });
+}
+
+export async function listStockMovementsAction(
+  organizationId: string,
+  branchId: string,
+  limit = 40,
+) {
+  await ctx(organizationId, branchId);
+  return prisma.hotelStockMovement.findMany({
+    where: { branchId },
+    include: {
+      menuItem: { select: { id: true, name: true, imageUrl: true } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: Math.min(100, Math.max(1, limit)),
+  });
+}
+
+const MAX_PRODUCT_IMAGE_CHARS = 700_000; // ~512 Ko data URL
+
+function normalizeProductImage(imageUrl?: string | null) {
+  const v = imageUrl?.trim() || null;
+  if (!v) return null;
+  if (v.length > MAX_PRODUCT_IMAGE_CHARS) {
+    throw new Error("Image trop volumineuse (max. 512 Ko).");
+  }
+  if (!v.startsWith("data:image/") && !v.startsWith("https://") && !v.startsWith("http://")) {
+    throw new Error("Format d’image invalide.");
+  }
+  return v;
+}
+
+function normalizeCategory(category: string) {
+  const c = category.trim();
+  if (!isHotelMenuCategory(c)) {
+    throw new Error("Type de produit invalide.");
+  }
+  return c;
+}
+
+function normalizeOptionalText(value?: string | null, max = 120) {
+  const v = value?.trim() || null;
+  if (!v) return null;
+  if (v.length > max) throw new Error("Texte trop long.");
+  return v;
+}
+
+export async function createMenuItemAction(input: {
+  organizationId: string;
+  branchId: string;
+  name: string;
+  category: string;
+  price?: number | null;
+  stockQty: number;
+  needsKitchen?: boolean;
+  imageUrl?: string | null;
+  provenance?: string | null;
+  supplierName?: string | null;
+}) {
+  await ctx(input.organizationId, input.branchId);
+  const name = input.name.trim();
+  if (!name) throw new Error("Nom du produit requis.");
+  const category = normalizeCategory(input.category);
+  const isConsumable = isConsumableCategory(category);
+  let price = Number(input.price);
+  if (!Number.isFinite(price) || price < 0) {
+    if (isConsumable) price = 0;
+    else throw new Error("Prix invalide.");
+  }
+  if (!isConsumable && (!(price > 0) && price !== 0)) {
+    // allow 0 for freebies? keep >= 0 already
+  }
+  const stockQty = Math.max(0, Math.round(Number(input.stockQty) || 0));
+  const needsKitchen = isConsumable
+    ? false
+    : (input.needsKitchen ?? defaultNeedsKitchen(category));
+
+  const item = await prisma.hotelMenuItem.create({
+    data: {
+      branchId: input.branchId,
+      name,
+      category,
+      price,
+      stockQty,
+      needsKitchen,
+      isConsumable,
+      provenance: isConsumable
+        ? normalizeOptionalText(input.provenance)
+        : null,
+      supplierName: isConsumable
+        ? normalizeOptionalText(input.supplierName)
+        : null,
+      imageUrl: normalizeProductImage(input.imageUrl),
+      active: true,
+    },
+  });
+  revalidateHotel(input.organizationId, input.branchId);
+  return item;
+}
+
+export async function updateMenuItemAction(input: {
+  organizationId: string;
+  branchId: string;
+  itemId: string;
+  name: string;
+  category: string;
+  price?: number | null;
+  stockQty: number;
+  needsKitchen: boolean;
+  active: boolean;
+  imageUrl?: string | null;
+  provenance?: string | null;
+  supplierName?: string | null;
+}) {
+  await ctx(input.organizationId, input.branchId);
+  const existing = await prisma.hotelMenuItem.findFirst({
+    where: { id: input.itemId, branchId: input.branchId },
+  });
+  if (!existing) throw new Error("Produit introuvable.");
+
+  const name = input.name.trim();
+  if (!name) throw new Error("Nom du produit requis.");
+  const category = normalizeCategory(input.category);
+  const isConsumable = isConsumableCategory(category);
+  let price = Number(input.price);
+  if (!Number.isFinite(price) || price < 0) {
+    if (isConsumable) price = 0;
+    else throw new Error("Prix invalide.");
+  }
+  const stockQty = Math.max(0, Math.round(Number(input.stockQty) || 0));
+
+  const item = await prisma.hotelMenuItem.update({
+    where: { id: existing.id },
+    data: {
+      name,
+      category,
+      price,
+      stockQty,
+      needsKitchen: isConsumable ? false : Boolean(input.needsKitchen),
+      isConsumable,
+      provenance: isConsumable
+        ? normalizeOptionalText(input.provenance)
+        : null,
+      supplierName: isConsumable
+        ? normalizeOptionalText(input.supplierName)
+        : null,
+      active: Boolean(input.active),
+      imageUrl: normalizeProductImage(input.imageUrl),
+    },
+  });
+  revalidateHotel(input.organizationId, input.branchId);
+  return item;
+}
+
+export async function setMenuItemStockAction(input: {
+  organizationId: string;
+  branchId: string;
+  itemId: string;
+  stockQty: number;
+}) {
+  await ctx(input.organizationId, input.branchId);
+  const stockQty = Math.max(0, Math.round(Number(input.stockQty) || 0));
+  const existing = await prisma.hotelMenuItem.findFirst({
+    where: { id: input.itemId, branchId: input.branchId },
+  });
+  if (!existing) throw new Error("Produit introuvable.");
+  const item = await prisma.hotelMenuItem.update({
+    where: { id: existing.id },
+    data: { stockQty },
+  });
+  revalidateHotel(input.organizationId, input.branchId);
+  return item;
+}
+
+/** Entrée (livraison) ou sortie (décompte) pour un consommable. */
+export async function recordConsumableStockMoveAction(input: {
+  organizationId: string;
+  branchId: string;
+  itemId: string;
+  kind: "ENTREE" | "SORTIE";
+  quantity: number;
+  note?: string | null;
+}) {
+  const { user } = await ctx(input.organizationId, input.branchId);
+  const qty = Math.round(Number(input.quantity));
+  if (!Number.isFinite(qty) || qty < 1) {
+    throw new Error("Quantité invalide (min. 1).");
+  }
+  if (input.kind !== "ENTREE" && input.kind !== "SORTIE") {
+    throw new Error("Type de mouvement invalide.");
+  }
+
+  const item = await prisma.hotelMenuItem.findFirst({
+    where: {
+      id: input.itemId,
+      branchId: input.branchId,
+      isConsumable: true,
+      active: true,
+    },
+  });
+  if (!item) throw new Error("Consommable introuvable.");
+
+  if (input.kind === "SORTIE" && item.stockQty < qty) {
+    throw new Error(
+      `Stock insuffisant pour « ${item.name} » (dispo ${item.stockQty}).`,
+    );
+  }
+
+  const note = normalizeOptionalText(input.note, 200);
+
+  await prisma.$transaction(async (tx) => {
+    await tx.hotelMenuItem.update({
+      where: { id: item.id },
+      data: {
+        stockQty:
+          input.kind === "ENTREE"
+            ? { increment: qty }
+            : { decrement: qty },
+      },
+    });
+    await tx.hotelStockMovement.create({
+      data: {
+        branchId: input.branchId,
+        menuItemId: item.id,
+        kind: input.kind,
+        quantity: qty,
+        note,
+        createdByUserId: user.id,
+      },
+    });
+  });
+
+  revalidateHotel(input.organizationId, input.branchId);
+  return { ok: true as const };
+}
+
+async function consumeMenuStock(
+  tx: Prisma.TransactionClient,
+  branchId: string,
+  lines: { menuItemId: string; quantity: number }[],
+) {
+  const ids = [...new Set(lines.map((l) => l.menuItemId))];
+  const rows = await tx.hotelMenuItem.findMany({
+    where: {
+      branchId,
+      id: { in: ids },
+      active: true,
+      isConsumable: false,
+    },
+    select: { id: true, name: true, stockQty: true },
+  });
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  const needed = new Map<string, number>();
+  for (const line of lines) {
+    if (!byId.has(line.menuItemId)) {
+      throw new Error("Article invalide.");
+    }
+    needed.set(
+      line.menuItemId,
+      (needed.get(line.menuItemId) ?? 0) + Math.max(1, line.quantity),
+    );
+  }
+  for (const [id, qty] of needed) {
+    const row = byId.get(id)!;
+    if (row.stockQty < qty) {
+      throw new Error(
+        `Stock insuffisant pour « ${row.name} » (dispo ${row.stockQty}).`,
+      );
+    }
+  }
+  for (const [id, qty] of needed) {
+    await tx.hotelMenuItem.update({
+      where: { id },
+      data: { stockQty: { decrement: qty } },
+    });
+  }
 }
 
 export async function ensureHotelMenuSeedAction(
@@ -531,11 +839,17 @@ export async function ensureHotelMenuSeedAction(
   const missing = DEFAULT_HOTEL_MENU.filter((item) => !known.has(item.name));
   if (missing.length > 0) {
     await prisma.hotelMenuItem.createMany({
-      data: missing.map((item) => ({ branchId, ...item })),
+      data: missing.map((item) => ({
+        branchId,
+        ...item,
+        stockQty: 50,
+      })),
     });
   }
   // Aligne desserts / articles seed sur needsKitchen (ex. desserts → cuisine)
-  const byName = new Map(DEFAULT_HOTEL_MENU.map((i) => [i.name, i]));
+  const byName = new Map<string, (typeof DEFAULT_HOTEL_MENU)[number]>(
+    DEFAULT_HOTEL_MENU.map((i) => [i.name, i]),
+  );
   for (const row of existing) {
     const def = byName.get(row.name);
     if (!def) continue;
@@ -584,7 +898,12 @@ export async function createHotelOrderAction(input: {
 
   const menuIds = input.items.map((i) => i.menuItemId);
   const menu = await prisma.hotelMenuItem.findMany({
-    where: { branchId: input.branchId, id: { in: menuIds }, active: true },
+    where: {
+      branchId: input.branchId,
+      id: { in: menuIds },
+      active: true,
+      isConsumable: false,
+    },
   });
   if (menu.length !== menuIds.length) throw new Error("Article invalide.");
 
@@ -592,6 +911,8 @@ export async function createHotelOrderAction(input: {
   const needsKitchen = menu.some((m) => m.needsKitchen);
 
   const order = await prisma.$transaction(async (tx) => {
+    await consumeMenuStock(tx, input.branchId, input.items);
+
     const o = await tx.hotelOrder.create({
       data: {
         branchId: input.branchId,
@@ -1017,7 +1338,12 @@ export async function createQuickSaleAction(input: {
 
   const menuIds = input.items.map((i) => i.menuItemId);
   const menu = await prisma.hotelMenuItem.findMany({
-    where: { branchId: input.branchId, id: { in: menuIds }, active: true },
+    where: {
+      branchId: input.branchId,
+      id: { in: menuIds },
+      active: true,
+      isConsumable: false,
+    },
   });
   if (menu.length !== menuIds.length) throw new Error("Article invalide.");
 
@@ -1026,6 +1352,8 @@ export async function createQuickSaleAction(input: {
   const now = new Date();
 
   const order = await prisma.$transaction(async (tx) => {
+    await consumeMenuStock(tx, input.branchId, input.items);
+
     const o = await tx.hotelOrder.create({
       data: {
         branchId: input.branchId,

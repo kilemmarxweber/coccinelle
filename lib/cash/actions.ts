@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { branchBasePath } from "@/lib/branch/paths";
 import prisma from "@/lib/prisma";
+import { normalizeUsdCdfRate } from "@/lib/cash/exchange";
 
 async function ctx(organizationId: string, branchId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -34,10 +35,11 @@ function revalidateBranch(organizationId: string, branchId: string) {
 }
 
 export async function getActiveExchangeRate(branchId: string) {
-  return prisma.exchangeRate.findFirst({
+  const row = await prisma.exchangeRate.findFirst({
     where: { branchId },
     orderBy: { validFrom: "desc" },
   });
+  return normalizeUsdCdfRate(row);
 }
 
 export async function listExchangeRatesAction(
@@ -61,11 +63,18 @@ export async function setExchangeRateAction(input: {
 }) {
   await ctx(input.organizationId, input.branchId);
   if (!(input.rate > 0)) throw new Error("Taux invalide.");
+  const from = input.fromCurrency.trim().toUpperCase() || "USD";
+  const to = input.toCurrency.trim().toUpperCase() || "CDF";
+  const pairOk =
+    (from === "USD" && to === "CDF") || (from === "CDF" && to === "USD");
+  if (!pairOk) {
+    throw new Error("Choisissez USD → CDF ou CDF → USD.");
+  }
   const row = await prisma.exchangeRate.create({
     data: {
       branchId: input.branchId,
-      fromCurrency: input.fromCurrency.trim().toUpperCase() || "USD",
-      toCurrency: input.toCurrency.trim().toUpperCase() || "CDF",
+      fromCurrency: from,
+      toCurrency: to,
       rate: input.rate,
       validFrom: new Date(),
     },

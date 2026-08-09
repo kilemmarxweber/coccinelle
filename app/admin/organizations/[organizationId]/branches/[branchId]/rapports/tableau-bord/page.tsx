@@ -2,6 +2,11 @@ import Link from "next/link";
 import { LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import { getActiveExchangeRate } from "@/lib/cash/actions";
+import {
+  formatPrimaryAmount,
+  formatSecondaryAmount,
+} from "@/lib/cash/exchange";
 import { getHotelDashboardKpisAction } from "@/lib/hotel/actions";
 import { branchDashboardPath, hotelRoutes } from "@/lib/branch/paths";
 
@@ -12,10 +17,16 @@ type PageProps = {
 export default async function TableauBordPage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
   const branch = await requireBranchContext({ organizationId, branchId });
-  const kpis =
+  const [kpis, rate] =
     branch.type === "HOTEL"
-      ? await getHotelDashboardKpisAction(organizationId, branchId)
-      : null;
+      ? await Promise.all([
+          getHotelDashboardKpisAction(organizationId, branchId),
+          getActiveExchangeRate(branchId),
+        ])
+      : [null, null];
+
+  const caPrimary = kpis ? formatPrimaryAmount(kpis.caJour, rate) : null;
+  const caSecondary = kpis ? formatSecondaryAmount(kpis.caJour, rate) : null;
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 px-4 py-6">
@@ -32,10 +43,26 @@ export default async function TableauBordPage({ params }: PageProps) {
       {kpis ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            { label: "Occupation", value: `${kpis.occupancyPct}%` },
-            { label: "Chambres occupées", value: `${kpis.occupied}/${kpis.rooms}` },
-            { label: "CA caisse (jour)", value: `${kpis.caJour.toFixed(2)} $` },
-            { label: "Tickets F&B (jour)", value: String(kpis.ticketsFnbJour) },
+            {
+              label: "Occupation",
+              value: `${kpis.occupancyPct}%`,
+              sub: null as string | null,
+            },
+            {
+              label: "Chambres occupées",
+              value: `${kpis.occupied}/${kpis.rooms}`,
+              sub: null,
+            },
+            {
+              label: "CA caisse (jour)",
+              value: caPrimary ?? `${kpis.caJour.toFixed(2)} $`,
+              sub: caSecondary,
+            },
+            {
+              label: "Tickets F&B (jour)",
+              value: String(kpis.ticketsFnbJour),
+              sub: null,
+            },
           ].map((k) => (
             <div
               key={k.label}
@@ -45,6 +72,11 @@ export default async function TableauBordPage({ params }: PageProps) {
                 {k.label}
               </p>
               <p className="mt-2 text-3xl font-bold text-primary">{k.value}</p>
+              {k.sub ? (
+                <p className="mt-1 text-xs text-muted-foreground tabular-nums">
+                  {k.sub}
+                </p>
+              ) : null}
             </div>
           ))}
         </div>
