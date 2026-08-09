@@ -64,6 +64,7 @@ type Order = {
   prepStartedAt?: string | Date | null;
   estimatedMinutes?: number | null;
   readyAt?: string | Date | null;
+  deliveredAt?: string | Date | null;
   createdAt?: string | Date;
   items: OrderItem[];
   stay?: { guestName: string; room?: { number: string } | null } | null;
@@ -78,7 +79,13 @@ const STATUS_RANK: Record<string, number> = {
   LIVREE: 5,
 };
 
-const DELIVERABLE = new Set(["PRETE", "EN_CAISSE", "PAYEE"]);
+const DELIVERABLE = new Set([
+  "ENVOYEE",
+  "EN_PREPARATION",
+  "PRETE",
+  "EN_CAISSE",
+  "PAYEE",
+]);
 
 function canDeliver(status: string) {
   return DELIVERABLE.has(status);
@@ -95,8 +102,8 @@ const STATUS_META: Record<
   },
   PRETE: { label: "Prête", tone: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" },
   EN_CAISSE: {
-    label: "En caisse",
-    tone: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+    label: "En cours",
+    tone: "bg-sky-500/15 text-sky-800 dark:text-sky-200",
   },
   PAYEE: { label: "À livrer", tone: "bg-primary/15 text-primary" },
   LIVREE: { label: "Livrée", tone: "bg-muted text-muted-foreground" },
@@ -115,7 +122,9 @@ export function RestaurationClient(props: {
   const [tableLabel, setTableLabel] = useState("T1");
   const [now, setNow] = useState(() => Date.now());
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const toDeliverCount = props.orders.filter((o) => canDeliver(o.status)).length;
+  const toDeliverCount = props.orders.filter(
+    (o) => canDeliver(o.status) && !o.deliveredAt,
+  ).length;
   const [view, setView] = useState<"commande" | "suivi">(
     props.initialView === "suivi" || toDeliverCount > 0 ? "suivi" : "commande",
   );
@@ -125,13 +134,17 @@ export function RestaurationClient(props: {
   const { cart, addItem, setQty, clear, toPayload } = usePosCart();
 
   const toDeliver = useMemo(
-    () => props.orders.filter((o) => canDeliver(o.status)),
+    () =>
+      props.orders.filter((o) => canDeliver(o.status) && !o.deliveredAt),
     [props.orders],
   );
   const activeOrders = useMemo(
     () =>
       props.orders.filter(
-        (o) => o.status !== "LIVREE" && o.status !== "ANNULEE",
+        (o) =>
+          o.status !== "LIVREE" &&
+          o.status !== "ANNULEE" &&
+          !o.deliveredAt,
       ),
     [props.orders],
   );
@@ -205,13 +218,22 @@ export function RestaurationClient(props: {
   function markDelivered(orderId: string) {
     start(async () => {
       try {
+        const order = props.orders.find((o) => o.id === orderId);
+        const fromKitchen =
+          order?.status === "ENVOYEE" || order?.status === "EN_PREPARATION";
         await advanceHotelOrderAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
           orderId,
           to: "LIVREE",
         });
-        toast.success("Livrée");
+        toast.success(
+          fromKitchen
+            ? "Livrée — hors cuisine · encaissement en caisse"
+            : order?.status === "PAYEE"
+              ? "Livrée"
+              : "Livrée — reste à encaisser en caisse",
+        );
         setSelectedId(null);
         router.refresh();
       } catch (e) {
@@ -362,7 +384,7 @@ export function RestaurationClient(props: {
                   tone: "bg-muted text-muted-foreground",
                 };
                 const isCooking = order.status === "EN_PREPARATION";
-                const isDeliver = canDeliver(order.status);
+                const isDeliver = canDeliver(order.status) && !order.deliveredAt;
                 const cd = isCooking
                   ? prepCountdown(
                       order.estimatedMinutes,
@@ -483,7 +505,8 @@ export function RestaurationClient(props: {
                           onClick={() => markDelivered(order.id)}
                         >
                           <CheckCircle2 className="size-4" />
-                          Marquer livrée
+                          Livrer
+                          {isCooking ? " (stop cuisine)" : ""}
                         </Button>
                       </footer>
                     ) : null}
@@ -615,7 +638,7 @@ export function RestaurationClient(props: {
                 ) : null}
               </div>
 
-              {canDeliver(selected.status) ? (
+              {canDeliver(selected.status) && !selected.deliveredAt ? (
                 <SheetFooter className="border-t border-border">
                   <Button
                     size="lg"
@@ -624,7 +647,11 @@ export function RestaurationClient(props: {
                     onClick={() => markDelivered(selected.id)}
                   >
                     <CheckCircle2 className="size-5" />
-                    Marquer livrée
+                    Livrer
+                    {selected.status === "ENVOYEE" ||
+                    selected.status === "EN_PREPARATION"
+                      ? " — retire de la cuisine"
+                      : ""}
                   </Button>
                 </SheetFooter>
               ) : null}

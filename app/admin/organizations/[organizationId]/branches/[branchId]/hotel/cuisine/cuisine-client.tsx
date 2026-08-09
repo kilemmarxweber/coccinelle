@@ -357,7 +357,7 @@ export function CuisineClient(props: {
                   </div>
                 </button>
 
-                <footer className="mt-auto flex gap-2 border-t border-border p-3">
+                <footer className="sticky bottom-0 z-10 mt-auto flex gap-2 border-t border-border bg-card p-3">
                   {order.status === "ENVOYEE" ? (
                     <Button
                       className="flex-1"
@@ -369,12 +369,16 @@ export function CuisineClient(props: {
                     </Button>
                   ) : null}
                   <Button
-                    className="flex-1 gap-1.5"
+                    className={cn(
+                      "flex-1 gap-1.5",
+                      cd?.overdue && "ring-2 ring-rose-500/50",
+                    )}
+                    variant={cd?.overdue ? "destructive" : "default"}
                     disabled={pending}
                     onClick={() => markReady(order.id)}
                   >
                     <CheckCircle2 className="size-4" />
-                    C’est prêt
+                    {cd?.overdue ? "C’est prêt (en retard)" : "C’est prêt"}
                   </Button>
                 </footer>
               </article>
@@ -561,7 +565,7 @@ export function CuisineClient(props: {
                 </p>
               </div>
 
-              <SheetFooter className="gap-2 border-t border-border sm:flex-col">
+              <SheetFooter className="sticky bottom-0 z-10 gap-2 border-t border-border bg-background sm:flex-col">
                 {selected.status === "ENVOYEE" ? (
                   <Button
                     size="lg"
@@ -573,15 +577,33 @@ export function CuisineClient(props: {
                     Commencer la préparation
                   </Button>
                 ) : null}
-                <Button
-                  size="lg"
-                  className="w-full gap-2"
-                  disabled={pending}
-                  onClick={() => markReady(selected.id)}
-                >
-                  <CheckCircle2 className="size-5" />
-                  Valider — c’est prêt
-                </Button>
+                {(() => {
+                  const cd =
+                    selected.status === "EN_PREPARATION"
+                      ? prepCountdown(
+                          selected.estimatedMinutes,
+                          selected.prepStartedAt,
+                          now,
+                        )
+                      : null;
+                  return (
+                    <Button
+                      size="lg"
+                      className={cn(
+                        "w-full gap-2",
+                        cd?.overdue && "ring-2 ring-rose-500/50",
+                      )}
+                      variant={cd?.overdue ? "destructive" : "default"}
+                      disabled={pending}
+                      onClick={() => markReady(selected.id)}
+                    >
+                      <CheckCircle2 className="size-5" />
+                      {cd?.overdue
+                        ? "Valider — c’est prêt (en retard)"
+                        : "Valider — c’est prêt"}
+                    </Button>
+                  );
+                })()}
               </SheetFooter>
             </>
           ) : null}

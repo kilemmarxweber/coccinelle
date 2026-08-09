@@ -166,17 +166,31 @@ export async function createPaymentAction(input: {
     });
 
     if (input.orderId) {
+      const existing = await tx.hotelOrder.findFirst({
+        where: { id: input.orderId, branchId: input.branchId },
+        select: { deliveredAt: true, tableLabel: true },
+      });
+      const alreadyDelivered = existing?.deliveredAt != null;
       await tx.hotelOrder.update({
         where: { id: input.orderId },
-        data: { status: "PAYEE", paidAt: new Date() },
+        data: {
+          status: alreadyDelivered ? "LIVREE" : "PAYEE",
+          paidAt: new Date(),
+        },
       });
       await tx.branchNotification.create({
         data: {
           branchId: input.branchId,
-          title: "Commande payée",
-          body: `Commande encaissée (${receiptNumber}). À livrer.`,
-          kind: "order_paid",
-          href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/restauration?view=suivi&orderId=${input.orderId}`,
+          title: alreadyDelivered
+            ? "Commande encaissée"
+            : "Commande payée",
+          body: alreadyDelivered
+            ? `Encaissée (${receiptNumber}) — déjà livrée.`
+            : `Commande encaissée (${receiptNumber}). À livrer.`,
+          kind: alreadyDelivered ? "order_paid_delivered" : "order_paid",
+          href: alreadyDelivered
+            ? `/admin/organizations/${input.organizationId}/branches/${input.branchId}/caisse/recu/${p.id}`
+            : `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/restauration?view=suivi&orderId=${input.orderId}`,
         },
       });
     }
@@ -237,7 +251,12 @@ export async function listReadyOrdersAction(
 ) {
   await ctx(organizationId, branchId);
   return prisma.hotelOrder.findMany({
-    where: { branchId, status: { in: ["PRETE", "EN_CAISSE"] } },
+    where: {
+      branchId,
+      status: {
+        in: ["ENVOYEE", "EN_PREPARATION", "PRETE", "EN_CAISSE", "PAYEE"],
+      },
+    },
     include: {
       items: true,
       stay: { include: { room: true } },

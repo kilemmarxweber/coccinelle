@@ -680,10 +680,60 @@ export async function advanceHotelOrderAction(input: {
   if (input.to === "LIVREE") data.deliveredAt = new Date();
 
   await prisma.$transaction(async (tx) => {
-    await tx.hotelOrder.update({ where: { id: order.id }, data });
-
+    // Livrer sans paiement : sort resto + cuisine, reste en file caisse
     if (input.to === "LIVREE") {
-      // Masque les notifs liées à cette commande (déjà livrée)
+      const alreadyPaid =
+        order.status === "PAYEE" || order.paidAt != null;
+      const wasInKitchen =
+        order.status === "ENVOYEE" || order.status === "EN_PREPARATION";
+
+      if (!alreadyPaid) {
+        await tx.hotelOrder.update({
+          where: { id: order.id },
+          data: {
+            status: "EN_CAISSE",
+            deliveredAt: new Date(),
+            readyAt: order.readyAt ?? new Date(),
+          },
+        });
+        await tx.branchNotification.updateMany({
+          where: {
+            branchId: input.branchId,
+            readAt: null,
+            OR: [
+              { href: { contains: `orderId=${order.id}` } },
+              { body: { contains: order.id.slice(0, 8) } },
+            ],
+          },
+          data: { readAt: new Date() },
+        });
+        if (wasInKitchen) {
+          await tx.branchNotification.create({
+            data: {
+              branchId: input.branchId,
+              title: "Cuisine — ticket retiré",
+              body: `${order.tableLabel ?? "Salle"} · livrée, en attente d’encaissement`,
+              kind: "order_kitchen_bypassed",
+              href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/cuisine`,
+            },
+          });
+        }
+        await tx.branchNotification.create({
+          data: {
+            branchId: input.branchId,
+            title: "À encaisser",
+            body: `${order.tableLabel ?? "Salle"} · déjà livrée — encaisser & reçu`,
+            kind: "order_awaiting_payment",
+            href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/caisse?orderId=${order.id}`,
+          },
+        });
+        return;
+      }
+
+      await tx.hotelOrder.update({
+        where: { id: order.id },
+        data: { status: "LIVREE", deliveredAt: new Date() },
+      });
       await tx.branchNotification.updateMany({
         where: {
           branchId: input.branchId,
@@ -705,6 +755,8 @@ export async function advanceHotelOrderAction(input: {
       });
       return;
     }
+
+    await tx.hotelOrder.update({ where: { id: order.id }, data });
 
     const href =
       input.to === "PRETE" || input.to === "EN_CAISSE"
@@ -950,70 +1002,69 @@ export async function getHotelDashboardKpisAction(
   };
 }
 
+/**
+ * Vente rapide caisse → file F&B « en cours » (pas cuisine, pas « prêt »).
+ * Le caissier encaisse et/ou livre lui-même.
+ */
 export async function createQuickSaleAction(input: {
   organizationId: string;
   branchId: string;
   items: { menuItemId: string; quantity: number }[];
-  method: "CASH" | "MOBILE_MONEY" | "CARTE";
+  tableLabel?: string;
 }) {
-  const { createPaymentAction, getActiveExchangeRate } = await import(
-    "@/lib/cash/actions"
-  );
   const { user } = await ctx(input.organizationId, input.branchId);
   if (!input.items.length) throw new Error("Panier vide.");
 
+  const menuIds = input.items.map((i) => i.menuItemId);
   const menu = await prisma.hotelMenuItem.findMany({
-    where: {
-      branchId: input.branchId,
-      id: { in: input.items.map((i) => i.menuItemId) },
-      active: true,
-    },
+    where: { branchId: input.branchId, id: { in: menuIds }, active: true },
   });
+  if (menu.length !== menuIds.length) throw new Error("Article invalide.");
+
   const byId = new Map(menu.map((m) => [m.id, m]));
-  let totalUsd = 0;
-  const lines = input.items.map((i) => {
-    const m = byId.get(i.menuItemId);
-    if (!m) throw new Error("Article invalide.");
-    const qty = Math.max(1, i.quantity);
-    const amount = m.price * qty;
-    totalUsd += amount;
-    return { m, qty, amount };
-  });
+  const label = input.tableLabel?.trim() || "Vente rapide";
+  const now = new Date();
 
-  const rate = await getActiveExchangeRate(input.branchId);
-  const amountCdf = rate ? totalUsd * rate.rate : totalUsd;
-
-  const folio = await prisma.folio.create({
-    data: {
-      branchId: input.branchId,
-      label: `Vente rapide`,
-      lines: {
-        create: lines.map(({ m, qty, amount }) => ({
-          kind: m.needsKitchen ? "FNB" : "PRODUCT",
-          description: m.name,
-          quantity: qty,
-          unitPrice: m.price,
-          amount,
-        })),
+  const order = await prisma.$transaction(async (tx) => {
+    const o = await tx.hotelOrder.create({
+      data: {
+        branchId: input.branchId,
+        tableLabel: label,
+        status: "EN_CAISSE",
+        createdByUserId: user.id,
+        sentAt: now,
+        readyAt: now,
+        items: {
+          create: input.items.map((i) => {
+            const m = byId.get(i.menuItemId)!;
+            const qty = Math.max(1, i.quantity);
+            return {
+              menuItemId: m.id,
+              name: m.name,
+              quantity: qty,
+              unitPrice: m.price,
+              amount: m.price * qty,
+              needsKitchen: false,
+            };
+          }),
+        },
       },
-    },
-  });
+      include: { items: true },
+    });
 
-  const payment = await createPaymentAction({
-    organizationId: input.organizationId,
-    branchId: input.branchId,
-    amountCdf,
-    amountForeign: totalUsd,
-    method: input.method,
-    folioId: folio.id,
-    note: `Vente rapide par ${user.name ?? user.email}`,
-  });
+    await tx.branchNotification.create({
+      data: {
+        branchId: input.branchId,
+        title: "Vente rapide — en cours caisse",
+        body: `${label} · ${o.items.length} article(s)`,
+        kind: "order_en_caisse",
+        href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/caisse?orderId=${o.id}`,
+      },
+    });
 
-  await prisma.folio.update({
-    where: { id: folio.id },
-    data: { closed: true },
+    return o;
   });
 
   revalidateHotel(input.organizationId, input.branchId);
-  return payment;
+  return order;
 }

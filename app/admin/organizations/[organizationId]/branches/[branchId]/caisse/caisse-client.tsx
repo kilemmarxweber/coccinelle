@@ -13,6 +13,7 @@ import {
   Receipt,
   RefreshCw,
   ShoppingBag,
+  Truck,
   Wallet,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -48,7 +49,7 @@ import {
   createPaymentAction,
   openCashSessionAction,
 } from "@/lib/cash/actions";
-import { createQuickSaleAction } from "@/lib/hotel/actions";
+import { createQuickSaleAction, advanceHotelOrderAction } from "@/lib/hotel/actions";
 import { caisseRoutes } from "@/lib/branch/paths";
 import { cn } from "@/lib/utils";
 
@@ -70,6 +71,8 @@ type OrderRow = {
   readyAt?: string | Date | null;
   sentAt?: string | Date | null;
   createdAt?: string | Date;
+  deliveredAt?: string | Date | null;
+  paidAt?: string | Date | null;
   items: {
     name: string;
     quantity: number;
@@ -139,6 +142,7 @@ export function CaisseClient(props: Props) {
   const [method, setMethod] = useState<"CASH" | "MOBILE_MONEY" | "CARTE">("CASH");
   const [tab, setTab] = useState<HubTab>("fnb");
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [quickSaleLabel, setQuickSaleLabel] = useState("");
   const [now, setNow] = useState(() => Date.now());
   const [sessionDialogOpen, setSessionDialogOpen] = useState(!props.cashSession);
   const { cart, addItem, setQty, clear, toPayload } = usePosCart();
@@ -261,11 +265,40 @@ export function CaisseClient(props: Props) {
           amountForeign: totalUsd,
           method,
         });
-        toast.success(`Commande encaissée · ${p.receiptNumber}`);
+        toast.success(`Encaissée · ${p.receiptNumber}`);
         setSelectedOrderId(null);
         router.push(
           caisseRoutes.receipt(props.organizationId, props.branchId, p.id),
         );
+        router.refresh();
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Erreur");
+      }
+    });
+  }
+
+  function deliverOrder(orderId: string) {
+    start(async () => {
+      try {
+        const order = props.readyOrders.find((o) => o.id === orderId);
+        const alreadyPaid =
+          order?.status === "PAYEE" || order?.paidAt != null;
+        const fromKitchen =
+          order?.status === "ENVOYEE" || order?.status === "EN_PREPARATION";
+        await advanceHotelOrderAction({
+          organizationId: props.organizationId,
+          branchId: props.branchId,
+          orderId,
+          to: "LIVREE",
+        });
+        toast.success(
+          alreadyPaid
+            ? "Livrée"
+            : fromKitchen
+              ? "Livrée — hors cuisine · reste à encaisser"
+              : "Livrée — reste à encaisser & imprimer le reçu",
+        );
+        setSelectedOrderId(null);
         router.refresh();
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Erreur");
@@ -279,23 +312,18 @@ export function CaisseClient(props: Props) {
       toast.message("Sélectionnez des articles");
       return;
     }
-    if (!props.cashSession) {
-      toast.error("Ouvrez d’abord la session de caisse");
-      return;
-    }
     start(async () => {
       try {
-        const p = await createQuickSaleAction({
+        await createQuickSaleAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
           items,
-          method,
+          tableLabel: quickSaleLabel.trim() || "Vente rapide",
         });
-        toast.success(`Vente · ${p.receiptNumber}`);
+        toast.success("Ajoutée à la file F&B");
         clear();
-        router.push(
-          caisseRoutes.receipt(props.organizationId, props.branchId, p.id),
-        );
+        setQuickSaleLabel("");
+        setTab("fnb");
         router.refresh();
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Erreur");
@@ -634,9 +662,10 @@ export function CaisseClient(props: Props) {
         <section className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className="font-semibold">File F&B — à encaisser</h2>
+              <h2 className="font-semibold">File F&B — caisse</h2>
               <p className="text-sm text-muted-foreground">
-                Plusieurs tickets prêts peuvent arriver en même temps.
+                Encaisser (vert) après Livrer (jaune) — la livraison doit être
+                faite avant l’encaissement.
               </p>
             </div>
             <PosPayMethodPicker
@@ -649,9 +678,9 @@ export function CaisseClient(props: Props) {
           {readySorted.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 px-6 py-14 text-center">
               <CircleDollarSign className="mb-3 size-10 text-muted-foreground/50" />
-              <p className="font-medium">Aucune commande F&B prête</p>
+              <p className="font-medium">Aucune commande en file F&B</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Les tickets validés cuisine apparaîtront ici pour encaissement.
+                Vente rapide et tickets cuisine prêts apparaîtront ici.
               </p>
             </div>
           ) : (
@@ -659,10 +688,45 @@ export function CaisseClient(props: Props) {
               {readySorted.map((order) => {
                 const total = orderTotal(order);
                 const waited = order.readyAt ?? order.sentAt ?? order.createdAt;
+                const isPaid = order.status === "PAYEE";
+                const isEnCours = order.status === "EN_CAISSE";
+                const alreadyServed = !!order.deliveredAt && !isPaid;
+                const inKitchen =
+                  order.status === "ENVOYEE" ||
+                  order.status === "EN_PREPARATION";
+                const canMarkDelivered =
+                  !order.deliveredAt && order.status !== "LIVREE";
+                // Encaisser seulement après livraison
+                const canPay =
+                  !isPaid &&
+                  order.status !== "LIVREE" &&
+                  !!order.deliveredAt;
+                const statusLabel = isPaid
+                  ? "À livrer"
+                  : alreadyServed
+                    ? "Livrée · à encaisser"
+                    : isEnCours
+                      ? "En cours"
+                      : inKitchen
+                        ? order.status === "EN_PREPARATION"
+                          ? "Cuisine"
+                          : "Envoyée"
+                        : "Prêt";
                 return (
                   <article
                     key={order.id}
-                    className="flex flex-col overflow-hidden rounded-2xl border border-emerald-500/30 bg-card shadow-sm ring-1 ring-emerald-500/10"
+                    className={cn(
+                      "flex flex-col overflow-hidden rounded-2xl border bg-card shadow-sm",
+                      isPaid
+                        ? "border-primary/40 ring-1 ring-primary/15"
+                        : alreadyServed
+                          ? "border-amber-500/50 ring-1 ring-amber-500/20"
+                          : inKitchen
+                            ? "border-orange-500/40 ring-1 ring-orange-500/10"
+                            : isEnCours
+                              ? "border-sky-500/40 ring-1 ring-sky-500/10"
+                              : "border-emerald-500/30 ring-1 ring-emerald-500/10",
+                    )}
                   >
                     <button
                       type="button"
@@ -686,8 +750,24 @@ export function CaisseClient(props: Props) {
                           </p>
                         </div>
                         <div className="flex flex-col items-end gap-1.5">
-                          <Badge className="bg-emerald-600 text-white hover:bg-emerald-600">
-                            Prêt
+                          <Badge
+                            className={cn(
+                              isPaid && "bg-primary text-primary-foreground",
+                              alreadyServed &&
+                                "bg-amber-600 text-white hover:bg-amber-600",
+                              isEnCours &&
+                                !alreadyServed &&
+                                "bg-sky-600 text-white hover:bg-sky-600",
+                              inKitchen &&
+                                "bg-orange-600 text-white hover:bg-orange-600",
+                              !isPaid &&
+                                !alreadyServed &&
+                                !isEnCours &&
+                                !inKitchen &&
+                                "bg-emerald-600 text-white hover:bg-emerald-600",
+                            )}
+                          >
+                            {statusLabel}
                           </Badge>
                           <span className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground tabular-nums">
                             <Clock3 className="size-3.5" />
@@ -728,16 +808,27 @@ export function CaisseClient(props: Props) {
                       </div>
                     </button>
 
-                    <footer className="border-t border-border p-3">
+                    <footer className="mt-auto grid grid-cols-2 gap-2 border-t border-border p-3">
                       <Button
-                        className="w-full gap-1.5"
-                        disabled={pending || !props.cashSession}
+                        className="gap-1.5 bg-amber-500 text-white hover:bg-amber-500/90"
+                        disabled={pending || !canMarkDelivered}
+                        onClick={() => deliverOrder(order.id)}
+                      >
+                        <Truck className="size-4" />
+                        Livrer
+                      </Button>
+                      <Button
+                        className="gap-1.5 bg-emerald-600 text-white hover:bg-emerald-600/90"
+                        disabled={pending || !canPay || !props.cashSession}
                         onClick={() => payOrder(order.id, total)}
+                        title={
+                          !order.deliveredAt
+                            ? "Livrer d’abord avant d’encaisser"
+                            : undefined
+                        }
                       >
                         <CheckCircle2 className="size-4" />
-                        {props.cashSession
-                          ? "Encaisser"
-                          : "Ouvrir la caisse d’abord"}
+                        Encaisser
                       </Button>
                     </footer>
                   </article>
@@ -760,7 +851,13 @@ export function CaisseClient(props: Props) {
                       {selectedOrder.tableLabel ?? "Salle"}
                     </SheetTitle>
                     <SheetDescription>
-                      Ticket #{selectedOrder.id.slice(0, 8)} · prêt depuis{" "}
+                      Ticket #{selectedOrder.id.slice(0, 8)} ·{" "}
+                      {selectedOrder.status === "EN_CAISSE"
+                        ? "en cours"
+                        : selectedOrder.status === "PAYEE"
+                          ? "à livrer"
+                          : "prêt"}{" "}
+                      ·{" "}
                       {elapsedLabel(
                         selectedOrder.readyAt ??
                           selectedOrder.sentAt ??
@@ -824,26 +921,56 @@ export function CaisseClient(props: Props) {
                     ) : null}
 
                     <div className="flex items-center justify-between rounded-xl bg-muted/30 px-3 py-3">
-                      <span className="font-medium">Total à encaisser</span>
+                      <span className="font-medium">
+                        {selectedOrder.status === "PAYEE"
+                          ? "Déjà payé"
+                          : "Total à encaisser"}
+                      </span>
                       <span className="text-xl font-bold tabular-nums">
                         {orderTotal(selectedOrder).toFixed(2)} $
                       </span>
                     </div>
 
-                    <PosPayMethodPicker value={method} onChange={setMethod} />
+                    {selectedOrder.status !== "PAYEE" ? (
+                      <PosPayMethodPicker value={method} onChange={setMethod} />
+                    ) : null}
                   </div>
 
-                  <SheetFooter className="border-t border-border">
+                  <SheetFooter className="grid grid-cols-2 gap-2 border-t border-border sm:flex-row">
                     <Button
                       size="lg"
-                      className="w-full gap-2"
-                      disabled={pending || !props.cashSession}
+                      className="gap-2 bg-amber-500 text-white hover:bg-amber-500/90"
+                      disabled={
+                        pending ||
+                        !!selectedOrder.deliveredAt ||
+                        selectedOrder.status === "LIVREE"
+                      }
+                      onClick={() => deliverOrder(selectedOrder.id)}
+                    >
+                      <Truck className="size-5" />
+                      Livrer
+                    </Button>
+                    <Button
+                      size="lg"
+                      className="gap-2 bg-emerald-600 text-white hover:bg-emerald-600/90"
+                      disabled={
+                        pending ||
+                        !props.cashSession ||
+                        selectedOrder.status === "PAYEE" ||
+                        selectedOrder.status === "LIVREE" ||
+                        !selectedOrder.deliveredAt
+                      }
                       onClick={() =>
                         payOrder(selectedOrder.id, orderTotal(selectedOrder))
                       }
+                      title={
+                        !selectedOrder.deliveredAt
+                          ? "Livrer d’abord avant d’encaisser"
+                          : undefined
+                      }
                     >
                       <CheckCircle2 className="size-5" />
-                      Valider l’encaissement
+                      Encaisser
                     </Button>
                   </SheetFooter>
                 </>
@@ -855,9 +982,17 @@ export function CaisseClient(props: Props) {
 
       {tab === "vente" ? (
         <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <ShoppingBag className="size-4 text-primary" />
-            <h2 className="font-semibold">Vente rapide — tous les produits</h2>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <ShoppingBag className="size-4 text-primary" />
+              <div>
+                <h2 className="font-semibold">Vente rapide — tous les produits</h2>
+                <p className="text-xs text-muted-foreground">
+                  Statut « en cours » — visible resto & caisse. Ordre : Livrer
+                  (jaune) puis Encaisser (vert).
+                </p>
+              </div>
+            </div>
           </div>
           <PosTerminal
             items={props.menuItems}
@@ -865,18 +1000,24 @@ export function CaisseClient(props: Props) {
             onAdd={addItem}
             onSetQty={setQty}
             onClear={clear}
-            ticketTitle="Ticket caisse"
+            ticketTitle="Ticket vente rapide"
             emptyHint="Touchez un produit pour l’ajouter au ticket"
             ticketMeta={
-              <PosPayMethodPicker value={method} onChange={setMethod} />
+              <div className="grid gap-1.5">
+                <Label htmlFor="quick-sale-label">Table / client</Label>
+                <Input
+                  id="quick-sale-label"
+                  value={quickSaleLabel}
+                  onChange={(e) => setQuickSaleLabel(e.target.value)}
+                  placeholder="T1, Comptoir, Jean…"
+                />
+              </div>
             }
             actions={
               <PosChargeButton
-                label={
-                  props.cashSession ? "Encaisser" : "Ouvrir la caisse d’abord"
-                }
+                label="Envoyer à la file F&B"
                 pending={pending}
-                disabled={!props.cashSession || cart.length === 0}
+                disabled={cart.length === 0}
                 onClick={quickSale}
               />
             }
