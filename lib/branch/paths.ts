@@ -101,11 +101,21 @@ export const hotelRoutes = {
     `${branchModulePath(orgId, branchId, "hotel")}/sejours/${stayId}`,
   restauration: (orgId: string, branchId: string) =>
     `${branchModulePath(orgId, branchId, "hotel")}/restauration`,
+  /** Caisse dans le shell Admin hôtel (pas `…/caisse` partagé hors sidebar). */
+  caisse: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "hotel")}/caisse`,
 } as const;
 
 /** Espace Client hôtel (`/{orgSlug}/hotel/…`). */
 export const clientHotelRoutes = {
   root: (orgSlug: string) => `/${orgSlug}/hotel`,
+  connexion: (orgSlug: string) => `/${orgSlug}/hotel/connexion`,
+  inscription: (orgSlug: string) => `/${orgSlug}/hotel/inscription`,
+  /** Connexion hôtel avec retour funnel (jamais `/auth/sign-in` Voyage). */
+  connexionWithCallback: (orgSlug: string, callbackUrl: string) =>
+    `/${orgSlug}/hotel/connexion?callbackUrl=${encodeURIComponent(callbackUrl)}`,
+  inscriptionWithCallback: (orgSlug: string, callbackUrl: string) =>
+    `/${orgSlug}/hotel/inscription?callbackUrl=${encodeURIComponent(callbackUrl)}`,
   recherche: (orgSlug: string) => `/${orgSlug}/hotel/recherche`,
   checkout: (orgSlug: string, draftToken: string) =>
     `/${orgSlug}/hotel/checkout/${draftToken}`,

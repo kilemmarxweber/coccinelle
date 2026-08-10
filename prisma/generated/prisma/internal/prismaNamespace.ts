@@ -3317,6 +3317,7 @@ export const HotelRoomTypeScalarFieldEnum = {
   description: 'description',
   capacity: 'capacity',
   priceNight: 'priceNight',
+  imageUrl: 'imageUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -3404,6 +3405,7 @@ export const HotelMenuItemScalarFieldEnum = {
   name: 'name',
   description: 'description',
   price: 'price',
+  imageUrl: 'imageUrl',
   active: 'active',
   sortOrder: 'sortOrder',
   createdAt: 'createdAt',

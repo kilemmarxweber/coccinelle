@@ -37,7 +37,10 @@ export default async function ClientHotelCommandePage({ params }: PageProps) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) {
     redirect(
-      `/auth/sign-in?callbackUrl=${encodeURIComponent(clientHotelRoutes.commande(org.slug))}`,
+      clientHotelRoutes.connexionWithCallback(
+        org.slug,
+        clientHotelRoutes.commande(org.slug),
+      ),
     );
   }
 

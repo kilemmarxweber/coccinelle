@@ -14,6 +14,7 @@ export type MenuItemView = {
   name: string;
   description: string | null;
   price: number;
+  imageUrl: string | null;
   active: boolean;
   sortOrder: number;
 };
@@ -99,6 +100,7 @@ export async function listMenuCategories(
       name: item.name,
       description: item.description,
       price: item.price,
+      imageUrl: item.imageUrl,
       active: item.active,
       sortOrder: item.sortOrder,
     })),

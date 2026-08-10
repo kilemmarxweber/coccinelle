@@ -45,7 +45,6 @@ export default async function HotelRestaurationPage({ params }: PageProps) {
     <HotelRestaurationPanel
       organizationId={organizationId}
       branchId={branch.id}
-      branchName={branch.name}
       categories={categories}
       orders={orders}
       tables={tables}

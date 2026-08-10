@@ -107,7 +107,7 @@ export async function createGuichetClientAction(
     if (existing?.client) {
       if (!existing.members.length) {
         await auth.api.addMember({
-          body: { userId: existing.id, role: ORG_ROLE.PARENT as "owner", organizationId },
+          body: { userId: existing.id, role: ORG_ROLE.CLIENT as "owner", organizationId },
           headers: h,
         });
       }
@@ -154,7 +154,7 @@ export async function createGuichetClientAction(
     });
 
     await auth.api.addMember({
-      body: { userId: user.id, role: ORG_ROLE.PARENT as "owner", organizationId },
+      body: { userId: user.id, role: ORG_ROLE.CLIENT as "owner", organizationId },
       headers: h,
     });
 

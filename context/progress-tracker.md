@@ -4,11 +4,11 @@ Update this file after every meaningful implementation change.
 
 ## Current Phase
 
-- Module Hôtel — **units-08** verified complete ; plan hôtel V1 units 01–08 livré
+- Module Hôtel — **phase séparation units 09–12** (après V1 métier 01–08 livré)
 
 ## Current Goal
 
-- Polish / deferred items (CashSession, MM production) — hors plan units
+- Phase séparation 09–12 livrée ; deferred hors plan (MM prod, CashSession)
 
 ## Completed
 
@@ -62,9 +62,31 @@ Update this file after every meaningful implementation change.
   - Client `/{orgSlug}/hotel/table` (± précommande) + confirmation ; GSAP ; CDF
   - Admin restauration onglet Réservations (liste à venir + création téléphone)
   - Sur-place serveur (units-04 Commandes) inchangé ; voyage untouched
-- [x] Seed comptes test org — 2026-08-08
-  - `serveur@test.com` ajouté ; BranchMember HOTEL pour guichetier/serveur si branche présente
+- [x] Seed comptes test org — 2026-08-08 (superseded by units-09 seed)
   - Runner : `pnpm tsx prisma/scripts/seed-org-members.ts` · password `Password123!`
+- [x] **units-09** — Rôles hôtel Better Auth — 2026-08-09
+  - `ORG_ROLE` : `receptioniste` / `caissier` / `client` ; slug `parent` retiré
+  - Matrices : réception ≠ caissier ; `guichetier` sans aucun `hotel_*`
+  - Seed : `receptioniste@test.com`, `caissier@test.com`, `serveur@test.com` (+ owner/gérant/client) ; BranchMember HOTEL ; soft migrate `parent` → `client`
+  - Labels / catalog / formulaires membres / post-login / ensure-client sync
+  - Tests `lib/permissions.test.ts` ; password seed `Password123!`
+- [x] **units-10** — Auth hôtel séparée — 2026-08-09
+  - Routes `/{orgSlug}/hotel/connexion` + `/inscription` ; `HotelAuthShell` (pas Plane / Voyage)
+  - `resolveHotelPostLoginPath` : callback `…/hotel/…` → staff `hotel_*` Admin hub → client mes séjours
+  - Gates funnels hôtel (checkout, mes séjours, commande, confirmation) → connexion hôtel
+  - Header public hôtel minimal (lien Connexion) ; `/auth/sign-in` Voyage inchangé
+- [x] **units-11** — Shell Admin hôtel — 2026-08-09
+  - Layout `…/hotel/layout.tsx` : `SidebarProvider` + `HotelAdminSidebar` + `HotelAdminHeader`
+  - Nav filtrée : Accueil / Chambres / Séjours / Restauration / Caisse (`hotelRoutes` + permissions)
+  - Header : trigger, nom branche, type HOTEL, theme, Branches, sign-out
+  - Gate caisse HOTEL : `hotel_stay:update` (redirect accueil si refus)
+  - Pas de `GerantSidebar` ; pages hub sans bouton retour redondant
+- [x] **units-12** — Landing client hôtel + seed — 2026-08-09
+  - Schema: `HotelRoomType.imageUrl` / `HotelMenuItem.imageUrl` + migration
+  - `prisma/seeds/hotel.seed.ts` (idempotent) branché dans `prisma/seed.ts` — HOTEL + chambres/menu/tables + Unsplash
+  - Landing `hotel-client-landing.tsx` : images chambres/plats, prix CDF, CTAs recherche / commande / table
+  - Header Accueil / Mes séjours / Connexion ; chrome Voyage isolé dans `(voyage)` (pas sous `/hotel`)
+  - GSAP entrée + stagger + `matchMedia` / `prefers-reduced-motion`
 
 ## In Progress
 
@@ -72,7 +94,7 @@ Update this file after every meaningful implementation change.
 
 ## Next Up
 
-- Deferred: production Mobile Money ; CashSession (post-hôtel V1)
+- Deferred hors plan : production Mobile Money ; CashSession
 
 ## Open Questions
 
@@ -92,13 +114,19 @@ Update this file after every meaningful implementation change.
 - units-01 maps `AVAILABLE`=Libre·Prête, `CLEANING`=Libre·Sale, `OCCUPIED`, `OUT_OF_ORDER` (no schema migration).
 - units-02: check-in requires room `AVAILABLE`; stays drive `OCCUPIED` / check-out → `CLEANING`.
 - **units-07 auth gate (ADR):** confirmation d’une réservation chambre en ligne exige connexion ou création de compte Better Auth (pas de confirm anonyme). Recherche / draft peuvent rester publics. Les séjours multi-nuits sont toujours rattachés au compte ; V1 applique la même règle à toute confirmation chambre en ligne.
-- **units-03 hotel role mapping (ADR):**
-  - Owner → `owner` — full `hotel_*` + rapports (accès branche inchangé).
-  - Gérant → `gestionnaire` — board + séjours + types/tarifs (`hotel_room:create`) + F&B + `rapport:read`.
-  - Réception / caissier → `guichetier` — board (`hotel_room:read|update`) + séjours ops + caisse entry ; pas de create inventaire/tarifs ni F&B.
-  - Serveur → `serveur` (nouveau slug) — `hotel_fnb` only (carte/file cuisine units-04).
-  - Client → `parent` — aucun droit hôtel Admin.
-  - Mutations: inventaire/tarifs = `hotel_room:create` ; statut chambre = `hotel_room:update` ; séjours create/update via `hotel_stay:*`.
+- **units-03 hotel role mapping (ADR historique — superseded by units-09):**
+  - Ancien mapping : réception/caissier → `guichetier` ; client → `parent`.
+- **units-09 hotel role mapping (ADR courant — livré) :**
+  - Owner → `owner` — full `hotel_*` + rapports.
+  - Gérant → `gestionnaire` — board + séjours + types/tarifs + F&B + `rapport:read`.
+  - Réceptionniste → `receptioniste` — `hotel_room:read|update` + `hotel_stay:create|update|read`.
+  - Caissier → `caissier` — `hotel_stay:read|update` + `hotel_room:read`.
+  - Serveur → `serveur` — `hotel_fnb` only.
+  - Client → `client` (plus de `parent`) — aucun droit hôtel Admin.
+  - Guichetier → `guichetier` — **agence only**, aucun `hotel_*`.
+  - Auth hôtel séparée (units-10) : `/{orgSlug}/hotel/connexion|inscription` ; pas `/auth/sign-in` Voyage pour les funnels hôtel.
+- **units-12 landing (ADR):** chrome Voyage (`OrgBrandHeader` / Mes billets) uniquement sous route group `(voyage)` — jamais sous `/{orgSlug}/hotel/*` ; header hôtel = Accueil / Mes séjours / Connexion.
+- **2026-08-09 séparation chrome (follow-up) :** hub branche HOTEL → redirect shell hôtel ; caisse sous `…/hotel/caisse` ; menus hub hôtel sans taux/rapports partagés voyage ; seed org `Coccinelle Demo` (plus « Mon Agence »).
 
 ## Session Notes
 
@@ -119,3 +147,9 @@ Update this file after every meaningful implementation change.
 - 2026-08-08: units-07 prérequis produit — confirmation réservation chambre exige compte (connexion / inscription) ; ADR documenté.
 - 2026-08-08: units-07 shipped — draft `HotelStayDraft`, auth gate, stub pay, confirmation + mes séjours.
 - 2026-08-08: units-08 shipped — `HotelTableReservation`, client funnel table ± food, Admin réservations à venir.
+- 2026-08-09: specs phase séparation — units-09 (rôles), 10 (auth), 11 (shell Admin), 12 (landing+seed) + build plan 00 mis à jour.
+- 2026-08-09: units-09 shipped — rôles BA hôtel distincts ; guichetier strip `hotel_*` ; soft migrate `parent`→`client`.
+- 2026-08-09: units-10 shipped — auth Client hôtel séparée ; redirects funnels ; header Connexion.
+- 2026-08-09: units-11 shipped — shell Admin hôtel (sidebar + header) ; nav permission ; gate caisse HOTEL.
+- 2026-08-09: units-12 shipped — landing images + seed hôtel + GSAP reduced-motion ; chrome Voyage override.
+- 2026-08-09: follow-up plan — séparation chrome agence/voyage hors surfaces hôtel (layout `(voyage)`, shell Admin hôtel caisse, redirect hub HOTEL, strip menus partagés).

@@ -46,7 +46,7 @@ export async function resolvePostLoginPath(requestHeaders: Headers): Promise<str
     return legacyGuichetPath(organizationId);
   }
 
-  if (role === ORG_ROLE.PARENT) {
+  if (role === ORG_ROLE.CLIENT) {
     const org = await prisma.organization.findUnique({
       where: { id: organizationId },
       select: { slug: true },

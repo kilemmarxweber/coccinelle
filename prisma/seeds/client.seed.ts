@@ -1,6 +1,7 @@
 "use server";
 import "dotenv/config";
 import prisma from "@/lib/prisma";
+import { ORG_ROLE } from "@/lib/permissions";
 
 export async function seedClients() {
   const users = [
@@ -20,17 +21,17 @@ export async function seedClients() {
       },
     });
 
-    // 🔗 MEMBER (organization) — client = slug Better Auth `parent`
+    // 🔗 MEMBER (organization) — client = slug Better Auth `client`
     await prisma.member.upsert({
       where: {
         id: `${u.id}-member`,
       },
-      update: { role: "parent" },
+      update: { role: ORG_ROLE.CLIENT },
       create: {
         id: `${u.id}-member`,
         userId: user.id,
         organizationId: "org-1",
-        role: "parent",
+        role: ORG_ROLE.CLIENT,
         createdAt: new Date(),
       },
     });

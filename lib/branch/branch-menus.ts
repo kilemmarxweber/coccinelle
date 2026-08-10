@@ -167,12 +167,14 @@ export function menuSectionsForBranch(
         iconColor: "text-emerald-400",
         items: [
           {
-            ...caisseVentesCard(
-              organizationId,
-              branchId,
-              "Ouvrir la caisse et encaisser séjours / F&B.",
-            ),
-            // Réception / gérant / owner — pas le serveur F&B seul
+            title: "Caisse & Ventes",
+            description: "Ouvrir la caisse et encaisser séjours / F&B.",
+            href: hotelRoutes.caisse(organizationId, branchId),
+            icon: Wallet,
+            iconBg: "bg-primary/15",
+            iconColor: "text-primary",
+            primary: true,
+            // Réceptionniste / caissier / gérant / owner — pas le serveur F&B seul
             permission: { hotel_stay: ["update"] },
           },
           {
@@ -193,10 +195,6 @@ export function menuSectionsForBranch(
             iconColor: "text-violet-400",
             permission: { hotel_fnb: ["read"] },
           },
-          {
-            ...tauxChangeCard(organizationId, branchId),
-            permission: { rapport: ["read"] },
-          },
         ],
       },
       {
@@ -216,9 +214,6 @@ export function menuSectionsForBranch(
           },
         ],
       },
-      ...rapportsSections(organizationId, branchId, {
-        hotelPermissionGate: true,
-      }),
     ];
   }
 

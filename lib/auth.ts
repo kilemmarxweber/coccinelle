@@ -77,7 +77,7 @@ const authOptions = {
     organization({
       ac: authAccessControl,
       creatorRole: ORG_ROLE.OWNER,
-      // Création d’org réservée à l’admin plateforme (pas gestionnaire / guichetier / parent).
+      // Création d’org réservée à l’admin plateforme (pas gestionnaire / staff / client).
       allowUserToCreateOrganization: async (user) => isAppAdminRole(user.role),
       organizationLimit: async (user) => {
         if (isAppAdminRole(user.role)) return false;

@@ -47,18 +47,20 @@ export default async function MesSejoursHotelPage({ params }: PageProps) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) {
     redirect(
-      `/auth/sign-in?callbackUrl=${encodeURIComponent(
+      clientHotelRoutes.connexionWithCallback(
+        org.slug,
         clientHotelRoutes.mesSejours(org.slug),
-      )}`,
+      ),
     );
   }
 
   const list = await listMyHotelStaysForOrg(org.id);
   if (list === null) {
     redirect(
-      `/auth/sign-in?callbackUrl=${encodeURIComponent(
+      clientHotelRoutes.connexionWithCallback(
+        org.slug,
         clientHotelRoutes.mesSejours(org.slug),
-      )}`,
+      ),
     );
   }
 

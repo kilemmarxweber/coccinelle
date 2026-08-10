@@ -42,7 +42,6 @@ import {
 type Props = {
   organizationId: string;
   branchId: string;
-  branchName: string;
   initial: RoomBoardData;
   canManageInventory?: boolean;
   canUpdateStatus?: boolean;
@@ -57,7 +56,6 @@ function floorKey(floor: string | null): string {
 export function HotelRoomBoard({
   organizationId,
   branchId,
-  branchName,
   initial,
   canManageInventory = false,
   canUpdateStatus = false,
@@ -121,7 +119,7 @@ export function HotelRoomBoard({
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Chambres</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Tableau d’occupation — {branchName}
+            Tableau d’occupation
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

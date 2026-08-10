@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import {
   ArrowRight,
   ShoppingCart,
@@ -6,7 +7,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ventePathForBranchType } from "@/lib/branch/branch-menus";
-import { branchDashboardPath } from "@/lib/branch/paths";
+import { branchDashboardPath, hotelRoutes } from "@/lib/branch/paths";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 
 type PageProps = {
@@ -23,6 +24,12 @@ function typeLabel(type: string) {
 export default async function BranchCaissePage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
   const branch = await requireBranchContext({ organizationId, branchId });
+
+  // Hôtel : caisse dans le shell Admin hôtel (pas le hub partagé / guichet).
+  if (branch.type === "HOTEL") {
+    redirect(hotelRoutes.caisse(organizationId, branch.id));
+  }
+
   const vente = ventePathForBranchType(organizationId, branchId, branch.type);
   const hub = branchDashboardPath(organizationId, branchId);
 

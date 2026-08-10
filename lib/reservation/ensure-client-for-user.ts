@@ -12,7 +12,7 @@ export type EnsureClientResult =
   | { ok: false; error: string };
 
 /**
- * Garantit un profil `Client` + membership org (`parent` si nouvellement ajouté)
+ * Garantit un profil `Client` + membership org (`client` si nouvellement ajouté)
  * pour un utilisateur authentifié qui paie en ligne.
  * N’utilise pas `inscription:create` (parcours guichet).
  */
@@ -45,7 +45,7 @@ export async function ensureClientForOnlineUser(input: {
       await auth.api.addMember({
         body: {
           userId: input.userId,
-          role: ORG_ROLE.PARENT as "owner",
+          role: ORG_ROLE.CLIENT as "owner",
           organizationId: input.organizationId,
         },
         headers: h,

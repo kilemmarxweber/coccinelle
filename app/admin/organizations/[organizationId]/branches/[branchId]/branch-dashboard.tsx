@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { GitBranch, LogOut, Plane, UserCircle } from "lucide-react";
+import {
+  BedDouble,
+  GitBranch,
+  LogOut,
+  Plane,
+  Store,
+  UserCircle,
+} from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -93,7 +100,13 @@ export function BranchDashboard({
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:h-16 sm:px-6 lg:px-8">
           <Link href={hubHref} className="flex min-w-0 items-center gap-2.5">
             <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground sm:size-9">
-              <Plane className="size-4" aria-hidden />
+              {branchType === "HOTEL" ? (
+                <BedDouble className="size-4" aria-hidden />
+              ) : branchType === "BOUTIQUE" ? (
+                <Store className="size-4" aria-hidden />
+              ) : (
+                <Plane className="size-4" aria-hidden />
+              )}
             </span>
             <span className="min-w-0">
               <span className="block truncate text-base font-bold tracking-tight text-primary sm:text-lg">

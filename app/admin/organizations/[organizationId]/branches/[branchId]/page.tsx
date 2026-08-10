@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { hotelRoutes } from "@/lib/branch/paths";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { resolveBranchMenuSections } from "@/lib/branch/resolve-branch-menu";
@@ -34,6 +36,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function BranchDashboardPage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
   const branch = await requireBranchContext({ organizationId, branchId });
+
+  // Hôtel : toujours le shell Admin hôtel (pas le hub agence avec Plane / billets).
+  if (branch.type === "HOTEL") {
+    redirect(hotelRoutes.root(branch.organizationId, branch.id));
+  }
+
   const menuSections = await resolveBranchMenuSections(
     branch.organizationId,
     branch.id,

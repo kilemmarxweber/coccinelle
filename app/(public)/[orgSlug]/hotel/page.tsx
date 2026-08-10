@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { HotelClientLanding } from "@/components/hotel/hotel-client-landing";
 import { getPublicHotelBranchForOrg } from "@/lib/hotel/client-online-order";
+import { listHotelLandingContent } from "@/lib/hotel/list-landing";
 import { getPublicOrganizationBySlug } from "@/lib/pwa/org";
 
 type PageProps = {
@@ -28,11 +29,17 @@ export default async function ClientHotelHomePage({ params }: PageProps) {
   const hotel = await getPublicHotelBranchForOrg(org.id);
   if (!hotel) notFound();
 
+  const { roomTypes, featuredDishes } = await listHotelLandingContent(
+    hotel.id,
+  );
+
   return (
     <HotelClientLanding
       orgSlug={org.slug}
       orgName={org.name}
       hotelName={hotel.name}
+      roomTypes={roomTypes}
+      featuredDishes={featuredDishes}
     />
   );
 }

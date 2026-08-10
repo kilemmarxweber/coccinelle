@@ -34,7 +34,7 @@ export function CreateMemberForm({ organizationId }: Props) {
       organizationId,
       email: "",
       name: "",
-      orgRole: ORG_ROLE.PARENT,
+      orgRole: ORG_ROLE.CLIENT,
     },
     mode: "onSubmit",
   });

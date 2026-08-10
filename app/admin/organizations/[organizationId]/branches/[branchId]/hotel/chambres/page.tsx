@@ -25,7 +25,6 @@ export default async function HotelChambresPage({ params }: PageProps) {
     <HotelRoomBoard
       organizationId={organizationId}
       branchId={branch.id}
-      branchName={branch.name}
       initial={board}
       canManageInventory={canManageInventory}
       canUpdateStatus={canUpdateStatus}

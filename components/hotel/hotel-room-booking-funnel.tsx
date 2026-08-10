@@ -58,12 +58,15 @@ export function HotelRoomBookingFunnel({
   const [stepError, setStepError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const signInHref = `/auth/sign-in?callbackUrl=${encodeURIComponent(
-    clientHotelRoutes.checkout(orgSlug, draftToken),
-  )}`;
-  const signUpHref = `/auth/sign-up?callbackUrl=${encodeURIComponent(
-    clientHotelRoutes.checkout(orgSlug, draftToken),
-  )}`;
+  const checkoutPath = clientHotelRoutes.checkout(orgSlug, draftToken);
+  const signInHref = clientHotelRoutes.connexionWithCallback(
+    orgSlug,
+    checkoutPath,
+  );
+  const signUpHref = clientHotelRoutes.inscriptionWithCallback(
+    orgSlug,
+    checkoutPath,
+  );
 
   useGSAP(
     () => {

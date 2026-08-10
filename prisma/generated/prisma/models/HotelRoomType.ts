@@ -43,6 +43,7 @@ export type HotelRoomTypeMinAggregateOutputType = {
   description: string | null
   capacity: number | null
   priceNight: number | null
+  imageUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -54,6 +55,7 @@ export type HotelRoomTypeMaxAggregateOutputType = {
   description: string | null
   capacity: number | null
   priceNight: number | null
+  imageUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -65,6 +67,7 @@ export type HotelRoomTypeCountAggregateOutputType = {
   description: number
   capacity: number
   priceNight: number
+  imageUrl: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -88,6 +91,7 @@ export type HotelRoomTypeMinAggregateInputType = {
   description?: true
   capacity?: true
   priceNight?: true
+  imageUrl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -99,6 +103,7 @@ export type HotelRoomTypeMaxAggregateInputType = {
   description?: true
   capacity?: true
   priceNight?: true
+  imageUrl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -110,6 +115,7 @@ export type HotelRoomTypeCountAggregateInputType = {
   description?: true
   capacity?: true
   priceNight?: true
+  imageUrl?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -208,6 +214,7 @@ export type HotelRoomTypeGroupByOutputType = {
   description: string | null
   capacity: number
   priceNight: number
+  imageUrl: string | null
   createdAt: Date
   updatedAt: Date
   _count: HotelRoomTypeCountAggregateOutputType | null
@@ -242,6 +249,7 @@ export type HotelRoomTypeWhereInput = {
   description?: Prisma.StringNullableFilter<"HotelRoomType"> | string | null
   capacity?: Prisma.IntFilter<"HotelRoomType"> | number
   priceNight?: Prisma.FloatFilter<"HotelRoomType"> | number
+  imageUrl?: Prisma.StringNullableFilter<"HotelRoomType"> | string | null
   createdAt?: Prisma.DateTimeFilter<"HotelRoomType"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"HotelRoomType"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
@@ -256,6 +264,7 @@ export type HotelRoomTypeOrderByWithRelationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   capacity?: Prisma.SortOrder
   priceNight?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   branch?: Prisma.BranchOrderByWithRelationInput
@@ -273,6 +282,7 @@ export type HotelRoomTypeWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringNullableFilter<"HotelRoomType"> | string | null
   capacity?: Prisma.IntFilter<"HotelRoomType"> | number
   priceNight?: Prisma.FloatFilter<"HotelRoomType"> | number
+  imageUrl?: Prisma.StringNullableFilter<"HotelRoomType"> | string | null
   createdAt?: Prisma.DateTimeFilter<"HotelRoomType"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"HotelRoomType"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
@@ -287,6 +297,7 @@ export type HotelRoomTypeOrderByWithAggregationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   capacity?: Prisma.SortOrder
   priceNight?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.HotelRoomTypeCountOrderByAggregateInput
@@ -306,6 +317,7 @@ export type HotelRoomTypeScalarWhereWithAggregatesInput = {
   description?: Prisma.StringNullableWithAggregatesFilter<"HotelRoomType"> | string | null
   capacity?: Prisma.IntWithAggregatesFilter<"HotelRoomType"> | number
   priceNight?: Prisma.FloatWithAggregatesFilter<"HotelRoomType"> | number
+  imageUrl?: Prisma.StringNullableWithAggregatesFilter<"HotelRoomType"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"HotelRoomType"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"HotelRoomType"> | Date | string
 }
@@ -316,6 +328,7 @@ export type HotelRoomTypeCreateInput = {
   description?: string | null
   capacity?: number
   priceNight: number
+  imageUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutHotelRoomTypesInput
@@ -330,6 +343,7 @@ export type HotelRoomTypeUncheckedCreateInput = {
   description?: string | null
   capacity?: number
   priceNight: number
+  imageUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   rooms?: Prisma.HotelRoomUncheckedCreateNestedManyWithoutRoomTypeInput
@@ -342,6 +356,7 @@ export type HotelRoomTypeUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   priceNight?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutHotelRoomTypesNestedInput
@@ -356,6 +371,7 @@ export type HotelRoomTypeUncheckedUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   priceNight?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   rooms?: Prisma.HotelRoomUncheckedUpdateManyWithoutRoomTypeNestedInput
@@ -369,6 +385,7 @@ export type HotelRoomTypeCreateManyInput = {
   description?: string | null
   capacity?: number
   priceNight: number
+  imageUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -379,6 +396,7 @@ export type HotelRoomTypeUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   priceNight?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -390,6 +408,7 @@ export type HotelRoomTypeUncheckedUpdateManyInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   priceNight?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -411,6 +430,7 @@ export type HotelRoomTypeCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   priceNight?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -427,6 +447,7 @@ export type HotelRoomTypeMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   priceNight?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -438,6 +459,7 @@ export type HotelRoomTypeMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   priceNight?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -528,6 +550,7 @@ export type HotelRoomTypeCreateWithoutBranchInput = {
   description?: string | null
   capacity?: number
   priceNight: number
+  imageUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   rooms?: Prisma.HotelRoomCreateNestedManyWithoutRoomTypeInput
@@ -540,6 +563,7 @@ export type HotelRoomTypeUncheckedCreateWithoutBranchInput = {
   description?: string | null
   capacity?: number
   priceNight: number
+  imageUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   rooms?: Prisma.HotelRoomUncheckedCreateNestedManyWithoutRoomTypeInput
@@ -582,6 +606,7 @@ export type HotelRoomTypeScalarWhereInput = {
   description?: Prisma.StringNullableFilter<"HotelRoomType"> | string | null
   capacity?: Prisma.IntFilter<"HotelRoomType"> | number
   priceNight?: Prisma.FloatFilter<"HotelRoomType"> | number
+  imageUrl?: Prisma.StringNullableFilter<"HotelRoomType"> | string | null
   createdAt?: Prisma.DateTimeFilter<"HotelRoomType"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"HotelRoomType"> | Date | string
 }
@@ -592,6 +617,7 @@ export type HotelRoomTypeCreateWithoutRoomsInput = {
   description?: string | null
   capacity?: number
   priceNight: number
+  imageUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutHotelRoomTypesInput
@@ -605,6 +631,7 @@ export type HotelRoomTypeUncheckedCreateWithoutRoomsInput = {
   description?: string | null
   capacity?: number
   priceNight: number
+  imageUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   stays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutRoomTypeInput
@@ -632,6 +659,7 @@ export type HotelRoomTypeUpdateWithoutRoomsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   priceNight?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutHotelRoomTypesNestedInput
@@ -645,6 +673,7 @@ export type HotelRoomTypeUncheckedUpdateWithoutRoomsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   priceNight?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stays?: Prisma.HotelStayUncheckedUpdateManyWithoutRoomTypeNestedInput
@@ -656,6 +685,7 @@ export type HotelRoomTypeCreateWithoutStaysInput = {
   description?: string | null
   capacity?: number
   priceNight: number
+  imageUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutHotelRoomTypesInput
@@ -669,6 +699,7 @@ export type HotelRoomTypeUncheckedCreateWithoutStaysInput = {
   description?: string | null
   capacity?: number
   priceNight: number
+  imageUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   rooms?: Prisma.HotelRoomUncheckedCreateNestedManyWithoutRoomTypeInput
@@ -696,6 +727,7 @@ export type HotelRoomTypeUpdateWithoutStaysInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   priceNight?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutHotelRoomTypesNestedInput
@@ -709,6 +741,7 @@ export type HotelRoomTypeUncheckedUpdateWithoutStaysInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   priceNight?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   rooms?: Prisma.HotelRoomUncheckedUpdateManyWithoutRoomTypeNestedInput
@@ -720,6 +753,7 @@ export type HotelRoomTypeCreateManyBranchInput = {
   description?: string | null
   capacity?: number
   priceNight: number
+  imageUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -730,6 +764,7 @@ export type HotelRoomTypeUpdateWithoutBranchInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   priceNight?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   rooms?: Prisma.HotelRoomUpdateManyWithoutRoomTypeNestedInput
@@ -742,6 +777,7 @@ export type HotelRoomTypeUncheckedUpdateWithoutBranchInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   priceNight?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   rooms?: Prisma.HotelRoomUncheckedUpdateManyWithoutRoomTypeNestedInput
@@ -754,6 +790,7 @@ export type HotelRoomTypeUncheckedUpdateManyWithoutBranchInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   priceNight?: Prisma.FloatFieldUpdateOperationsInput | number
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -805,6 +842,7 @@ export type HotelRoomTypeSelect<ExtArgs extends runtime.Types.Extensions.Interna
   description?: boolean
   capacity?: boolean
   priceNight?: boolean
+  imageUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -820,6 +858,7 @@ export type HotelRoomTypeSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   description?: boolean
   capacity?: boolean
   priceNight?: boolean
+  imageUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -832,6 +871,7 @@ export type HotelRoomTypeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   description?: boolean
   capacity?: boolean
   priceNight?: boolean
+  imageUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -844,11 +884,12 @@ export type HotelRoomTypeSelectScalar = {
   description?: boolean
   capacity?: boolean
   priceNight?: boolean
+  imageUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type HotelRoomTypeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "name" | "description" | "capacity" | "priceNight" | "createdAt" | "updatedAt", ExtArgs["result"]["hotelRoomType"]>
+export type HotelRoomTypeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "name" | "description" | "capacity" | "priceNight" | "imageUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["hotelRoomType"]>
 export type HotelRoomTypeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   rooms?: boolean | Prisma.HotelRoomType$roomsArgs<ExtArgs>
@@ -876,6 +917,7 @@ export type $HotelRoomTypePayload<ExtArgs extends runtime.Types.Extensions.Inter
     description: string | null
     capacity: number
     priceNight: number
+    imageUrl: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["hotelRoomType"]>
@@ -1310,6 +1352,7 @@ export interface HotelRoomTypeFieldRefs {
   readonly description: Prisma.FieldRef<"HotelRoomType", 'String'>
   readonly capacity: Prisma.FieldRef<"HotelRoomType", 'Int'>
   readonly priceNight: Prisma.FieldRef<"HotelRoomType", 'Float'>
+  readonly imageUrl: Prisma.FieldRef<"HotelRoomType", 'String'>
   readonly createdAt: Prisma.FieldRef<"HotelRoomType", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"HotelRoomType", 'DateTime'>
 }

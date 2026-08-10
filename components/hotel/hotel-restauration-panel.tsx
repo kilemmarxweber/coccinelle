@@ -82,7 +82,6 @@ import { recordFoodOrderPaymentAction } from "@/lib/hotel/payment-actions";
 type Props = {
   organizationId: string;
   branchId: string;
-  branchName: string;
   categories: MenuCategoryView[];
   orders: FoodOrderView[];
   tables: RestaurantTableView[];
@@ -96,7 +95,6 @@ type Props = {
 export function HotelRestaurationPanel({
   organizationId,
   branchId,
-  branchName,
   categories,
   orders,
   tables,
@@ -111,8 +109,7 @@ export function HotelRestaurationPanel({
       <header>
         <h1 className="text-2xl font-semibold tracking-tight">Restauration</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Carte, commandes sur place, file cuisine et réservations de table —{" "}
-          {branchName}
+          Carte, commandes sur place, file cuisine et réservations de table
         </p>
       </header>
 

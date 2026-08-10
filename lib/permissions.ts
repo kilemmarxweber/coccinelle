@@ -2,12 +2,14 @@
  * Slugs de rôles, presets Better Auth (`adminAc`, `ownerAc`, …),
  * grilles métier pour les rôles d’organisation, et AC partagée pour `betterAuth`.
  *
- * Mapping produit → Better Auth :
- * - Owner → `owner` (crée / supervise l’org)
- * - Gérant → `gestionnaire` (agence / hôtel ; ne crée pas d’org)
- * - Guichetier → `guichetier` (vente comptoir agence ; réception / caissier hôtel)
+ * Mapping produit → Better Auth (units-09) :
+ * - Owner → `owner` (crée / supervise l’org + hôtel)
+ * - Gérant → `gestionnaire` (org + hôtel ; ne crée pas d’org)
+ * - Réceptionniste → `receptioniste` (hôtel)
+ * - Caissier → `caissier` (hôtel)
  * - Serveur → `serveur` (restauration F&B sur place)
- * - Client → `parent` (self-service)
+ * - Client → `client` (self-service public ; pas Admin hôtel)
+ * - Guichetier → `guichetier` (agence only — aucun `hotel_*`)
  */
 
 import { createAccessControl } from "better-auth/plugins/access";
@@ -35,17 +37,21 @@ export function isAppAdminRole(role: string | null | undefined): boolean {
 export const ORG_ROLE = {
   OWNER: "owner",
   GESTIONNAIRE: "gestionnaire",
-  GUICHETIER: "guichetier",
+  RECEPTIONISTE: "receptioniste",
+  CAISSIER: "caissier",
   SERVEUR: "serveur",
-  PARENT: "parent",
+  CLIENT: "client",
+  GUICHETIER: "guichetier",
 } as const;
 
 export const ALL_ORG_ROLE_SLUGS = [
   ORG_ROLE.OWNER,
   ORG_ROLE.GESTIONNAIRE,
-  ORG_ROLE.GUICHETIER,
+  ORG_ROLE.RECEPTIONISTE,
+  ORG_ROLE.CAISSIER,
   ORG_ROLE.SERVEUR,
-  ORG_ROLE.PARENT,
+  ORG_ROLE.CLIENT,
+  ORG_ROLE.GUICHETIER,
 ] as const;
 
 /** Statements AC — resources métier + presets plugins admin / organization. */
@@ -82,7 +88,7 @@ export const applicationRoleStatements: Record<string, StatementShape> = {
 };
 
 /**
- * Grille organisation (source de vérité U04).
+ * Grille organisation (source de vérité).
  * La permission décide ; le slug alimente uniquement cette matrice.
  */
 export const organizationRoleStatements: Record<string, StatementShape> = {
@@ -114,21 +120,29 @@ export const organizationRoleStatements: Record<string, StatementShape> = {
     hotel_stay: ["create", "update", "delete", "read"],
     hotel_fnb: ["create", "update", "delete", "read"],
   },
-  [ORG_ROLE.GUICHETIER]: {
+  [ORG_ROLE.RECEPTIONISTE]: {
     ...organizationPluginMemberAc.statements,
-    inscription: ["create", "share", "update"],
-    depart: ["read"],
-    embarquement: ["scan", "update", "read"],
-    // Hôtel réception / caissier : board + séjours (pas types/tarifs create)
     hotel_room: ["read", "update"],
     hotel_stay: ["create", "update", "read"],
+  },
+  [ORG_ROLE.CAISSIER]: {
+    ...organizationPluginMemberAc.statements,
+    hotel_stay: ["read", "update"],
+    hotel_room: ["read"],
   },
   [ORG_ROLE.SERVEUR]: {
     ...organizationPluginMemberAc.statements,
     // Restauration sur place : saisie commande + file cuisine (units-04+)
     hotel_fnb: ["create", "update", "read"],
   },
-  [ORG_ROLE.PARENT]: { ...organizationPluginMemberAc.statements },
+  [ORG_ROLE.CLIENT]: { ...organizationPluginMemberAc.statements },
+  [ORG_ROLE.GUICHETIER]: {
+    ...organizationPluginMemberAc.statements,
+    inscription: ["create", "share", "update"],
+    depart: ["read"],
+    embarquement: ["scan", "update", "read"],
+    // Agence only — aucun hotel_*
+  },
 };
 
 const authAccessControl = createAccessControl(accessControlStatements);

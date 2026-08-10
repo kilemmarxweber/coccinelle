@@ -39,7 +39,6 @@ export default async function HotelSejoursPage({
     <HotelStaysPanel
       organizationId={organizationId}
       branchId={branch.id}
-      branchName={branch.name}
       filter={filter}
       stays={stays}
       formOptions={formOptions}

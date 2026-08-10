@@ -15,6 +15,7 @@
 
 - Lives under `/admin/…` with auth in `app/admin/layout.tsx`.
 - Hotel lives under `/admin/organizations/[organizationId]/branches/[branchId]/hotel/…`.
+- **units-11:** hotel module uses app shell (sidebar + header) on all `…/hotel/*` Admin routes — not blank cards-only pages.
 - Hub dashboard uses cards from `lib/branch/branch-menus.ts` — keep hotel cards linking to real screens as units ship.
 - Pages use existing admin spacing: page title, short description, primary actions top-right.
 - Prefer full-width operational boards for reception (room board).
@@ -26,8 +27,10 @@
 - Code under route group `app/(public)/` — **not** the static folder `public/` at repo root.
 - Landing produit Coccinelle at `/` (`app/(public)/page.tsx`).
 - Org Client routes under `/{orgSlug}/…` and hotel under `/{orgSlug}/hotel/…` (same URLs; files in `app/(public)/[orgSlug]/`).
-- Separate layout from Admin: no staff sidebar; auth where the page needs it (billets, room service, **confirmation réservation chambre**).
+- Separate layout from Admin: no staff sidebar; auth where the page needs it (billets voyage, room service, **confirmation réservation chambre**).
+- **units-10:** hôtel auth = `/{orgSlug}/hotel/connexion|inscription` (pas `/auth/sign-in` Voyage). Header public hôtel distinct (pas Mes billets).
 - Room booking funnel: search/draft may be public; **sign-in or sign-up required before confirm/pay** (multi-night stays always tied to an account).
+- **units-12:** landing `/{orgSlug}/hotel` with room + food imagery (seeded), GSAP, CTAs to funnels.
 - **Responsive**: desk + tablet + mobile.
 - **GSAP** for intentional motion on hotel Client surfaces (funnel transitions, entrées, micro-interactions) — 2–3 purposeful motions per major surface, not noise.
 - CDF prices visible early; French copy.

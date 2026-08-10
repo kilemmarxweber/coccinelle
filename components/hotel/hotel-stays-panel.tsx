@@ -47,7 +47,6 @@ import { createHotelStayAction } from "@/lib/hotel/stay-actions";
 type Props = {
   organizationId: string;
   branchId: string;
-  branchName: string;
   filter: StayListFilter;
   stays: StayListItem[];
   formOptions: StayFormOptions;
@@ -63,7 +62,6 @@ const FILTERS: Array<{ id: StayListFilter; label: string }> = [
 export function HotelStaysPanel({
   organizationId,
   branchId,
-  branchName,
   filter,
   stays,
   formOptions,
@@ -77,7 +75,7 @@ export function HotelStaysPanel({
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Séjours</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Réservations, check-in / check-out — {branchName}
+            Réservations, check-in / check-out
           </p>
         </div>
         {canCreateStay ? (

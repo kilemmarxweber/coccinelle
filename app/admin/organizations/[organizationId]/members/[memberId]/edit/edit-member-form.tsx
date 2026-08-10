@@ -24,7 +24,7 @@ type Props = { organizationId: string; memberId: string };
 export function EditMemberForm({ organizationId, memberId }: Props) {
   const router = useRouter();
   const [member, setMember] = useState<MemberRow | null | undefined>(undefined);
-  const [role, setRole] = useState<string>(ORG_ROLE.PARENT);
+  const [role, setRole] = useState<string>(ORG_ROLE.CLIENT);
   const [pending, startTransition] = useTransition();
   const [pendingRemove, startRemove] = useTransition();
 
@@ -43,9 +43,9 @@ export function EditMemberForm({ organizationId, memberId }: Props) {
       const found = list.find((m) => m.id === memberId) ?? null;
       setMember(found);
       if (found) {
-        const primary = found.role.split(",")[0]?.trim() ?? ORG_ROLE.PARENT;
+        const primary = found.role.split(",")[0]?.trim() ?? ORG_ROLE.CLIENT;
         setRole(
-          (ALL_ORG_ROLE_SLUGS as readonly string[]).includes(primary) ? primary : ORG_ROLE.PARENT,
+          (ALL_ORG_ROLE_SLUGS as readonly string[]).includes(primary) ? primary : ORG_ROLE.CLIENT,
         );
       }
     } catch {

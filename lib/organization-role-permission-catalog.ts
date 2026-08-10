@@ -41,11 +41,13 @@ export const ORGANIZATION_ROLE_PERMISSION_CATALOG: OrganizationRoleCatalogEntry[
     permissions: (organizationRoleStatements[slug] ?? {}) as OrganizationRolePermissionPayload,
   }));
 
-/** Rôles produit principaux (U04 + hôtel units-03). */
+/** Rôles produit principaux (U04 + hôtel units-09). */
 export const PRODUCT_ORG_ROLES = [
   ORG_ROLE.OWNER,
   ORG_ROLE.GESTIONNAIRE,
-  ORG_ROLE.GUICHETIER,
+  ORG_ROLE.RECEPTIONISTE,
+  ORG_ROLE.CAISSIER,
   ORG_ROLE.SERVEUR,
-  ORG_ROLE.PARENT,
+  ORG_ROLE.CLIENT,
+  ORG_ROLE.GUICHETIER,
 ] as const;

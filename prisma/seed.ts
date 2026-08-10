@@ -8,12 +8,14 @@ import { seedPaiements } from "./seeds/paiement.seed";
 import { seedPenalites } from "./seeds/penalite.seed";
 import { seedPassagers } from "./seeds/passages.seed";
 import { seedOrganization } from "./seeds/organization.seed";
+import { seedHotel } from "./seeds/hotel.seed";
 import { seedOrgMembers } from "./seeds/org-members.seed";
 import { seedTrajetProgramme } from "./seeds/trajetProgram.seed";
 import { seedTrajetDepart } from "./seeds/trajetDepart.seed";
 async function main() {
   console.log("🚀 START FULL SEED");
   await seedOrganization();
+  await seedHotel();
   await seedOrgMembers();
   await seedTrajets();
   await seedTrajetProgramme();

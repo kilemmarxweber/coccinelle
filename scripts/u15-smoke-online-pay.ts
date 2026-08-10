@@ -154,8 +154,8 @@ async function main() {
     where: { reservationId: reservation.id },
   });
 
-  const parentStatements = organizationRoleStatements[ORG_ROLE.PARENT];
-  const canCreate = parentStatements.inscription?.includes("create") ?? false;
+  const clientStatements = organizationRoleStatements[ORG_ROLE.CLIENT];
+  const canCreate = clientStatements.inscription?.includes("create") ?? false;
 
   console.log(
     JSON.stringify(
@@ -167,7 +167,7 @@ async function main() {
         paiementMethode: pay?.methode,
         paiementReference: pay?.reference,
         draftConsumed: after === null,
-        parentInscriptionCreate: canCreate,
+        clientInscriptionCreate: canCreate,
         confirmationUrl: `/${org.slug}/confirmation/${reservation.codeUnique}`,
         mesReservationsUrl: `/${org.slug}/mes-reservations`,
       },

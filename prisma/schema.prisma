@@ -548,6 +548,7 @@ model HotelRoomType {
   description String?
   capacity    Int         @default(2)
   priceNight  Float
+  imageUrl    String?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   branch      Branch      @relation(fields: [branchId], references: [id], onDelete: Cascade)
@@ -657,6 +658,7 @@ model HotelMenuItem {
   name        String
   description String?
   price       Float
+  imageUrl    String?
   active      Boolean           @default(true)
   sortOrder   Int               @default(0)
   createdAt   DateTime          @default(now())

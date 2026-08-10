@@ -26,6 +26,18 @@ const ORG_MEMBERS = [
     role: ORG_ROLE.GUICHETIER,
   },
   {
+    id: "user-receptioniste-1",
+    name: "Réceptionniste Hôtel",
+    email: "receptioniste@test.com",
+    role: ORG_ROLE.RECEPTIONISTE,
+  },
+  {
+    id: "user-caissier-1",
+    name: "Caissier Hôtel",
+    email: "caissier@test.com",
+    role: ORG_ROLE.CAISSIER,
+  },
+  {
     id: "user-serveur-1",
     name: "Serveur Restauration",
     email: "serveur@test.com",
@@ -35,19 +47,38 @@ const ORG_MEMBERS = [
     id: "user-client-1",
     name: "Client Demo",
     email: "client@test.com",
-    role: ORG_ROLE.PARENT,
+    role: ORG_ROLE.CLIENT,
   },
 ] as const;
 
-const BRANCH_STAFF_ROLES = new Set<string>([
-  ORG_ROLE.GUICHETIER,
+/** Staff rattaché à la branche HOTEL (pas le guichetier agence). */
+const HOTEL_BRANCH_STAFF_ROLES = new Set<string>([
+  ORG_ROLE.RECEPTIONISTE,
+  ORG_ROLE.CAISSIER,
   ORG_ROLE.SERVEUR,
 ]);
 
-/** Seeds les rôles produit (owner / gérant / guichetier / serveur / client) pour org-1. */
+/** Soft migrate Member.role `parent` → `client` (units-09). */
+async function migrateParentRoleToClient() {
+  const result = await prisma.member.updateMany({
+    where: { role: "parent" },
+    data: { role: ORG_ROLE.CLIENT },
+  });
+  if (result.count > 0) {
+    console.log(`✅ Soft migrate Member.role parent → client (${result.count})`);
+  }
+}
+
+/**
+ * Seeds les rôles produit pour org-1.
+ * Comptes hôtel : receptioniste / caissier / serveur (+ owner / gérant / client).
+ * Password test : Password123!
+ */
 export async function seedOrgMembers() {
+  await migrateParentRoleToClient();
+
   const passwordHash = await hashPassword(SEED_PASSWORD);
-  const branchStaffMemberIds: string[] = [];
+  const hotelStaffMemberIds: string[] = [];
 
   for (const m of ORG_MEMBERS) {
     const user = await prisma.user.upsert({
@@ -86,11 +117,11 @@ export async function seedOrgMembers() {
       },
     });
 
-    if (BRANCH_STAFF_ROLES.has(m.role)) {
-      branchStaffMemberIds.push(member.id);
+    if (HOTEL_BRANCH_STAFF_ROLES.has(m.role)) {
+      hotelStaffMemberIds.push(member.id);
     }
 
-    if (m.role === ORG_ROLE.PARENT) {
+    if (m.role === ORG_ROLE.CLIENT) {
       await prisma.client.upsert({
         where: { userId: user.id },
         update: {},
@@ -115,7 +146,7 @@ export async function seedOrgMembers() {
   });
 
   if (hotelBranch) {
-    for (const memberId of branchStaffMemberIds) {
+    for (const memberId of hotelStaffMemberIds) {
       await prisma.branchMember.upsert({
         where: {
           branchId_memberId: {
@@ -134,15 +165,15 @@ export async function seedOrgMembers() {
       });
     }
     console.log(
-      `✅ BranchMember HOTEL: guichetier + serveur → ${hotelBranch.name} (${hotelBranch.id})`,
+      `✅ BranchMember HOTEL: receptioniste + caissier + serveur → ${hotelBranch.name} (${hotelBranch.id})`,
     );
   } else {
     console.log(
-      "⚠️ Aucune branche HOTEL active sur org-1 — créez-en une en gérant, puis re-seed les membres pour rattacher guichetier/serveur.",
+      "⚠️ Aucune branche HOTEL active sur org-1 — créez-en une en gérant, puis re-seed les membres pour rattacher le staff hôtel.",
     );
   }
 
   console.log(
-    `✅ Org members seeded (password: ${SEED_PASSWORD}) — owner / gerant / guichetier / serveur / client @test.com`,
+    `✅ Org members seeded (password: ${SEED_PASSWORD}) — owner / gerant / guichetier / receptioniste / caissier / serveur / client @test.com`,
   );
 }

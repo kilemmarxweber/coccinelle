@@ -19,8 +19,8 @@
 |------|------|
 | `app/(public)/` | **Espace Public** (route group) — landing `/` + client ; le groupe n’apparaît pas dans l’URL |
 | `app/(public)/page.tsx` | Landing produit Coccinelle (`/`) — pas d’auth staff obligatoire |
-| `app/(public)/[orgSlug]/…` | **Client** PWA multi-tenant (`/{orgSlug}/…` voyage + hôtel) |
-| `app/(public)/[orgSlug]/hotel/…` | **Client hôtel** — room service (units-05), room booking (units-07), table ± food (units-08) |
+| `app/(public)/[orgSlug]/(voyage)/…` | **Client voyage** — chrome Plane / Mes billets |
+| `app/(public)/[orgSlug]/hotel/…` | **Client hôtel** — landing images (units-12), room service (units-05), room booking (units-07), table ± food (units-08), auth (units-10) ; **sans** chrome Voyage |
 | `app/admin/…` | **Espace Admin** — staff ; auth session dans `admin/layout.tsx` |
 | `app/admin/…/branches/[branchId]/hotel/*` | **Admin** hôtel (board, stays, restauration, payments) |
 | `lib/branch/paths.ts` | Admin `hotelRoutes` + Client `clientHotelRoutes` |
@@ -40,20 +40,24 @@
 | Kind | Where |
 |------|--------|
 | Tenancy, members, branches, hotel rooms/types, stays + folio lines, F&B, tables, payments, hotel stay drafts | PostgreSQL via Prisma |
-| Uploads (if any) | `public/uploads/` (existing pattern) |
+| Uploads (if any) | `public/uploads/` (existing pattern) ; demo hôtel images via `imageUrl` (Unsplash / `public/demo/hotel/`) |
 | Session | Better Auth session store (DB) |
 | Cache | None required for hotel V1 |
 | Generated Prisma client | `prisma/generated/prisma` |
+| Seed hôtel | `prisma/seeds/hotel.seed.ts` (branch HOTEL demo + chambres/menu/images) |
 
 ## Auth and access model
 
 - App roles: `admin` | `user` (`APP_ROLE`).
-- Org roles: `owner`, `gestionnaire`, `guichetier`, `serveur` (hôtel F&B), `parent` (client).
+- Org roles (units-09) : `owner`, `gestionnaire`, `receptioniste`, `caissier`, `serveur`, `client` ; `guichetier` = agence only (pas de `hotel_*`). Slug `parent` retiré.
 - Hotel staff operate inside a `Branch` with `type = HOTEL`.
+- Auth client hôtel (units-10) : `/{orgSlug}/hotel/connexion` et `…/inscription` — distinct de `/auth/sign-in` Voyage ; même session Better Auth.
+- Chrome Client Voyage (`OrgBrandHeader`) uniquement sous le route group `(voyage)` — **jamais** sous `/{orgSlug}/hotel/*`.
 - Every hotel query/mutation must scope by `organizationId` and `branchId`.
 - Authorization via Better Auth access control + helpers — **never** `if (role === "…")` as sole gate.
 - New hotel resources (e.g. `hotel_stay`, `hotel_fnb`) must be declared in `accessControlStatements` / org role matrices after consulting Better Auth MCP docs.
 - `requireBranchContext({ requireModule: "hotel" })` guards hotel staff routes.
+- Admin hôtel shell (units-11) : layout sidebar + header sous `…/branches/[branchId]/hotel/*` (caisse incluse : `…/hotel/caisse`). Hub branche HOTEL redirige vers ce shell.
 - Voyage `Paiement` stays linked to `Reservation` only. Hotel encaissement uses a separate branch-scoped model (introduced in units-06) — no forced merge in early units.
 
 ## Background / AI tasks
