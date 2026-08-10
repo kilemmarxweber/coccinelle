@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Plane, Bus } from "lucide-react";
+import { ArrowRight, Plane, Bus, Ship } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,7 +38,12 @@ export function DepartResultCard({
   className,
   ctaLabel = "Choisir",
 }: DepartResultCardProps) {
-  const ModeIcon = depart.modeTransport === "AVION" ? Plane : Bus;
+  const ModeIcon =
+    depart.modeTransport === "AVION"
+      ? Plane
+      : depart.modeTransport === "BATEAU"
+        ? Ship
+        : Bus;
   const placesLabel = depart.complet
     ? "Complet"
     : `${depart.placesRestantes} place${depart.placesRestantes !== 1 ? "s" : ""} restante${depart.placesRestantes !== 1 ? "s" : ""}`;

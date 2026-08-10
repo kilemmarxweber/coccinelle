@@ -5,7 +5,7 @@ import { SignUpForm } from "./components/sign-up-form";
 
 export const metadata: Metadata = {
   title: "Créer un compte — Coccinelle",
-  description: "Inscription à Coccinelle Voyage.",
+  description: "Inscription à Coccinelle.",
 };
 
 type PageProps = {

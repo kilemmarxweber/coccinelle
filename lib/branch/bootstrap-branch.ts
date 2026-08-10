@@ -1,9 +1,11 @@
 /**
- * Bootstrap des éléments initiaux selon BranchType (B02).
+ * Bootstrap des éléments initiaux selon BranchType + modules.
  */
 
 import type { PrismaClient, BranchType } from "../../prisma/generated/prisma/client";
 import { DEFAULT_HOTEL_MENU } from "@/lib/hotel/default-menu";
+import { isHospitality } from "@/lib/branch/hospitality";
+import type { AgencyFlags, ShopFlags } from "@/lib/branch/agency-shop";
 
 type Db = PrismaClient | Parameters<Parameters<PrismaClient["$transaction"]>[0]>[0];
 
@@ -11,6 +13,14 @@ export type BootstrapBranchInput = {
   organizationId: string;
   branchId: string;
   type: BranchType;
+  hasStays?: boolean;
+  hasRestaurant?: boolean;
+  hasAvion?: boolean;
+  hasBus?: boolean;
+  hasBateau?: boolean;
+  hasPharmacie?: boolean;
+  hasShop?: boolean;
+  hasAlimentation?: boolean;
   /** Crée des données démo (trajets / chambres / produits). Défaut true. */
   seedDemo?: boolean;
   /** Member id du créateur (owner) à rattacher comme branch_manager. */
@@ -24,6 +34,7 @@ export type BootstrapBranchResult = {
   roomsCreated: number;
   categoriesCreated: number;
   productsCreated: number;
+  menuItemsCreated: number;
 };
 
 export async function bootstrapBranchByType(
@@ -38,6 +49,7 @@ export async function bootstrapBranchByType(
     roomsCreated: 0,
     categoriesCreated: 0,
     productsCreated: 0,
+    menuItemsCreated: 0,
   };
 
   if (input.creatorMemberId) {
@@ -53,41 +65,98 @@ export async function bootstrapBranchByType(
     result.branchMembersCreated = 1;
   }
 
-  if (!seedDemo) return result;
+  const agency: AgencyFlags = {
+    hasAvion: input.hasAvion === true,
+    hasBus: input.hasBus === true,
+    hasBateau: input.hasBateau === true,
+  };
+  const shop: ShopFlags = {
+    hasPharmacie: input.hasPharmacie === true,
+    hasShop: input.hasShop === true,
+    hasAlimentation: input.hasAlimentation === true,
+  };
+
+  const hasStays = input.hasStays ?? input.type === "HOTEL";
+  const hasRestaurant =
+    input.hasRestaurant ??
+    (input.type === "HOTEL" || input.type === "RESTAURANT");
+
+  if (!seedDemo) {
+    await db.branch.update({
+      where: { id: input.branchId },
+      data: {
+        settings: {
+          bootstrappedAt: new Date().toISOString(),
+          module: input.type,
+          cashpayeEnabled: true,
+          hasStays,
+          hasRestaurant,
+          ...agency,
+          ...shop,
+        },
+      },
+    });
+    return result;
+  }
 
   if (input.type === "AGENCE") {
-    const trajets = await Promise.all([
-      db.trajet.create({
-        data: {
-          organizationId: input.organizationId,
-          branchId: input.branchId,
-          villeDepart: "Kinshasa",
-          villeArrivee: "Lubumbashi",
-          modeTransport: "AVION",
-          kilosGratuits: 20,
-          prixParKilo: 5,
-          prixBase: 350,
-          dureeEstimee: 120,
-        },
-      }),
-      db.trajet.create({
-        data: {
-          organizationId: input.organizationId,
-          branchId: input.branchId,
-          villeDepart: "Kinshasa",
-          villeArrivee: "Matadi",
-          modeTransport: "BUS",
-          kilosGratuits: 15,
-          prixParKilo: 2,
-          prixBase: 45,
-          dureeEstimee: 240,
-        },
-      }),
-    ]);
+    const creates = [];
+    if (agency.hasAvion) {
+      creates.push(
+        db.trajet.create({
+          data: {
+            organizationId: input.organizationId,
+            branchId: input.branchId,
+            villeDepart: "Kinshasa",
+            villeArrivee: "Lubumbashi",
+            modeTransport: "AVION",
+            kilosGratuits: 20,
+            prixParKilo: 5,
+            prixBase: 350,
+            dureeEstimee: 120,
+          },
+        }),
+      );
+    }
+    if (agency.hasBus) {
+      creates.push(
+        db.trajet.create({
+          data: {
+            organizationId: input.organizationId,
+            branchId: input.branchId,
+            villeDepart: "Kinshasa",
+            villeArrivee: "Matadi",
+            modeTransport: "BUS",
+            kilosGratuits: 15,
+            prixParKilo: 2,
+            prixBase: 45,
+            dureeEstimee: 240,
+          },
+        }),
+      );
+    }
+    if (agency.hasBateau) {
+      creates.push(
+        db.trajet.create({
+          data: {
+            organizationId: input.organizationId,
+            branchId: input.branchId,
+            villeDepart: "Kinshasa",
+            villeArrivee: "Mbandaka",
+            modeTransport: "BATEAU",
+            kilosGratuits: 30,
+            prixParKilo: 1.5,
+            prixBase: 55,
+            dureeEstimee: 720,
+          },
+        }),
+      );
+    }
+    const trajets = await Promise.all(creates);
     result.trajetsCreated = trajets.length;
   }
 
-  if (input.type === "HOTEL") {
+  if (isHospitality(input.type) && hasStays) {
     const standard = await db.hotelRoomType.create({
       data: {
         branchId: input.branchId,
@@ -120,7 +189,9 @@ export async function bootstrapBranchByType(
     });
     result.roomTypesCreated = 2;
     result.roomsCreated = standard.rooms.length + suite.rooms.length;
+  }
 
+  if (isHospitality(input.type) && hasRestaurant) {
     await db.hotelMenuItem.createMany({
       data: DEFAULT_HOTEL_MENU.map((item) => ({
         branchId: input.branchId,
@@ -128,7 +199,10 @@ export async function bootstrapBranchByType(
         stockQty: 50,
       })),
     });
+    result.menuItemsCreated = DEFAULT_HOTEL_MENU.length;
+  }
 
+  if (isHospitality(input.type)) {
     await db.exchangeRate.create({
       data: {
         branchId: input.branchId,
@@ -140,34 +214,64 @@ export async function bootstrapBranchByType(
   }
 
   if (input.type === "BOUTIQUE") {
-    const boissons = await db.shopCategory.create({
-      data: {
-        branchId: input.branchId,
-        name: "Boissons",
-        products: {
-          create: [
-            { name: "Eau 1.5L", sku: "EAU-15", price: 1.5, stockQty: 100 },
-            { name: "Jus local", sku: "JUS-01", price: 2.5, stockQty: 40 },
-          ],
+    let categoriesCreated = 0;
+    let productsCreated = 0;
+
+    if (shop.hasPharmacie) {
+      const cat = await db.shopCategory.create({
+        data: {
+          branchId: input.branchId,
+          name: "Pharmacie",
+          products: {
+            create: [
+              { name: "Paracétamol 500mg", sku: "PHA-PARA", price: 1.2, stockQty: 200 },
+              { name: "Sérum physiologique", sku: "PHA-SER", price: 0.8, stockQty: 120 },
+            ],
+          },
         },
-      },
-      include: { products: true },
-    });
-    const divers = await db.shopCategory.create({
-      data: {
-        branchId: input.branchId,
-        name: "Divers",
-        products: {
-          create: [
-            { name: "Carte SIM", sku: "SIM-01", price: 5, stockQty: 25 },
-            { name: "Snack", sku: "SNK-01", price: 1, stockQty: 80 },
-          ],
+        include: { products: true },
+      });
+      categoriesCreated += 1;
+      productsCreated += cat.products.length;
+    }
+    if (shop.hasShop) {
+      const cat = await db.shopCategory.create({
+        data: {
+          branchId: input.branchId,
+          name: "Boutique",
+          products: {
+            create: [
+              { name: "Carte SIM", sku: "SIM-01", price: 5, stockQty: 25 },
+              { name: "Chargeur USB", sku: "CHG-01", price: 8, stockQty: 40 },
+            ],
+          },
         },
-      },
-      include: { products: true },
-    });
-    result.categoriesCreated = 2;
-    result.productsCreated = boissons.products.length + divers.products.length;
+        include: { products: true },
+      });
+      categoriesCreated += 1;
+      productsCreated += cat.products.length;
+    }
+    if (shop.hasAlimentation) {
+      const cat = await db.shopCategory.create({
+        data: {
+          branchId: input.branchId,
+          name: "Alimentation",
+          products: {
+            create: [
+              { name: "Eau 1.5L", sku: "EAU-15", price: 1.5, stockQty: 100 },
+              { name: "Riz 1kg", sku: "RIZ-01", price: 2.2, stockQty: 80 },
+              { name: "Huile 1L", sku: "HUI-01", price: 3.5, stockQty: 60 },
+            ],
+          },
+        },
+        include: { products: true },
+      });
+      categoriesCreated += 1;
+      productsCreated += cat.products.length;
+    }
+
+    result.categoriesCreated = categoriesCreated;
+    result.productsCreated = productsCreated;
   }
 
   await db.branch.update({
@@ -177,6 +281,10 @@ export async function bootstrapBranchByType(
         bootstrappedAt: new Date().toISOString(),
         module: input.type,
         cashpayeEnabled: true,
+        hasStays,
+        hasRestaurant,
+        ...agency,
+        ...shop,
       },
     },
   });

@@ -1,8 +1,10 @@
 import { Suspense } from "react";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import { canAccessStays } from "@/lib/branch/hospitality";
 import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
   ensureHotelMenuSeedAction,
+  listActiveStaysForChargeAction,
   listMenuItemsAction,
   listOrdersByStatusAction,
 } from "@/lib/hotel/actions";
@@ -19,13 +21,15 @@ export default async function RestaurationPage({
 }: PageProps) {
   const { organizationId, branchId } = await params;
   const { view } = await searchParams;
-  await requireBranchContext({
+  const branch = await requireBranchContext({
     organizationId,
     branchId,
     requireModule: "hotel",
+    requireHospitality: "restaurant",
   });
   await ensureHotelMenuSeedAction(organizationId, branchId);
-  const [menuItems, orders, rate] = await Promise.all([
+  const hasStays = canAccessStays(branch);
+  const [menuItems, orders, rate, activeStays] = await Promise.all([
     listMenuItemsAction(organizationId, branchId),
     listOrdersByStatusAction(organizationId, branchId, [
       "ENVOYEE",
@@ -36,6 +40,9 @@ export default async function RestaurationPage({
       "LIVREE",
     ]),
     getActiveExchangeRate(branchId),
+    hasStays
+      ? listActiveStaysForChargeAction(organizationId, branchId)
+      : Promise.resolve([]),
   ]);
   return (
     <Suspense fallback={null}>
@@ -44,6 +51,8 @@ export default async function RestaurationPage({
         branchId={branchId}
         menuItems={menuItems}
         orders={orders}
+        activeStays={activeStays}
+        hasStays={hasStays}
         rate={rate}
         initialView={view === "suivi" ? "suivi" : undefined}
       />

@@ -12,6 +12,7 @@ export default async function ChambresPage({ params }: PageProps) {
     organizationId,
     branchId,
     requireModule: "hotel",
+    requireHospitality: "stays",
   });
   const rooms = await listRoomsWithTypesAction(organizationId, branchId);
   return (

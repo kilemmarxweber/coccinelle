@@ -12,17 +12,12 @@ import {
   branchDashboardPath,
   organizationBranchesPath,
 } from "@/lib/branch/paths";
+import { branchTypeDetailLabel, isHospitality } from "@/lib/branch/hospitality";
 
 type LayoutProps = {
   children: ReactNode;
   params: Promise<{ organizationId: string; branchId: string }>;
 };
-
-function typeLabel(type: string) {
-  if (type === "HOTEL") return "Hôtel";
-  if (type === "BOUTIQUE") return "Boutique";
-  return "Agence";
-}
 
 export default async function BranchWorkspaceLayout({
   children,
@@ -47,11 +42,11 @@ export default async function BranchWorkspaceLayout({
     <div className="min-h-svh bg-background">
       <DashboardNavbar
         title={branch.name}
-        subtitle={`${branch.organizationName} · ${typeLabel(branch.type)} · ${branch.code}`}
+        subtitle={`${branch.organizationName} · ${branchTypeDetailLabel(branch)} · ${branch.code}`}
         titleHref={branchDashboardPath(organizationId, branchId)}
         actions={
           <div className="flex items-center gap-2">
-            {branch.type === "HOTEL" ? (
+            {isHospitality(branch.type) ? (
               <BranchNotificationsBell
                 organizationId={organizationId}
                 branchId={branchId}

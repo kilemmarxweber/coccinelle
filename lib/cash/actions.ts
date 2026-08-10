@@ -204,6 +204,28 @@ export async function createPaymentAction(input: {
       });
     }
 
+    if (input.folioId) {
+      const [lines, payments] = await Promise.all([
+        tx.folioLine.findMany({ where: { folioId: input.folioId } }),
+        tx.payment.findMany({ where: { folioId: input.folioId } }),
+      ]);
+      const charges = lines.reduce((s, l) => s + l.amount, 0);
+      const paid = payments.reduce(
+        (s, pay) =>
+          s +
+          (pay.amountForeign != null && pay.amountForeign > 0
+            ? pay.amountForeign
+            : pay.amountCdf),
+        0,
+      );
+      if (charges - paid <= 0.01) {
+        await tx.folio.update({
+          where: { id: input.folioId },
+          data: { checkoutQueuedAt: null },
+        });
+      }
+    }
+
     return p;
   });
 
@@ -238,7 +260,7 @@ export async function listOpenFoliosAction(
       lines: true,
       payments: true,
     },
-    orderBy: { updatedAt: "desc" },
+    orderBy: [{ checkoutQueuedAt: "asc" }, { updatedAt: "desc" }],
   });
   return folios.map((f) => {
     const charges = f.lines.reduce((s, l) => s + l.amount, 0);
@@ -250,7 +272,11 @@ export async function listOpenFoliosAction(
           : p.amountCdf),
       0,
     );
-    return { ...f, balance: charges - paid };
+    return {
+      ...f,
+      balance: charges - paid,
+      inCheckoutQueue: f.checkoutQueuedAt != null,
+    };
   });
 }
 
@@ -265,6 +291,8 @@ export async function listReadyOrdersAction(
       status: {
         in: ["ENVOYEE", "EN_PREPARATION", "PRETE", "EN_CAISSE", "PAYEE"],
       },
+      // Sur note : hors file encaissement F&B (réglé via note de chambre)
+      NOT: { settlementMode: "NOTE_CHAMBRE" },
     },
     include: {
       items: true,

@@ -21,9 +21,22 @@ import {
   checkOutStayAction,
   createStayAction,
   extendStayAction,
+  getStayFolioStatementAction,
+  prepareStayCheckoutBillingAction,
 } from "@/lib/hotel/actions";
 import { HOTEL_CHECKOUT_HOUR } from "@/lib/hotel/constants";
 import { branchCaissePath } from "@/lib/branch/paths";
+import {
+  formatBothAmounts,
+  formatConfiguredRateLabel,
+  formatPrimaryAmount,
+  type NormalizedUsdCdfRate,
+} from "@/lib/cash/exchange";
+import {
+  StayFolioStatementView,
+  type StayFolioStatementViewModel,
+} from "@/components/hotel/stay-folio-statement";
+import { SearchCombobox } from "@/components/ui/search-combobox";
 import { cn } from "@/lib/utils";
 
 type Room = {
@@ -46,7 +59,12 @@ type Stay = {
   };
   folio: {
     id: string;
-    lines: { amount: number; description?: string }[];
+    lines: {
+      amount: number;
+      description?: string;
+      kind?: string;
+      quantity?: number;
+    }[];
     payments?: { amountCdf: number; amountForeign?: number | null }[];
   } | null;
 };
@@ -154,6 +172,7 @@ export function SejoursClient(props: {
   yearStays: YearStay[];
   initialYear: number;
   initialMonth: number;
+  rate?: NormalizedUsdCdfRate | null;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -169,6 +188,20 @@ export function SejoursClient(props: {
   });
   const [extendStayId, setExtendStayId] = useState<string | null>(null);
   const [extendDate, setExtendDate] = useState("");
+  const [noteStayId, setNoteStayId] = useState<string | null>(null);
+  const [noteStatement, setNoteStatement] =
+    useState<StayFolioStatementViewModel | null>(null);
+  const [checkoutStayId, setCheckoutStayId] = useState<string | null>(null);
+  const [checkoutStatement, setCheckoutStatement] =
+    useState<StayFolioStatementViewModel | null>(null);
+
+  function fmt(amountUsd: number) {
+    return formatPrimaryAmount(amountUsd, props.rate);
+  }
+
+  function fmtBoth(amountUsd: number) {
+    return formatBothAmounts(amountUsd, props.rate);
+  }
 
   const todayKey = toDateKey(new Date());
   const dim = daysInMonth(year, month);
@@ -260,18 +293,101 @@ export function SejoursClient(props: {
   function checkOut(stayId: string) {
     start(async () => {
       try {
+        const statement = await getStayFolioStatementAction(
+          props.organizationId,
+          props.branchId,
+          stayId,
+          { forCheckout: true },
+        );
+        setCheckoutStayId(stayId);
+        setCheckoutStatement({
+          ...statement,
+          payments: statement.payments.map((p) => ({
+            ...p,
+            paidAt: p.paidAt,
+          })),
+        });
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Erreur");
+      }
+    });
+  }
+
+  function confirmCheckOut() {
+    if (!checkoutStayId) return;
+    const stayId = checkoutStayId;
+    start(async () => {
+      try {
         const res = await checkOutStayAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
           stayId,
         });
         if (!res.ok && res.needsPayment) {
-          toast.message(`Solde ${res.balance.toFixed(2)} $ — allez à la caisse`);
-          router.push(branchCaissePath(props.organizationId, props.branchId));
+          toast.message(
+            `Solde ${formatPrimaryAmount(res.balance, props.rate)} — mis en file d’attente caisse`,
+          );
+          setCheckoutStayId(null);
+          setCheckoutStatement(null);
+          router.push(
+            `${branchCaissePath(props.organizationId, props.branchId)}?tab=folios&queue=1`,
+          );
           return;
         }
-        toast.success("Check-out effectué");
+        toast.success("Check-out effectué — imprimez la facture pour signature");
+        setCheckoutStayId(null);
+        setCheckoutStatement(null);
+        window.open(
+          `/admin/organizations/${props.organizationId}/branches/${props.branchId}/hotel/sejours/note/${stayId}?sign=1`,
+          "_blank",
+        );
         router.refresh();
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Erreur");
+      }
+    });
+  }
+
+  function payCheckoutAtCaisse() {
+    if (!checkoutStayId || !checkoutStatement) return;
+    start(async () => {
+      try {
+        const res = await prepareStayCheckoutBillingAction({
+          organizationId: props.organizationId,
+          branchId: props.branchId,
+          stayId: checkoutStayId,
+        });
+        toast.message(
+          `${res.guestName} · ch. ${res.roomNumber} — mis en file d’attente caisse`,
+        );
+        setCheckoutStayId(null);
+        setCheckoutStatement(null);
+        router.push(
+          `${branchCaissePath(props.organizationId, props.branchId)}?tab=folios&queue=1`,
+        );
+        router.refresh();
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Erreur");
+      }
+    });
+  }
+
+  function openNote(stayId: string) {
+    start(async () => {
+      try {
+        const statement = await getStayFolioStatementAction(
+          props.organizationId,
+          props.branchId,
+          stayId,
+        );
+        setNoteStayId(stayId);
+        setNoteStatement({
+          ...statement,
+          payments: statement.payments.map((p) => ({
+            ...p,
+            paidAt: p.paidAt,
+          })),
+        });
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Erreur");
       }
@@ -297,7 +413,7 @@ export function SejoursClient(props: {
           newCheckOutDate: extendDate,
         });
         toast.success(
-          `Prolongé · +${res.extraNights} nuit(s) · ${res.amount.toFixed(2)} $`,
+          `Prolongé · +${res.extraNights} nuit(s) · ${fmt(res.amount)}`,
         );
         setExtendStayId(null);
         router.refresh();
@@ -336,6 +452,14 @@ export function SejoursClient(props: {
             <span className="font-semibold text-slate-500">gris</span>
             {" · "}libération chambre à{" "}
             <span className="font-semibold">{HOTEL_CHECKOUT_HOUR}h</span>
+            {props.rate ? (
+              <>
+                {" · "}
+                <span className="font-medium">
+                  {formatConfiguredRateLabel(props.rate)}
+                </span>
+              </>
+            ) : null}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -499,20 +623,18 @@ export function SejoursClient(props: {
           <h2 className="font-semibold">Nouvelle réservation</h2>
           <div className="grid gap-1.5">
             <Label>Chambre</Label>
-            <select
-              className="h-10 rounded-md border border-border bg-background px-3 text-sm"
+            <SearchCombobox
+              items={props.rooms.map((r) => ({
+                value: r.id,
+                label: `${r.number} · ${r.roomType.name} (${fmt(r.roomType.priceNight)}/nuit)`,
+              }))}
               value={form.roomId}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, roomId: e.target.value }))
+              onValueChange={(roomId) =>
+                setForm((f) => ({ ...f, roomId }))
               }
-            >
-              {props.rooms.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.number} · {r.roomType.name} (
-                  {r.roomType.priceNight.toFixed(2)} $/nuit)
-                </option>
-              ))}
-            </select>
+              placeholder="Rechercher une chambre…"
+              emptyText="Aucune chambre trouvée."
+            />
           </div>
           <div className="grid gap-1.5">
             <Label>Client</Label>
@@ -647,8 +769,8 @@ export function SejoursClient(props: {
                             ? ` · ${m.elapsed} nuit(s) écoulée(s)`
                             : ""}
                           {" · "}
-                          solde {balance.toFixed(2)} $ ·{" "}
-                          {s.room.roomType.priceNight.toFixed(2)} $/nuit
+                          solde note {fmtBoth(balance)} ·{" "}
+                          {fmt(s.room.roomType.priceNight)}/nuit
                         </p>
                       </div>
                       <div className="flex flex-wrap gap-2">
@@ -678,16 +800,26 @@ export function SejoursClient(props: {
                         >
                           Prolongation
                         </Button>
+                        {s.folio ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={pending}
+                            onClick={() => openNote(s.id)}
+                          >
+                            Voir la note
+                          </Button>
+                        ) : null}
                         {balance > 0.01 ? (
                           <Button
                             size="sm"
                             variant="secondary"
                             render={
                               <Link
-                                href={branchCaissePath(
+                                href={`${branchCaissePath(
                                   props.organizationId,
                                   props.branchId,
-                                )}
+                                )}?tab=folios`}
                               />
                             }
                           >
@@ -715,7 +847,7 @@ export function SejoursClient(props: {
             <DialogTitle>Prolonger le séjour</DialogTitle>
             <DialogDescription>
               {extendTarget
-                ? `${extendTarget.guestName} · ch. ${extendTarget.room.number} — les nuitées ajoutées sont facturées au folio.`
+                ? `${extendTarget.guestName} · ch. ${extendTarget.room.number} — les nuitées ajoutées sont facturées sur la note de chambre.`
                 : null}
             </DialogDescription>
           </DialogHeader>
@@ -744,13 +876,13 @@ export function SejoursClient(props: {
                   asUtcDay(extendDate),
                 )}{" "}
                 nuit(s) ·{" "}
-                {(
+                {fmtBoth(
                   nightsBetween(
                     asUtcDay(extendTarget.checkOutDate),
                     asUtcDay(extendDate),
-                  ) * extendTarget.room.roomType.priceNight
-                ).toFixed(2)}{" "}
-                $ à facturer
+                  ) * extendTarget.room.roomType.priceNight,
+                )}{" "}
+                à facturer
               </p>
             ) : null}
           </div>
@@ -765,6 +897,112 @@ export function SejoursClient(props: {
             <Button disabled={pending || !extendDate} onClick={confirmExtend}>
               Confirmer la prolongation
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={!!noteStatement}
+        onOpenChange={(open) => {
+          if (!open) {
+            setNoteStayId(null);
+            setNoteStatement(null);
+          }
+        }}
+      >
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Note de chambre</DialogTitle>
+            <DialogDescription>
+              Facture séjour — nuitées, consommations et solde.
+            </DialogDescription>
+          </DialogHeader>
+          {noteStatement ? (
+            <StayFolioStatementView
+              statement={noteStatement}
+              rate={props.rate}
+            />
+          ) : null}
+          <DialogFooter className="gap-2 sm:justify-between">
+            {noteStayId ? (
+              <Button
+                variant="outline"
+                render={
+                  <Link
+                    href={`/admin/organizations/${props.organizationId}/branches/${props.branchId}/hotel/sejours/note/${noteStayId}`}
+                    target="_blank"
+                  />
+                }
+              >
+                Imprimer
+              </Button>
+            ) : (
+              <span />
+            )}
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setNoteStayId(null);
+                setNoteStatement(null);
+              }}
+            >
+              Fermer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={!!checkoutStatement}
+        onOpenChange={(open) => {
+          if (!open) {
+            setCheckoutStayId(null);
+            setCheckoutStatement(null);
+          }
+        }}
+      >
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              Check-out
+              {checkoutStatement
+                ? ` — ${checkoutStatement.guestName}`
+                : " — facture séjour"}
+            </DialogTitle>
+            <DialogDescription>
+              {checkoutStatement
+                ? checkoutStatement.balance > 0.01
+                  ? `Ch. ${checkoutStatement.roomNumber} · solde à mettre en file d’attente caisse.`
+                  : `Ch. ${checkoutStatement.roomNumber} · aucun solde — imprimer la facture générale pour signature client.`
+                : `Nuitées recalculées selon les jours consommés (limite ${HOTEL_CHECKOUT_HOUR}h).`}
+            </DialogDescription>
+          </DialogHeader>
+          {checkoutStatement ? (
+            <StayFolioStatementView
+              statement={checkoutStatement}
+              rate={props.rate}
+            />
+          ) : null}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setCheckoutStayId(null);
+                setCheckoutStatement(null);
+              }}
+              disabled={pending}
+            >
+              Annuler
+            </Button>
+            {checkoutStatement && checkoutStatement.balance > 0.01 ? (
+              <Button disabled={pending} onClick={payCheckoutAtCaisse}>
+                Mettre en file d’attente caisse ({fmt(checkoutStatement.balance)})
+              </Button>
+            ) : (
+              <Button disabled={pending} onClick={confirmCheckOut}>
+                Check-out + imprimer facture
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

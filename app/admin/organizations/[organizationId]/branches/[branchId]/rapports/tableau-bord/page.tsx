@@ -3,10 +3,15 @@ import { LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ReportsNav } from "@/components/reports/report-shell";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import {
+  canAccessRestaurant,
+  canAccessStays,
+  isHospitality,
+} from "@/lib/branch/hospitality";
 import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
-  formatPrimaryAmount,
-  formatSecondaryAmount,
+  formatBothAmounts,
+  formatBothRateLabels,
 } from "@/lib/cash/exchange";
 import { getHotelDashboardKpisAction } from "@/lib/hotel/actions";
 import { branchDashboardPath, hotelRoutes } from "@/lib/branch/paths";
@@ -18,16 +23,50 @@ type PageProps = {
 export default async function TableauBordPage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
   const branch = await requireBranchContext({ organizationId, branchId });
-  const [kpis, rate] =
-    branch.type === "HOTEL"
-      ? await Promise.all([
-          getHotelDashboardKpisAction(organizationId, branchId),
-          getActiveExchangeRate(branchId),
-        ])
-      : [null, null];
+  const hospitality = isHospitality(branch.type);
+  const showStays = canAccessStays(branch);
+  const showRestaurant = canAccessRestaurant(branch);
 
-  const caPrimary = kpis ? formatPrimaryAmount(kpis.caJour, rate) : null;
-  const caSecondary = kpis ? formatSecondaryAmount(kpis.caJour, rate) : null;
+  const [kpis, rate] = hospitality
+    ? await Promise.all([
+        getHotelDashboardKpisAction(organizationId, branchId),
+        getActiveExchangeRate(branchId),
+      ])
+    : [null, null];
+
+  const caBoth = kpis ? formatBothAmounts(kpis.caJour, rate) : null;
+  const rateLabels = formatBothRateLabels(rate);
+
+  const kpiCards = kpis
+    ? [
+        showStays
+          ? {
+              label: "Occupation",
+              value: `${kpis.occupancyPct}%`,
+              sub: null as string | null,
+            }
+          : null,
+        showStays
+          ? {
+              label: "Chambres occupées",
+              value: `${kpis.occupied}/${kpis.rooms}`,
+              sub: null as string | null,
+            }
+          : null,
+        {
+          label: "CA caisse (jour)",
+          value: caBoth ?? `${kpis.caJour.toFixed(2)} $`,
+          sub: rateLabels?.both ?? null,
+        },
+        showRestaurant
+          ? {
+              label: "Tickets F&B (jour)",
+              value: String(kpis.ticketsFnbJour),
+              sub: null as string | null,
+            }
+          : null,
+      ].filter((x): x is NonNullable<typeof x> => x != null)
+    : [];
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 px-4 py-6">
@@ -38,6 +77,11 @@ export default async function TableauBordPage({ params }: PageProps) {
         <div>
           <h1 className="text-2xl font-bold">Tableau de Bord</h1>
           <p className="text-sm text-muted-foreground">{branch.name}</p>
+          {rateLabels ? (
+            <p className="mt-1 text-xs font-medium text-sky-700 dark:text-sky-300">
+              {rateLabels.both}
+            </p>
+          ) : null}
         </div>
       </div>
 
@@ -47,30 +91,9 @@ export default async function TableauBordPage({ params }: PageProps) {
         active="tableauBord"
       />
 
-      {kpis ? (
+      {kpiCards.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            {
-              label: "Occupation",
-              value: `${kpis.occupancyPct}%`,
-              sub: null as string | null,
-            },
-            {
-              label: "Chambres occupées",
-              value: `${kpis.occupied}/${kpis.rooms}`,
-              sub: null,
-            },
-            {
-              label: "CA caisse (jour)",
-              value: caPrimary ?? `${kpis.caJour.toFixed(2)} $`,
-              sub: caSecondary,
-            },
-            {
-              label: "Tickets F&B (jour)",
-              value: String(kpis.ticketsFnbJour),
-              sub: null,
-            },
-          ].map((k) => (
+          {kpiCards.map((k) => (
             <div
               key={k.label}
               className="rounded-2xl border border-border bg-card p-5 shadow-sm"
@@ -89,19 +112,31 @@ export default async function TableauBordPage({ params }: PageProps) {
         </div>
       ) : (
         <p className="text-sm text-muted-foreground">
-          KPI hôtel disponibles sur une branche HOTEL.
+          KPI hôtellerie-restaurant disponibles sur une branche Hôtel ou Restaurant.
         </p>
       )}
 
       <div className="flex flex-wrap gap-2">
-        <Button
-          variant="outline"
-          render={
-            <Link href={hotelRoutes.sejours(organizationId, branchId)} />
-          }
-        >
-          Séjours
-        </Button>
+        {showStays ? (
+          <Button
+            variant="outline"
+            render={
+              <Link href={hotelRoutes.sejours(organizationId, branchId)} />
+            }
+          >
+            Séjours
+          </Button>
+        ) : null}
+        {showRestaurant ? (
+          <Button
+            variant="outline"
+            render={
+              <Link href={hotelRoutes.restauration(organizationId, branchId)} />
+            }
+          >
+            Restauration
+          </Button>
+        ) : null}
         <Button
           variant="outline"
           render={

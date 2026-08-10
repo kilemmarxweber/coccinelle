@@ -23,16 +23,16 @@ const panelCopy: Record<
   }
 > = {
   "sign-in": {
-    badge: "COCCINELLE VOYAGE",
+    badge: "COCCINELLE V.0.1",
     title: "Nouveau dans l'équipe ?",
     description:
-      "Créez votre compte opérateur et gérez voyages, réservations et colis en quelques minutes.",
+      "Créez votre compte opérateur et gérez vos commandes, réservations et colis en quelques minutes.",
     ctaLabel: "Créer un compte",
     ctaHref: "/auth/sign-up",
     quote: "Voyager loin, c’est commencer ici.",
   },
   "sign-up": {
-    badge: "COCCINELLE VOYAGE",
+    badge: "COCCINELLE V 0.1",
     title: "Déjà un compte ?",
     description:
       "Reconnectez-vous à la console pour reprendre la gestion de vos trajets et passagers.",

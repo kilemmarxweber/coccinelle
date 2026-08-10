@@ -13,7 +13,7 @@ Modéliser `Branch` (typée) et `BranchMember` en base.
 
 ## Scope
 
-- Enum `BranchType` : `AGENCE` \| `HOTEL` \| `BOUTIQUE`
+- Enum `BranchType` : `AGENCE` \| `HOTEL` \| `BOUTIQUE` \| `RESTAURANT` (voir [B13](./B13-hospitalite-modules.md) pour `hasStays` / `hasRestaurant`)
 - Modèles `Branch`, `BranchMember`
 - Modèles bootstrap minimaux : `HotelRoomType`, `HotelRoom`, `ShopCategory`, `ShopProduct`
 - `Trajet.branchId` optionnel (nullable) pour rattachement progressif

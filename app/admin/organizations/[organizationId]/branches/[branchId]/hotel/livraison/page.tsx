@@ -16,6 +16,7 @@ export default async function HotelLivraisonPage({ params }: PageProps) {
     organizationId,
     branchId,
     requireModule: "hotel",
+    requireHospitality: "livraison",
   });
   const [items, movements, branch] = await Promise.all([
     listConsumableItemsAction(organizationId, branchId),

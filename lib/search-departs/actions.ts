@@ -27,7 +27,7 @@ const searchDepartsSchema = z
     villeDepart: z.string().trim().min(1, "Ville de départ requise."),
     villeArrivee: z.string().trim().min(1, "Ville d'arrivée requise."),
     date: z.string().trim().min(1, "Date requise."),
-    modeTransport: z.enum(["BUS", "AVION"]).optional(),
+    modeTransport: z.enum(["BUS", "AVION", "BATEAU"]).optional(),
     includeComplets: z.boolean().optional(),
   })
   .refine((v) => Boolean(v.organizationId || v.organizationSlug), {
@@ -40,7 +40,7 @@ const listDepartsDuJourSchema = z
     organizationId: organizationIdSchema.optional(),
     organizationSlug: z.string().trim().min(1).optional(),
     date: z.string().trim().min(1).optional(),
-    modeTransport: z.enum(["BUS", "AVION"]).optional(),
+    modeTransport: z.enum(["BUS", "AVION", "BATEAU"]).optional(),
     includeComplets: z.boolean().optional(),
   })
   .refine((v) => Boolean(v.organizationId || v.organizationSlug), {

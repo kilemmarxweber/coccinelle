@@ -30,6 +30,7 @@ export type FolioMinAggregateOutputType = {
   stayId: string | null
   label: string | null
   closed: boolean | null
+  checkoutQueuedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -40,6 +41,7 @@ export type FolioMaxAggregateOutputType = {
   stayId: string | null
   label: string | null
   closed: boolean | null
+  checkoutQueuedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -50,6 +52,7 @@ export type FolioCountAggregateOutputType = {
   stayId: number
   label: number
   closed: number
+  checkoutQueuedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -62,6 +65,7 @@ export type FolioMinAggregateInputType = {
   stayId?: true
   label?: true
   closed?: true
+  checkoutQueuedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -72,6 +76,7 @@ export type FolioMaxAggregateInputType = {
   stayId?: true
   label?: true
   closed?: true
+  checkoutQueuedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -82,6 +87,7 @@ export type FolioCountAggregateInputType = {
   stayId?: true
   label?: true
   closed?: true
+  checkoutQueuedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -165,6 +171,7 @@ export type FolioGroupByOutputType = {
   stayId: string | null
   label: string | null
   closed: boolean
+  checkoutQueuedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: FolioCountAggregateOutputType | null
@@ -196,6 +203,7 @@ export type FolioWhereInput = {
   stayId?: Prisma.StringNullableFilter<"Folio"> | string | null
   label?: Prisma.StringNullableFilter<"Folio"> | string | null
   closed?: Prisma.BoolFilter<"Folio"> | boolean
+  checkoutQueuedAt?: Prisma.DateTimeNullableFilter<"Folio"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Folio"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Folio"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
@@ -211,6 +219,7 @@ export type FolioOrderByWithRelationInput = {
   stayId?: Prisma.SortOrderInput | Prisma.SortOrder
   label?: Prisma.SortOrderInput | Prisma.SortOrder
   closed?: Prisma.SortOrder
+  checkoutQueuedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   branch?: Prisma.BranchOrderByWithRelationInput
@@ -229,6 +238,7 @@ export type FolioWhereUniqueInput = Prisma.AtLeast<{
   branchId?: Prisma.StringFilter<"Folio"> | string
   label?: Prisma.StringNullableFilter<"Folio"> | string | null
   closed?: Prisma.BoolFilter<"Folio"> | boolean
+  checkoutQueuedAt?: Prisma.DateTimeNullableFilter<"Folio"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Folio"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Folio"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
@@ -244,6 +254,7 @@ export type FolioOrderByWithAggregationInput = {
   stayId?: Prisma.SortOrderInput | Prisma.SortOrder
   label?: Prisma.SortOrderInput | Prisma.SortOrder
   closed?: Prisma.SortOrder
+  checkoutQueuedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.FolioCountOrderByAggregateInput
@@ -260,6 +271,7 @@ export type FolioScalarWhereWithAggregatesInput = {
   stayId?: Prisma.StringNullableWithAggregatesFilter<"Folio"> | string | null
   label?: Prisma.StringNullableWithAggregatesFilter<"Folio"> | string | null
   closed?: Prisma.BoolWithAggregatesFilter<"Folio"> | boolean
+  checkoutQueuedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Folio"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Folio"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Folio"> | Date | string
 }
@@ -268,6 +280,7 @@ export type FolioCreateInput = {
   id?: string
   label?: string | null
   closed?: boolean
+  checkoutQueuedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutFoliosInput
@@ -283,6 +296,7 @@ export type FolioUncheckedCreateInput = {
   stayId?: string | null
   label?: string | null
   closed?: boolean
+  checkoutQueuedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.FolioLineUncheckedCreateNestedManyWithoutFolioInput
@@ -294,6 +308,7 @@ export type FolioUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkoutQueuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutFoliosNestedInput
@@ -309,6 +324,7 @@ export type FolioUncheckedUpdateInput = {
   stayId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkoutQueuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.FolioLineUncheckedUpdateManyWithoutFolioNestedInput
@@ -322,6 +338,7 @@ export type FolioCreateManyInput = {
   stayId?: string | null
   label?: string | null
   closed?: boolean
+  checkoutQueuedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -330,6 +347,7 @@ export type FolioUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkoutQueuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -340,6 +358,7 @@ export type FolioUncheckedUpdateManyInput = {
   stayId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkoutQueuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -365,6 +384,7 @@ export type FolioCountOrderByAggregateInput = {
   stayId?: Prisma.SortOrder
   label?: Prisma.SortOrder
   closed?: Prisma.SortOrder
+  checkoutQueuedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -375,6 +395,7 @@ export type FolioMaxOrderByAggregateInput = {
   stayId?: Prisma.SortOrder
   label?: Prisma.SortOrder
   closed?: Prisma.SortOrder
+  checkoutQueuedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -385,6 +406,7 @@ export type FolioMinOrderByAggregateInput = {
   stayId?: Prisma.SortOrder
   label?: Prisma.SortOrder
   closed?: Prisma.SortOrder
+  checkoutQueuedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -518,6 +540,7 @@ export type FolioCreateWithoutBranchInput = {
   id?: string
   label?: string | null
   closed?: boolean
+  checkoutQueuedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   stay?: Prisma.HotelStayCreateNestedOneWithoutFolioInput
@@ -531,6 +554,7 @@ export type FolioUncheckedCreateWithoutBranchInput = {
   stayId?: string | null
   label?: string | null
   closed?: boolean
+  checkoutQueuedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.FolioLineUncheckedCreateNestedManyWithoutFolioInput
@@ -573,6 +597,7 @@ export type FolioScalarWhereInput = {
   stayId?: Prisma.StringNullableFilter<"Folio"> | string | null
   label?: Prisma.StringNullableFilter<"Folio"> | string | null
   closed?: Prisma.BoolFilter<"Folio"> | boolean
+  checkoutQueuedAt?: Prisma.DateTimeNullableFilter<"Folio"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Folio"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Folio"> | Date | string
 }
@@ -581,6 +606,7 @@ export type FolioCreateWithoutStayInput = {
   id?: string
   label?: string | null
   closed?: boolean
+  checkoutQueuedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutFoliosInput
@@ -594,6 +620,7 @@ export type FolioUncheckedCreateWithoutStayInput = {
   branchId: string
   label?: string | null
   closed?: boolean
+  checkoutQueuedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.FolioLineUncheckedCreateNestedManyWithoutFolioInput
@@ -621,6 +648,7 @@ export type FolioUpdateWithoutStayInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkoutQueuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutFoliosNestedInput
@@ -634,6 +662,7 @@ export type FolioUncheckedUpdateWithoutStayInput = {
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkoutQueuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.FolioLineUncheckedUpdateManyWithoutFolioNestedInput
@@ -645,6 +674,7 @@ export type FolioCreateWithoutLinesInput = {
   id?: string
   label?: string | null
   closed?: boolean
+  checkoutQueuedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutFoliosInput
@@ -659,6 +689,7 @@ export type FolioUncheckedCreateWithoutLinesInput = {
   stayId?: string | null
   label?: string | null
   closed?: boolean
+  checkoutQueuedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFolioInput
@@ -685,6 +716,7 @@ export type FolioUpdateWithoutLinesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkoutQueuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutFoliosNestedInput
@@ -699,6 +731,7 @@ export type FolioUncheckedUpdateWithoutLinesInput = {
   stayId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkoutQueuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFolioNestedInput
@@ -709,6 +742,7 @@ export type FolioCreateWithoutPaymentsInput = {
   id?: string
   label?: string | null
   closed?: boolean
+  checkoutQueuedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutFoliosInput
@@ -723,6 +757,7 @@ export type FolioUncheckedCreateWithoutPaymentsInput = {
   stayId?: string | null
   label?: string | null
   closed?: boolean
+  checkoutQueuedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.FolioLineUncheckedCreateNestedManyWithoutFolioInput
@@ -749,6 +784,7 @@ export type FolioUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkoutQueuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutFoliosNestedInput
@@ -763,6 +799,7 @@ export type FolioUncheckedUpdateWithoutPaymentsInput = {
   stayId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkoutQueuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.FolioLineUncheckedUpdateManyWithoutFolioNestedInput
@@ -773,6 +810,7 @@ export type FolioCreateWithoutOrdersInput = {
   id?: string
   label?: string | null
   closed?: boolean
+  checkoutQueuedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutFoliosInput
@@ -787,6 +825,7 @@ export type FolioUncheckedCreateWithoutOrdersInput = {
   stayId?: string | null
   label?: string | null
   closed?: boolean
+  checkoutQueuedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.FolioLineUncheckedCreateNestedManyWithoutFolioInput
@@ -813,6 +852,7 @@ export type FolioUpdateWithoutOrdersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkoutQueuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutFoliosNestedInput
@@ -827,6 +867,7 @@ export type FolioUncheckedUpdateWithoutOrdersInput = {
   stayId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkoutQueuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.FolioLineUncheckedUpdateManyWithoutFolioNestedInput
@@ -838,6 +879,7 @@ export type FolioCreateManyBranchInput = {
   stayId?: string | null
   label?: string | null
   closed?: boolean
+  checkoutQueuedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -846,6 +888,7 @@ export type FolioUpdateWithoutBranchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkoutQueuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stay?: Prisma.HotelStayUpdateOneWithoutFolioNestedInput
@@ -859,6 +902,7 @@ export type FolioUncheckedUpdateWithoutBranchInput = {
   stayId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkoutQueuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.FolioLineUncheckedUpdateManyWithoutFolioNestedInput
@@ -871,6 +915,7 @@ export type FolioUncheckedUpdateManyWithoutBranchInput = {
   stayId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkoutQueuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -930,6 +975,7 @@ export type FolioSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   stayId?: boolean
   label?: boolean
   closed?: boolean
+  checkoutQueuedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -946,6 +992,7 @@ export type FolioSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   stayId?: boolean
   label?: boolean
   closed?: boolean
+  checkoutQueuedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -958,6 +1005,7 @@ export type FolioSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   stayId?: boolean
   label?: boolean
   closed?: boolean
+  checkoutQueuedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -970,11 +1018,12 @@ export type FolioSelectScalar = {
   stayId?: boolean
   label?: boolean
   closed?: boolean
+  checkoutQueuedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type FolioOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "stayId" | "label" | "closed" | "createdAt" | "updatedAt", ExtArgs["result"]["folio"]>
+export type FolioOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "stayId" | "label" | "closed" | "checkoutQueuedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["folio"]>
 export type FolioInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   stay?: boolean | Prisma.Folio$stayArgs<ExtArgs>
@@ -1007,6 +1056,10 @@ export type $FolioPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     stayId: string | null
     label: string | null
     closed: boolean
+    /**
+     * Mis en file d’attente caisse (check-out avec solde à régler)
+     */
+    checkoutQueuedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["folio"]>
@@ -1442,6 +1495,7 @@ export interface FolioFieldRefs {
   readonly stayId: Prisma.FieldRef<"Folio", 'String'>
   readonly label: Prisma.FieldRef<"Folio", 'String'>
   readonly closed: Prisma.FieldRef<"Folio", 'Boolean'>
+  readonly checkoutQueuedAt: Prisma.FieldRef<"Folio", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Folio", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Folio", 'DateTime'>
 }

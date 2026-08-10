@@ -121,7 +121,8 @@ export type SourceReservation = (typeof SourceReservation)[keyof typeof SourceRe
 
 export const ModeTransport = {
   BUS: 'BUS',
-  AVION: 'AVION'
+  AVION: 'AVION',
+  BATEAU: 'BATEAU'
 } as const
 
 export type ModeTransport = (typeof ModeTransport)[keyof typeof ModeTransport]
@@ -130,7 +131,8 @@ export type ModeTransport = (typeof ModeTransport)[keyof typeof ModeTransport]
 export const BranchType = {
   AGENCE: 'AGENCE',
   HOTEL: 'HOTEL',
-  BOUTIQUE: 'BOUTIQUE'
+  BOUTIQUE: 'BOUTIQUE',
+  RESTAURANT: 'RESTAURANT'
 } as const
 
 export type BranchType = (typeof BranchType)[keyof typeof BranchType]

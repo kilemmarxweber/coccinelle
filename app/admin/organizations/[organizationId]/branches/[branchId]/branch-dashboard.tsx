@@ -7,6 +7,7 @@ import {
   DashboardSection,
 } from "@/components/ui/dashboard-menu-card";
 import { menuSectionsForBranch } from "@/lib/branch/branch-menus";
+import { branchTypeDetailLabel } from "@/lib/branch/hospitality";
 import { APP_ROLE } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 
@@ -18,19 +19,20 @@ function roleLabel(role: string | null | undefined) {
   return role ? role.charAt(0).toUpperCase() + role.slice(1) : "Visiteur";
 }
 
-function branchTypeLabel(type: string) {
-  if (type === "AGENCE") return "Agence";
-  if (type === "HOTEL") return "Hôtel";
-  if (type === "BOUTIQUE") return "Boutique";
-  return type;
-}
-
 export type BranchDashboardProps = {
   organizationId: string;
   branchId: string;
   branchName: string;
   branchCode: string;
   branchType: string;
+  hasStays: boolean;
+  hasRestaurant: boolean;
+  hasAvion: boolean;
+  hasBus: boolean;
+  hasBateau: boolean;
+  hasPharmacie: boolean;
+  hasShop: boolean;
+  hasAlimentation: boolean;
   organizationName: string;
 };
 
@@ -39,13 +41,37 @@ export function BranchDashboard({
   branchId,
   branchName,
   branchType,
+  hasStays,
+  hasRestaurant,
+  hasAvion,
+  hasBus,
+  hasBateau,
+  hasPharmacie,
+  hasShop,
+  hasAlimentation,
 }: BranchDashboardProps) {
   const { data: session } = authClient.useSession();
   const [showWelcome, setShowWelcome] = useState(true);
 
   const user = session?.user;
   const userName = user?.name?.trim() || user?.email || "Visiteur";
-  const sections = menuSectionsForBranch(organizationId, branchId, branchType);
+  const sections = menuSectionsForBranch(
+    organizationId,
+    branchId,
+    branchType,
+    { hasStays, hasRestaurant },
+  );
+  const typeDetail = branchTypeDetailLabel({
+    type: branchType,
+    hasStays,
+    hasRestaurant,
+    hasAvion,
+    hasBus,
+    hasBateau,
+    hasPharmacie,
+    hasShop,
+    hasAlimentation,
+  });
 
   useEffect(() => {
     const t = setTimeout(() => setShowWelcome(false), WELCOME_MS);
@@ -74,7 +100,7 @@ export function BranchDashboard({
                 une option pour commencer.
               </p>
               <p className="mt-3 text-xs text-primary-foreground/70">
-                {branchTypeLabel(branchType)} · {branchName}
+                {typeDetail} · {branchName}
               </p>
             </div>
             <div className="absolute top-5 right-5 rounded-full bg-background/95 px-3.5 py-1.5 text-xs font-semibold text-primary shadow-sm sm:top-6 sm:right-6">

@@ -101,7 +101,7 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
             Coccinelle
           </span>
           <span className="block text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
-            Voyage RDC
+            v 0.1
           </span>
         </span>
       </Link>
@@ -111,7 +111,7 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
           Créer un compte
         </h1>
         <p className="text-sm text-muted-foreground">
-          Rejoignez la console Coccinelle pour gérer voyages, passagers et colis.
+          Rejoignez la console Coccinelle pour gérer vos commandes, réservations et demandes de service.
         </p>
       </div>
 

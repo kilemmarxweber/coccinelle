@@ -41,6 +41,8 @@ export type HotelOrderMinAggregateOutputType = {
   folioId: string | null
   tableLabel: string | null
   status: $Enums.HotelOrderStatus | null
+  settlementMode: string | null
+  postedToFolioAt: Date | null
   serverNote: string | null
   createdByUserId: string | null
   createdAt: Date | null
@@ -61,6 +63,8 @@ export type HotelOrderMaxAggregateOutputType = {
   folioId: string | null
   tableLabel: string | null
   status: $Enums.HotelOrderStatus | null
+  settlementMode: string | null
+  postedToFolioAt: Date | null
   serverNote: string | null
   createdByUserId: string | null
   createdAt: Date | null
@@ -81,6 +85,8 @@ export type HotelOrderCountAggregateOutputType = {
   folioId: number
   tableLabel: number
   status: number
+  settlementMode: number
+  postedToFolioAt: number
   serverNote: number
   createdByUserId: number
   createdAt: number
@@ -111,6 +117,8 @@ export type HotelOrderMinAggregateInputType = {
   folioId?: true
   tableLabel?: true
   status?: true
+  settlementMode?: true
+  postedToFolioAt?: true
   serverNote?: true
   createdByUserId?: true
   createdAt?: true
@@ -131,6 +139,8 @@ export type HotelOrderMaxAggregateInputType = {
   folioId?: true
   tableLabel?: true
   status?: true
+  settlementMode?: true
+  postedToFolioAt?: true
   serverNote?: true
   createdByUserId?: true
   createdAt?: true
@@ -151,6 +161,8 @@ export type HotelOrderCountAggregateInputType = {
   folioId?: true
   tableLabel?: true
   status?: true
+  settlementMode?: true
+  postedToFolioAt?: true
   serverNote?: true
   createdByUserId?: true
   createdAt?: true
@@ -258,6 +270,8 @@ export type HotelOrderGroupByOutputType = {
   folioId: string | null
   tableLabel: string | null
   status: $Enums.HotelOrderStatus
+  settlementMode: string
+  postedToFolioAt: Date | null
   serverNote: string | null
   createdByUserId: string
   createdAt: Date
@@ -301,6 +315,8 @@ export type HotelOrderWhereInput = {
   folioId?: Prisma.StringNullableFilter<"HotelOrder"> | string | null
   tableLabel?: Prisma.StringNullableFilter<"HotelOrder"> | string | null
   status?: Prisma.EnumHotelOrderStatusFilter<"HotelOrder"> | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFilter<"HotelOrder"> | string
+  postedToFolioAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
   serverNote?: Prisma.StringNullableFilter<"HotelOrder"> | string | null
   createdByUserId?: Prisma.StringFilter<"HotelOrder"> | string
   createdAt?: Prisma.DateTimeFilter<"HotelOrder"> | Date | string
@@ -326,6 +342,8 @@ export type HotelOrderOrderByWithRelationInput = {
   folioId?: Prisma.SortOrderInput | Prisma.SortOrder
   tableLabel?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  settlementMode?: Prisma.SortOrder
+  postedToFolioAt?: Prisma.SortOrderInput | Prisma.SortOrder
   serverNote?: Prisma.SortOrderInput | Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -354,6 +372,8 @@ export type HotelOrderWhereUniqueInput = Prisma.AtLeast<{
   folioId?: Prisma.StringNullableFilter<"HotelOrder"> | string | null
   tableLabel?: Prisma.StringNullableFilter<"HotelOrder"> | string | null
   status?: Prisma.EnumHotelOrderStatusFilter<"HotelOrder"> | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFilter<"HotelOrder"> | string
+  postedToFolioAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
   serverNote?: Prisma.StringNullableFilter<"HotelOrder"> | string | null
   createdByUserId?: Prisma.StringFilter<"HotelOrder"> | string
   createdAt?: Prisma.DateTimeFilter<"HotelOrder"> | Date | string
@@ -379,6 +399,8 @@ export type HotelOrderOrderByWithAggregationInput = {
   folioId?: Prisma.SortOrderInput | Prisma.SortOrder
   tableLabel?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  settlementMode?: Prisma.SortOrder
+  postedToFolioAt?: Prisma.SortOrderInput | Prisma.SortOrder
   serverNote?: Prisma.SortOrderInput | Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -407,6 +429,8 @@ export type HotelOrderScalarWhereWithAggregatesInput = {
   folioId?: Prisma.StringNullableWithAggregatesFilter<"HotelOrder"> | string | null
   tableLabel?: Prisma.StringNullableWithAggregatesFilter<"HotelOrder"> | string | null
   status?: Prisma.EnumHotelOrderStatusWithAggregatesFilter<"HotelOrder"> | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringWithAggregatesFilter<"HotelOrder"> | string
+  postedToFolioAt?: Prisma.DateTimeNullableWithAggregatesFilter<"HotelOrder"> | Date | string | null
   serverNote?: Prisma.StringNullableWithAggregatesFilter<"HotelOrder"> | string | null
   createdByUserId?: Prisma.StringWithAggregatesFilter<"HotelOrder"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"HotelOrder"> | Date | string
@@ -424,6 +448,8 @@ export type HotelOrderCreateInput = {
   id?: string
   tableLabel?: string | null
   status?: $Enums.HotelOrderStatus
+  settlementMode?: string
+  postedToFolioAt?: Date | string | null
   serverNote?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -449,6 +475,8 @@ export type HotelOrderUncheckedCreateInput = {
   folioId?: string | null
   tableLabel?: string | null
   status?: $Enums.HotelOrderStatus
+  settlementMode?: string
+  postedToFolioAt?: Date | string | null
   serverNote?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -468,6 +496,8 @@ export type HotelOrderUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -493,6 +523,8 @@ export type HotelOrderUncheckedUpdateInput = {
   folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -515,6 +547,8 @@ export type HotelOrderCreateManyInput = {
   folioId?: string | null
   tableLabel?: string | null
   status?: $Enums.HotelOrderStatus
+  settlementMode?: string
+  postedToFolioAt?: Date | string | null
   serverNote?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -532,6 +566,8 @@ export type HotelOrderUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -552,6 +588,8 @@ export type HotelOrderUncheckedUpdateManyInput = {
   folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -587,6 +625,8 @@ export type HotelOrderCountOrderByAggregateInput = {
   folioId?: Prisma.SortOrder
   tableLabel?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  settlementMode?: Prisma.SortOrder
+  postedToFolioAt?: Prisma.SortOrder
   serverNote?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -611,6 +651,8 @@ export type HotelOrderMaxOrderByAggregateInput = {
   folioId?: Prisma.SortOrder
   tableLabel?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  settlementMode?: Prisma.SortOrder
+  postedToFolioAt?: Prisma.SortOrder
   serverNote?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -631,6 +673,8 @@ export type HotelOrderMinOrderByAggregateInput = {
   folioId?: Prisma.SortOrder
   tableLabel?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  settlementMode?: Prisma.SortOrder
+  postedToFolioAt?: Prisma.SortOrder
   serverNote?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -817,6 +861,8 @@ export type HotelOrderCreateWithoutBranchInput = {
   id?: string
   tableLabel?: string | null
   status?: $Enums.HotelOrderStatus
+  settlementMode?: string
+  postedToFolioAt?: Date | string | null
   serverNote?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -840,6 +886,8 @@ export type HotelOrderUncheckedCreateWithoutBranchInput = {
   folioId?: string | null
   tableLabel?: string | null
   status?: $Enums.HotelOrderStatus
+  settlementMode?: string
+  postedToFolioAt?: Date | string | null
   serverNote?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -891,6 +939,8 @@ export type HotelOrderScalarWhereInput = {
   folioId?: Prisma.StringNullableFilter<"HotelOrder"> | string | null
   tableLabel?: Prisma.StringNullableFilter<"HotelOrder"> | string | null
   status?: Prisma.EnumHotelOrderStatusFilter<"HotelOrder"> | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFilter<"HotelOrder"> | string
+  postedToFolioAt?: Prisma.DateTimeNullableFilter<"HotelOrder"> | Date | string | null
   serverNote?: Prisma.StringNullableFilter<"HotelOrder"> | string | null
   createdByUserId?: Prisma.StringFilter<"HotelOrder"> | string
   createdAt?: Prisma.DateTimeFilter<"HotelOrder"> | Date | string
@@ -908,6 +958,8 @@ export type HotelOrderCreateWithoutStayInput = {
   id?: string
   tableLabel?: string | null
   status?: $Enums.HotelOrderStatus
+  settlementMode?: string
+  postedToFolioAt?: Date | string | null
   serverNote?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -931,6 +983,8 @@ export type HotelOrderUncheckedCreateWithoutStayInput = {
   folioId?: string | null
   tableLabel?: string | null
   status?: $Enums.HotelOrderStatus
+  settlementMode?: string
+  postedToFolioAt?: Date | string | null
   serverNote?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -976,6 +1030,8 @@ export type HotelOrderCreateWithoutFolioInput = {
   id?: string
   tableLabel?: string | null
   status?: $Enums.HotelOrderStatus
+  settlementMode?: string
+  postedToFolioAt?: Date | string | null
   serverNote?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -999,6 +1055,8 @@ export type HotelOrderUncheckedCreateWithoutFolioInput = {
   stayId?: string | null
   tableLabel?: string | null
   status?: $Enums.HotelOrderStatus
+  settlementMode?: string
+  postedToFolioAt?: Date | string | null
   serverNote?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -1044,6 +1102,8 @@ export type HotelOrderCreateWithoutPaymentsInput = {
   id?: string
   tableLabel?: string | null
   status?: $Enums.HotelOrderStatus
+  settlementMode?: string
+  postedToFolioAt?: Date | string | null
   serverNote?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -1068,6 +1128,8 @@ export type HotelOrderUncheckedCreateWithoutPaymentsInput = {
   folioId?: string | null
   tableLabel?: string | null
   status?: $Enums.HotelOrderStatus
+  settlementMode?: string
+  postedToFolioAt?: Date | string | null
   serverNote?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -1102,6 +1164,8 @@ export type HotelOrderUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1126,6 +1190,8 @@ export type HotelOrderUncheckedUpdateWithoutPaymentsInput = {
   folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1144,6 +1210,8 @@ export type HotelOrderCreateWithoutItemsInput = {
   id?: string
   tableLabel?: string | null
   status?: $Enums.HotelOrderStatus
+  settlementMode?: string
+  postedToFolioAt?: Date | string | null
   serverNote?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -1168,6 +1236,8 @@ export type HotelOrderUncheckedCreateWithoutItemsInput = {
   folioId?: string | null
   tableLabel?: string | null
   status?: $Enums.HotelOrderStatus
+  settlementMode?: string
+  postedToFolioAt?: Date | string | null
   serverNote?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -1202,6 +1272,8 @@ export type HotelOrderUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1226,6 +1298,8 @@ export type HotelOrderUncheckedUpdateWithoutItemsInput = {
   folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1246,6 +1320,8 @@ export type HotelOrderCreateManyBranchInput = {
   folioId?: string | null
   tableLabel?: string | null
   status?: $Enums.HotelOrderStatus
+  settlementMode?: string
+  postedToFolioAt?: Date | string | null
   serverNote?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -1263,6 +1339,8 @@ export type HotelOrderUpdateWithoutBranchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1286,6 +1364,8 @@ export type HotelOrderUncheckedUpdateWithoutBranchInput = {
   folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1307,6 +1387,8 @@ export type HotelOrderUncheckedUpdateManyWithoutBranchInput = {
   folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1326,6 +1408,8 @@ export type HotelOrderCreateManyStayInput = {
   folioId?: string | null
   tableLabel?: string | null
   status?: $Enums.HotelOrderStatus
+  settlementMode?: string
+  postedToFolioAt?: Date | string | null
   serverNote?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -1343,6 +1427,8 @@ export type HotelOrderUpdateWithoutStayInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1366,6 +1452,8 @@ export type HotelOrderUncheckedUpdateWithoutStayInput = {
   folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1387,6 +1475,8 @@ export type HotelOrderUncheckedUpdateManyWithoutStayInput = {
   folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1406,6 +1496,8 @@ export type HotelOrderCreateManyFolioInput = {
   stayId?: string | null
   tableLabel?: string | null
   status?: $Enums.HotelOrderStatus
+  settlementMode?: string
+  postedToFolioAt?: Date | string | null
   serverNote?: string | null
   createdByUserId: string
   createdAt?: Date | string
@@ -1423,6 +1515,8 @@ export type HotelOrderUpdateWithoutFolioInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1446,6 +1540,8 @@ export type HotelOrderUncheckedUpdateWithoutFolioInput = {
   stayId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1467,6 +1563,8 @@ export type HotelOrderUncheckedUpdateManyWithoutFolioInput = {
   stayId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumHotelOrderStatusFieldUpdateOperationsInput | $Enums.HotelOrderStatus
+  settlementMode?: Prisma.StringFieldUpdateOperationsInput | string
+  postedToFolioAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serverNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1527,6 +1625,8 @@ export type HotelOrderSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   folioId?: boolean
   tableLabel?: boolean
   status?: boolean
+  settlementMode?: boolean
+  postedToFolioAt?: boolean
   serverNote?: boolean
   createdByUserId?: boolean
   createdAt?: boolean
@@ -1553,6 +1653,8 @@ export type HotelOrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   folioId?: boolean
   tableLabel?: boolean
   status?: boolean
+  settlementMode?: boolean
+  postedToFolioAt?: boolean
   serverNote?: boolean
   createdByUserId?: boolean
   createdAt?: boolean
@@ -1576,6 +1678,8 @@ export type HotelOrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   folioId?: boolean
   tableLabel?: boolean
   status?: boolean
+  settlementMode?: boolean
+  postedToFolioAt?: boolean
   serverNote?: boolean
   createdByUserId?: boolean
   createdAt?: boolean
@@ -1599,6 +1703,8 @@ export type HotelOrderSelectScalar = {
   folioId?: boolean
   tableLabel?: boolean
   status?: boolean
+  settlementMode?: boolean
+  postedToFolioAt?: boolean
   serverNote?: boolean
   createdByUserId?: boolean
   createdAt?: boolean
@@ -1612,7 +1718,7 @@ export type HotelOrderSelectScalar = {
   deliveredAt?: boolean
 }
 
-export type HotelOrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "stayId" | "folioId" | "tableLabel" | "status" | "serverNote" | "createdByUserId" | "createdAt" | "updatedAt" | "sentAt" | "prepStartedAt" | "preparedByUserId" | "estimatedMinutes" | "readyAt" | "paidAt" | "deliveredAt", ExtArgs["result"]["hotelOrder"]>
+export type HotelOrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "stayId" | "folioId" | "tableLabel" | "status" | "settlementMode" | "postedToFolioAt" | "serverNote" | "createdByUserId" | "createdAt" | "updatedAt" | "sentAt" | "prepStartedAt" | "preparedByUserId" | "estimatedMinutes" | "readyAt" | "paidAt" | "deliveredAt", ExtArgs["result"]["hotelOrder"]>
 export type HotelOrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   stay?: boolean | Prisma.HotelOrder$stayArgs<ExtArgs>
@@ -1648,6 +1754,14 @@ export type $HotelOrderPayload<ExtArgs extends runtime.Types.Extensions.Internal
     folioId: string | null
     tableLabel: string | null
     status: $Enums.HotelOrderStatus
+    /**
+     * COMPTANT | NOTE_CHAMBRE — règlement immédiat vs report sur note de chambre
+     */
+    settlementMode: string
+    /**
+     * Quand les lignes F&B ont été postées sur le folio (mode NOTE_CHAMBRE)
+     */
+    postedToFolioAt: Date | null
     serverNote: string | null
     createdByUserId: string
     createdAt: Date
@@ -2102,6 +2216,8 @@ export interface HotelOrderFieldRefs {
   readonly folioId: Prisma.FieldRef<"HotelOrder", 'String'>
   readonly tableLabel: Prisma.FieldRef<"HotelOrder", 'String'>
   readonly status: Prisma.FieldRef<"HotelOrder", 'HotelOrderStatus'>
+  readonly settlementMode: Prisma.FieldRef<"HotelOrder", 'String'>
+  readonly postedToFolioAt: Prisma.FieldRef<"HotelOrder", 'DateTime'>
   readonly serverNote: Prisma.FieldRef<"HotelOrder", 'String'>
   readonly createdByUserId: Prisma.FieldRef<"HotelOrder", 'String'>
   readonly createdAt: Prisma.FieldRef<"HotelOrder", 'DateTime'>

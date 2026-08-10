@@ -1,4 +1,5 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
   applyLateCheckoutFeesAction,
   listRoomsWithTypesAction,
@@ -19,6 +20,7 @@ export default async function SejoursPage({ params, searchParams }: PageProps) {
     organizationId,
     branchId,
     requireModule: "hotel",
+    requireHospitality: "stays",
   });
 
   // Nuitée auto si occupant encore présent après 10h le jour de sortie
@@ -28,10 +30,11 @@ export default async function SejoursPage({ params, searchParams }: PageProps) {
   const year = Number(sp.year) || now.getFullYear();
   const month = Number(sp.month) || now.getMonth() + 1;
 
-  const [rooms, stays, yearStays] = await Promise.all([
+  const [rooms, stays, yearStays, rate] = await Promise.all([
     listRoomsWithTypesAction(organizationId, branchId),
     listStaysForMonthAction(organizationId, branchId, year, month),
     listStaysForYearAction(organizationId, branchId, year),
+    getActiveExchangeRate(branchId),
   ]);
 
   return (
@@ -43,6 +46,7 @@ export default async function SejoursPage({ params, searchParams }: PageProps) {
       yearStays={yearStays}
       initialYear={year}
       initialMonth={month}
+      rate={rate}
     />
   );
 }

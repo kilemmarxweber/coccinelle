@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Branch
- * * Point d’exploitation typé (Agence / Hôtel / Boutique).
+ * * Point d’exploitation typé (Agence / Hôtel / Boutique / Restaurant).
  */
 export type BranchModel = runtime.Types.Result.DefaultSelection<Prisma.$BranchPayload>
 
@@ -32,6 +32,14 @@ export type BranchMinAggregateOutputType = {
   code: string | null
   slug: string | null
   status: $Enums.BranchStatus | null
+  hasStays: boolean | null
+  hasRestaurant: boolean | null
+  hasAvion: boolean | null
+  hasBus: boolean | null
+  hasBateau: boolean | null
+  hasPharmacie: boolean | null
+  hasShop: boolean | null
+  hasAlimentation: boolean | null
   imageUrl: string | null
   address: string | null
   city: string | null
@@ -50,6 +58,14 @@ export type BranchMaxAggregateOutputType = {
   code: string | null
   slug: string | null
   status: $Enums.BranchStatus | null
+  hasStays: boolean | null
+  hasRestaurant: boolean | null
+  hasAvion: boolean | null
+  hasBus: boolean | null
+  hasBateau: boolean | null
+  hasPharmacie: boolean | null
+  hasShop: boolean | null
+  hasAlimentation: boolean | null
   imageUrl: string | null
   address: string | null
   city: string | null
@@ -68,6 +84,14 @@ export type BranchCountAggregateOutputType = {
   code: number
   slug: number
   status: number
+  hasStays: number
+  hasRestaurant: number
+  hasAvion: number
+  hasBus: number
+  hasBateau: number
+  hasPharmacie: number
+  hasShop: number
+  hasAlimentation: number
   imageUrl: number
   address: number
   city: number
@@ -89,6 +113,14 @@ export type BranchMinAggregateInputType = {
   code?: true
   slug?: true
   status?: true
+  hasStays?: true
+  hasRestaurant?: true
+  hasAvion?: true
+  hasBus?: true
+  hasBateau?: true
+  hasPharmacie?: true
+  hasShop?: true
+  hasAlimentation?: true
   imageUrl?: true
   address?: true
   city?: true
@@ -107,6 +139,14 @@ export type BranchMaxAggregateInputType = {
   code?: true
   slug?: true
   status?: true
+  hasStays?: true
+  hasRestaurant?: true
+  hasAvion?: true
+  hasBus?: true
+  hasBateau?: true
+  hasPharmacie?: true
+  hasShop?: true
+  hasAlimentation?: true
   imageUrl?: true
   address?: true
   city?: true
@@ -125,6 +165,14 @@ export type BranchCountAggregateInputType = {
   code?: true
   slug?: true
   status?: true
+  hasStays?: true
+  hasRestaurant?: true
+  hasAvion?: true
+  hasBus?: true
+  hasBateau?: true
+  hasPharmacie?: true
+  hasShop?: true
+  hasAlimentation?: true
   imageUrl?: true
   address?: true
   city?: true
@@ -217,6 +265,14 @@ export type BranchGroupByOutputType = {
   code: string
   slug: string | null
   status: $Enums.BranchStatus
+  hasStays: boolean
+  hasRestaurant: boolean
+  hasAvion: boolean
+  hasBus: boolean
+  hasBateau: boolean
+  hasPharmacie: boolean
+  hasShop: boolean
+  hasAlimentation: boolean
   imageUrl: string | null
   address: string | null
   city: string | null
@@ -257,6 +313,14 @@ export type BranchWhereInput = {
   code?: Prisma.StringFilter<"Branch"> | string
   slug?: Prisma.StringNullableFilter<"Branch"> | string | null
   status?: Prisma.EnumBranchStatusFilter<"Branch"> | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFilter<"Branch"> | boolean
+  hasRestaurant?: Prisma.BoolFilter<"Branch"> | boolean
+  hasAvion?: Prisma.BoolFilter<"Branch"> | boolean
+  hasBus?: Prisma.BoolFilter<"Branch"> | boolean
+  hasBateau?: Prisma.BoolFilter<"Branch"> | boolean
+  hasPharmacie?: Prisma.BoolFilter<"Branch"> | boolean
+  hasShop?: Prisma.BoolFilter<"Branch"> | boolean
+  hasAlimentation?: Prisma.BoolFilter<"Branch"> | boolean
   imageUrl?: Prisma.StringNullableFilter<"Branch"> | string | null
   address?: Prisma.StringNullableFilter<"Branch"> | string | null
   city?: Prisma.StringNullableFilter<"Branch"> | string | null
@@ -290,6 +354,14 @@ export type BranchOrderByWithRelationInput = {
   code?: Prisma.SortOrder
   slug?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  hasStays?: Prisma.SortOrder
+  hasRestaurant?: Prisma.SortOrder
+  hasAvion?: Prisma.SortOrder
+  hasBus?: Prisma.SortOrder
+  hasBateau?: Prisma.SortOrder
+  hasPharmacie?: Prisma.SortOrder
+  hasShop?: Prisma.SortOrder
+  hasAlimentation?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -327,6 +399,14 @@ export type BranchWhereUniqueInput = Prisma.AtLeast<{
   code?: Prisma.StringFilter<"Branch"> | string
   slug?: Prisma.StringNullableFilter<"Branch"> | string | null
   status?: Prisma.EnumBranchStatusFilter<"Branch"> | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFilter<"Branch"> | boolean
+  hasRestaurant?: Prisma.BoolFilter<"Branch"> | boolean
+  hasAvion?: Prisma.BoolFilter<"Branch"> | boolean
+  hasBus?: Prisma.BoolFilter<"Branch"> | boolean
+  hasBateau?: Prisma.BoolFilter<"Branch"> | boolean
+  hasPharmacie?: Prisma.BoolFilter<"Branch"> | boolean
+  hasShop?: Prisma.BoolFilter<"Branch"> | boolean
+  hasAlimentation?: Prisma.BoolFilter<"Branch"> | boolean
   imageUrl?: Prisma.StringNullableFilter<"Branch"> | string | null
   address?: Prisma.StringNullableFilter<"Branch"> | string | null
   city?: Prisma.StringNullableFilter<"Branch"> | string | null
@@ -360,6 +440,14 @@ export type BranchOrderByWithAggregationInput = {
   code?: Prisma.SortOrder
   slug?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  hasStays?: Prisma.SortOrder
+  hasRestaurant?: Prisma.SortOrder
+  hasAvion?: Prisma.SortOrder
+  hasBus?: Prisma.SortOrder
+  hasBateau?: Prisma.SortOrder
+  hasPharmacie?: Prisma.SortOrder
+  hasShop?: Prisma.SortOrder
+  hasAlimentation?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -385,6 +473,14 @@ export type BranchScalarWhereWithAggregatesInput = {
   code?: Prisma.StringWithAggregatesFilter<"Branch"> | string
   slug?: Prisma.StringNullableWithAggregatesFilter<"Branch"> | string | null
   status?: Prisma.EnumBranchStatusWithAggregatesFilter<"Branch"> | $Enums.BranchStatus
+  hasStays?: Prisma.BoolWithAggregatesFilter<"Branch"> | boolean
+  hasRestaurant?: Prisma.BoolWithAggregatesFilter<"Branch"> | boolean
+  hasAvion?: Prisma.BoolWithAggregatesFilter<"Branch"> | boolean
+  hasBus?: Prisma.BoolWithAggregatesFilter<"Branch"> | boolean
+  hasBateau?: Prisma.BoolWithAggregatesFilter<"Branch"> | boolean
+  hasPharmacie?: Prisma.BoolWithAggregatesFilter<"Branch"> | boolean
+  hasShop?: Prisma.BoolWithAggregatesFilter<"Branch"> | boolean
+  hasAlimentation?: Prisma.BoolWithAggregatesFilter<"Branch"> | boolean
   imageUrl?: Prisma.StringNullableWithAggregatesFilter<"Branch"> | string | null
   address?: Prisma.StringNullableWithAggregatesFilter<"Branch"> | string | null
   city?: Prisma.StringNullableWithAggregatesFilter<"Branch"> | string | null
@@ -403,6 +499,14 @@ export type BranchCreateInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -436,6 +540,14 @@ export type BranchUncheckedCreateInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -467,6 +579,14 @@ export type BranchUpdateInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -500,6 +620,14 @@ export type BranchUncheckedUpdateInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -532,6 +660,14 @@ export type BranchCreateManyInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -550,6 +686,14 @@ export type BranchUpdateManyMutationInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -569,6 +713,14 @@ export type BranchUncheckedUpdateManyInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -608,6 +760,14 @@ export type BranchCountOrderByAggregateInput = {
   code?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  hasStays?: Prisma.SortOrder
+  hasRestaurant?: Prisma.SortOrder
+  hasAvion?: Prisma.SortOrder
+  hasBus?: Prisma.SortOrder
+  hasBateau?: Prisma.SortOrder
+  hasPharmacie?: Prisma.SortOrder
+  hasShop?: Prisma.SortOrder
+  hasAlimentation?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrder
   address?: Prisma.SortOrder
   city?: Prisma.SortOrder
@@ -627,6 +787,14 @@ export type BranchMaxOrderByAggregateInput = {
   code?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  hasStays?: Prisma.SortOrder
+  hasRestaurant?: Prisma.SortOrder
+  hasAvion?: Prisma.SortOrder
+  hasBus?: Prisma.SortOrder
+  hasBateau?: Prisma.SortOrder
+  hasPharmacie?: Prisma.SortOrder
+  hasShop?: Prisma.SortOrder
+  hasAlimentation?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrder
   address?: Prisma.SortOrder
   city?: Prisma.SortOrder
@@ -645,6 +813,14 @@ export type BranchMinOrderByAggregateInput = {
   code?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  hasStays?: Prisma.SortOrder
+  hasRestaurant?: Prisma.SortOrder
+  hasAvion?: Prisma.SortOrder
+  hasBus?: Prisma.SortOrder
+  hasBateau?: Prisma.SortOrder
+  hasPharmacie?: Prisma.SortOrder
+  hasShop?: Prisma.SortOrder
+  hasAlimentation?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrder
   address?: Prisma.SortOrder
   city?: Prisma.SortOrder
@@ -901,6 +1077,14 @@ export type BranchCreateWithoutOrganizationInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -932,6 +1116,14 @@ export type BranchUncheckedCreateWithoutOrganizationInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -993,6 +1185,14 @@ export type BranchScalarWhereInput = {
   code?: Prisma.StringFilter<"Branch"> | string
   slug?: Prisma.StringNullableFilter<"Branch"> | string | null
   status?: Prisma.EnumBranchStatusFilter<"Branch"> | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFilter<"Branch"> | boolean
+  hasRestaurant?: Prisma.BoolFilter<"Branch"> | boolean
+  hasAvion?: Prisma.BoolFilter<"Branch"> | boolean
+  hasBus?: Prisma.BoolFilter<"Branch"> | boolean
+  hasBateau?: Prisma.BoolFilter<"Branch"> | boolean
+  hasPharmacie?: Prisma.BoolFilter<"Branch"> | boolean
+  hasShop?: Prisma.BoolFilter<"Branch"> | boolean
+  hasAlimentation?: Prisma.BoolFilter<"Branch"> | boolean
   imageUrl?: Prisma.StringNullableFilter<"Branch"> | string | null
   address?: Prisma.StringNullableFilter<"Branch"> | string | null
   city?: Prisma.StringNullableFilter<"Branch"> | string | null
@@ -1011,6 +1211,14 @@ export type BranchCreateWithoutTrajetsInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -1043,6 +1251,14 @@ export type BranchUncheckedCreateWithoutTrajetsInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -1089,6 +1305,14 @@ export type BranchUpdateWithoutTrajetsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1121,6 +1345,14 @@ export type BranchUncheckedUpdateWithoutTrajetsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1151,6 +1383,14 @@ export type BranchCreateWithoutMembersInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -1183,6 +1423,14 @@ export type BranchUncheckedCreateWithoutMembersInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -1229,6 +1477,14 @@ export type BranchUpdateWithoutMembersInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1261,6 +1517,14 @@ export type BranchUncheckedUpdateWithoutMembersInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1291,6 +1555,14 @@ export type BranchCreateWithoutHotelRoomTypesInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -1323,6 +1595,14 @@ export type BranchUncheckedCreateWithoutHotelRoomTypesInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -1369,6 +1649,14 @@ export type BranchUpdateWithoutHotelRoomTypesInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1401,6 +1689,14 @@ export type BranchUncheckedUpdateWithoutHotelRoomTypesInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1431,6 +1727,14 @@ export type BranchCreateWithoutShopCategoriesInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -1463,6 +1767,14 @@ export type BranchUncheckedCreateWithoutShopCategoriesInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -1509,6 +1821,14 @@ export type BranchUpdateWithoutShopCategoriesInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1541,6 +1861,14 @@ export type BranchUncheckedUpdateWithoutShopCategoriesInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1571,6 +1899,14 @@ export type BranchCreateWithoutExchangeRatesInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -1603,6 +1939,14 @@ export type BranchUncheckedCreateWithoutExchangeRatesInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -1649,6 +1993,14 @@ export type BranchUpdateWithoutExchangeRatesInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1681,6 +2033,14 @@ export type BranchUncheckedUpdateWithoutExchangeRatesInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1711,6 +2071,14 @@ export type BranchCreateWithoutCashSessionsInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -1743,6 +2111,14 @@ export type BranchUncheckedCreateWithoutCashSessionsInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -1789,6 +2165,14 @@ export type BranchUpdateWithoutCashSessionsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1821,6 +2205,14 @@ export type BranchUncheckedUpdateWithoutCashSessionsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1851,6 +2243,14 @@ export type BranchCreateWithoutHotelStaysInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -1883,6 +2283,14 @@ export type BranchUncheckedCreateWithoutHotelStaysInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -1929,6 +2337,14 @@ export type BranchUpdateWithoutHotelStaysInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1961,6 +2377,14 @@ export type BranchUncheckedUpdateWithoutHotelStaysInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1991,6 +2415,14 @@ export type BranchCreateWithoutFoliosInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -2023,6 +2455,14 @@ export type BranchUncheckedCreateWithoutFoliosInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -2069,6 +2509,14 @@ export type BranchUpdateWithoutFoliosInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2101,6 +2549,14 @@ export type BranchUncheckedUpdateWithoutFoliosInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2131,6 +2587,14 @@ export type BranchCreateWithoutPaymentsInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -2163,6 +2627,14 @@ export type BranchUncheckedCreateWithoutPaymentsInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -2209,6 +2681,14 @@ export type BranchUpdateWithoutPaymentsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2241,6 +2721,14 @@ export type BranchUncheckedUpdateWithoutPaymentsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2271,6 +2759,14 @@ export type BranchCreateWithoutMenuItemsInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -2303,6 +2799,14 @@ export type BranchUncheckedCreateWithoutMenuItemsInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -2349,6 +2853,14 @@ export type BranchUpdateWithoutMenuItemsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2381,6 +2893,14 @@ export type BranchUncheckedUpdateWithoutMenuItemsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2411,6 +2931,14 @@ export type BranchCreateWithoutStockMovementsInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -2443,6 +2971,14 @@ export type BranchUncheckedCreateWithoutStockMovementsInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -2489,6 +3025,14 @@ export type BranchUpdateWithoutStockMovementsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2521,6 +3065,14 @@ export type BranchUncheckedUpdateWithoutStockMovementsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2551,6 +3103,14 @@ export type BranchCreateWithoutHotelOrdersInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -2583,6 +3143,14 @@ export type BranchUncheckedCreateWithoutHotelOrdersInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -2629,6 +3197,14 @@ export type BranchUpdateWithoutHotelOrdersInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2661,6 +3237,14 @@ export type BranchUncheckedUpdateWithoutHotelOrdersInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2691,6 +3275,14 @@ export type BranchCreateWithoutNotificationsInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -2723,6 +3315,14 @@ export type BranchUncheckedCreateWithoutNotificationsInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -2769,6 +3369,14 @@ export type BranchUpdateWithoutNotificationsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2801,6 +3409,14 @@ export type BranchUncheckedUpdateWithoutNotificationsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2831,6 +3447,14 @@ export type BranchCreateManyOrganizationInput = {
   code: string
   slug?: string | null
   status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: string | null
   address?: string | null
   city?: string | null
@@ -2849,6 +3473,14 @@ export type BranchUpdateWithoutOrganizationInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2880,6 +3512,14 @@ export type BranchUncheckedUpdateWithoutOrganizationInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2911,6 +3551,14 @@ export type BranchUncheckedUpdateManyWithoutOrganizationInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3069,6 +3717,14 @@ export type BranchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   code?: boolean
   slug?: boolean
   status?: boolean
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: boolean
   address?: boolean
   city?: boolean
@@ -3103,6 +3759,14 @@ export type BranchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   code?: boolean
   slug?: boolean
   status?: boolean
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: boolean
   address?: boolean
   city?: boolean
@@ -3123,6 +3787,14 @@ export type BranchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   code?: boolean
   slug?: boolean
   status?: boolean
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: boolean
   address?: boolean
   city?: boolean
@@ -3143,6 +3815,14 @@ export type BranchSelectScalar = {
   code?: boolean
   slug?: boolean
   status?: boolean
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
   imageUrl?: boolean
   address?: boolean
   city?: boolean
@@ -3154,7 +3834,7 @@ export type BranchSelectScalar = {
   updatedAt?: boolean
 }
 
-export type BranchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "type" | "name" | "code" | "slug" | "status" | "imageUrl" | "address" | "city" | "phone" | "email" | "timezone" | "settings" | "createdAt" | "updatedAt", ExtArgs["result"]["branch"]>
+export type BranchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "type" | "name" | "code" | "slug" | "status" | "hasStays" | "hasRestaurant" | "hasAvion" | "hasBus" | "hasBateau" | "hasPharmacie" | "hasShop" | "hasAlimentation" | "imageUrl" | "address" | "city" | "phone" | "email" | "timezone" | "settings" | "createdAt" | "updatedAt", ExtArgs["result"]["branch"]>
 export type BranchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   members?: boolean | Prisma.Branch$membersArgs<ExtArgs>
@@ -3205,6 +3885,29 @@ export type $BranchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     code: string
     slug: string | null
     status: $Enums.BranchStatus
+    /**
+     * Hébergement : chambres + séjours (HOTEL avec ou sans resto).
+     */
+    hasStays: boolean
+    /**
+     * F&B : restauration, cuisine, produits vendus (HOTEL et/ou RESTAURANT).
+     */
+    hasRestaurant: boolean
+    /**
+     * Agence voyage : modes de transport autorisés.
+     */
+    hasAvion: boolean
+    hasBus: boolean
+    hasBateau: boolean
+    /**
+     * Boutique : verticales métier.
+     */
+    hasPharmacie: boolean
+    /**
+     * Boutique générale (commerce).
+     */
+    hasShop: boolean
+    hasAlimentation: boolean
     /**
      * Logo / image de la branche (URL ou data URL), optionnel.
      */
@@ -3661,6 +4364,14 @@ export interface BranchFieldRefs {
   readonly code: Prisma.FieldRef<"Branch", 'String'>
   readonly slug: Prisma.FieldRef<"Branch", 'String'>
   readonly status: Prisma.FieldRef<"Branch", 'BranchStatus'>
+  readonly hasStays: Prisma.FieldRef<"Branch", 'Boolean'>
+  readonly hasRestaurant: Prisma.FieldRef<"Branch", 'Boolean'>
+  readonly hasAvion: Prisma.FieldRef<"Branch", 'Boolean'>
+  readonly hasBus: Prisma.FieldRef<"Branch", 'Boolean'>
+  readonly hasBateau: Prisma.FieldRef<"Branch", 'Boolean'>
+  readonly hasPharmacie: Prisma.FieldRef<"Branch", 'Boolean'>
+  readonly hasShop: Prisma.FieldRef<"Branch", 'Boolean'>
+  readonly hasAlimentation: Prisma.FieldRef<"Branch", 'Boolean'>
   readonly imageUrl: Prisma.FieldRef<"Branch", 'String'>
   readonly address: Prisma.FieldRef<"Branch", 'String'>
   readonly city: Prisma.FieldRef<"Branch", 'String'>

@@ -40,6 +40,8 @@ Chaque unit = livrable **visible** + **testable**. Suivre l’ordre strict.
 | B10 | [Hôtel MVP](./B10-hotel-mvp.md) | B3 | B02, B09 | Chambres + séjour + paye | `todo` |
 | B11 | [Boutique MVP](./B11-boutique-mvp.md) | B4 | B02, B09 | POS + stock | `todo` |
 | B12 | [Rapports multi-branches](./B12-rapports-consolides.md) | B5 | B07–B11 | CA consolidé owner | `todo` |
+| B13 | [Modules hôtellerie-restaurant](./B13-hospitalite-modules.md) | B3+ | B01–B03, B10 | Création modules séjours ± resto ; type RESTAURANT | `done` |
+| B14 | [Modules Agence & Boutique](./B14-agence-boutique-modules.md) | B0+ | B01–B03 | Avion/Bus/Bateau · Pharmacie/Boutique/Alimentation | `done` |
 
 ```mermaid
 flowchart TD
@@ -74,7 +76,10 @@ flowchart TD
 
 **Prochaine unit :** [B04](./B04-branch-member-permissions.md) (affectations + `branch:*`).  
 **Dashboard dynamique :** [PLAN-dashboard-dynamique.md](./PLAN-dashboard-dynamique.md) (D01–D02 livrés côté nav ; D03–D06 = B08–B11).  
-**Hôtel (caisse · séjours · resto) :** [`../plan-hotel-caisse-sejours-restauration.md`](../plan-hotel-caisse-sejours-restauration.md) — phases H0→H5, cartes Dashboard only.
+**Hôtel (caisse · séjours · resto) :** [`../plan-hotel-caisse-sejours-restauration.md`](../plan-hotel-caisse-sejours-restauration.md) — phases H0→H5, cartes Dashboard only.  
+**Hôtellerie-restaurant (modules Hôtel / Restaurant) :** [`../plan-hospitalite-modules-hotel-restaurant.md`](../plan-hospitalite-modules-hotel-restaurant.md) — séjours ± restaurant, type `RESTAURANT`, livraison commune.  
+**Agence & Boutique (modules) :** [`../plan-agence-boutique-modules.md`](../plan-agence-boutique-modules.md) — Avion/Bus/Bateau · Pharmacie/Boutique/Alimentation.  
+**Séjour — Note de chambre :** [`../plan-sejour-note-chambre.md`](../plan-sejour-note-chambre.md) — Comptant vs Sur note · consommations sur facture séjour.
 
 ---
 

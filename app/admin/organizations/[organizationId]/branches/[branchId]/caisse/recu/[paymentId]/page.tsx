@@ -2,9 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import { isHospitality } from "@/lib/branch/hospitality";
 import { getPaymentByIdAction } from "@/lib/cash/actions";
 import { branchCaissePath } from "@/lib/branch/paths";
+import { FOLIO_SECTION_LABEL } from "@/lib/hotel/folio-note";
 import { paymentAmountUsd } from "@/lib/hotel/money";
+import type { FolioLineKind } from "@/prisma/generated/prisma/client";
 import { PrintButton } from "./print-button";
 
 type PageProps = {
@@ -21,6 +24,7 @@ type ReceiptLine = {
   quantity: number;
   unitPrice: number;
   amount: number;
+  kind?: FolioLineKind;
 };
 
 export default async function ReceiptPage({ params }: PageProps) {
@@ -32,6 +36,8 @@ export default async function ReceiptPage({ params }: PageProps) {
     paymentId,
   );
   if (!payment) notFound();
+
+  const isFolioReceipt = Boolean(payment.folioId && !payment.orderId);
 
   const lines: ReceiptLine[] = payment.order?.items?.length
     ? payment.order.items.map((item) => ({
@@ -47,16 +53,39 @@ export default async function ReceiptPage({ params }: PageProps) {
         quantity: line.quantity,
         unitPrice: line.unitPrice,
         amount: line.amount,
+        kind: line.kind,
       }));
+
+  const kindOrder: FolioLineKind[] = [
+    "NIGHT",
+    "FNB",
+    "PRODUCT",
+    "TAX",
+    "OTHER",
+  ];
+  const folioSections = isFolioReceipt
+    ? kindOrder
+        .map((kind) => {
+          const sectionLines = lines.filter((l) => l.kind === kind);
+          if (!sectionLines.length) return null;
+          return {
+            kind,
+            label: FOLIO_SECTION_LABEL[kind],
+            lines: sectionLines,
+            total: sectionLines.reduce((s, l) => s + l.amount, 0),
+          };
+        })
+        .filter((s): s is NonNullable<typeof s> => s != null)
+    : [];
 
   const linesTotal = lines.reduce((sum, line) => sum + line.amount, 0);
   const guestLabel = payment.folio?.stay
     ? `${payment.folio.stay.guestName} · ch. ${payment.folio.stay.room.number}`
     : payment.folio?.label ?? payment.order?.tableLabel ?? null;
-  const isHotel = branch.type === "HOTEL";
+  const isHospitalityBranch = isHospitality(branch.type);
   const paidUsd = paymentAmountUsd(payment);
   const paidCdf =
-    isHotel && payment.amountForeign != null && payment.amountForeign > 0
+    isHospitalityBranch && payment.amountForeign != null && payment.amountForeign > 0
       ? payment.amountCdf
       : payment.amountCdf;
 
@@ -78,7 +107,9 @@ export default async function ReceiptPage({ params }: PageProps) {
             Coccinelle
           </p>
           <h1 className="text-xl font-bold">{branch.name}</h1>
-          <p className="text-sm text-muted-foreground">Reçu de paiement</p>
+          <p className="text-sm text-muted-foreground">
+            {isFolioReceipt ? "Reçu — note de chambre" : "Reçu de paiement"}
+          </p>
         </header>
 
         <dl className="mt-4 space-y-2 text-sm">
@@ -102,7 +133,47 @@ export default async function ReceiptPage({ params }: PageProps) {
           ) : null}
         </dl>
 
-        {lines.length > 0 ? (
+        {folioSections.length > 0 ? (
+          <div className="mt-5 space-y-4 border-t border-border pt-4">
+            {folioSections.map((section) => (
+              <section key={section.kind}>
+                <div className="mb-2 flex items-baseline justify-between gap-2">
+                  <h2 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                    {section.label}
+                  </h2>
+                  <span className="text-xs font-medium tabular-nums">
+                    {section.total.toFixed(2)}
+                    {isHospitalityBranch ? " $" : ""}
+                  </span>
+                </div>
+                <ul className="space-y-1.5 text-sm">
+                  {section.lines.map((line) => (
+                    <li
+                      key={line.key}
+                      className="grid grid-cols-[1fr_2.5rem_4.5rem] items-center gap-2"
+                    >
+                      <p className="min-w-0 truncate font-medium">{line.label}</p>
+                      <p className="text-center tabular-nums text-muted-foreground">
+                        {line.quantity}
+                      </p>
+                      <p className="text-right font-semibold tabular-nums">
+                        {line.amount.toFixed(2)}
+                        {isHospitalityBranch ? " $" : ""}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+            <div className="flex justify-between gap-4 border-t border-dashed border-border pt-3 text-sm">
+              <span className="text-muted-foreground">Total note</span>
+              <span className="font-medium tabular-nums">
+                {linesTotal.toFixed(2)}
+                {isHospitalityBranch ? " $" : ""}
+              </span>
+            </div>
+          </div>
+        ) : lines.length > 0 ? (
           <section className="mt-5 border-t border-border pt-4">
             <h2 className="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
               Articles
@@ -124,7 +195,7 @@ export default async function ReceiptPage({ params }: PageProps) {
                   </p>
                   <p className="text-right font-semibold tabular-nums">
                     {line.amount.toFixed(2)}
-                    {isHotel ? " $" : ""}
+                    {isHospitalityBranch ? " $" : ""}
                   </p>
                 </li>
               ))}
@@ -133,14 +204,14 @@ export default async function ReceiptPage({ params }: PageProps) {
               <span className="text-muted-foreground">Sous-total articles</span>
               <span className="font-medium tabular-nums">
                 {linesTotal.toFixed(2)}
-                {isHotel ? " $" : ""}
+                {isHospitalityBranch ? " $" : ""}
               </span>
             </div>
           </section>
         ) : null}
 
         <dl className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
-          {isHotel ? (
+          {isHospitalityBranch ? (
             <>
               <div className="flex justify-between gap-4 text-base">
                 <dt className="font-semibold">Montant payé</dt>

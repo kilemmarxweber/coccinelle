@@ -93,6 +93,16 @@ export function formatSecondaryAmount(
   })} CDF`;
 }
 
+/** Toujours USD + CDF : principal selon sens configuré, secondaire entre parenthèses. */
+export function formatBothAmounts(
+  amountUsd: number,
+  rate?: Pick<NormalizedUsdCdfRate, "rate" | "configuredFrom"> | null,
+) {
+  const primary = formatPrimaryAmount(amountUsd, rate);
+  const secondary = formatSecondaryAmount(amountUsd, rate);
+  return secondary ? `${primary} (${secondary})` : primary;
+}
+
 export function formatConfiguredRateLabel(
   rate: Pick<
     NormalizedUsdCdfRate,
@@ -108,4 +118,45 @@ export function formatInverseRate(usdToCdfRate: number, digits = 6) {
     maximumFractionDigits: digits,
     minimumFractionDigits: Math.min(4, digits),
   });
+}
+
+/** Toujours les deux sens : 1 USD = … CDF et 1 CDF = … USD. */
+export function formatBothRateLabels(
+  rate: Pick<
+    NormalizedUsdCdfRate,
+    "rate" | "configuredFrom" | "configuredTo" | "configuredRate"
+  > | null | undefined,
+) {
+  if (!rate || !(rate.rate > 0)) return null;
+  const usdToCdf = `1 USD = ${rate.rate.toLocaleString("fr-FR", {
+    maximumFractionDigits: 2,
+  })} CDF`;
+  const cdfToUsd = `1 CDF = ${formatInverseRate(rate.rate)} USD`;
+  return {
+    configured: formatConfiguredRateLabel(rate),
+    usdToCdf,
+    cdfToUsd,
+    /** Ex. « Fixé CDF→USD · 1 USD = 2 850 CDF · 1 CDF = 0,000351 USD » */
+    both: `Fixé ${rate.configuredFrom}→${rate.configuredTo} · ${usdToCdf} · ${cdfToUsd}`,
+  };
+}
+
+/** Snapshot sérialisable pour les rapports client. */
+export type ReportExchangeRate = {
+  rate: number;
+  configuredFrom: string;
+  configuredTo: string;
+  configuredRate: number;
+};
+
+export function toReportExchangeRate(
+  rate: NormalizedUsdCdfRate | null | undefined,
+): ReportExchangeRate | null {
+  if (!rate || !(rate.rate > 0)) return null;
+  return {
+    rate: rate.rate,
+    configuredFrom: rate.configuredFrom,
+    configuredTo: rate.configuredTo,
+    configuredRate: rate.configuredRate,
+  };
 }

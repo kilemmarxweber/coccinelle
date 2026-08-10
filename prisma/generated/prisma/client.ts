@@ -133,7 +133,7 @@ export type Paiement = Prisma.PaiementModel
 export type Penalite = Prisma.PenaliteModel
 /**
  * Model Branch
- * * Point d’exploitation typé (Agence / Hôtel / Boutique).
+ * * Point d’exploitation typé (Agence / Hôtel / Boutique / Restaurant).
  */
 export type Branch = Prisma.BranchModel
 /**

@@ -3359,6 +3359,14 @@ export const BranchScalarFieldEnum = {
   code: 'code',
   slug: 'slug',
   status: 'status',
+  hasStays: 'hasStays',
+  hasRestaurant: 'hasRestaurant',
+  hasAvion: 'hasAvion',
+  hasBus: 'hasBus',
+  hasBateau: 'hasBateau',
+  hasPharmacie: 'hasPharmacie',
+  hasShop: 'hasShop',
+  hasAlimentation: 'hasAlimentation',
   imageUrl: 'imageUrl',
   address: 'address',
   city: 'city',
@@ -3499,6 +3507,7 @@ export const FolioScalarFieldEnum = {
   stayId: 'stayId',
   label: 'label',
   closed: 'closed',
+  checkoutQueuedAt: 'checkoutQueuedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -3554,6 +3563,7 @@ export const HotelMenuItemScalarFieldEnum = {
   supplierName: 'supplierName',
   needsKitchen: 'needsKitchen',
   active: 'active',
+  createdByUserId: 'createdByUserId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -3584,6 +3594,8 @@ export const HotelOrderScalarFieldEnum = {
   folioId: 'folioId',
   tableLabel: 'tableLabel',
   status: 'status',
+  settlementMode: 'settlementMode',
+  postedToFolioAt: 'postedToFolioAt',
   serverNote: 'serverNote',
   createdByUserId: 'createdByUserId',
   createdAt: 'createdAt',

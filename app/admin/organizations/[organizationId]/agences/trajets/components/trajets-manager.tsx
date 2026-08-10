@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bus, Plane, Plus } from "lucide-react";
+import { Bus, Plane, Plus, Ship } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +22,7 @@ import {
 } from "../actions";
 import { SearchDepartsSmoke } from "./search-departs-smoke";
 
-export type ModeTransport = "BUS" | "AVION";
+export type ModeTransport = "BUS" | "AVION" | "BATEAU";
 
 export type TrajetRow = {
   id: string;
@@ -176,6 +176,7 @@ export function TrajetsManager({ organizationId, trajets, guichetHref }: Props) 
                   >
                     <option value="BUS">Bus</option>
                     <option value="AVION">Avion</option>
+                    <option value="BATEAU">Bateau</option>
                   </Select>
                 </Field>
                 <Field label="Prix base (FC)">
@@ -235,6 +236,7 @@ export function TrajetsManager({ organizationId, trajets, guichetHref }: Props) 
                   { value: "TOUS", label: "Tous" },
                   { value: "BUS", label: "Bus" },
                   { value: "AVION", label: "Avion" },
+                  { value: "BATEAU", label: "Bateau" },
                 ] as const
               ).map((opt) => (
                 <Button
@@ -312,7 +314,7 @@ export function TrajetsManager({ organizationId, trajets, guichetHref }: Props) 
 }
 
 function ModeTransportBadge({ mode }: { mode: ModeTransport }) {
-  const Icon = mode === "AVION" ? Plane : Bus;
+  const Icon = mode === "AVION" ? Plane : mode === "BATEAU" ? Ship : Bus;
   return (
     <Badge variant="secondary">
       <Icon data-icon="inline-start" aria-hidden />

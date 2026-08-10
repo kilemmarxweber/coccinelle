@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { getActiveExchangeRate } from "@/lib/cash/actions";
+import { toReportExchangeRate } from "@/lib/cash/exchange";
 import prisma from "@/lib/prisma";
 import {
   dayKey,
@@ -234,13 +235,15 @@ export async function getSalesReportAction(input: PeriodInput) {
   const prev = previousRange(input.from, input.to);
   const days = eachDayIso(input.from, input.to);
 
-  const [curPays, prevPays, curOrders, prevOrders, lines] = await Promise.all([
-    loadPayments(input.branchId, input.from, input.to),
-    loadPayments(input.branchId, prev.from, prev.to),
-    loadSoldItems(input.branchId, input.from, input.to),
-    loadSoldItems(input.branchId, prev.from, prev.to),
-    loadSaleLines(input.branchId, input.from, input.to),
-  ]);
+  const [curPays, prevPays, curOrders, prevOrders, lines, exchange] =
+    await Promise.all([
+      loadPayments(input.branchId, input.from, input.to),
+      loadPayments(input.branchId, prev.from, prev.to),
+      loadSoldItems(input.branchId, input.from, input.to),
+      loadSoldItems(input.branchId, prev.from, prev.to),
+      loadSaleLines(input.branchId, input.from, input.to),
+      getActiveExchangeRate(input.branchId),
+    ]);
 
   const ca = curPays.reduce((s, p) => s + p.usd, 0);
   const caPrev = prevPays.reduce((s, p) => s + p.usd, 0);
@@ -289,6 +292,7 @@ export async function getSalesReportAction(input: PeriodInput) {
     })),
     lines,
     linesTotal: lines.reduce((s, l) => s + l.usd, 0),
+    rate: toReportExchangeRate(exchange),
     compare: {
       caPrev,
       ticketsPrev,
@@ -302,9 +306,10 @@ export async function getPurchasesReportAction(input: PeriodInput) {
   const prev = previousRange(input.from, input.to);
   const days = eachDayIso(input.from, input.to);
 
-  const [cur, prevMoves] = await Promise.all([
+  const [cur, prevMoves, exchange] = await Promise.all([
     loadStockMoves(input.branchId, input.from, input.to),
     loadStockMoves(input.branchId, prev.from, prev.to),
+    getActiveExchangeRate(input.branchId),
   ]);
 
   const entrees = cur.filter((m) => m.kind === "ENTREE");
@@ -363,6 +368,7 @@ export async function getPurchasesReportAction(input: PeriodInput) {
     byProduct: [...byProduct.values()]
       .sort((a, b) => b.inQty + b.outQty - (a.inQty + a.outQty))
       .slice(0, 20),
+    rate: toReportExchangeRate(exchange),
     compare: { qtyInPrev, qtyOutPrev },
   };
 }
@@ -372,10 +378,11 @@ export async function getArticlesReportAction(input: PeriodInput) {
   const prev = previousRange(input.from, input.to);
   const days = eachDayIso(input.from, input.to);
 
-  const [orders, prevOrders, moves] = await Promise.all([
+  const [orders, prevOrders, moves, exchange] = await Promise.all([
     loadSoldItems(input.branchId, input.from, input.to),
     loadSoldItems(input.branchId, prev.from, prev.to),
     loadStockMoves(input.branchId, input.from, input.to),
+    getActiveExchangeRate(input.branchId),
   ]);
 
   type Agg = {
@@ -467,6 +474,7 @@ export async function getArticlesReportAction(input: PeriodInput) {
       days,
       [...soldByDay.entries()].map(([day, value]) => ({ day, value })),
     ),
+    rate: toReportExchangeRate(exchange),
   };
 }
 
@@ -475,19 +483,21 @@ export async function getFinanceReportAction(input: PeriodInput) {
   const prev = previousRange(input.from, input.to);
   const days = eachDayIso(input.from, input.to);
 
-  const [pays, prevPays, moves, prevMoves, folioLines] = await Promise.all([
-    loadPayments(input.branchId, input.from, input.to),
-    loadPayments(input.branchId, prev.from, prev.to),
-    loadStockMoves(input.branchId, input.from, input.to),
-    loadStockMoves(input.branchId, prev.from, prev.to),
-    prisma.folioLine.findMany({
-      where: {
-        folio: { branchId: input.branchId },
-        createdAt: rangeBounds(input.from, input.to),
-      },
-      select: { kind: true, amount: true, createdAt: true },
-    }),
-  ]);
+  const [pays, prevPays, moves, prevMoves, folioLines, exchange] =
+    await Promise.all([
+      loadPayments(input.branchId, input.from, input.to),
+      loadPayments(input.branchId, prev.from, prev.to),
+      loadStockMoves(input.branchId, input.from, input.to),
+      loadStockMoves(input.branchId, prev.from, prev.to),
+      prisma.folioLine.findMany({
+        where: {
+          folio: { branchId: input.branchId },
+          createdAt: rangeBounds(input.from, input.to),
+        },
+        select: { kind: true, amount: true, createdAt: true },
+      }),
+      getActiveExchangeRate(input.branchId),
+    ]);
 
   const revenue = pays.reduce((s, p) => s + p.usd, 0);
   const revenuePrev = prevPays.reduce((s, p) => s + p.usd, 0);
@@ -558,6 +568,7 @@ export async function getFinanceReportAction(input: PeriodInput) {
       name,
       value,
     })),
+    rate: toReportExchangeRate(exchange),
     compare: { revenuePrev, qtyInPrev, qtyOutPrev },
   };
 }

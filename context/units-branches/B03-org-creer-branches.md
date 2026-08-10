@@ -17,11 +17,17 @@ Après `organization.create`, l’admin peut **créer une ou plusieurs branches*
 Créer org (nom + slug)
   → Succès
   → Écran « Ajouter des branches »
-       - Type (Agence / Hôtel / Boutique)
+       - Type (Agence / Hôtellerie-restaurant / Commerce)
+       - Si Hôtellerie-restaurant : modules Séjours ± Restaurant
+       - Si Agence : Avion / Bus / Bateau
+       - Si Commerce : Pharmacie / Boutique / Alimentation
        - Nom + code
        - Option « données démo »
   → Créer → redirect org hub / première branche
 ```
+
+> Modules hôtellerie-restaurant : [B13](./B13-hospitalite-modules.md).  
+> Modules agence & boutique : [B14](./B14-agence-boutique-modules.md).
 
 ## Critères
 

@@ -13,6 +13,7 @@ export type StockMovePrintRow = {
   stockAfter?: number | null;
   note: string | null;
   createdAt: string | Date;
+  createdByName?: string | null;
   menuItem: {
     name: string;
     stockQty?: number | null;
@@ -115,7 +116,7 @@ export function buildStockMovementsPrintDocument(input: {
       return `<tr>
   <td>${escapeHtml(formatWhen(r.createdAt))}</td>
   <td>${escapeHtml(entree ? "Entrée" : "Sortie")}</td>
-  <td>${escapeHtml(r.menuItem.name)}${supplier ? `<div class="muted">${escapeHtml(supplier)}</div>` : ""}</td>
+  <td>${escapeHtml(r.menuItem.name)}${supplier ? `<div class="muted">${escapeHtml(supplier)}</div>` : ""}${r.createdByName ? `<div class="muted">${escapeHtml(r.createdByName)}</div>` : ""}</td>
   <td class="num">${before != null ? before : "—"}</td>
   <td class="num">${entree ? "+" : "−"}${r.quantity}</td>
   <td class="num">${after != null ? after : "—"}</td>

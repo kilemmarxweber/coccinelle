@@ -12,6 +12,7 @@ export default async function CuisinePage({ params }: PageProps) {
     organizationId,
     branchId,
     requireModule: "hotel",
+    requireHospitality: "restaurant",
   });
   const orders = await listOrdersByStatusAction(organizationId, branchId, [
     "ENVOYEE",

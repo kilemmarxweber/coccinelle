@@ -87,12 +87,15 @@ enum SourceReservation {
 enum ModeTransport {
   BUS
   AVION
+  BATEAU
 }
 
 enum BranchType {
   AGENCE
   HOTEL
   BOUTIQUE
+  /// F&B seul (sans hébergement) — routes module `hotel/*` + flags.
+  RESTAURANT
 }
 
 enum BranchStatus {
@@ -493,7 +496,7 @@ model Penalite {
   @@index([reservationId])
 }
 
-/** Point d’exploitation typé (Agence / Hôtel / Boutique). */
+/** Point d’exploitation typé (Agence / Hôtel / Boutique / Restaurant). */
 model Branch {
   id             String        @id @default(uuid())
   organizationId String
@@ -502,6 +505,19 @@ model Branch {
   code           String
   slug           String?
   status         BranchStatus  @default(ACTIVE)
+  /// Hébergement : chambres + séjours (HOTEL avec ou sans resto).
+  hasStays       Boolean       @default(false)
+  /// F&B : restauration, cuisine, produits vendus (HOTEL et/ou RESTAURANT).
+  hasRestaurant  Boolean       @default(false)
+  /// Agence voyage : modes de transport autorisés.
+  hasAvion       Boolean       @default(false)
+  hasBus         Boolean       @default(false)
+  hasBateau      Boolean       @default(false)
+  /// Boutique : verticales métier.
+  hasPharmacie   Boolean       @default(false)
+  /// Boutique générale (commerce).
+  hasShop        Boolean       @default(false)
+  hasAlimentation Boolean      @default(false)
   /// Logo / image de la branche (URL ou data URL), optionnel.
   imageUrl       String?
   address        String?
@@ -673,6 +689,8 @@ model Folio {
   stayId    String?     @unique
   label     String?
   closed    Boolean     @default(false)
+  /// Mis en file d’attente caisse (check-out avec solde à régler)
+  checkoutQueuedAt DateTime?
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   branch    Branch      @relation(fields: [branchId], references: [id], onDelete: Cascade)
@@ -682,6 +700,7 @@ model Folio {
   orders    HotelOrder[]
 
   @@index([branchId, closed])
+  @@index([branchId, checkoutQueuedAt])
 }
 
 model FolioLine {
@@ -745,6 +764,8 @@ model HotelMenuItem {
   supplierName String?
   needsKitchen Boolean  @default(true)
   active       Boolean  @default(true)
+  /// Utilisateur (membre branche) ayant créé le produit.
+  createdByUserId String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   branch       Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
@@ -753,6 +774,7 @@ model HotelMenuItem {
 
   @@index([branchId, active])
   @@index([branchId, isConsumable])
+  @@index([branchId, createdByUserId])
 }
 
 /// Entrées (livraison fournisseur) / sorties (consommation) de stock.
@@ -784,6 +806,10 @@ model HotelOrder {
   folioId     String?
   tableLabel  String?
   status      HotelOrderStatus @default(BROUILLON)
+  /// COMPTANT | NOTE_CHAMBRE — règlement immédiat vs report sur note de chambre
+  settlementMode String        @default("COMPTANT")
+  /// Quand les lignes F&B ont été postées sur le folio (mode NOTE_CHAMBRE)
+  postedToFolioAt DateTime?
   serverNote  String?
   createdByUserId String
   createdAt   DateTime         @default(now())
@@ -805,6 +831,7 @@ model HotelOrder {
   payments    Payment[]
 
   @@index([branchId, status])
+  @@index([branchId, settlementMode])
 }
 
 model HotelOrderItem {

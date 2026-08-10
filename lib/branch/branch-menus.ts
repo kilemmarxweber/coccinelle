@@ -30,6 +30,12 @@ import {
   hotelRoutes,
   sharedBranchRoutes,
 } from "@/lib/branch/paths";
+import { isHospitality } from "@/lib/branch/hospitality";
+
+export type BranchMenuFlags = {
+  hasStays?: boolean;
+  hasRestaurant?: boolean;
+};
 
 export type BranchMenuItem = {
   title: string;
@@ -141,81 +147,102 @@ function rapportsSections(
 export function menuSectionsForBranch(
   organizationId: string,
   branchId: string,
-  type: "AGENCE" | "HOTEL" | "BOUTIQUE" | string,
+  type: "AGENCE" | "HOTEL" | "BOUTIQUE" | "RESTAURANT" | string,
+  flags: BranchMenuFlags = {},
 ): BranchMenuSection[] {
   const shared = rapportsSections(organizationId, branchId);
+  const hasStays = flags.hasStays ?? type === "HOTEL";
+  const hasRestaurant =
+    flags.hasRestaurant ?? (type === "HOTEL" || type === "RESTAURANT");
 
-  if (type === "HOTEL") {
+  if (isHospitality(type)) {
+    const dailyItems: BranchMenuItem[] = [
+      caisseVentesCard(
+        organizationId,
+        branchId,
+        hasStays && hasRestaurant
+          ? "Ouvrir la caisse et encaisser séjours / F&B."
+          : hasStays
+            ? "Ouvrir la caisse et encaisser les séjours."
+            : "Ouvrir la caisse et encaisser la restauration.",
+      ),
+    ];
+    if (hasStays) {
+      dailyItems.push({
+        title: "Séjours",
+        description: "Réservations, check-in / check-out.",
+        href: hotelRoutes.sejours(organizationId, branchId),
+        icon: ClipboardList,
+        iconBg: "bg-emerald-500/15",
+        iconColor: "text-emerald-400",
+      });
+    }
+    if (hasRestaurant) {
+      dailyItems.push(
+        {
+          title: "Restauration",
+          description: "Commandes F&B et additions.",
+          href: hotelRoutes.restauration(organizationId, branchId),
+          icon: UtensilsCrossed,
+          iconBg: "bg-violet-500/15",
+          iconColor: "text-violet-400",
+        },
+        {
+          title: "Cuisine",
+          description: "File de préparation — marquer prêt.",
+          href: hotelRoutes.cuisine(organizationId, branchId),
+          icon: ChefHat,
+          iconBg: "bg-orange-500/15",
+          iconColor: "text-orange-400",
+        },
+      );
+    }
+    dailyItems.push(tauxChangeCard(organizationId, branchId));
+
+    const stockItems: BranchMenuItem[] = [];
+    if (hasStays) {
+      stockItems.push({
+        title: "Chambres",
+        description: "Types, inventaire et statuts.",
+        href: hotelRoutes.chambres(organizationId, branchId),
+        icon: BedDouble,
+        iconBg: "bg-sky-500/15",
+        iconColor: "text-sky-400",
+      });
+    }
+    if (hasRestaurant) {
+      stockItems.push({
+        title: "Produits",
+        description: "Carte F&B, photos, stock et cuisine.",
+        href: hotelRoutes.produits(organizationId, branchId),
+        icon: Package,
+        iconBg: "bg-sky-500/15",
+        iconColor: "text-sky-400",
+      });
+    }
+    stockItems.push({
+      title: "Livraison",
+      description: "Consommables — entrées et décompte stock.",
+      href: hotelRoutes.livraison(organizationId, branchId),
+      icon: Truck,
+      iconBg: "bg-sky-500/15",
+      iconColor: "text-sky-400",
+    });
+
     return [
       {
         title: "OPÉRATIONS AU QUOTIDIEN",
         titleColor: "text-emerald-400",
         icon: Wallet,
         iconColor: "text-emerald-400",
-        items: [
-          caisseVentesCard(
-            organizationId,
-            branchId,
-            "Ouvrir la caisse et encaisser séjours / F&B.",
-          ),
-          {
-            title: "Séjours",
-            description: "Réservations, check-in / check-out.",
-            href: hotelRoutes.sejours(organizationId, branchId),
-            icon: ClipboardList,
-            iconBg: "bg-emerald-500/15",
-            iconColor: "text-emerald-400",
-          },
-          {
-            title: "Restauration",
-            description: "Commandes F&B et additions.",
-            href: hotelRoutes.restauration(organizationId, branchId),
-            icon: UtensilsCrossed,
-            iconBg: "bg-violet-500/15",
-            iconColor: "text-violet-400",
-          },
-          {
-            title: "Cuisine",
-            description: "File de préparation — marquer prêt.",
-            href: hotelRoutes.cuisine(organizationId, branchId),
-            icon: ChefHat,
-            iconBg: "bg-orange-500/15",
-            iconColor: "text-orange-400",
-          },
-          tauxChangeCard(organizationId, branchId),
-        ],
+        items: dailyItems,
       },
       {
-        title: "HÉBERGEMENT",
+        title: hasStays && !hasRestaurant ? "HÉBERGEMENT" : hasRestaurant && !hasStays ? "RESTAURANT & STOCK" : "HÉBERGEMENT & STOCK",
         titleColor: "text-sky-400",
-        icon: BedDouble,
+        icon: hasStays ? BedDouble : UtensilsCrossed,
         iconColor: "text-sky-400",
-        items: [
-          {
-            title: "Chambres",
-            description: "Types, inventaire et statuts.",
-            href: hotelRoutes.chambres(organizationId, branchId),
-            icon: BedDouble,
-            iconBg: "bg-sky-500/15",
-            iconColor: "text-sky-400",
-          },
-          {
-            title: "Produits",
-            description: "Carte F&B, photos, stock et cuisine.",
-            href: hotelRoutes.produits(organizationId, branchId),
-            icon: Package,
-            iconBg: "bg-sky-500/15",
-            iconColor: "text-sky-400",
-          },
-          {
-            title: "Livraison",
-            description: "Consommables — entrées et décompte stock.",
-            href: hotelRoutes.livraison(organizationId, branchId),
-            icon: Truck,
-            iconBg: "bg-sky-500/15",
-            iconColor: "text-sky-400",
-          },
-        ],
+        items: stockItems,
       },
       ...shared,
     ];
@@ -353,13 +380,31 @@ export function menuSectionsForBranch(
 export function ventePathForBranchType(
   organizationId: string,
   branchId: string,
-  type: "AGENCE" | "HOTEL" | "BOUTIQUE" | string,
+  type: "AGENCE" | "HOTEL" | "BOUTIQUE" | "RESTAURANT" | string,
+  flags: BranchMenuFlags = {},
 ): { href: string; label: string; description: string } {
-  if (type === "HOTEL") {
+  if (isHospitality(type)) {
+    const hasStays = flags.hasStays ?? type === "HOTEL";
+    const hasRestaurant =
+      flags.hasRestaurant ?? (type === "HOTEL" || type === "RESTAURANT");
+    if (hasStays) {
+      return {
+        href: hotelRoutes.sejours(organizationId, branchId),
+        label: "Encaisser un séjour",
+        description: "Ouvrir les séjours pour check-in et encaissement.",
+      };
+    }
+    if (hasRestaurant) {
+      return {
+        href: hotelRoutes.restauration(organizationId, branchId),
+        label: "Nouvelle commande F&B",
+        description: "Ouvrir la restauration pour prendre une commande.",
+      };
+    }
     return {
-      href: hotelRoutes.sejours(organizationId, branchId),
-      label: "Encaisser un séjour",
-      description: "Ouvrir les séjours pour check-in et encaissement.",
+      href: branchCaissePath(organizationId, branchId),
+      label: "Ouvrir la caisse",
+      description: "Encaisser depuis la caisse.",
     };
   }
   if (type === "BOUTIQUE") {

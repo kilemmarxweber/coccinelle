@@ -4,7 +4,7 @@
  * Structure :
  *   .../branches/[branchId]              → hub dashboard
  *   .../branches/[branchId]/agence/*     → verticale voyage (AGENCE)
- *   .../branches/[branchId]/hotel/*      → verticale hôtel (HOTEL)
+ *   .../branches/[branchId]/hotel/*      → verticale hospitalité (HOTEL | RESTAURANT)
  *   .../branches/[branchId]/boutique/*   → verticale retail (BOUTIQUE)
  *   .../branches/[branchId]/caisse/*     → cashpaye partagé (toutes)
  */
@@ -31,9 +31,9 @@ export function branchBasePath(
 
 /** Module métier selon BranchType Prisma. */
 export function moduleForBranchType(
-  type: "AGENCE" | "HOTEL" | "BOUTIQUE" | string,
+  type: "AGENCE" | "HOTEL" | "BOUTIQUE" | "RESTAURANT" | string,
 ): BranchModule {
-  if (type === "HOTEL") return "hotel";
+  if (type === "HOTEL" || type === "RESTAURANT") return "hotel";
   if (type === "BOUTIQUE") return "boutique";
   return "agence";
 }
@@ -89,7 +89,7 @@ export const agenceRoutes = {
     `${branchModulePath(orgId, branchId, "agence")}/clients`,
 } as const;
 
-/** Sous-routes HOTEL. */
+/** Sous-routes hospitalité (HOTEL / RESTAURANT). */
 export const hotelRoutes = {
   root: (orgId: string, branchId: string) =>
     branchModulePath(orgId, branchId, "hotel"),

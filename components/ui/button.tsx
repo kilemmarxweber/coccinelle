@@ -60,7 +60,11 @@ function Button({
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
   const classes = cn(buttonVariants({ variant, size, className }))
 
-  /** Avec `render={<Link />}`, l’élément n’est pas un `<button>` : Base UI exige `nativeButton={false}`. */
+  /**
+   * Avec `render={<Link />}`, l’élément n’est pas un `<button>` : Base UI exige
+   * `nativeButton={false}` (défaut si `render` est fourni).
+   * Si `render` reste un vrai bouton (ex. ComboboxTrigger), passer `nativeButton`.
+   */
   const effectiveNativeButton =
     render == null ? nativeButton : (nativeButton ?? false)
 

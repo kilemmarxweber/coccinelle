@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import { isHospitality } from "@/lib/branch/hospitality";
 import {
   getActiveExchangeRate,
   getOpenCashSession,
@@ -8,6 +10,7 @@ import {
 } from "@/lib/cash/actions";
 import {
   ensureHotelMenuSeedAction,
+  listActiveStaysForChargeAction,
   listMenuItemsAction,
 } from "@/lib/hotel/actions";
 import { CaisseClient } from "./caisse-client";
@@ -20,33 +23,49 @@ export default async function BranchCaissePage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
   const branch = await requireBranchContext({ organizationId, branchId });
 
-  if (branch.type === "HOTEL") {
+  const hospitality = isHospitality(branch.type);
+  const hasStays = hospitality && branch.hasStays;
+  const hasRestaurant = hospitality && branch.hasRestaurant;
+
+  if (hasRestaurant) {
     await ensureHotelMenuSeedAction(organizationId, branchId);
   }
 
-  const [cashSession, rate, folios, readyOrders, todayPayments, menuItems] =
+  const [cashSession, rate, folios, readyOrders, todayPayments, menuItems, activeStays] =
     await Promise.all([
       getOpenCashSession(branchId),
       getActiveExchangeRate(branchId),
-      listOpenFoliosAction(organizationId, branchId),
-      listReadyOrdersAction(organizationId, branchId),
+      hasStays
+        ? listOpenFoliosAction(organizationId, branchId)
+        : Promise.resolve([]),
+      hasRestaurant
+        ? listReadyOrdersAction(organizationId, branchId)
+        : Promise.resolve([]),
       getTodayPaymentsAction(organizationId, branchId),
-      branch.type === "HOTEL"
+      hasRestaurant
         ? listMenuItemsAction(organizationId, branchId)
+        : Promise.resolve([]),
+      hasStays && hasRestaurant
+        ? listActiveStaysForChargeAction(organizationId, branchId)
         : Promise.resolve([]),
     ]);
 
   return (
-    <CaisseClient
-      organizationId={organizationId}
-      branchId={branchId}
-      branchName={branch.name}
-      cashSession={cashSession}
-      rate={rate}
-      folios={folios}
-      readyOrders={readyOrders}
-      todayPayments={todayPayments}
-      menuItems={menuItems}
-    />
+    <Suspense fallback={null}>
+      <CaisseClient
+        organizationId={organizationId}
+        branchId={branchId}
+        branchName={branch.name}
+        cashSession={cashSession}
+        rate={rate}
+        folios={folios}
+        readyOrders={readyOrders}
+        todayPayments={todayPayments}
+        menuItems={menuItems}
+        activeStays={activeStays}
+        hasStays={hasStays}
+        hasRestaurant={hasRestaurant}
+      />
+    </Suspense>
   );
 }

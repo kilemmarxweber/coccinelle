@@ -40,6 +40,14 @@ export default async function BranchDashboardPage({ params }: PageProps) {
       branchName={branch.name}
       branchCode={branch.code}
       branchType={branch.type}
+      hasStays={branch.hasStays}
+      hasRestaurant={branch.hasRestaurant}
+      hasAvion={branch.hasAvion}
+      hasBus={branch.hasBus}
+      hasBateau={branch.hasBateau}
+      hasPharmacie={branch.hasPharmacie}
+      hasShop={branch.hasShop}
+      hasAlimentation={branch.hasAlimentation}
       organizationName={branch.organizationName}
     />
   );

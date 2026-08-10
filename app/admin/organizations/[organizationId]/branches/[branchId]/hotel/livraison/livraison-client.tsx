@@ -52,6 +52,8 @@ type Movement = {
   stockAfter?: number | null;
   note: string | null;
   createdAt: string | Date;
+  createdByUserId?: string;
+  createdByName?: string | null;
   menuItem: {
     id: string;
     name: string;
@@ -310,7 +312,8 @@ export function LivraisonClient(props: {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Livraison</h1>
             <p className="text-sm text-muted-foreground">
-              Consommables — entrées, décomptes et historique.
+              Stock et mouvements de cette branche — enregistrés par ses
+              membres.
             </p>
           </div>
         </div>
@@ -515,6 +518,7 @@ export function LivraisonClient(props: {
                       <p className="text-xs text-muted-foreground">
                         {entree ? "Entrée" : "Sortie"} ·{" "}
                         {formatWhen(m.createdAt)}
+                        {m.createdByName ? ` · ${m.createdByName}` : ""}
                         {typeof m.stockBefore === "number" &&
                         typeof m.stockAfter === "number"
                           ? ` · ${m.stockBefore} → ${m.stockAfter}`

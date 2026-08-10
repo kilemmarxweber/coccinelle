@@ -107,7 +107,7 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
             Coccinelle
           </span>
           <span className="block text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
-            Voyage RDC
+            v 0.1
           </span>
         </span>
       </Link>
@@ -117,7 +117,7 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
           Bon retour
         </h1>
         <p className="text-sm text-muted-foreground">
-          Connectez-vous à la console pour gérer voyages, réservations et véhicules.
+          Connectez-vous à la console pour gérer vos commandes, réservations et demandes de service.
         </p>
       </div>
 

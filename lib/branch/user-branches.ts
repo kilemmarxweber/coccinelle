@@ -15,7 +15,15 @@ export type AccessibleBranch = {
   id: string;
   name: string;
   code: string;
-  type: "AGENCE" | "HOTEL" | "BOUTIQUE";
+  type: "AGENCE" | "HOTEL" | "BOUTIQUE" | "RESTAURANT";
+  hasStays: boolean;
+  hasRestaurant: boolean;
+  hasAvion: boolean;
+  hasBus: boolean;
+  hasBateau: boolean;
+  hasPharmacie: boolean;
+  hasShop: boolean;
+  hasAlimentation: boolean;
   organizationId: string;
   organizationName: string;
 };
@@ -25,6 +33,14 @@ const branchSelect = {
   name: true,
   code: true,
   type: true,
+  hasStays: true,
+  hasRestaurant: true,
+  hasAvion: true,
+  hasBus: true,
+  hasBateau: true,
+  hasPharmacie: true,
+  hasShop: true,
+  hasAlimentation: true,
   organizationId: true,
   organization: { select: { name: true } },
 } as const;
@@ -34,6 +50,14 @@ function mapBranch(b: {
   name: string;
   code: string;
   type: AccessibleBranch["type"];
+  hasStays: boolean;
+  hasRestaurant: boolean;
+  hasAvion: boolean;
+  hasBus: boolean;
+  hasBateau: boolean;
+  hasPharmacie: boolean;
+  hasShop: boolean;
+  hasAlimentation: boolean;
   organizationId: string;
   organization: { name: string };
 }): AccessibleBranch {
@@ -42,6 +66,14 @@ function mapBranch(b: {
     name: b.name,
     code: b.code,
     type: b.type,
+    hasStays: b.hasStays,
+    hasRestaurant: b.hasRestaurant,
+    hasAvion: b.hasAvion,
+    hasBus: b.hasBus,
+    hasBateau: b.hasBateau,
+    hasPharmacie: b.hasPharmacie,
+    hasShop: b.hasShop,
+    hasAlimentation: b.hasAlimentation,
     organizationId: b.organizationId,
     organizationName: b.organization.name,
   };
@@ -186,7 +218,7 @@ export async function resolveDefaultBranchPath(
 
   const branches = await listAccessibleBranches(userId, appRole, organizationId);
   if (branches.length === 1) {
-    return branchDashboardPath(organizationId, branches[0].id);
+    return branchDashboardPath(organizationId, branches[0]!.id);
   }
   if (branches.length > 1) {
     return organizationBranchesPath(organizationId);

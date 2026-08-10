@@ -52,6 +52,8 @@ type MenuItem = {
   isConsumable?: boolean;
   provenance?: string | null;
   supplierName?: string | null;
+  createdByUserId?: string | null;
+  createdByName?: string | null;
 };
 
 type FormState = {
@@ -293,7 +295,8 @@ export function ProduitsClient(props: {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Produits</h1>
             <p className="text-sm text-muted-foreground">
-              Vente F&B et consommables — photos, stock, fournisseurs.
+              Catalogue de cette branche uniquement — lié aux membres qui y ont
+              accès.
             </p>
           </div>
         </div>
@@ -418,6 +421,9 @@ export function ProduitsClient(props: {
                           ? "Passe en cuisine"
                           : "Service direct"}
                       {!item.active ? " · Inactif" : null}
+                      {item.createdByName
+                        ? ` · par ${item.createdByName}`
+                        : null}
                     </p>
                   </div>
                   <div className="mt-auto flex gap-1.5">

@@ -14,7 +14,7 @@
 | Type | Éléments bootstrap |
 |------|-------------------|
 | `AGENCE` | Paramètres voyage ; 1–2 trajets démo (optionnel flag) ; BranchMember owner |
-| `HOTEL` | Types de chambres + chambres inventaire initial |
+| `HOTEL` / `RESTAURANT` | Selon flags : chambres si `hasStays` ; menu F&B si `hasRestaurant` ; taux de change (voir [B13](./B13-hospitalite-modules.md)) |
 | `BOUTIQUE` | Catégories + produits + stock initial |
 
 ## Critères

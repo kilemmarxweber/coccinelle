@@ -1,7 +1,10 @@
 /** Helpers temps de préparation / décompte commande cuisine. */
 
-export function elapsedLabel(from: string | Date | null | undefined, now: number) {
-  if (!from) return "—";
+export function elapsedLabel(
+  from: string | Date | null | undefined,
+  now: number | null | undefined,
+) {
+  if (now == null || !from) return "—";
   const ms = Math.max(0, now - new Date(from).getTime());
   const mins = Math.floor(ms / 60000);
   if (mins < 1) return "< 1 min";
@@ -11,8 +14,11 @@ export function elapsedLabel(from: string | Date | null | undefined, now: number
   return `${h} h ${m} min`;
 }
 
-export function urgencyTone(from: string | Date | null | undefined, now: number) {
-  if (!from) return "normal" as const;
+export function urgencyTone(
+  from: string | Date | null | undefined,
+  now: number | null | undefined,
+) {
+  if (now == null || !from) return "normal" as const;
   const mins = (now - new Date(from).getTime()) / 60000;
   if (mins >= 20) return "critical" as const;
   if (mins >= 10) return "warn" as const;
@@ -31,9 +37,10 @@ export type PrepCountdown = {
 export function prepCountdown(
   estimatedMinutes: number | null | undefined,
   prepStartedAt: string | Date | null | undefined,
-  now: number,
+  now: number | null | undefined,
 ): PrepCountdown | null {
   if (
+    now == null ||
     estimatedMinutes == null ||
     estimatedMinutes <= 0 ||
     !prepStartedAt

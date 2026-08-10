@@ -32,6 +32,7 @@ export const CATEGORIE_PASSAGER_LABELS: Record<string, string> = {
 export const MODE_TRANSPORT_LABELS: Record<string, string> = {
   BUS: "Bus",
   AVION: "Avion",
+  BATEAU: "Bateau",
 };
 
 export const STATUT_TRAJET_DEPART_LABELS: Record<string, string> = {

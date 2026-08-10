@@ -16,6 +16,7 @@ import {
   TrendAreaChart,
 } from "@/components/reports/report-charts";
 import { openBlankPrintWindow } from "@/lib/hotel/stock-movements-print";
+import { formatBothRateLabels } from "@/lib/cash/exchange";
 
 function printSimpleReport(title: string, htmlBody: string) {
   const win = openBlankPrintWindow();
@@ -35,6 +36,20 @@ function printSimpleReport(title: string, htmlBody: string) {
   }, 250);
 }
 
+function rateBanner(
+  rate:
+    | {
+        rate: number;
+        configuredFrom: string;
+        configuredTo: string;
+        configuredRate: number;
+      }
+    | null
+    | undefined,
+) {
+  return formatBothRateLabels(rate)?.both ?? null;
+}
+
 type SalesData = Awaited<
   ReturnType<typeof import("@/lib/hotel/reports/actions").getSalesReportAction>
 >;
@@ -48,7 +63,9 @@ export function SalesReportClient(props: {
   data: SalesData;
 }) {
   const base = `/admin/organizations/${props.organizationId}/branches/${props.branchId}/rapports/ventes`;
-  const { kpis, caByDay, caByMethod, lines, linesTotal } = props.data;
+  const { kpis, caByDay, caByMethod, lines, linesTotal, rate } = props.data;
+  const money = (n: number) => formatMoney(n, rate);
+  const rates = rateBanner(rate);
 
   function formatDayFr(iso: string) {
     const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
@@ -77,22 +94,24 @@ export function SalesReportClient(props: {
       from={props.from}
       to={props.to}
       basePath={base}
+      rateBanner={rates}
       onExportPdf={() =>
         printSimpleReport(
           "Rapport Ventes",
           `<h1>Rapport Ventes — ${props.branchName}</h1>
           <p>${props.from} → ${props.to}</p>
-          <p>CA : ${formatMoney(kpis.ca)} · Tickets : ${kpis.tickets} · Qté : ${kpis.qtySold}</p>
+          ${rates ? `<p>${rates}</p>` : ""}
+          <p>CA : ${money(kpis.ca)} · Tickets : ${kpis.tickets} · Qté : ${kpis.qtySold}</p>
           <table><thead><tr>
             <th>Jour</th><th>Commande</th><th>Articles</th><th>Participants</th><th class="num">Payé</th>
           </tr></thead><tbody>
           ${lines
             .map(
               (l) =>
-                `<tr><td>${formatDayFr(l.day)}</td><td>${l.label}${l.receiptNumber ? ` · #${l.receiptNumber}` : ""}</td><td>${l.itemsLabel ?? "—"}</td><td>${participantsLabel(l.participants)}</td><td class="num">${l.usd.toFixed(2)}</td></tr>`,
+                `<tr><td>${formatDayFr(l.day)}</td><td>${l.label}${l.receiptNumber ? ` · #${l.receiptNumber}` : ""}</td><td>${l.itemsLabel ?? "—"}</td><td>${participantsLabel(l.participants)}</td><td class="num">${money(l.usd)}</td></tr>`,
             )
             .join("")}
-          <tr><td colspan="4"><strong>Total</strong></td><td class="num"><strong>${linesTotal.toFixed(2)}</strong></td></tr>
+          <tr><td colspan="4"><strong>Total</strong></td><td class="num"><strong>${money(linesTotal)}</strong></td></tr>
           </tbody></table>`,
         )
       }
@@ -106,7 +125,7 @@ export function SalesReportClient(props: {
         items={[
           {
             label: "CA encaissé",
-            value: formatMoney(kpis.ca),
+            value: money(kpis.ca),
             delta: kpis.caDelta,
           },
           {
@@ -121,7 +140,7 @@ export function SalesReportClient(props: {
           },
           {
             label: "Ticket moyen",
-            value: formatMoney(kpis.avgTicket),
+            value: money(kpis.avgTicket),
             hint: `${kpis.paymentsCount} paiement(s)`,
           },
         ]}
@@ -197,7 +216,7 @@ export function SalesReportClient(props: {
                     )}
                   </td>
                   <td className="px-4 py-2.5 text-right tabular-nums font-medium">
-                    {formatMoney(l.usd)}
+                    {money(l.usd)}
                   </td>
                 </tr>
               ))}
@@ -219,7 +238,7 @@ export function SalesReportClient(props: {
                     Total
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums text-sm font-semibold">
-                    {formatMoney(linesTotal)}
+                    {money(linesTotal)}
                   </td>
                 </tr>
               )}
@@ -246,7 +265,8 @@ export function PurchasesReportClient(props: {
   data: PurchasesData;
 }) {
   const base = `/admin/organizations/${props.organizationId}/branches/${props.branchId}/rapports/achats`;
-  const { kpis, flowByDay, byProduct } = props.data;
+  const { kpis, flowByDay, byProduct, rate } = props.data;
+  const rates = rateBanner(rate);
 
   return (
     <ReportShell
@@ -257,11 +277,13 @@ export function PurchasesReportClient(props: {
       from={props.from}
       to={props.to}
       basePath={base}
+      rateBanner={rates}
       onExportPdf={() =>
         printSimpleReport(
           "Rapport Achats",
           `<h1>Rapport Achats — ${props.branchName}</h1>
           <p>${props.from} → ${props.to}</p>
+          ${rates ? `<p>${rates}</p>` : ""}
           <p>Entrées : ${kpis.qtyIn} · Sorties : ${kpis.qtyOut} · Net : ${kpis.net}</p>
           <table><thead><tr><th>Produit</th><th class="num">Entrées</th><th class="num">Sorties</th></tr></thead><tbody>
           ${byProduct.map((p) => `<tr><td>${p.name}</td><td class="num">${p.inQty}</td><td class="num">${p.outQty}</td></tr>`).join("")}
@@ -383,7 +405,9 @@ export function ArticlesReportClient(props: {
   data: ArticlesData;
 }) {
   const base = `/admin/organizations/${props.organizationId}/branches/${props.branchId}/rapports/articles`;
-  const { kpis, topArticles, byCategory, soldByDay } = props.data;
+  const { kpis, topArticles, byCategory, soldByDay, rate } = props.data;
+  const money = (n: number) => formatMoney(n, rate);
+  const rates = rateBanner(rate);
 
   return (
     <ReportShell
@@ -394,13 +418,15 @@ export function ArticlesReportClient(props: {
       from={props.from}
       to={props.to}
       basePath={base}
+      rateBanner={rates}
       onExportPdf={() =>
         printSimpleReport(
           "Rapport Articles",
           `<h1>Rapport Articles — ${props.branchName}</h1>
           <p>${props.from} → ${props.to}</p>
+          ${rates ? `<p>${rates}</p>` : ""}
           <table><thead><tr><th>Article</th><th class="num">Qté</th><th class="num">CA</th><th class="num">Sorties</th></tr></thead><tbody>
-          ${topArticles.map((a) => `<tr><td>${a.name}</td><td class="num">${a.qty}</td><td class="num">${a.revenue.toFixed(2)}</td><td class="num">${a.stockOut}</td></tr>`).join("")}
+          ${topArticles.map((a) => `<tr><td>${a.name}</td><td class="num">${a.qty}</td><td class="num">${money(a.revenue)}</td><td class="num">${a.stockOut}</td></tr>`).join("")}
           </tbody></table>`,
         )
       }
@@ -423,7 +449,7 @@ export function ArticlesReportClient(props: {
           },
           {
             label: "CA articles",
-            value: formatMoney(kpis.revenue),
+            value: money(kpis.revenue),
           },
           {
             label: "Sorties stock",
@@ -477,7 +503,7 @@ export function ArticlesReportClient(props: {
                   {a.qtyDelta}%
                 </td>
                 <td className="px-4 py-2.5 text-right tabular-nums">
-                  {formatMoney(a.revenue)}
+                  {money(a.revenue)}
                 </td>
                 <td className="px-4 py-2.5 text-right tabular-nums">
                   {a.stockOut}
@@ -516,8 +542,10 @@ export function FinanceReportClient(props: {
   data: FinanceData;
 }) {
   const base = `/admin/organizations/${props.organizationId}/branches/${props.branchId}/rapports/financier`;
-  const { kpis, flowByDay, revenueByMethod, folioByKind, revenueByDay } =
+  const { kpis, flowByDay, revenueByMethod, folioByKind, revenueByDay, rate } =
     props.data;
+  const money = (n: number) => formatMoney(n, rate);
+  const rates = rateBanner(rate);
 
   return (
     <ReportShell
@@ -528,12 +556,14 @@ export function FinanceReportClient(props: {
       from={props.from}
       to={props.to}
       basePath={base}
+      rateBanner={rates}
       onExportPdf={() =>
         printSimpleReport(
           "Rapport Financier",
           `<h1>Rapport Financier — ${props.branchName}</h1>
           <p>${props.from} → ${props.to}</p>
-          <p>Revenus : ${formatMoney(kpis.revenue)} · Entrées : ${kpis.qtyIn} · Sorties : ${kpis.qtyOut}</p>`,
+          ${rates ? `<p>${rates}</p>` : ""}
+          <p>Revenus : ${money(kpis.revenue)} · Entrées : ${kpis.qtyIn} · Sorties : ${kpis.qtyOut}</p>`,
         )
       }
     >
@@ -546,7 +576,7 @@ export function FinanceReportClient(props: {
         items={[
           {
             label: "Revenus",
-            value: formatMoney(kpis.revenue),
+            value: money(kpis.revenue),
             delta: kpis.revenueDelta,
           },
           {
@@ -561,7 +591,7 @@ export function FinanceReportClient(props: {
           },
           {
             label: "Rev. / sortie",
-            value: formatMoney(kpis.coverage),
+            value: money(kpis.coverage),
             hint: "Intensité revenu vs décompte",
           },
         ]}

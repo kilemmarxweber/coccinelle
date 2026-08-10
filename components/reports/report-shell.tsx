@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { formatBothAmounts } from "@/lib/cash/exchange";
 import { defaultReportRange, toIsoDate } from "@/lib/hotel/reports/period";
 
 export function ReportShell(props: {
@@ -20,6 +21,8 @@ export function ReportShell(props: {
   basePath: string;
   children: ReactNode;
   onExportPdf?: () => void;
+  /** Bandeau taux : toujours les deux sens USD↔CDF. */
+  rateBanner?: string | null;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -46,6 +49,11 @@ export function ReportShell(props: {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{props.title}</h1>
           <p className="text-sm text-muted-foreground">{props.subtitle}</p>
+          {props.rateBanner ? (
+            <p className="mt-1 text-xs font-medium text-sky-700 dark:text-sky-300">
+              {props.rateBanner}
+            </p>
+          ) : null}
         </div>
         <div className="flex flex-wrap gap-2">
           {props.onExportPdf ? (
@@ -142,7 +150,9 @@ export function KpiGrid(props: {
           <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
             {k.label}
           </p>
-          <p className="mt-2 text-2xl font-bold tabular-nums">{k.value}</p>
+          <p className="mt-2 text-xl font-bold tabular-nums leading-snug sm:text-2xl">
+            {k.value}
+          </p>
           {typeof k.delta === "number" ? (
             <p
               className={cn(
@@ -230,8 +240,17 @@ export function ReportsNav(props: {
   );
 }
 
-export function formatMoney(n: number) {
-  return `${n.toLocaleString("fr-FR", {
+export function formatMoney(
+  amountUsd: number,
+  rate?: {
+    rate: number;
+    configuredFrom?: string;
+  } | null,
+) {
+  if (rate && rate.rate > 0) {
+    return formatBothAmounts(amountUsd, rate);
+  }
+  return `${amountUsd.toLocaleString("fr-FR", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })} $`;

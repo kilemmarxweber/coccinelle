@@ -32,6 +32,11 @@ import {
   advanceHotelOrderAction,
   createHotelOrderAction,
 } from "@/lib/hotel/actions";
+import { ORDER_SETTLEMENT } from "@/lib/hotel/folio-note";
+import {
+  extractRoomNumber,
+  lookupRoomStay,
+} from "@/lib/hotel/stay-room-match";
 import {
   formatPrimaryAmount,
   type NormalizedUsdCdfRate,
@@ -41,6 +46,7 @@ import {
   formatCountdownBanner,
   prepCountdown,
 } from "@/lib/hotel/order-time";
+import { SearchCombobox } from "@/components/ui/search-combobox";
 import { cn } from "@/lib/utils";
 
 type MenuItem = {
@@ -65,6 +71,8 @@ type Order = {
   id: string;
   tableLabel: string | null;
   status: string;
+  settlementMode?: string | null;
+  postedToFolioAt?: string | Date | null;
   serverNote?: string | null;
   sentAt?: string | Date | null;
   prepStartedAt?: string | Date | null;
@@ -74,6 +82,13 @@ type Order = {
   createdAt?: string | Date;
   items: OrderItem[];
   stay?: { guestName: string; room?: { number: string } | null } | null;
+};
+
+type ActiveStay = {
+  id: string;
+  guestName: string;
+  room: { number: string };
+  folio: { id: string } | null;
 };
 
 const STATUS_RANK: Record<string, number> = {
@@ -115,20 +130,46 @@ const STATUS_META: Record<
   LIVREE: { label: "Livrée", tone: "bg-muted text-muted-foreground" },
 };
 
+function isOnNote(order: Order) {
+  return order.settlementMode === ORDER_SETTLEMENT.NOTE_CHAMBRE;
+}
+
 export function RestaurationClient(props: {
   organizationId: string;
   branchId: string;
   menuItems: MenuItem[];
   orders: Order[];
+  activeStays?: ActiveStay[];
+  hasStays?: boolean;
   rate?: NormalizedUsdCdfRate | null;
   initialView?: "commande" | "suivi";
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [pending, start] = useTransition();
-  const [tableLabel, setTableLabel] = useState("T1");
-  const [now, setNow] = useState(() => Date.now());
+  const [tableLabel, setTableLabel] = useState("");
+  const [stayId, setStayId] = useState("");
+  const [settlementMode, setSettlementMode] = useState<
+    "COMPTANT" | "NOTE_CHAMBRE"
+  >("COMPTANT");
+  const [now, setNow] = useState<number | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const hasStays = Boolean(props.hasStays);
+  const activeStays = props.activeStays ?? [];
+
+  const roomLookup = useMemo(() => {
+    if (!hasStays || stayId) return { status: "idle" as const };
+    return lookupRoomStay(activeStays, tableLabel);
+  }, [hasStays, stayId, activeStays, tableLabel]);
+
+  const roomMatchedStay =
+    roomLookup.status === "matched" ? roomLookup.stay : null;
+
+  const selectedStay = useMemo(
+    () => activeStays.find((s) => s.id === stayId) ?? null,
+    [activeStays, stayId],
+  );
 
   function fmt(amountUsd: number) {
     return formatPrimaryAmount(amountUsd, props.rate);
@@ -174,6 +215,10 @@ export function RestaurationClient(props: {
   }, [searchParams]);
 
   useEffect(() => {
+    setNow(Date.now());
+  }, []);
+
+  useEffect(() => {
     if (view !== "suivi") return;
     const tick = window.setInterval(() => setNow(Date.now()), 1000);
     const refresh = window.setInterval(() => router.refresh(), 12000);
@@ -182,6 +227,17 @@ export function RestaurationClient(props: {
       window.clearInterval(refresh);
     };
   }, [view, router]);
+
+  function applyMatchedStay(stay: ActiveStay) {
+    setStayId(stay.id);
+    setTableLabel(`Ch. ${stay.room.number}`);
+    setSettlementMode("NOTE_CHAMBRE");
+  }
+
+  function clearStayLink() {
+    setStayId("");
+    setSettlementMode("COMPTANT");
+  }
 
   const suiviRows = useMemo(() => {
     let rows = props.orders;
@@ -201,10 +257,14 @@ export function RestaurationClient(props: {
     [props.orders, selectedId],
   );
 
-  function send() {
+  function send(mode: "COMPTANT" | "NOTE_CHAMBRE" = settlementMode) {
     const items = toPayload();
     if (!items.length) {
       toast.message("Ajoutez des articles");
+      return;
+    }
+    if (mode === "NOTE_CHAMBRE" && !stayId) {
+      toast.message("Sélectionnez un séjour pour la note de chambre");
       return;
     }
     start(async () => {
@@ -212,10 +272,16 @@ export function RestaurationClient(props: {
         await createHotelOrderAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
-          tableLabel,
+          tableLabel: tableLabel.trim() || undefined,
+          stayId: stayId || undefined,
+          settlementMode: mode,
           items,
         });
-        toast.success("Commande envoyée");
+        toast.success(
+          mode === "NOTE_CHAMBRE"
+            ? "Commande Sur note de chambre"
+            : "Commande envoyée",
+        );
         clear();
         router.refresh();
         setView("suivi");
@@ -232,6 +298,7 @@ export function RestaurationClient(props: {
         const order = props.orders.find((o) => o.id === orderId);
         const fromKitchen =
           order?.status === "ENVOYEE" || order?.status === "EN_PREPARATION";
+        const onNote = order ? isOnNote(order) : false;
         await advanceHotelOrderAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
@@ -239,11 +306,13 @@ export function RestaurationClient(props: {
           to: "LIVREE",
         });
         toast.success(
-          fromKitchen
-            ? "Livrée — hors cuisine · encaissement en caisse"
-            : order?.status === "PAYEE"
-              ? "Livrée"
-              : "Livrée — reste à encaisser en caisse",
+          onNote
+            ? "Livrée · imputée à la note de chambre"
+            : fromKitchen
+              ? "Livrée — hors cuisine · encaissement en caisse"
+              : order?.status === "PAYEE"
+                ? "Livrée"
+                : "Livrée — reste à encaisser en caisse",
         );
         setSelectedId(null);
         router.refresh();
@@ -328,23 +397,197 @@ export function RestaurationClient(props: {
           ticketTitle="Ticket serveur"
           emptyHint="Touchez un plat ou une boisson pour composer le ticket"
           ticketMeta={
-            <div className="grid gap-1.5">
-              <Label htmlFor="table">Table / chambre</Label>
-              <Input
-                id="table"
-                value={tableLabel}
-                onChange={(e) => setTableLabel(e.target.value)}
-                placeholder="T1, Ch. 12…"
-              />
+            <div className="grid gap-3">
+              <div className="grid gap-1.5">
+                <Label htmlFor="table">
+                  {hasStays ? "Table / n° chambre" : "Table / Client"}
+                </Label>
+                <Input
+                  id="table"
+                  value={tableLabel}
+                  onChange={(e) => {
+                    const next = e.target.value;
+                    setTableLabel(next);
+                    if (stayId) {
+                      const stay = activeStays.find((s) => s.id === stayId);
+                      const stayLabel = stay
+                        ? `Ch. ${stay.room.number}`
+                        : "";
+                      if (
+                        stay &&
+                        next.trim().toUpperCase() !== stayLabel.toUpperCase() &&
+                        extractRoomNumber(next) !==
+                          stay.room.number.trim().toUpperCase()
+                      ) {
+                        clearStayLink();
+                      }
+                    }
+                  }}
+                  placeholder={
+                    hasStays ? "T1, 12, Ch. 101…" : "T1, bar…"
+                  }
+                />
+                {hasStays ? (
+                  <p className="text-[11px] text-muted-foreground">
+                    Saisissez le n° de chambre pour lier un séjour actif.
+                  </p>
+                ) : null}
+              </div>
+
+              {roomMatchedStay && !stayId ? (
+                <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-3 text-sm">
+                  <p className="font-semibold text-amber-900 dark:text-amber-100">
+                    Séjour check-in · ch. {roomMatchedStay.room.number}
+                  </p>
+                  <p className="mt-0.5 text-xs text-amber-800/90 dark:text-amber-200/90">
+                    {roomMatchedStay.guestName} — lier à la note ou comptant
+                  </p>
+                  <div className="mt-2.5 flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="bg-amber-600 text-white hover:bg-amber-600/90"
+                      onClick={() => applyMatchedStay(roomMatchedStay)}
+                    >
+                      Lier · Sur note
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setStayId(roomMatchedStay.id);
+                        setTableLabel(`Ch. ${roomMatchedStay.room.number}`);
+                        setSettlementMode("COMPTANT");
+                      }}
+                    >
+                      Lier · Comptant
+                    </Button>
+                  </div>
+                </div>
+              ) : null}
+
+              {roomLookup.status === "no_guest" && !stayId ? (
+                <div className="rounded-xl border border-rose-500/35 bg-rose-500/10 px-3 py-3 text-sm">
+                  <p className="font-semibold text-rose-800 dark:text-rose-200">
+                    Aucun client check-in · ch. {roomLookup.roomNumber}
+                  </p>
+                  <p className="mt-0.5 text-xs text-rose-700/90 dark:text-rose-300/90">
+                    La note de chambre n’est disponible que pour un séjour
+                    occupé. Vérifiez le n° ou faites un check-in d’abord.
+                  </p>
+                </div>
+              ) : null}
+
+              {roomLookup.status === "no_checkins" && !stayId ? (
+                <div className="rounded-xl border border-muted-foreground/25 bg-muted/40 px-3 py-3 text-sm">
+                  <p className="font-semibold">Aucun client en séjour</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Pas de chambre check-in pour le moment — vente salle /
+                    comptant uniquement.
+                  </p>
+                </div>
+              ) : null}
+
+              {selectedStay ? (
+                <div className="grid gap-2 rounded-xl border border-sky-500/30 bg-sky-500/10 px-3 py-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold">
+                        Ch. {selectedStay.room.number} · {selectedStay.guestName}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        Client en séjour — choisissez le règlement
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      size="xs"
+                      variant="ghost"
+                      onClick={clearStayLink}
+                    >
+                      Retirer
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1 rounded-lg border border-border/60 bg-background/60 p-1">
+                    {(
+                      [
+                        ["COMPTANT", "Comptant"],
+                        ["NOTE_CHAMBRE", "Sur note"],
+                      ] as const
+                    ).map(([id, label]) => (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => setSettlementMode(id)}
+                        className={cn(
+                          "rounded-md px-2 py-2 text-xs font-semibold transition",
+                          settlementMode === id
+                            ? "bg-primary text-primary-foreground shadow-sm"
+                            : "text-muted-foreground hover:bg-muted",
+                        )}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    {settlementMode === "NOTE_CHAMBRE"
+                      ? "Imputée à la note de chambre · solde au check-out"
+                      : "Paiement immédiat en caisse"}
+                  </p>
+                </div>
+              ) : hasStays && activeStays.length > 0 ? (
+                <div className="grid gap-1.5">
+                  <Label htmlFor="stay">Ou choisir un séjour check-in</Label>
+                  <SearchCombobox
+                    id="stay"
+                    items={activeStays.map((s) => ({
+                      value: s.id,
+                      label: `Ch. ${s.room.number} · ${s.guestName}`,
+                    }))}
+                    value={stayId}
+                    showClear
+                    onValueChange={(next) => {
+                      if (!next) {
+                        clearStayLink();
+                        return;
+                      }
+                      const stay = activeStays.find((s) => s.id === next);
+                      if (stay) applyMatchedStay(stay);
+                    }}
+                    placeholder="Rechercher chambre / client…"
+                    emptyText="Aucun séjour trouvé."
+                  />
+                </div>
+              ) : hasStays ? (
+                <p className="rounded-lg border border-dashed border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+                  Aucun client check-in — impossible de lier une note de chambre
+                  pour l’instant.
+                </p>
+              ) : null}
             </div>
           }
           actions={
-            <PosChargeButton
-              label="Envoyer la commande"
-              pending={pending}
-              disabled={cart.length === 0}
-              onClick={send}
-            />
+            stayId ? (
+              <PosChargeButton
+                label={
+                  settlementMode === "NOTE_CHAMBRE"
+                    ? "Envoyer · Sur note de chambre"
+                    : "Envoyer · Comptant"
+                }
+                pending={pending}
+                disabled={cart.length === 0}
+                onClick={() => send(settlementMode)}
+              />
+            ) : (
+              <PosChargeButton
+                label="Envoyer la commande"
+                pending={pending}
+                disabled={cart.length === 0}
+                onClick={() => send("COMPTANT")}
+              />
+            )
           }
         />
       ) : (
@@ -439,6 +682,14 @@ export function RestaurationClient(props: {
                           </p>
                         </div>
                         <div className="flex flex-col items-end gap-1.5">
+                          {isOnNote(order) ? (
+                            <span className="inline-flex rounded-full bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:text-amber-200">
+                              Sur note
+                              {order.stay?.room
+                                ? ` · Ch. ${order.stay.room.number}`
+                                : ""}
+                            </span>
+                          ) : null}
                           <span
                             className={cn(
                               "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold",
@@ -546,6 +797,7 @@ export function RestaurationClient(props: {
                 <SheetDescription>
                   Ticket #{selected.id.slice(0, 8)} ·{" "}
                   {STATUS_META[selected.status]?.label ?? selected.status}
+                  {isOnNote(selected) ? " · Sur note de chambre" : ""}
                 </SheetDescription>
               </SheetHeader>
 

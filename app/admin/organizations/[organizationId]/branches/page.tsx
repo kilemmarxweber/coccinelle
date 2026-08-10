@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Building2, GitBranch, Hotel, Plus, Store } from "lucide-react";
+import { Building2, GitBranch, Hotel, Plus, Store, UtensilsCrossed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -8,6 +8,11 @@ import {
   DashboardMenuCard,
   DashboardSection,
 } from "@/components/ui/dashboard-menu-card";
+import { isHospitality } from "@/lib/branch/hospitality";
+import {
+  agencyModesLabel,
+  shopVerticalsLabel,
+} from "@/lib/branch/agency-shop";
 import prisma from "@/lib/prisma";
 import { listBranchesAction } from "./actions";
 
@@ -25,6 +30,12 @@ const TYPE_META = {
     icon: Hotel,
     iconBg: "bg-sky-500/15",
     iconColor: "text-sky-400",
+  },
+  RESTAURANT: {
+    label: "Restaurant",
+    icon: UtensilsCrossed,
+    iconBg: "bg-violet-500/15",
+    iconColor: "text-violet-400",
   },
   BOUTIQUE: {
     label: "Boutique",
@@ -76,7 +87,7 @@ export default async function BranchesPage({ params }: PageProps) {
         <EmptyState
           icon={Building2}
           title="Aucune branche"
-          description="Créez une Agence, un Hôtel ou une Boutique pour commencer. Les éléments du type seront chargés automatiquement."
+          description="Créez une Agence, une hôtellerie-restaurant ou un commerce pour commencer. Les éléments du type seront chargés automatiquement."
           action={
             <Button
               render={
@@ -98,17 +109,38 @@ export default async function BranchesPage({ params }: PageProps) {
         >
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {branches.map((b) => {
-              const meta = TYPE_META[b.type];
+              const meta = TYPE_META[b.type] ?? {
+                label: branchTypeLabel(b.type),
+                icon: Building2,
+                iconBg: "bg-muted",
+                iconColor: "text-muted-foreground",
+              };
               const canOpen = b.status === "ACTIVE";
               const stats =
                 b.type === "AGENCE"
-                  ? `${b._count.trajets} trajets`
-                  : b.type === "HOTEL"
-                    ? `${b._count.hotelRoomTypes} types de chambres`
-                    : `${b._count.shopCategories} catégories`;
+                  ? `${b._count.trajets} trajets · ${agencyModesLabel(b)}`
+                  : isHospitality(b.type)
+                    ? [
+                        b.hasStays
+                          ? `${b._count.hotelRoomTypes} types chambres`
+                          : null,
+                        b.hasRestaurant
+                          ? `${b._count.menuItems} produits F&B`
+                          : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ") || "Hôtellerie-restaurant"
+                    : `${b._count.shopCategories} cat. · ${shopVerticalsLabel(b)}`;
               const href = canOpen
                 ? `/admin/organizations/${organizationId}/branches/${b.id}`
                 : `/admin/organizations/${organizationId}/branches`;
+
+              const detailBadge =
+                b.type === "AGENCE"
+                  ? agencyModesLabel(b)
+                  : b.type === "BOUTIQUE"
+                    ? shopVerticalsLabel(b)
+                    : meta.label;
 
               return (
                 <DashboardMenuCard
@@ -122,7 +154,7 @@ export default async function BranchesPage({ params }: PageProps) {
                   primary={canOpen}
                   footer={
                     <div className="flex flex-wrap gap-1.5">
-                      <Badge variant="secondary">{meta.label}</Badge>
+                      <Badge variant="secondary">{detailBadge}</Badge>
                       <Badge variant="outline">{b.code}</Badge>
                       <Badge variant="outline">{b.status}</Badge>
                     </div>

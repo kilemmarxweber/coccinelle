@@ -1,6 +1,12 @@
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import {
+  canAccessStays,
+  canAccessRestaurant,
+  canAccessLivraison,
+  type HospitalityModule,
+} from "@/lib/branch/hospitality";
 import { canAccessBranch, type AccessibleBranch } from "@/lib/branch/user-branches";
 import {
   branchDashboardPath,
@@ -13,6 +19,8 @@ type LoadOpts = {
   branchId: string;
   /** Si défini, refuse l’accès si le type de branche ne matche pas. */
   requireModule?: BranchModule;
+  /** Module hospitalité (stays / restaurant / livraison). */
+  requireHospitality?: HospitalityModule;
 };
 
 /**
@@ -44,6 +52,16 @@ export async function requireBranchContext(
     if (actual !== opts.requireModule) {
       redirect(hub);
     }
+  }
+
+  if (opts.requireHospitality) {
+    const ok =
+      opts.requireHospitality === "stays"
+        ? canAccessStays(branch)
+        : opts.requireHospitality === "restaurant"
+          ? canAccessRestaurant(branch)
+          : canAccessLivraison(branch);
+    if (!ok) redirect(hub);
   }
 
   return branch;

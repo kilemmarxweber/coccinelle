@@ -15,6 +15,7 @@ export default async function HotelProduitsPage({ params }: PageProps) {
     organizationId,
     branchId,
     requireModule: "hotel",
+    requireHospitality: "restaurant",
   });
   await ensureHotelMenuSeedAction(organizationId, branchId);
   const items = await listAllMenuItemsAction(organizationId, branchId);

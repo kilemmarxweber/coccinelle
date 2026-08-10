@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
@@ -50,6 +50,10 @@ import {
   openCashSessionAction,
 } from "@/lib/cash/actions";
 import { createQuickSaleAction, advanceHotelOrderAction } from "@/lib/hotel/actions";
+import {
+  extractRoomNumber,
+  lookupRoomStay,
+} from "@/lib/hotel/stay-room-match";
 import { caisseRoutes } from "@/lib/branch/paths";
 import {
   formatConfiguredRateLabel,
@@ -57,16 +61,20 @@ import {
   formatSecondaryAmount,
   isCdfPrimary,
 } from "@/lib/cash/exchange";
+import { SearchCombobox } from "@/components/ui/search-combobox";
 import { cn } from "@/lib/utils";
 
 type FolioRow = {
   id: string;
   label: string | null;
   balance: number;
+  inCheckoutQueue?: boolean;
+  checkoutQueuedAt?: string | Date | null;
   stay: {
     guestName: string;
     room: { number: string };
   } | null;
+  lines?: { kind: string; amount: number; description: string }[];
 };
 
 type OrderRow = {
@@ -102,6 +110,13 @@ type MenuItem = {
   stockQty?: number;
 };
 
+type ActiveStay = {
+  id: string;
+  guestName: string;
+  room: { number: string };
+  folio: { id: string } | null;
+};
+
 type PaymentRow = {
   id: string;
   receiptNumber: string;
@@ -129,44 +144,115 @@ type Props = {
   readyOrders: OrderRow[];
   todayPayments: PaymentRow[];
   menuItems: MenuItem[];
+  activeStays?: ActiveStay[];
+  hasStays?: boolean;
+  hasRestaurant?: boolean;
 };
 
 type HubTab = "fnb" | "vente" | "folios" | "paiements";
 
 function folioLabel(f: FolioRow) {
   if (f.stay) return `${f.stay.guestName} · ch. ${f.stay.room.number}`;
-  return f.label ?? "Folio";
+  return f.label ?? "Note de chambre";
 }
 
 function orderTotal(order: OrderRow) {
   return order.items.reduce((s, i) => s + i.amount, 0);
 }
 
-function elapsedLabel(from: string | Date | null | undefined, now: number) {
-  if (!from) return "—";
+function elapsedLabel(from: string | Date | null | undefined, now: number | null) {
+  if (now == null || !from) return "—";
   const mins = Math.floor(Math.max(0, now - new Date(from).getTime()) / 60000);
   if (mins < 1) return "< 1 min";
   if (mins < 60) return `${mins} min`;
   return `${Math.floor(mins / 60)} h ${mins % 60} min`;
 }
 
+function defaultHubTab(hasStays: boolean, hasRestaurant: boolean): HubTab {
+  if (hasRestaurant) return "fnb";
+  if (hasStays) return "folios";
+  return "paiements";
+}
+
+function parseHubTab(
+  raw: string | null,
+  hasStays: boolean,
+  hasRestaurant: boolean,
+): HubTab {
+  if (raw === "fnb" && hasRestaurant) return "fnb";
+  if (raw === "vente" && hasRestaurant) return "vente";
+  if (raw === "folios" && hasStays) return "folios";
+  if (raw === "paiements") return "paiements";
+  return defaultHubTab(hasStays, hasRestaurant);
+}
+
 export function CaisseClient(props: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [pending, start] = useTransition();
   const [float, setFloat] = useState("0");
   const [method, setMethod] = useState<"CASH" | "MOBILE_MONEY" | "CARTE">("CASH");
-  const [tab, setTab] = useState<HubTab>("fnb");
+  const hasStays = props.hasStays !== false;
+  const hasRestaurant = props.hasRestaurant !== false;
+  const [tab, setTab] = useState<HubTab>(() =>
+    parseHubTab(searchParams.get("tab"), hasStays, hasRestaurant),
+  );
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [folioPayId, setFolioPayId] = useState<string | null>(null);
+  const [folioPayAmount, setFolioPayAmount] = useState("");
   const [quickSaleLabel, setQuickSaleLabel] = useState("");
-  const [now, setNow] = useState(() => Date.now());
+  const [quickStayId, setQuickStayId] = useState("");
+  const [quickSettlementMode, setQuickSettlementMode] = useState<
+    "COMPTANT" | "NOTE_CHAMBRE"
+  >("COMPTANT");
+  const [now, setNow] = useState<number | null>(null);
   const [sessionDialogOpen, setSessionDialogOpen] = useState(!props.cashSession);
   const { cart, addItem, setQty, clear, toPayload } = usePosCart();
+
+  const activeStays = props.activeStays ?? [];
+  const quickRoomLookup = useMemo(() => {
+    if (!hasStays || quickStayId) return { status: "idle" as const };
+    return lookupRoomStay(activeStays, quickSaleLabel);
+  }, [hasStays, quickStayId, activeStays, quickSaleLabel]);
+  const quickRoomMatched =
+    quickRoomLookup.status === "matched" ? quickRoomLookup.stay : null;
+  const quickSelectedStay = useMemo(
+    () => activeStays.find((s) => s.id === quickStayId) ?? null,
+    [activeStays, quickStayId],
+  );
+
+  function applyQuickStay(stay: ActiveStay, mode: "COMPTANT" | "NOTE_CHAMBRE") {
+    setQuickStayId(stay.id);
+    setQuickSaleLabel(`Ch. ${stay.room.number}`);
+    setQuickSettlementMode(mode);
+  }
+
+  function clearQuickStay() {
+    setQuickStayId("");
+    setQuickSettlementMode("COMPTANT");
+  }
 
   useEffect(() => {
     if (!props.cashSession) setSessionDialogOpen(true);
   }, [props.cashSession]);
 
   useEffect(() => {
+    const fromUrl = searchParams.get("tab");
+    if (fromUrl) {
+      setTab(parseHubTab(fromUrl, hasStays, hasRestaurant));
+    }
+  }, [searchParams, hasStays, hasRestaurant]);
+
+  useEffect(() => {
+    // File d’attente check-out : ouvrir l’onglet notes, sans auto-ouvrir le paiement.
+    if (!hasStays) return;
+    if (searchParams.get("queue") === "1" || searchParams.get("tab") === "folios") {
+      setTab("folios");
+    }
+  }, [searchParams, hasStays]);
+
+  useEffect(() => {
+    setNow(Date.now());
     const tick = window.setInterval(() => setNow(Date.now()), 30000);
     const refresh = window.setInterval(() => router.refresh(), 12000);
     return () => {
@@ -175,9 +261,32 @@ export function CaisseClient(props: Props) {
     };
   }, [router]);
 
-  const openFolios = useMemo(
-    () => props.folios.filter((f) => f.balance > 0.01),
-    [props.folios],
+  const openFolios = useMemo(() => {
+    const open = props.folios.filter((f) => f.balance > 0.01);
+    return [...open].sort((a, b) => {
+      const aq = a.inCheckoutQueue ? 1 : 0;
+      const bq = b.inCheckoutQueue ? 1 : 0;
+      if (aq !== bq) return bq - aq;
+      const at = a.checkoutQueuedAt
+        ? new Date(a.checkoutQueuedAt).getTime()
+        : 0;
+      const bt = b.checkoutQueuedAt
+        ? new Date(b.checkoutQueuedAt).getTime()
+        : 0;
+      return at - bt;
+    });
+  }, [props.folios]);
+  const checkoutQueue = useMemo(
+    () => openFolios.filter((f) => f.inCheckoutQueue),
+    [openFolios],
+  );
+  const otherOpenFolios = useMemo(
+    () => openFolios.filter((f) => !f.inCheckoutQueue),
+    [openFolios],
+  );
+  const folioPayTarget = useMemo(
+    () => openFolios.find((f) => f.id === folioPayId) ?? null,
+    [openFolios, folioPayId],
   );
   const caJour = useMemo(() => {
     return props.todayPayments.reduce(
@@ -260,21 +369,33 @@ export function CaisseClient(props: Props) {
     });
   }
 
-  function payFolio(folioId: string, balanceUsd: number) {
+  function openFolioPay(folioId: string, balanceUsd: number) {
+    setFolioPayId(folioId);
+    setFolioPayAmount(balanceUsd.toFixed(2));
+  }
+
+  function payFolio(folioId: string, amountUsd: number, isPartial: boolean) {
     start(async () => {
       try {
+        if (!(amountUsd > 0)) throw new Error("Montant invalide.");
         const amountCdf = props.rate
-          ? balanceUsd * props.rate.rate
-          : balanceUsd;
+          ? amountUsd * props.rate.rate
+          : amountUsd;
         const p = await createPaymentAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
           folioId,
           amountCdf,
-          amountForeign: balanceUsd,
+          amountForeign: amountUsd,
           method,
+          note: isPartial ? "Acompte note de chambre" : "Règlement note de chambre",
         });
-        toast.success(`Payé · ${p.receiptNumber}`);
+        toast.success(
+          isPartial
+            ? `Acompte · ${p.receiptNumber}`
+            : `Payé · ${p.receiptNumber}`,
+        );
+        setFolioPayId(null);
         router.push(
           caisseRoutes.receipt(props.organizationId, props.branchId, p.id),
         );
@@ -338,24 +459,36 @@ export function CaisseClient(props: Props) {
     });
   }
 
-  function quickSale() {
+  function quickSale(mode: "COMPTANT" | "NOTE_CHAMBRE" = quickSettlementMode) {
     const items = toPayload();
     if (!items.length) {
       toast.message("Sélectionnez des articles");
       return;
     }
+    if (mode === "NOTE_CHAMBRE" && !quickStayId) {
+      toast.message("Sélectionnez un séjour pour la note de chambre");
+      return;
+    }
     start(async () => {
       try {
-        await createQuickSaleAction({
+        const res = await createQuickSaleAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
           items,
-          tableLabel: quickSaleLabel.trim() || "Vente rapide",
+          tableLabel: quickSaleLabel.trim() || undefined,
+          stayId: quickStayId || undefined,
+          settlementMode: mode,
         });
-        toast.success("Ajoutée à la file F&B");
         clear();
         setQuickSaleLabel("");
-        setTab("fnb");
+        clearQuickStay();
+        if (res.onNote) {
+          toast.success("Imputée à la note de chambre");
+          setTab("folios");
+        } else {
+          toast.success("Ajoutée à la file F&B");
+          setTab("fnb");
+        }
         router.refresh();
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Erreur");
@@ -370,7 +503,15 @@ export function CaisseClient(props: Props) {
         id: "client",
         header: "Client / chambre",
         cell: ({ row }) => (
-          <span className="font-medium">{folioLabel(row.original)}</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-medium">{folioLabel(row.original)}</span>
+            {row.original.inCheckoutQueue ? (
+              <Badge variant="secondary" className="gap-1">
+                <Clock3 className="size-3" />
+                Check-out
+              </Badge>
+            ) : null}
+          </div>
         ),
       },
       {
@@ -399,7 +540,7 @@ export function CaisseClient(props: Props) {
             size="sm"
             disabled={pending || !props.cashSession}
             onClick={() =>
-              payFolio(row.original.id, row.original.balance)
+              openFolioPay(row.original.id, row.original.balance)
             }
           >
             Encaisser
@@ -492,7 +633,7 @@ export function CaisseClient(props: Props) {
         : "text-muted-foreground",
     },
     {
-      label: "Folios",
+      label: "Notes chambre",
       value: String(openFolios.length),
       sub: null,
       tone: "text-foreground",
@@ -652,12 +793,26 @@ export function CaisseClient(props: Props) {
         <div className="flex gap-1 overflow-x-auto rounded-xl border border-border bg-card p-1">
           {(
             [
-              ["fnb", `F&B (${props.readyOrders.length})`, CircleDollarSign],
-              ["vente", "Vente rapide", ShoppingBag],
-              ["folios", `Folios (${openFolios.length})`, Receipt],
-              ["paiements", "Paiements", Printer],
+              hasRestaurant
+                ? (["fnb", `F&B (${props.readyOrders.length})`, CircleDollarSign] as const)
+                : null,
+              hasRestaurant
+                ? (["vente", "Vente rapide", ShoppingBag] as const)
+                : null,
+              hasStays
+                ? ([
+                    "folios",
+                    checkoutQueue.length > 0
+                      ? `File (${checkoutQueue.length})`
+                      : `Notes (${openFolios.length})`,
+                    Receipt,
+                  ] as const)
+                : null,
+              ["paiements", "Paiements", Printer] as const,
             ] as const
-          ).map(([id, label, Icon]) => (
+          )
+            .filter((x): x is NonNullable<typeof x> => x != null)
+            .map(([id, label, Icon]) => (
             <button
               key={id}
               type="button"
@@ -770,18 +925,19 @@ export function CaisseClient(props: Props) {
                       <header className="flex items-start justify-between gap-3 border-b border-border/80 px-4 py-3">
                         <div className="min-w-0">
                           <p className="truncate text-xl font-bold tracking-tight">
-                            {order.tableLabel ?? "Salle"}
+                            {order.stay?.room
+                              ? `Ch. ${order.stay.room.number}`
+                              : (order.tableLabel ?? "Salle")}
                           </p>
                           <p className="text-xs text-muted-foreground">
                             #{order.id.slice(0, 8)}
-                            {order.stay
-                              ? ` · ${order.stay.guestName}${
-                                  order.stay.room
-                                    ? ` · ch. ${order.stay.room.number}`
-                                    : ""
-                                }`
-                              : ""}
+                            {order.stay ? ` · ${order.stay.guestName} · séjour` : ""}
                           </p>
+                          {order.stay ? (
+                            <span className="mt-1 inline-flex rounded-full bg-sky-500/15 px-2 py-0.5 text-[11px] font-semibold text-sky-800 dark:text-sky-200">
+                              Client en chambre
+                            </span>
+                          ) : null}
                         </div>
                         <div className="flex flex-col items-end gap-1.5">
                           <Badge
@@ -903,15 +1059,20 @@ export function CaisseClient(props: Props) {
 
                   <div className="flex-1 space-y-4 overflow-auto px-4 pb-2">
                     {selectedOrder.stay ? (
-                      <div className="rounded-xl border border-border bg-muted/20 px-3 py-2 text-sm">
-                        <p className="font-medium">
-                          {selectedOrder.stay.guestName}
+                      <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 px-3 py-2.5 text-sm">
+                        <p className="text-[11px] font-semibold tracking-wide text-sky-800 uppercase dark:text-sky-200">
+                          Client en chambre
                         </p>
-                        {selectedOrder.stay.room ? (
-                          <p className="text-muted-foreground">
-                            Chambre {selectedOrder.stay.room.number}
-                          </p>
-                        ) : null}
+                        <p className="mt-1 font-medium">
+                          {selectedOrder.stay.guestName}
+                          {selectedOrder.stay.room
+                            ? ` · ch. ${selectedOrder.stay.room.number}`
+                            : ""}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Paiement comptant (file F&B) — la note de chambre se
+                          règle dans l’onglet Notes.
+                        </p>
                       </div>
                     ) : null}
 
@@ -1023,8 +1184,9 @@ export function CaisseClient(props: Props) {
               <div>
                 <h2 className="font-semibold">Vente rapide — tous les produits</h2>
                 <p className="text-xs text-muted-foreground">
-                  Statut « en cours » — visible resto & caisse. Ordre : Livrer
-                  (jaune) puis Encaisser (vert).
+                  {hasStays
+                    ? "Comptant → file F&B · Sur note → imputée à la note de chambre"
+                    : "Statut « en cours » — Livrer puis Encaisser dans la file F&B."}
                 </p>
               </div>
             </div>
@@ -1039,23 +1201,196 @@ export function CaisseClient(props: Props) {
             emptyHint="Touchez un produit pour l’ajouter au ticket"
             formatPrice={fmt}
             ticketMeta={
-              <div className="grid gap-1.5">
-                <Label htmlFor="quick-sale-label">Table / client</Label>
-                <Input
-                  id="quick-sale-label"
-                  value={quickSaleLabel}
-                  onChange={(e) => setQuickSaleLabel(e.target.value)}
-                  placeholder="T1, Comptoir, Jean…"
-                />
+              <div className="grid gap-3">
+                <div className="grid gap-1.5">
+                  <Label htmlFor="quick-sale-label">
+                    {hasStays ? "Table / n° chambre" : "Table / client"}
+                  </Label>
+                  <Input
+                    id="quick-sale-label"
+                    value={quickSaleLabel}
+                    onChange={(e) => {
+                      const next = e.target.value;
+                      setQuickSaleLabel(next);
+                      if (quickStayId) {
+                        const stay = activeStays.find((s) => s.id === quickStayId);
+                        if (
+                          stay &&
+                          extractRoomNumber(next) !==
+                            stay.room.number.trim().toUpperCase() &&
+                          next.trim().toUpperCase() !==
+                            `CH. ${stay.room.number}`.toUpperCase()
+                        ) {
+                          clearQuickStay();
+                        }
+                      }
+                    }}
+                    placeholder={
+                      hasStays ? "T1, 12, Ch. 101…" : "T1, Comptoir, Jean…"
+                    }
+                  />
+                  {hasStays ? (
+                    <p className="text-[11px] text-muted-foreground">
+                      Saisissez le n° de chambre pour lier un séjour actif.
+                    </p>
+                  ) : null}
+                </div>
+
+                {quickRoomMatched && !quickStayId ? (
+                  <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-3 text-sm">
+                    <p className="font-semibold text-amber-900 dark:text-amber-100">
+                      Séjour check-in · ch. {quickRoomMatched.room.number}
+                    </p>
+                    <p className="mt-0.5 text-xs text-amber-800/90 dark:text-amber-200/90">
+                      {quickRoomMatched.guestName} — mode de règlement
+                    </p>
+                    <div className="mt-2.5 flex flex-wrap gap-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        className="bg-amber-600 text-white hover:bg-amber-600/90"
+                        onClick={() =>
+                          applyQuickStay(quickRoomMatched, "NOTE_CHAMBRE")
+                        }
+                      >
+                        Lier · Sur note
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          applyQuickStay(quickRoomMatched, "COMPTANT")
+                        }
+                      >
+                        Lier · Comptant
+                      </Button>
+                    </div>
+                  </div>
+                ) : null}
+
+                {quickRoomLookup.status === "no_guest" && !quickStayId ? (
+                  <div className="rounded-xl border border-rose-500/35 bg-rose-500/10 px-3 py-3 text-sm">
+                    <p className="font-semibold text-rose-800 dark:text-rose-200">
+                      Aucun client check-in · ch. {quickRoomLookup.roomNumber}
+                    </p>
+                    <p className="mt-0.5 text-xs text-rose-700/90 dark:text-rose-300/90">
+                      Impossible de lier une note — chambre libre ou pas encore
+                      check-in.
+                    </p>
+                  </div>
+                ) : null}
+
+                {quickRoomLookup.status === "no_checkins" && !quickStayId ? (
+                  <div className="rounded-xl border border-muted-foreground/25 bg-muted/40 px-3 py-3 text-sm">
+                    <p className="font-semibold">Aucun client en séjour</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      Pas de chambre check-in — vente comptoir / comptant
+                      uniquement.
+                    </p>
+                  </div>
+                ) : null}
+
+                {quickSelectedStay ? (
+                  <div className="grid gap-2 rounded-xl border border-sky-500/30 bg-sky-500/10 px-3 py-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold">
+                          Ch. {quickSelectedStay.room.number} ·{" "}
+                          {quickSelectedStay.guestName}
+                        </p>
+                        <p className="text-[11px] text-muted-foreground">
+                          Client en séjour
+                        </p>
+                      </div>
+                      <Button
+                        type="button"
+                        size="xs"
+                        variant="ghost"
+                        onClick={clearQuickStay}
+                      >
+                        Retirer
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-1 rounded-lg border border-border/60 bg-background/60 p-1">
+                      {(
+                        [
+                          ["COMPTANT", "Comptant"],
+                          ["NOTE_CHAMBRE", "Sur note"],
+                        ] as const
+                      ).map(([id, label]) => (
+                        <button
+                          key={id}
+                          type="button"
+                          onClick={() => setQuickSettlementMode(id)}
+                          className={cn(
+                            "rounded-md px-2 py-2 text-xs font-semibold transition",
+                            quickSettlementMode === id
+                              ? "bg-primary text-primary-foreground shadow-sm"
+                              : "text-muted-foreground hover:bg-muted",
+                          )}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[11px] text-muted-foreground">
+                      {quickSettlementMode === "NOTE_CHAMBRE"
+                        ? "Ajoutée directement à la note · solde au check-out"
+                        : "File F&B — livrer puis encaisser"}
+                    </p>
+                  </div>
+                ) : hasStays && activeStays.length > 0 ? (
+                  <div className="grid gap-1.5">
+                    <Label htmlFor="quick-stay">Ou choisir un séjour check-in</Label>
+                    <SearchCombobox
+                      id="quick-stay"
+                      items={activeStays.map((s) => ({
+                        value: s.id,
+                        label: `Ch. ${s.room.number} · ${s.guestName}`,
+                      }))}
+                      value={quickStayId}
+                      showClear
+                      onValueChange={(next) => {
+                        if (!next) {
+                          clearQuickStay();
+                          return;
+                        }
+                        const stay = activeStays.find((s) => s.id === next);
+                        if (stay) applyQuickStay(stay, "NOTE_CHAMBRE");
+                      }}
+                      placeholder="Rechercher chambre / client…"
+                      emptyText="Aucun séjour trouvé."
+                    />
+                  </div>
+                ) : hasStays ? (
+                  <p className="rounded-lg border border-dashed border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+                    Aucun client check-in — impossible de lier une note de
+                    chambre pour l’instant.
+                  </p>
+                ) : null}
               </div>
             }
             actions={
-              <PosChargeButton
-                label="Envoyer à la file F&B"
-                pending={pending}
-                disabled={cart.length === 0}
-                onClick={quickSale}
-              />
+              quickStayId ? (
+                <PosChargeButton
+                  label={
+                    quickSettlementMode === "NOTE_CHAMBRE"
+                      ? "Imputer à la note de chambre"
+                      : "Envoyer · Comptant (file F&B)"
+                  }
+                  pending={pending}
+                  disabled={cart.length === 0}
+                  onClick={() => quickSale(quickSettlementMode)}
+                />
+              ) : (
+                <PosChargeButton
+                  label="Envoyer à la file F&B"
+                  pending={pending}
+                  disabled={cart.length === 0}
+                  onClick={() => quickSale("COMPTANT")}
+                />
+              )
             }
           />
         </div>
@@ -1064,29 +1399,73 @@ export function CaisseClient(props: Props) {
       {tab === "folios" ? (
         <section className="space-y-4 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="font-semibold">Folios à encaisser</h2>
+            <div>
+              <h2 className="font-semibold">Notes de chambre</h2>
+              <p className="text-xs text-muted-foreground">
+                File d’attente check-out en tête · acompte ou solde total
+              </p>
+            </div>
             <PosPayMethodPicker
               value={method}
               onChange={setMethod}
               className="w-full max-w-xs"
             />
           </div>
-          <ResponsiveDataTable
-            columns={folioColumns}
-            data={openFolios}
-            emptyText="Aucun solde ouvert."
-            mobileCardTitle={(row) => folioLabel(row)}
-            mobileCardSubtitle={(row) => fmt(row.balance)}
-            mobileCardActions={(row) => (
-              <Button
-                size="sm"
-                disabled={pending || !props.cashSession}
-                onClick={() => payFolio(row.id, row.balance)}
-              >
-                Encaisser
-              </Button>
-            )}
-          />
+
+          {checkoutQueue.length > 0 ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Clock3 className="size-4 text-amber-700" />
+                <h3 className="text-sm font-semibold">
+                  File d’attente check-out ({checkoutQueue.length})
+                </h3>
+              </div>
+              <ResponsiveDataTable
+                columns={folioColumns}
+                data={checkoutQueue}
+                emptyText="Aucune note en file d’attente."
+                mobileCardTitle={(row) => folioLabel(row)}
+                mobileCardSubtitle={(row) => fmt(row.balance)}
+                mobileCardActions={(row) => (
+                  <Button
+                    size="sm"
+                    disabled={pending || !props.cashSession}
+                    onClick={() => openFolioPay(row.id, row.balance)}
+                  >
+                    Encaisser
+                  </Button>
+                )}
+              />
+            </div>
+          ) : null}
+
+          <div className="space-y-2">
+            {checkoutQueue.length > 0 ? (
+              <h3 className="text-sm font-semibold text-muted-foreground">
+                Autres notes ouvertes
+              </h3>
+            ) : null}
+            <ResponsiveDataTable
+              columns={folioColumns}
+              data={otherOpenFolios}
+              emptyText={
+                checkoutQueue.length > 0
+                  ? "Aucune autre note ouverte."
+                  : "Aucune note ouverte avec solde."
+              }
+              mobileCardTitle={(row) => folioLabel(row)}
+              mobileCardSubtitle={(row) => fmt(row.balance)}
+              mobileCardActions={(row) => (
+                <Button
+                  size="sm"
+                  disabled={pending || !props.cashSession}
+                  onClick={() => openFolioPay(row.id, row.balance)}
+                >
+                  Encaisser
+                </Button>
+              )}
+            />
+          </div>
         </section>
       ) : null}
 
@@ -1129,6 +1508,89 @@ export function CaisseClient(props: Props) {
           />
         </section>
       ) : null}
+
+      <Dialog
+        open={!!folioPayTarget}
+        onOpenChange={(open) => {
+          if (!open) setFolioPayId(null);
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Règlement note de chambre</DialogTitle>
+            <DialogDescription>
+              {folioPayTarget
+                ? `${folioLabel(folioPayTarget)} — solde ${folioPayTarget.balance.toFixed(2)} $`
+                : null}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-3 py-2">
+            {folioPayTarget ? (
+              <div className="rounded-xl border border-border bg-muted/30 px-3 py-2.5">
+                <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                  Client
+                </p>
+                <p className="mt-0.5 font-semibold">
+                  {folioPayTarget.stay?.guestName ??
+                    folioPayTarget.label ??
+                    "Client"}
+                </p>
+                {folioPayTarget.stay?.room ? (
+                  <p className="text-xs text-muted-foreground">
+                    Chambre {folioPayTarget.stay.room.number}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+            <div className="grid gap-1.5">
+              <Label htmlFor="folio-amount">Montant USD (acompte ou solde)</Label>
+              <Input
+                id="folio-amount"
+                type="number"
+                min={0.01}
+                step="0.01"
+                value={folioPayAmount}
+                onChange={(e) => setFolioPayAmount(e.target.value)}
+              />
+              {folioPayTarget ? (
+                <p className="text-xs text-muted-foreground">
+                  Max {folioPayTarget.balance.toFixed(2)} $ · laissez le solde
+                  pour tout régler, ou un montant inférieur pour un acompte.
+                </p>
+              ) : null}
+            </div>
+            <PosPayMethodPicker value={method} onChange={setMethod} />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setFolioPayId(null)}
+              disabled={pending}
+            >
+              Annuler
+            </Button>
+            <Button
+              disabled={pending || !folioPayTarget || !props.cashSession}
+              onClick={() => {
+                if (!folioPayTarget) return;
+                const amount = Number(folioPayAmount);
+                if (!(amount > 0)) {
+                  toast.message("Montant invalide");
+                  return;
+                }
+                if (amount > folioPayTarget.balance + 0.01) {
+                  toast.message("Montant supérieur au solde");
+                  return;
+                }
+                const isPartial = amount < folioPayTarget.balance - 0.01;
+                payFolio(folioPayTarget.id, amount, isPartial);
+              }}
+            >
+              Encaisser
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

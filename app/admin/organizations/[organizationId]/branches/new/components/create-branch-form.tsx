@@ -2,7 +2,18 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, Hotel, ImagePlus, Store } from "lucide-react";
+import {
+  Building2,
+  Bus,
+  Hotel,
+  ImagePlus,
+  Pill,
+  Plane,
+  Ship,
+  ShoppingBasket,
+  Store,
+  UtensilsCrossed,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -22,23 +33,24 @@ const TYPES = [
   {
     value: "AGENCE" as const,
     label: "Agence",
-    description: "Voyages, billets, réservations, colis, cashpaye guichet.",
+    description: "Voyages — choisissez Avion, Bus et/ou Bateau.",
     icon: Building2,
-    bootstrap: "Trajets démo Kinshasa → Lubumbashi / Matadi",
+    bootstrap: "Trajets démo selon les modes cochés",
   },
   {
     value: "HOTEL" as const,
-    label: "Hôtel",
-    description: "Chambres, séjours, restauration, cashpaye réception.",
+    label: "Hôtellerie-restaurant",
+    description:
+      "Hôtel et/ou restaurant — choisissez les modules ci-dessous.",
     icon: Hotel,
-    bootstrap: "Types Standard + Suite et inventaire chambres",
+    bootstrap: "Seed selon modules : chambres et/ou carte F&B",
   },
   {
     value: "BOUTIQUE" as const,
-    label: "Boutique",
-    description: "Produits, stock, ventes POS, cashpaye caisse.",
+    label: "Commerce",
+    description: "Pharmacie, boutique et/ou alimentation.",
     icon: Store,
-    bootstrap: "Catégories Boissons / Divers + produits en stock",
+    bootstrap: "Catalogue démo selon les verticales cochées",
   },
 ];
 
@@ -51,6 +63,14 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [type, setType] = useState<"AGENCE" | "HOTEL" | "BOUTIQUE">("AGENCE");
+  const [hasStays, setHasStays] = useState(true);
+  const [hasRestaurant, setHasRestaurant] = useState(true);
+  const [hasAvion, setHasAvion] = useState(true);
+  const [hasBus, setHasBus] = useState(true);
+  const [hasBateau, setHasBateau] = useState(false);
+  const [hasPharmacie, setHasPharmacie] = useState(false);
+  const [hasShop, setHasShop] = useState(true);
+  const [hasAlimentation, setHasAlimentation] = useState(false);
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [city, setCity] = useState("");
@@ -60,6 +80,13 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [seedDemo, setSeedDemo] = useState(true);
   const [pending, startTransition] = useTransition();
+
+  const modulesOk =
+    type === "HOTEL"
+      ? hasStays || hasRestaurant
+      : type === "AGENCE"
+        ? hasAvion || hasBus || hasBateau
+        : hasPharmacie || hasShop || hasAlimentation;
 
   async function onPickImage(file: File | null) {
     if (!file) return;
@@ -82,10 +109,28 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!modulesOk) {
+      toast.error(
+        type === "AGENCE"
+          ? "Choisissez au moins Avion, Bus ou Bateau."
+          : type === "BOUTIQUE"
+            ? "Choisissez au moins Pharmacie, Boutique ou Alimentation."
+            : "Choisissez au moins Séjours ou Restaurant.",
+      );
+      return;
+    }
     startTransition(async () => {
       const res = await createBranchWithBootstrapAction({
         organizationId,
         type,
+        hasStays: type === "HOTEL" ? hasStays : undefined,
+        hasRestaurant: type === "HOTEL" ? hasRestaurant : undefined,
+        hasAvion: type === "AGENCE" ? hasAvion : undefined,
+        hasBus: type === "AGENCE" ? hasBus : undefined,
+        hasBateau: type === "AGENCE" ? hasBateau : undefined,
+        hasPharmacie: type === "BOUTIQUE" ? hasPharmacie : undefined,
+        hasShop: type === "BOUTIQUE" ? hasShop : undefined,
+        hasAlimentation: type === "BOUTIQUE" ? hasAlimentation : undefined,
         name,
         code,
         city: city || undefined,
@@ -101,20 +146,33 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
       }
       const b = res.bootstrap;
       toast.success("Branche créée", {
-        description: `Bootstrap : ${b.trajetsCreated} trajets, ${b.roomsCreated} chambres, ${b.productsCreated} produits.`,
+        description: `Bootstrap : ${b.trajetsCreated} trajets, ${b.roomsCreated} chambres, ${b.productsCreated} produits${b.menuItemsCreated ? `, ${b.menuItemsCreated} plats` : ""}.`,
       });
       router.push(`/admin/organizations/${organizationId}/branches`);
       router.refresh();
     });
   }
 
+  const namePlaceholder =
+    type === "AGENCE"
+      ? "Agence Gombe"
+      : type === "HOTEL"
+        ? !hasStays && hasRestaurant
+          ? "Restaurant Riviera"
+          : "Hôtel Fleuve"
+        : hasPharmacie && !hasShop && !hasAlimentation
+          ? "Pharmacie Centrale"
+          : hasAlimentation && !hasShop && !hasPharmacie
+            ? "Alimentation Marché"
+            : "Boutique Victoire";
+
   return (
     <form onSubmit={submit} className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6">
       <div>
         <h1 className="text-xl font-semibold">Nouvelle branche</h1>
         <p className="text-sm text-muted-foreground">
-          Organisation « {organizationName} » — choisissez le type puis chargez les éléments
-          nécessaires.
+          Organisation « {organizationName} » — choisissez le type puis les
+          modules métier.
         </p>
       </div>
 
@@ -148,6 +206,175 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
           );
         })}
       </div>
+
+      {type === "AGENCE" ? (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Modes de transport</CardTitle>
+            <CardDescription>
+              Au moins un mode. Les trajets démo suivent votre sélection.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3 sm:grid-cols-3">
+            {(
+              [
+                [hasAvion, setHasAvion, Plane, "Avion", "Vols & billets aériens", "text-sky-500"],
+                [hasBus, setHasBus, Bus, "Bus", "Lignes routières", "text-emerald-500"],
+                [hasBateau, setHasBateau, Ship, "Bateau", "Liaisons fluviales", "text-indigo-500"],
+              ] as const
+            ).map(([checked, set, Icon, label, hint, color]) => (
+              <label
+                key={label}
+                className={cn(
+                  "flex cursor-pointer items-start gap-3 rounded-xl border p-3",
+                  checked ? "border-primary bg-primary/5" : "border-border",
+                )}
+              >
+                <Checkbox
+                  checked={checked}
+                  onCheckedChange={(v) => set(v === true)}
+                  disabled={pending}
+                />
+                <span>
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <Icon className={cn("size-4", color)} />
+                    {label}
+                  </span>
+                  <span className="mt-0.5 block text-xs text-muted-foreground">
+                    {hint}
+                  </span>
+                </span>
+              </label>
+            ))}
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {type === "HOTEL" ? (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Modules hôtellerie-restaurant</CardTitle>
+            <CardDescription>
+              Au moins un module. Livraison stock commune. Type final :{" "}
+              <strong>
+                {!hasStays && hasRestaurant
+                  ? "Restaurant"
+                  : hasStays
+                    ? "Hôtel"
+                    : "—"}
+              </strong>
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3 sm:grid-cols-2">
+            <label
+              className={cn(
+                "flex cursor-pointer items-start gap-3 rounded-xl border p-3",
+                hasStays ? "border-primary bg-primary/5" : "border-border",
+              )}
+            >
+              <Checkbox
+                checked={hasStays}
+                onCheckedChange={(v) => setHasStays(v === true)}
+                disabled={pending}
+              />
+              <span>
+                <span className="flex items-center gap-1.5 font-medium">
+                  <Hotel className="size-4 text-sky-500" />
+                  Séjours
+                </span>
+                <span className="mt-0.5 block text-xs text-muted-foreground">
+                  Chambres, check-in / check-out, folios nuitées.
+                </span>
+              </span>
+            </label>
+            <label
+              className={cn(
+                "flex cursor-pointer items-start gap-3 rounded-xl border p-3",
+                hasRestaurant ? "border-primary bg-primary/5" : "border-border",
+              )}
+            >
+              <Checkbox
+                checked={hasRestaurant}
+                onCheckedChange={(v) => setHasRestaurant(v === true)}
+                disabled={pending}
+              />
+              <span>
+                <span className="flex items-center gap-1.5 font-medium">
+                  <UtensilsCrossed className="size-4 text-violet-500" />
+                  Restaurant
+                </span>
+                <span className="mt-0.5 block text-xs text-muted-foreground">
+                  Restauration, cuisine, produits F&B.
+                </span>
+              </span>
+            </label>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {type === "BOUTIQUE" ? (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Verticales commerce</CardTitle>
+            <CardDescription>
+              Au moins une verticale. Le catalogue démo suit votre sélection.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3 sm:grid-cols-3">
+            {(
+              [
+                [
+                  hasPharmacie,
+                  setHasPharmacie,
+                  Pill,
+                  "Pharmacie",
+                  "Médicaments & parapharmacie",
+                  "text-rose-500",
+                ],
+                [
+                  hasShop,
+                  setHasShop,
+                  Store,
+                  "Boutique",
+                  "Commerce général / accessoires",
+                  "text-violet-500",
+                ],
+                [
+                  hasAlimentation,
+                  setHasAlimentation,
+                  ShoppingBasket,
+                  "Alimentation",
+                  "Épicerie & denrées",
+                  "text-amber-600",
+                ],
+              ] as const
+            ).map(([checked, set, Icon, label, hint, color]) => (
+              <label
+                key={label}
+                className={cn(
+                  "flex cursor-pointer items-start gap-3 rounded-xl border p-3",
+                  checked ? "border-primary bg-primary/5" : "border-border",
+                )}
+              >
+                <Checkbox
+                  checked={checked}
+                  onCheckedChange={(v) => set(v === true)}
+                  disabled={pending}
+                />
+                <span>
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <Icon className={cn("size-4", color)} />
+                    {label}
+                  </span>
+                  <span className="mt-0.5 block text-xs text-muted-foreground">
+                    {hint}
+                  </span>
+                </span>
+              </label>
+            ))}
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card>
         <CardHeader className="pb-3">
@@ -216,13 +443,7 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
               id="branch-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={
-                type === "AGENCE"
-                  ? "Agence Gombe"
-                  : type === "HOTEL"
-                    ? "Hôtel Fleuve"
-                    : "Boutique Victoire"
-              }
+              placeholder={namePlaceholder}
               required
               minLength={2}
               disabled={pending}
@@ -295,7 +516,11 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
         </CardContent>
       </Card>
 
-      <Button type="submit" className="h-11" disabled={pending || !name.trim() || !code.trim()}>
+      <Button
+        type="submit"
+        className="h-11"
+        disabled={pending || !name.trim() || !code.trim() || !modulesOk}
+      >
         {pending ? "Création…" : "Créer la branche"}
       </Button>
     </form>
