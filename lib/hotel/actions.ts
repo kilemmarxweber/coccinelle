@@ -19,6 +19,7 @@ import {
   isConsumableCategory,
   isHotelMenuCategory,
 } from "@/lib/hotel/menu-categories";
+import { parseBarcodeInput } from "@/lib/hotel/barcode";
 import {
   ORDER_SETTLEMENT,
   buildStayFolioStatement,
@@ -1409,6 +1410,27 @@ function normalizeOptionalText(value?: string | null, max = 120) {
   return v;
 }
 
+async function assertBarcodeAvailable(
+  branchId: string,
+  barcode: string | null,
+  excludeItemId?: string,
+) {
+  if (!barcode) return;
+  const clash = await prisma.hotelMenuItem.findFirst({
+    where: {
+      branchId,
+      barcode,
+      ...(excludeItemId ? { NOT: { id: excludeItemId } } : {}),
+    },
+    select: { id: true, name: true },
+  });
+  if (clash) {
+    throw new Error(
+      `Ce code-barres est déjà utilisé par « ${clash.name} » sur cette branche.`,
+    );
+  }
+}
+
 export async function createMenuItemAction(input: {
   organizationId: string;
   branchId: string;
@@ -1420,6 +1442,7 @@ export async function createMenuItemAction(input: {
   imageUrl?: string | null;
   provenance?: string | null;
   supplierName?: string | null;
+  barcode?: string | null;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId, "restaurant");
   const name = input.name.trim();
@@ -1438,6 +1461,8 @@ export async function createMenuItemAction(input: {
   const needsKitchen = isConsumable
     ? false
     : (input.needsKitchen ?? defaultNeedsKitchen(category));
+  const barcode = parseBarcodeInput(input.barcode);
+  await assertBarcodeAvailable(input.branchId, barcode);
 
   const item = await prisma.hotelMenuItem.create({
     data: {
@@ -1448,6 +1473,7 @@ export async function createMenuItemAction(input: {
       stockQty,
       needsKitchen,
       isConsumable,
+      barcode,
       provenance: isConsumable
         ? normalizeOptionalText(input.provenance)
         : null,
@@ -1476,6 +1502,7 @@ export async function updateMenuItemAction(input: {
   imageUrl?: string | null;
   provenance?: string | null;
   supplierName?: string | null;
+  barcode?: string | null;
 }) {
   await ctx(input.organizationId, input.branchId, "restaurant");
   const existing = await prisma.hotelMenuItem.findFirst({
@@ -1493,6 +1520,11 @@ export async function updateMenuItemAction(input: {
     else throw new Error("Prix invalide.");
   }
   const stockQty = Math.max(0, Math.round(Number(input.stockQty) || 0));
+  const barcode =
+    input.barcode === undefined
+      ? existing.barcode
+      : parseBarcodeInput(input.barcode);
+  await assertBarcodeAvailable(input.branchId, barcode, existing.id);
 
   const item = await prisma.hotelMenuItem.update({
     where: { id: existing.id },
@@ -1503,6 +1535,7 @@ export async function updateMenuItemAction(input: {
       stockQty,
       needsKitchen: isConsumable ? false : Boolean(input.needsKitchen),
       isConsumable,
+      barcode,
       provenance: isConsumable
         ? normalizeOptionalText(input.provenance)
         : null,

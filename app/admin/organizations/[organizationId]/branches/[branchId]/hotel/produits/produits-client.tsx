@@ -8,6 +8,7 @@ import {
   Package,
   Pencil,
   Plus,
+  RefreshCw,
   Search,
   Trash2,
   Truck,
@@ -31,6 +32,7 @@ import {
   createMenuItemAction,
   updateMenuItemAction,
 } from "@/lib/hotel/actions";
+import { generateInternalBarcode } from "@/lib/hotel/barcode";
 import {
   HOTEL_MENU_CATEGORIES,
   STOCK_LOW_THRESHOLD,
@@ -47,6 +49,7 @@ type MenuItem = {
   price: number;
   imageUrl: string | null;
   stockQty: number;
+  barcode?: string | null;
   needsKitchen: boolean;
   active: boolean;
   isConsumable?: boolean;
@@ -61,6 +64,7 @@ type FormState = {
   category: HotelMenuCategory;
   price: string;
   stockQty: string;
+  barcode: string;
   needsKitchen: boolean;
   active: boolean;
   imageUrl: string | null;
@@ -73,6 +77,7 @@ const EMPTY_FORM: FormState = {
   category: "Plats",
   price: "",
   stockQty: "50",
+  barcode: "",
   needsKitchen: true,
   active: true,
   imageUrl: null,
@@ -133,6 +138,7 @@ export function ProduitsClient(props: {
       return (
         item.name.toLowerCase().includes(q) ||
         item.category.toLowerCase().includes(q) ||
+        (item.barcode?.toLowerCase().includes(q) ?? false) ||
         (item.supplierName?.toLowerCase().includes(q) ?? false) ||
         (item.provenance?.toLowerCase().includes(q) ?? false)
       );
@@ -162,6 +168,7 @@ export function ProduitsClient(props: {
       category,
       price: item.price ? String(item.price) : "",
       stockQty: String(item.stockQty),
+      barcode: item.barcode ?? "",
       needsKitchen: item.needsKitchen,
       active: item.active,
       imageUrl: item.imageUrl,
@@ -177,6 +184,14 @@ export function ProduitsClient(props: {
       category,
       needsKitchen: defaultNeedsKitchen(category),
     }));
+  }
+
+  function generateBarcode() {
+    setForm((f) => ({
+      ...f,
+      barcode: generateInternalBarcode(props.branchId),
+    }));
+    toast.message("Code interne généré — enregistrez pour le conserver.");
   }
 
   async function onPickImage(file: File | null) {
@@ -234,6 +249,7 @@ export function ProduitsClient(props: {
           imageUrl: form.imageUrl,
           provenance: isCons ? form.provenance : null,
           supplierName: isCons ? form.supplierName : null,
+          barcode: form.barcode.trim() || null,
         };
         if (editing) {
           await updateMenuItemAction({
@@ -414,6 +430,11 @@ export function ProduitsClient(props: {
                         {item.price.toFixed(2)} $
                       </p>
                     )}
+                    {item.barcode ? (
+                      <p className="mt-0.5 font-mono text-[10px] tracking-wide text-muted-foreground">
+                        {item.barcode}
+                      </p>
+                    ) : null}
                     <p className="mt-1 text-[11px] text-muted-foreground">
                       {isCons
                         ? "Géré via Livraison"
@@ -589,6 +610,46 @@ export function ProduitsClient(props: {
                 {consumable
                   ? "Géré via Livraison (entrées / décomptes)."
                   : "Décrémenté à chaque vente / commande."}
+              </p>
+            </div>
+
+            <div className="grid gap-1.5">
+              <Label htmlFor="product-barcode">Code-barres</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="product-barcode"
+                  value={form.barcode}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, barcode: e.target.value }))
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      e.currentTarget.blur();
+                    }
+                  }}
+                  placeholder="Scanner ou saisir…"
+                  className="font-mono uppercase"
+                  autoComplete="off"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="shrink-0 gap-1.5"
+                  onClick={generateBarcode}
+                  title={
+                    form.barcode
+                      ? "Régénérer un code interne"
+                      : "Générer un code interne"
+                  }
+                >
+                  <RefreshCw className="size-3.5" />
+                  {form.barcode ? "Régénérer" : "Générer"}
+                </Button>
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                Scannez avec le lecteur USB, saisissez l’EAN fabricant, ou
+                générez un code interne si le produit n’en a pas.
               </p>
             </div>
 

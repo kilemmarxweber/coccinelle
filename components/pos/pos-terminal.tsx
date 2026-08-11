@@ -1,10 +1,21 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
-import { Minus, Plus, Search, Trash2, X } from "lucide-react";
+import { useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
+import { Barcode, Minus, Plus, Trash2, X } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useBarcodeScanField } from "@/hooks/use-barcode-scan-field";
+import { normalizeBarcode } from "@/lib/hotel/barcode";
 import { cn } from "@/lib/utils";
+
+/** Heuristique : saisie type scan USB (pas une recherche nom). */
+function looksLikeBarcode(raw: string) {
+  const v = raw.trim();
+  if (v.length < 6) return false;
+  if (/\s/.test(v)) return false;
+  return /^[A-Za-z0-9\-_.]+$/.test(v) && /\d/.test(v);
+}
 
 export type PosMenuItem = {
   id: string;
@@ -14,6 +25,7 @@ export type PosMenuItem = {
   needsKitchen?: boolean;
   imageUrl?: string | null;
   stockQty?: number;
+  barcode?: string | null;
 };
 
 export type PosCartLine = {
@@ -51,6 +63,8 @@ type Props = {
   className?: string;
   /** Format d’affichage des prix (défaut : 2 décimales + $). */
   formatPrice?: (amount: number) => string;
+  /** Active le champ scan code-barres (défaut true). */
+  barcodeScanEnabled?: boolean;
 };
 
 export function PosTerminal({
@@ -62,9 +76,10 @@ export function PosTerminal({
   ticketTitle = "Ticket",
   ticketMeta,
   actions,
-  emptyHint = "Touchez un article pour l’ajouter",
+  emptyHint = "Touchez un article ou scannez un code-barres",
   className,
   formatPrice = (amount: number) => `${amount.toFixed(2)} $`,
+  barcodeScanEnabled = true,
 }: Props) {
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -73,20 +88,35 @@ export function PosTerminal({
   }, [items]);
 
   const [category, setCategory] = useState("Tous");
-  const [query, setQuery] = useState("");
+  const [scanFlash, setScanFlash] = useState<"ok" | "err" | null>(null);
+
+  const itemByBarcode = useMemo(() => {
+    const map = new Map<string, PosMenuItem>();
+    for (const item of items) {
+      const code = normalizeBarcode(item.barcode);
+      if (code) map.set(code, item);
+    }
+    return map;
+  }, [items]);
+
+  const scan = useBarcodeScanField(() => {}, {
+    enabled: barcodeScanEnabled,
+    autoFocus: true,
+  });
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = scan.value.trim().toLowerCase();
     return items.filter((item) => {
       const cat = item.category || "Autres";
       if (category !== "Tous" && cat !== category) return false;
       if (!q) return true;
       return (
         item.name.toLowerCase().includes(q) ||
-        cat.toLowerCase().includes(q)
+        cat.toLowerCase().includes(q) ||
+        (item.barcode?.toLowerCase().includes(q) ?? false)
       );
     });
-  }, [items, category, query]);
+  }, [items, category, scan.value]);
 
   const total = cart.reduce((s, l) => s + l.price * l.quantity, 0);
   const linesCount = cart.reduce((s, l) => s + l.quantity, 0);
@@ -112,10 +142,11 @@ export function PosTerminal({
     return Math.max(0, item.stockQty - inCart);
   }
 
-  function tryAdd(item: PosMenuItem) {
+  function tryAdd(item: PosMenuItem): boolean {
     const rem = liveStock(item);
-    if (rem !== null && rem <= 0) return;
+    if (rem !== null && rem <= 0) return false;
     onAdd(item);
+    return true;
   }
 
   function trySetQty(menuItemId: string, quantity: number) {
@@ -126,6 +157,51 @@ export function PosTerminal({
     onSetQty(menuItemId, quantity);
   }
 
+  function addFromBarcode(raw: string): "ok" | "unknown" | "stock" | "skip" {
+    const code = normalizeBarcode(raw);
+    if (!code) return "skip";
+    const item = itemByBarcode.get(code);
+    if (!item) {
+      if (!looksLikeBarcode(raw)) return "skip";
+      setScanFlash("err");
+      toast.error(`Produit inconnu : ${code}`);
+      return "unknown";
+    }
+    const rem = liveStock(item);
+    if (rem !== null && rem <= 0) {
+      setScanFlash("err");
+      toast.error(`Rupture — ${item.name}`);
+      return "stock";
+    }
+    if (!tryAdd(item)) {
+      setScanFlash("err");
+      toast.error(`Rupture — ${item.name}`);
+      return "stock";
+    }
+    setScanFlash("ok");
+    toast.success(`${item.name} · +1`, { duration: 1200 });
+    return "ok";
+  }
+
+  function onSearchKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    e.stopPropagation();
+    const raw = scan.value.trim() || e.currentTarget.value.trim();
+    if (!raw) return;
+    const result = addFromBarcode(raw);
+    if (result === "ok" || result === "unknown" || result === "stock") {
+      scan.clear();
+    }
+    // Recherche par nom : Enter ne vide pas le filtre
+  }
+
+  useEffect(() => {
+    if (!scanFlash) return;
+    const t = window.setTimeout(() => setScanFlash(null), 700);
+    return () => window.clearTimeout(t);
+  }, [scanFlash]);
+
   return (
     <div
       className={cn(
@@ -135,7 +211,7 @@ export function PosTerminal({
     >
       <div className="flex min-h-0 flex-col border-b border-border lg:border-b-0 lg:border-r">
         <div className="flex items-center gap-3 bg-primary px-4 py-3 text-primary-foreground">
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 shrink-0">
             <p className="truncate text-lg font-semibold tracking-tight">
               {activeLabel}
             </p>
@@ -143,14 +219,54 @@ export function PosTerminal({
               {filtered.length} article{filtered.length === 1 ? "" : "s"}
             </p>
           </div>
-          <div className="relative w-full max-w-[220px]">
-            <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 opacity-70" />
+          <div
+            className={cn(
+              "relative flex min-w-0 flex-1 items-center gap-2 rounded-lg border px-2.5 py-1.5 transition",
+              !scanFlash && "border-neutral-200 bg-white dark:border-neutral-200 dark:bg-white",
+              scanFlash === "ok" &&
+                "border-emerald-500 bg-white ring-2 ring-emerald-500/40 dark:bg-white",
+              scanFlash === "err" &&
+                "border-rose-500 bg-white ring-2 ring-rose-500/40 dark:bg-white",
+            )}
+          >
+            <Barcode className="size-4 shrink-0 text-neutral-500" />
             <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Rechercher…"
-              className="h-9 border-primary-foreground/20 bg-primary-foreground/10 pl-8 text-primary-foreground placeholder:text-primary-foreground/60 focus-visible:ring-primary-foreground/30"
+              ref={scan.inputRef}
+              value={scan.value}
+              onChange={(e) => scan.setValue(e.target.value)}
+              onKeyDown={onSearchKeyDown}
+              onBlur={() => {
+                window.setTimeout(() => {
+                  if (document.activeElement?.tagName === "INPUT") return;
+                  if (document.activeElement?.tagName === "TEXTAREA") return;
+                  if (document.activeElement?.tagName === "SELECT") return;
+                  if (
+                    (document.activeElement as HTMLElement | null)
+                      ?.isContentEditable
+                  ) {
+                    return;
+                  }
+                  scan.focus();
+                }, 120);
+              }}
+              placeholder="Nom ou code-barres…"
+              className="h-8 min-w-0 flex-1 border-0 bg-white px-0 text-sm text-black shadow-none placeholder:text-neutral-400 focus-visible:ring-0 dark:bg-white dark:text-black dark:placeholder:text-neutral-400"
+              autoComplete="off"
+              aria-label="Recherche et scan code-barres"
             />
+            {scan.value ? (
+              <button
+                type="button"
+                className="shrink-0 rounded p-0.5 text-neutral-500 hover:text-black"
+                aria-label="Effacer"
+                onClick={() => {
+                  scan.clear();
+                  scan.focus();
+                }}
+              >
+                <X className="size-3.5" />
+              </button>
+            ) : null}
           </div>
         </div>
 

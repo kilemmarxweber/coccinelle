@@ -108,6 +108,7 @@ type MenuItem = {
   needsKitchen: boolean;
   imageUrl?: string | null;
   stockQty?: number;
+  barcode?: string | null;
 };
 
 type ActiveStay = {

@@ -605,6 +605,7 @@ export const HotelMenuItemScalarFieldEnum = {
   price: 'price',
   imageUrl: 'imageUrl',
   stockQty: 'stockQty',
+  barcode: 'barcode',
   isConsumable: 'isConsumable',
   provenance: 'provenance',
   supplierName: 'supplierName',

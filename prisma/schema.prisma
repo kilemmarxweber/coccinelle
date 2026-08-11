@@ -789,6 +789,8 @@ model HotelMenuItem {
   imageUrl     String?
   /// Quantité en stock (signalée et décrémentée à la vente / livraison).
   stockQty     Int      @default(50)
+  /// Code-barres (EAN / Code128 / code interne). Unique par branche.
+  barcode      String?
   /// Consommable : non vendu (invisible resto / vente rapide).
   isConsumable Boolean  @default(false)
   /// Provenance (consommables, optionnel).
@@ -805,6 +807,7 @@ model HotelMenuItem {
   orderItems   HotelOrderItem[]
   stockMovements HotelStockMovement[]
 
+  @@unique([branchId, barcode])
   @@index([branchId, active])
   @@index([branchId, isConsumable])
   @@index([branchId, createdByUserId])

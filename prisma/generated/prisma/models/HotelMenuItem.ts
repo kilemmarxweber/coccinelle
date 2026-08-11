@@ -44,6 +44,7 @@ export type HotelMenuItemMinAggregateOutputType = {
   price: number | null
   imageUrl: string | null
   stockQty: number | null
+  barcode: string | null
   isConsumable: boolean | null
   provenance: string | null
   supplierName: string | null
@@ -62,6 +63,7 @@ export type HotelMenuItemMaxAggregateOutputType = {
   price: number | null
   imageUrl: string | null
   stockQty: number | null
+  barcode: string | null
   isConsumable: boolean | null
   provenance: string | null
   supplierName: string | null
@@ -80,6 +82,7 @@ export type HotelMenuItemCountAggregateOutputType = {
   price: number
   imageUrl: number
   stockQty: number
+  barcode: number
   isConsumable: number
   provenance: number
   supplierName: number
@@ -110,6 +113,7 @@ export type HotelMenuItemMinAggregateInputType = {
   price?: true
   imageUrl?: true
   stockQty?: true
+  barcode?: true
   isConsumable?: true
   provenance?: true
   supplierName?: true
@@ -128,6 +132,7 @@ export type HotelMenuItemMaxAggregateInputType = {
   price?: true
   imageUrl?: true
   stockQty?: true
+  barcode?: true
   isConsumable?: true
   provenance?: true
   supplierName?: true
@@ -146,6 +151,7 @@ export type HotelMenuItemCountAggregateInputType = {
   price?: true
   imageUrl?: true
   stockQty?: true
+  barcode?: true
   isConsumable?: true
   provenance?: true
   supplierName?: true
@@ -251,6 +257,7 @@ export type HotelMenuItemGroupByOutputType = {
   price: number
   imageUrl: string | null
   stockQty: number
+  barcode: string | null
   isConsumable: boolean
   provenance: string | null
   supplierName: string | null
@@ -292,6 +299,7 @@ export type HotelMenuItemWhereInput = {
   price?: Prisma.FloatFilter<"HotelMenuItem"> | number
   imageUrl?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
   stockQty?: Prisma.IntFilter<"HotelMenuItem"> | number
+  barcode?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
   isConsumable?: Prisma.BoolFilter<"HotelMenuItem"> | boolean
   provenance?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
   supplierName?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
@@ -313,6 +321,7 @@ export type HotelMenuItemOrderByWithRelationInput = {
   price?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   stockQty?: Prisma.SortOrder
+  barcode?: Prisma.SortOrderInput | Prisma.SortOrder
   isConsumable?: Prisma.SortOrder
   provenance?: Prisma.SortOrderInput | Prisma.SortOrder
   supplierName?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -328,6 +337,7 @@ export type HotelMenuItemOrderByWithRelationInput = {
 
 export type HotelMenuItemWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  branchId_barcode?: Prisma.HotelMenuItemBranchIdBarcodeCompoundUniqueInput
   AND?: Prisma.HotelMenuItemWhereInput | Prisma.HotelMenuItemWhereInput[]
   OR?: Prisma.HotelMenuItemWhereInput[]
   NOT?: Prisma.HotelMenuItemWhereInput | Prisma.HotelMenuItemWhereInput[]
@@ -337,6 +347,7 @@ export type HotelMenuItemWhereUniqueInput = Prisma.AtLeast<{
   price?: Prisma.FloatFilter<"HotelMenuItem"> | number
   imageUrl?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
   stockQty?: Prisma.IntFilter<"HotelMenuItem"> | number
+  barcode?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
   isConsumable?: Prisma.BoolFilter<"HotelMenuItem"> | boolean
   provenance?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
   supplierName?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
@@ -348,7 +359,7 @@ export type HotelMenuItemWhereUniqueInput = Prisma.AtLeast<{
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   orderItems?: Prisma.HotelOrderItemListRelationFilter
   stockMovements?: Prisma.HotelStockMovementListRelationFilter
-}, "id">
+}, "id" | "branchId_barcode">
 
 export type HotelMenuItemOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -358,6 +369,7 @@ export type HotelMenuItemOrderByWithAggregationInput = {
   price?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   stockQty?: Prisma.SortOrder
+  barcode?: Prisma.SortOrderInput | Prisma.SortOrder
   isConsumable?: Prisma.SortOrder
   provenance?: Prisma.SortOrderInput | Prisma.SortOrder
   supplierName?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -384,6 +396,7 @@ export type HotelMenuItemScalarWhereWithAggregatesInput = {
   price?: Prisma.FloatWithAggregatesFilter<"HotelMenuItem"> | number
   imageUrl?: Prisma.StringNullableWithAggregatesFilter<"HotelMenuItem"> | string | null
   stockQty?: Prisma.IntWithAggregatesFilter<"HotelMenuItem"> | number
+  barcode?: Prisma.StringNullableWithAggregatesFilter<"HotelMenuItem"> | string | null
   isConsumable?: Prisma.BoolWithAggregatesFilter<"HotelMenuItem"> | boolean
   provenance?: Prisma.StringNullableWithAggregatesFilter<"HotelMenuItem"> | string | null
   supplierName?: Prisma.StringNullableWithAggregatesFilter<"HotelMenuItem"> | string | null
@@ -401,6 +414,7 @@ export type HotelMenuItemCreateInput = {
   price?: number
   imageUrl?: string | null
   stockQty?: number
+  barcode?: string | null
   isConsumable?: boolean
   provenance?: string | null
   supplierName?: string | null
@@ -422,6 +436,7 @@ export type HotelMenuItemUncheckedCreateInput = {
   price?: number
   imageUrl?: string | null
   stockQty?: number
+  barcode?: string | null
   isConsumable?: boolean
   provenance?: string | null
   supplierName?: string | null
@@ -441,6 +456,7 @@ export type HotelMenuItemUpdateInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -462,6 +478,7 @@ export type HotelMenuItemUncheckedUpdateInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -482,6 +499,7 @@ export type HotelMenuItemCreateManyInput = {
   price?: number
   imageUrl?: string | null
   stockQty?: number
+  barcode?: string | null
   isConsumable?: boolean
   provenance?: string | null
   supplierName?: string | null
@@ -499,6 +517,7 @@ export type HotelMenuItemUpdateManyMutationInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -517,6 +536,7 @@ export type HotelMenuItemUncheckedUpdateManyInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -537,6 +557,11 @@ export type HotelMenuItemOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type HotelMenuItemBranchIdBarcodeCompoundUniqueInput = {
+  branchId: string
+  barcode: string
+}
+
 export type HotelMenuItemCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   branchId?: Prisma.SortOrder
@@ -545,6 +570,7 @@ export type HotelMenuItemCountOrderByAggregateInput = {
   price?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrder
   stockQty?: Prisma.SortOrder
+  barcode?: Prisma.SortOrder
   isConsumable?: Prisma.SortOrder
   provenance?: Prisma.SortOrder
   supplierName?: Prisma.SortOrder
@@ -568,6 +594,7 @@ export type HotelMenuItemMaxOrderByAggregateInput = {
   price?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrder
   stockQty?: Prisma.SortOrder
+  barcode?: Prisma.SortOrder
   isConsumable?: Prisma.SortOrder
   provenance?: Prisma.SortOrder
   supplierName?: Prisma.SortOrder
@@ -586,6 +613,7 @@ export type HotelMenuItemMinOrderByAggregateInput = {
   price?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrder
   stockQty?: Prisma.SortOrder
+  barcode?: Prisma.SortOrder
   isConsumable?: Prisma.SortOrder
   provenance?: Prisma.SortOrder
   supplierName?: Prisma.SortOrder
@@ -690,6 +718,7 @@ export type HotelMenuItemCreateWithoutBranchInput = {
   price?: number
   imageUrl?: string | null
   stockQty?: number
+  barcode?: string | null
   isConsumable?: boolean
   provenance?: string | null
   supplierName?: string | null
@@ -709,6 +738,7 @@ export type HotelMenuItemUncheckedCreateWithoutBranchInput = {
   price?: number
   imageUrl?: string | null
   stockQty?: number
+  barcode?: string | null
   isConsumable?: boolean
   provenance?: string | null
   supplierName?: string | null
@@ -758,6 +788,7 @@ export type HotelMenuItemScalarWhereInput = {
   price?: Prisma.FloatFilter<"HotelMenuItem"> | number
   imageUrl?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
   stockQty?: Prisma.IntFilter<"HotelMenuItem"> | number
+  barcode?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
   isConsumable?: Prisma.BoolFilter<"HotelMenuItem"> | boolean
   provenance?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
   supplierName?: Prisma.StringNullableFilter<"HotelMenuItem"> | string | null
@@ -775,6 +806,7 @@ export type HotelMenuItemCreateWithoutStockMovementsInput = {
   price?: number
   imageUrl?: string | null
   stockQty?: number
+  barcode?: string | null
   isConsumable?: boolean
   provenance?: string | null
   supplierName?: string | null
@@ -795,6 +827,7 @@ export type HotelMenuItemUncheckedCreateWithoutStockMovementsInput = {
   price?: number
   imageUrl?: string | null
   stockQty?: number
+  barcode?: string | null
   isConsumable?: boolean
   provenance?: string | null
   supplierName?: string | null
@@ -829,6 +862,7 @@ export type HotelMenuItemUpdateWithoutStockMovementsInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -849,6 +883,7 @@ export type HotelMenuItemUncheckedUpdateWithoutStockMovementsInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -867,6 +902,7 @@ export type HotelMenuItemCreateWithoutOrderItemsInput = {
   price?: number
   imageUrl?: string | null
   stockQty?: number
+  barcode?: string | null
   isConsumable?: boolean
   provenance?: string | null
   supplierName?: string | null
@@ -887,6 +923,7 @@ export type HotelMenuItemUncheckedCreateWithoutOrderItemsInput = {
   price?: number
   imageUrl?: string | null
   stockQty?: number
+  barcode?: string | null
   isConsumable?: boolean
   provenance?: string | null
   supplierName?: string | null
@@ -921,6 +958,7 @@ export type HotelMenuItemUpdateWithoutOrderItemsInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -941,6 +979,7 @@ export type HotelMenuItemUncheckedUpdateWithoutOrderItemsInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -959,6 +998,7 @@ export type HotelMenuItemCreateManyBranchInput = {
   price?: number
   imageUrl?: string | null
   stockQty?: number
+  barcode?: string | null
   isConsumable?: boolean
   provenance?: string | null
   supplierName?: string | null
@@ -976,6 +1016,7 @@ export type HotelMenuItemUpdateWithoutBranchInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -995,6 +1036,7 @@ export type HotelMenuItemUncheckedUpdateWithoutBranchInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1014,6 +1056,7 @@ export type HotelMenuItemUncheckedUpdateManyWithoutBranchInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   provenance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supplierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1072,6 +1115,7 @@ export type HotelMenuItemSelect<ExtArgs extends runtime.Types.Extensions.Interna
   price?: boolean
   imageUrl?: boolean
   stockQty?: boolean
+  barcode?: boolean
   isConsumable?: boolean
   provenance?: boolean
   supplierName?: boolean
@@ -1094,6 +1138,7 @@ export type HotelMenuItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   price?: boolean
   imageUrl?: boolean
   stockQty?: boolean
+  barcode?: boolean
   isConsumable?: boolean
   provenance?: boolean
   supplierName?: boolean
@@ -1113,6 +1158,7 @@ export type HotelMenuItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   price?: boolean
   imageUrl?: boolean
   stockQty?: boolean
+  barcode?: boolean
   isConsumable?: boolean
   provenance?: boolean
   supplierName?: boolean
@@ -1132,6 +1178,7 @@ export type HotelMenuItemSelectScalar = {
   price?: boolean
   imageUrl?: boolean
   stockQty?: boolean
+  barcode?: boolean
   isConsumable?: boolean
   provenance?: boolean
   supplierName?: boolean
@@ -1142,7 +1189,7 @@ export type HotelMenuItemSelectScalar = {
   updatedAt?: boolean
 }
 
-export type HotelMenuItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "name" | "category" | "price" | "imageUrl" | "stockQty" | "isConsumable" | "provenance" | "supplierName" | "needsKitchen" | "active" | "createdByUserId" | "createdAt" | "updatedAt", ExtArgs["result"]["hotelMenuItem"]>
+export type HotelMenuItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "name" | "category" | "price" | "imageUrl" | "stockQty" | "barcode" | "isConsumable" | "provenance" | "supplierName" | "needsKitchen" | "active" | "createdByUserId" | "createdAt" | "updatedAt", ExtArgs["result"]["hotelMenuItem"]>
 export type HotelMenuItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   orderItems?: boolean | Prisma.HotelMenuItem$orderItemsArgs<ExtArgs>
@@ -1180,6 +1227,10 @@ export type $HotelMenuItemPayload<ExtArgs extends runtime.Types.Extensions.Inter
      * Quantité en stock (signalée et décrémentée à la vente / livraison).
      */
     stockQty: number
+    /**
+     * Code-barres (EAN / Code128 / code interne). Unique par branche.
+     */
+    barcode: string | null
     /**
      * Consommable : non vendu (invisible resto / vente rapide).
      */
@@ -1633,6 +1684,7 @@ export interface HotelMenuItemFieldRefs {
   readonly price: Prisma.FieldRef<"HotelMenuItem", 'Float'>
   readonly imageUrl: Prisma.FieldRef<"HotelMenuItem", 'String'>
   readonly stockQty: Prisma.FieldRef<"HotelMenuItem", 'Int'>
+  readonly barcode: Prisma.FieldRef<"HotelMenuItem", 'String'>
   readonly isConsumable: Prisma.FieldRef<"HotelMenuItem", 'Boolean'>
   readonly provenance: Prisma.FieldRef<"HotelMenuItem", 'String'>
   readonly supplierName: Prisma.FieldRef<"HotelMenuItem", 'String'>
