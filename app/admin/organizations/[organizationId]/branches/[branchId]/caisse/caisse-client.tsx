@@ -262,7 +262,9 @@ export function CaisseClient(props: Props) {
   }, [router]);
 
   const openFolios = useMemo(() => {
-    const open = props.folios.filter((f) => f.balance > 0.01);
+    const open = props.folios.filter(
+      (f) => f.balance > 0.01 || f.balance < -0.01 || f.inCheckoutQueue,
+    );
     return [...open].sort((a, b) => {
       const aq = a.inCheckoutQueue ? 1 : 0;
       const bq = b.inCheckoutQueue ? 1 : 0;
@@ -291,12 +293,12 @@ export function CaisseClient(props: Props) {
   const caJour = useMemo(() => {
     return props.todayPayments.reduce(
       (acc, p) => {
-        if (p.amountForeign != null && p.amountForeign > 0) {
+        if (p.amountForeign != null && p.amountForeign !== 0) {
           acc.usd += p.amountForeign;
           acc.cdf += p.amountCdf;
         } else if (props.rate && props.rate.rate > 0) {
-          acc.usd += p.amountCdf;
-          acc.cdf += p.amountCdf * props.rate.rate;
+          acc.usd += p.amountCdf / props.rate.rate;
+          acc.cdf += p.amountCdf;
         } else {
           acc.usd += p.amountCdf;
           acc.cdf += p.amountCdf;
@@ -371,29 +373,39 @@ export function CaisseClient(props: Props) {
 
   function openFolioPay(folioId: string, balanceUsd: number) {
     setFolioPayId(folioId);
-    setFolioPayAmount(balanceUsd.toFixed(2));
+    setFolioPayAmount(Math.abs(balanceUsd).toFixed(2));
   }
 
   function payFolio(folioId: string, amountUsd: number, isPartial: boolean) {
     start(async () => {
       try {
         if (!(amountUsd > 0)) throw new Error("Montant invalide.");
+        const target = props.folios.find((f) => f.id === folioId);
+        const isRefund = (target?.balance ?? 0) < -0.01;
+        const signedUsd = isRefund ? -amountUsd : amountUsd;
         const amountCdf = props.rate
-          ? amountUsd * props.rate.rate
-          : amountUsd;
+          ? signedUsd * props.rate.rate
+          : signedUsd;
         const p = await createPaymentAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
           folioId,
           amountCdf,
-          amountForeign: amountUsd,
+          amountForeign: signedUsd,
           method,
-          note: isPartial ? "Acompte note de chambre" : "Règlement note de chambre",
+          isRefund,
+          note: isRefund
+            ? "Remboursement départ anticipé"
+            : isPartial
+              ? "Acompte note de chambre"
+              : "Règlement note de chambre",
         });
         toast.success(
-          isPartial
-            ? `Acompte · ${p.receiptNumber}`
-            : `Payé · ${p.receiptNumber}`,
+          isRefund
+            ? `Remboursé · ${p.receiptNumber}`
+            : isPartial
+              ? `Acompte · ${p.receiptNumber}`
+              : `Payé · ${p.receiptNumber}`,
         );
         setFolioPayId(null);
         router.push(
@@ -519,10 +531,17 @@ export function CaisseClient(props: Props) {
         header: "Solde",
         cell: ({ row }) => {
           const bal = row.original.balance;
-          const sub = fmtSub(bal);
+          const sub = fmtSub(Math.abs(bal));
           return (
             <div className="text-right">
-              <div className="font-semibold tabular-nums">{fmt(bal)}</div>
+              <div
+                className={cn(
+                  "font-semibold tabular-nums",
+                  bal < -0.01 && "text-amber-700 dark:text-amber-400",
+                )}
+              >
+                {bal < -0.01 ? `À remb. ${fmt(Math.abs(bal))}` : fmt(bal)}
+              </div>
               {sub ? (
                 <div className="text-xs text-muted-foreground tabular-nums">
                   ≈ {sub}
@@ -543,7 +562,7 @@ export function CaisseClient(props: Props) {
               openFolioPay(row.original.id, row.original.balance)
             }
           >
-            Encaisser
+            {row.original.balance < -0.01 ? "Rembourser" : "Encaisser"}
           </Button>
         ),
       },
@@ -1425,14 +1444,18 @@ export function CaisseClient(props: Props) {
                 data={checkoutQueue}
                 emptyText="Aucune note en file d’attente."
                 mobileCardTitle={(row) => folioLabel(row)}
-                mobileCardSubtitle={(row) => fmt(row.balance)}
+                mobileCardSubtitle={(row) =>
+                  row.balance < -0.01
+                    ? `À remb. ${fmt(Math.abs(row.balance))}`
+                    : fmt(row.balance)
+                }
                 mobileCardActions={(row) => (
                   <Button
                     size="sm"
                     disabled={pending || !props.cashSession}
                     onClick={() => openFolioPay(row.id, row.balance)}
                   >
-                    Encaisser
+                    {row.balance < -0.01 ? "Rembourser" : "Encaisser"}
                   </Button>
                 )}
               />
@@ -1454,14 +1477,18 @@ export function CaisseClient(props: Props) {
                   : "Aucune note ouverte avec solde."
               }
               mobileCardTitle={(row) => folioLabel(row)}
-              mobileCardSubtitle={(row) => fmt(row.balance)}
+              mobileCardSubtitle={(row) =>
+                row.balance < -0.01
+                  ? `À remb. ${fmt(Math.abs(row.balance))}`
+                  : fmt(row.balance)
+              }
               mobileCardActions={(row) => (
                 <Button
                   size="sm"
                   disabled={pending || !props.cashSession}
                   onClick={() => openFolioPay(row.id, row.balance)}
                 >
-                  Encaisser
+                  {row.balance < -0.01 ? "Rembourser" : "Encaisser"}
                 </Button>
               )}
             />
@@ -1517,10 +1544,16 @@ export function CaisseClient(props: Props) {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Règlement note de chambre</DialogTitle>
+            <DialogTitle>
+              {folioPayTarget && folioPayTarget.balance < -0.01
+                ? "Remboursement note de chambre"
+                : "Règlement note de chambre"}
+            </DialogTitle>
             <DialogDescription>
               {folioPayTarget
-                ? `${folioLabel(folioPayTarget)} — solde ${folioPayTarget.balance.toFixed(2)} $`
+                ? folioPayTarget.balance < -0.01
+                  ? `${folioLabel(folioPayTarget)} — à rembourser ${Math.abs(folioPayTarget.balance).toFixed(2)} $ (nuitées consommées)`
+                  : `${folioLabel(folioPayTarget)} — solde ${folioPayTarget.balance.toFixed(2)} $`
                 : null}
             </DialogDescription>
           </DialogHeader>
@@ -1543,7 +1576,11 @@ export function CaisseClient(props: Props) {
               </div>
             ) : null}
             <div className="grid gap-1.5">
-              <Label htmlFor="folio-amount">Montant USD (acompte ou solde)</Label>
+              <Label htmlFor="folio-amount">
+                {folioPayTarget && folioPayTarget.balance < -0.01
+                  ? "Montant USD à rembourser"
+                  : "Montant USD (acompte ou solde)"}
+              </Label>
               <Input
                 id="folio-amount"
                 type="number"
@@ -1554,8 +1591,9 @@ export function CaisseClient(props: Props) {
               />
               {folioPayTarget ? (
                 <p className="text-xs text-muted-foreground">
-                  Max {folioPayTarget.balance.toFixed(2)} $ · laissez le solde
-                  pour tout régler, ou un montant inférieur pour un acompte.
+                  {folioPayTarget.balance < -0.01
+                    ? `Max ${Math.abs(folioPayTarget.balance).toFixed(2)} $ · rembourser le trop-perçu après recalcul des nuitées.`
+                    : `Max ${folioPayTarget.balance.toFixed(2)} $ · laissez le solde pour tout régler, ou un montant inférieur pour un acompte.`}
                 </p>
               ) : null}
             </div>
@@ -1578,15 +1616,22 @@ export function CaisseClient(props: Props) {
                   toast.message("Montant invalide");
                   return;
                 }
-                if (amount > folioPayTarget.balance + 0.01) {
-                  toast.message("Montant supérieur au solde");
+                const due = Math.abs(folioPayTarget.balance);
+                if (amount > due + 0.01) {
+                  toast.message(
+                    folioPayTarget.balance < -0.01
+                      ? "Montant supérieur au remboursement dû"
+                      : "Montant supérieur au solde",
+                  );
                   return;
                 }
-                const isPartial = amount < folioPayTarget.balance - 0.01;
+                const isPartial = amount < due - 0.01;
                 payFolio(folioPayTarget.id, amount, isPartial);
               }}
             >
-              Encaisser
+              {folioPayTarget && folioPayTarget.balance < -0.01
+                ? "Rembourser"
+                : "Encaisser"}
             </Button>
           </DialogFooter>
         </DialogContent>

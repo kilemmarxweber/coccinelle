@@ -44,7 +44,7 @@ export function flatStayDescription(input: {
       ? ` · ${input.plannedHours} h`
       : "";
   const note = input.rateNote?.trim() ? ` · ${input.rateNote.trim()}` : "";
-  const prefix = input.prolongation ? "Prolongation forfait" : "Forfait séjour";
+  const prefix = input.prolongation ? "Prolongation passage" : "Passage";
   return `${prefix}${hours} · ${input.roomTypeName} ${input.roomNumber}${note}`;
 }
 
@@ -175,13 +175,13 @@ export function assertStayRateInput(input: {
   const note = input.rateNote?.trim() || "";
   if (input.billingMode === STAY_BILLING.FLAT) {
     if (input.flatAmount == null || !(input.flatAmount >= 0)) {
-      throw new Error("Montant forfait invalide.");
+      throw new Error("Montant passage invalide.");
     }
     if (input.plannedHours == null || !(input.plannedHours > 0)) {
-      throw new Error("Durée en heures obligatoire pour un forfait / au temps.");
+      throw new Error("Durée en heures obligatoire pour un passage.");
     }
     if (!note) {
-      throw new Error("Motif obligatoire pour un forfait / séjour au temps.");
+      throw new Error("Motif obligatoire pour un passage.");
     }
     return;
   }

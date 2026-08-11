@@ -632,6 +632,14 @@ export async function createStayAction(input: {
     throw new Error("Dates invalides.");
   }
 
+  const today = new Date();
+  const todayUtc = new Date(
+    Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()),
+  );
+  if (checkIn.getTime() < todayUtc.getTime()) {
+    throw new Error("Impossible de réserver à une date antérieure.");
+  }
+
   const overlapStay = await prisma.hotelStay.findFirst({
     where: {
       roomId: room.id,
@@ -707,6 +715,16 @@ export async function createStayAction(input: {
       : (flatAmount ?? 0);
 
   const stay = await prisma.$transaction(async (tx) => {
+    const today = new Date();
+    const todayUtc = new Date(
+      Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()),
+    );
+    const checkInIsToday = checkIn.getTime() === todayUtc.getTime();
+    // Forfait / au temps : toujours check-in immédiat.
+    // Nuitée avec entrée aujourd’hui : check-in direct (pas de réservation).
+    const immediateCheckIn =
+      billingMode === STAY_BILLING.FLAT || checkInIsToday;
+    const now = new Date();
     const s = await tx.hotelStay.create({
       data: {
         branchId: input.branchId,
@@ -721,7 +739,8 @@ export async function createStayAction(input: {
             : checkOut,
         adults: input.adults ?? 1,
         notes: input.notes ?? null,
-        status: "RESERVED",
+        status: immediateCheckIn ? "CHECKED_IN" : "RESERVED",
+        checkedInAt: immediateCheckIn ? now : null,
         billingMode,
         catalogUnitPrice,
         unitPriceApplied:
@@ -733,6 +752,12 @@ export async function createStayAction(input: {
           negotiated || billingMode === STAY_BILLING.FLAT ? user.id : null,
       },
     });
+    if (immediateCheckIn) {
+      await tx.hotelRoom.update({
+        where: { id: room.id },
+        data: { status: "OCCUPIED" },
+      });
+    }
     await tx.folio.create({
       data: {
         branchId: input.branchId,
@@ -775,9 +800,15 @@ export async function createStayAction(input: {
     await tx.branchNotification.create({
       data: {
         branchId: input.branchId,
-        title: "Nouvelle réservation",
-        body: `${input.guestName.trim()} · ch. ${room.number}`,
-        kind: "stay_reserved",
+        title: immediateCheckIn
+          ? billingMode === STAY_BILLING.FLAT
+            ? "Passage démarré"
+            : "Check-in effectué"
+          : "Nouvelle réservation",
+        body: immediateCheckIn
+          ? `${input.guestName.trim()} · ${isMeeting ? "salle" : "ch."} ${room.number} · check-in`
+          : `${input.guestName.trim()} · ch. ${room.number}`,
+        kind: immediateCheckIn ? "stay_checkin" : "stay_reserved",
         href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/sejours`,
       },
     });
@@ -835,6 +866,7 @@ export async function checkOutStayAction(input: {
     where: { id: input.stayId, branchId: input.branchId },
     include: {
       folio: { include: { lines: true, payments: true } },
+      room: { include: { roomType: true } },
     },
   });
   if (!stay) throw new Error("Séjour introuvable.");
@@ -845,7 +877,7 @@ export async function checkOutStayAction(input: {
     stay.folio?.payments.reduce(
       (s, p) =>
         s +
-        (p.amountForeign != null && p.amountForeign > 0
+        (p.amountForeign != null && p.amountForeign !== 0
           ? p.amountForeign
           : p.amountCdf),
       0,
@@ -872,10 +904,41 @@ export async function checkOutStayAction(input: {
     return {
       ok: false as const,
       needsPayment: true,
+      needsRefund: false,
       balance,
       folioId: stay.folio?.id ?? null,
     };
   }
+
+  if (balance < -0.01) {
+    if (stay.folio) {
+      await prisma.$transaction([
+        prisma.folio.update({
+          where: { id: stay.folio.id },
+          data: { checkoutQueuedAt: new Date() },
+        }),
+        prisma.branchNotification.create({
+          data: {
+            branchId: input.branchId,
+            title: "Remboursement check-out",
+            body: `${stay.guestName} · à rembourser ${Math.abs(balance).toFixed(2)} $ (nuitées consommées, règle ${HOTEL_CHECKOUT_HOUR}h)`,
+            kind: "checkout_refund",
+            href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/caisse?tab=folios&queue=1`,
+          },
+        }),
+      ]);
+    }
+    return {
+      ok: false as const,
+      needsPayment: false,
+      needsRefund: true,
+      balance,
+      folioId: stay.folio?.id ?? null,
+    };
+  }
+
+  const freeStatus =
+    stay.room.roomType.kind === "MEETING" ? "AVAILABLE" : "CLEANING";
 
   await prisma.$transaction([
     prisma.hotelStay.update({
@@ -884,7 +947,7 @@ export async function checkOutStayAction(input: {
     }),
     prisma.hotelRoom.update({
       where: { id: stay.roomId },
-      data: { status: "CLEANING" },
+      data: { status: freeStatus },
     }),
     ...(stay.folio
       ? [
@@ -905,7 +968,13 @@ export async function checkOutStayAction(input: {
     }),
   ]);
   revalidateHotel(input.organizationId, input.branchId);
-  return { ok: true as const, needsPayment: false, balance: 0, folioId: null };
+  return {
+    ok: true as const,
+    needsPayment: false,
+    needsRefund: false,
+    balance: 0,
+    folioId: stay.folio?.id ?? null,
+  };
 }
 
 /**
@@ -937,10 +1006,10 @@ export async function extendStayAction(input: {
     const hours = stay.plannedHours;
     const amount = stay.flatAmount;
     if (hours == null || !(hours > 0)) {
-      throw new Error("Durée du forfait introuvable — impossible de prolonger.");
+      throw new Error("Durée du passage introuvable — impossible de prolonger.");
     }
     if (amount == null || !(amount >= 0)) {
-      throw new Error("Montant forfait introuvable — impossible de prolonger.");
+      throw new Error("Montant passage introuvable — impossible de prolonger.");
     }
 
     await prisma.$transaction(async (tx) => {
@@ -970,7 +1039,7 @@ export async function extendStayAction(input: {
       await tx.branchNotification.create({
         data: {
           branchId: input.branchId,
-          title: "Forfait prolongé",
+          title: "Passage prolongé",
           body: `${stay.guestName} · +${hours} h · ch. ${stay.room.number}`,
           kind: "stay_extended",
           href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/sejours`,
@@ -1693,10 +1762,27 @@ export async function getStayFolioStatementAction(
     stay.status === "CHECKED_IN" &&
     stay.billingMode !== STAY_BILLING.FLAT
   ) {
+    const existingNightQty = stay.folio.lines
+      .filter((l) => l.kind === "NIGHT")
+      .reduce((s, l) => s + l.quantity, 0);
     nightBilling = computeStayNightBilling({
       checkInDate: stay.checkInDate,
       plannedCheckOutDate: stay.checkOutDate,
     });
+    // Si la note a déjà été réduite, conserver le volume initial pour le libellé « prévu »
+    if (existingNightQty > nightBilling.plannedNights) {
+      nightBilling = {
+        ...nightBilling,
+        plannedNights: existingNightQty,
+        earlyDeparture: nightBilling.nights < existingNightQty,
+      };
+    } else if (existingNightQty > nightBilling.nights) {
+      nightBilling = {
+        ...nightBilling,
+        plannedNights: Math.max(nightBilling.plannedNights, existingNightQty),
+        earlyDeparture: true,
+      };
+    }
     const amount = nightBilling.nights * appliedUnit;
     const description = nightChargeDescription({
       nights: nightBilling.nights,
@@ -1849,14 +1935,16 @@ export async function prepareStayCheckoutBillingAction(input: {
   const paid = stay.folio.payments.reduce(
     (s, p) =>
       s +
-      (p.amountForeign != null && p.amountForeign > 0
+      (p.amountForeign != null && p.amountForeign !== 0
         ? p.amountForeign
         : p.amountCdf),
     0,
   );
-  const balance = Math.max(0, charges - paid);
+  const balance = charges - paid;
+  const needsPayment = balance > 0.01;
+  const needsRefund = balance < -0.01;
 
-  if (balance > 0.01) {
+  if (needsPayment || needsRefund) {
     await prisma.$transaction([
       prisma.folio.update({
         where: { id: stay.folio.id },
@@ -1865,9 +1953,13 @@ export async function prepareStayCheckoutBillingAction(input: {
       prisma.branchNotification.create({
         data: {
           branchId: input.branchId,
-          title: "File d’attente check-out",
-          body: `${stay.guestName} · ch. ${stay.room.number} · solde ${balance.toFixed(2)} $`,
-          kind: "checkout_queue",
+          title: needsRefund
+            ? "Remboursement check-out"
+            : "File d’attente check-out",
+          body: needsRefund
+            ? `${stay.guestName} · ch. ${stay.room.number} · à rembourser ${Math.abs(balance).toFixed(2)} $ (nuitées consommées, règle ${HOTEL_CHECKOUT_HOUR}h)`
+            : `${stay.guestName} · ch. ${stay.room.number} · solde ${balance.toFixed(2)} $`,
+          kind: needsRefund ? "checkout_refund" : "checkout_queue",
           href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/caisse?tab=folios&queue=1`,
         },
       }),
@@ -1881,6 +1973,8 @@ export async function prepareStayCheckoutBillingAction(input: {
     guestName: stay.guestName,
     roomNumber: stay.room.number,
     balance,
+    needsPayment,
+    needsRefund,
   };
 }
 

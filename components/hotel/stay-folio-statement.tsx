@@ -97,14 +97,14 @@ export function StayFolioStatementView(props: {
         <div className="rounded-xl border border-border bg-muted/30 px-3 py-2.5 text-xs">
           {s.rateInfo.billingMode === "FLAT" ? (
             <>
-              <p className="font-semibold">Forfait / au temps</p>
+              <p className="font-semibold">Passage</p>
               <p className="mt-0.5 text-muted-foreground">
                 Durée {s.rateInfo.plannedHours ?? "—"} h · montant{" "}
                 {money(s.rateInfo.flatAmount ?? s.rateInfo.appliedUnit)}
               </p>
               <p className="mt-0.5 text-[11px] text-muted-foreground">
                 Sans règle de sortie 10h — prolongation = même durée / même
-                forfait.
+                montant.
               </p>
             </>
           ) : (
@@ -219,11 +219,22 @@ export function StayFolioStatementView(props: {
                     {p.note ? ` · ${p.note}` : ""}
                   </p>
                 </div>
-                <span className="shrink-0 text-right tabular-nums font-medium text-emerald-700 dark:text-emerald-400">
-                  <span className="block">−{money(p.amountUsd)}</span>
-                  {moneySub(p.amountUsd) ? (
+                <span
+                  className={cn(
+                    "shrink-0 text-right tabular-nums font-medium",
+                    p.amountUsd < 0
+                      ? "text-amber-700 dark:text-amber-400"
+                      : "text-emerald-700 dark:text-emerald-400",
+                  )}
+                >
+                  <span className="block">
+                    {p.amountUsd < 0
+                      ? `Remb. ${money(Math.abs(p.amountUsd))}`
+                      : `−${money(p.amountUsd)}`}
+                  </span>
+                  {moneySub(Math.abs(p.amountUsd)) ? (
                     <span className="text-[11px] font-normal text-muted-foreground">
-                      ≈ {moneySub(p.amountUsd)}
+                      ≈ {moneySub(Math.abs(p.amountUsd))}
                     </span>
                   ) : null}
                 </span>
@@ -262,23 +273,42 @@ export function StayFolioStatementView(props: {
           </dd>
         </div>
         <div className="flex justify-between gap-4 font-semibold">
-          <dt>Solde à encaisser</dt>
+          <dt>
+            {s.balance < -0.01
+              ? "Solde à rembourser"
+              : s.balance > 0.01
+                ? "Solde à encaisser"
+                : "Solde"}
+          </dt>
           <dd
             className={cn(
               "text-right tabular-nums",
               s.balance > 0.01
                 ? "text-rose-600 dark:text-rose-400"
-                : "text-emerald-700 dark:text-emerald-400",
+                : s.balance < -0.01
+                  ? "text-amber-700 dark:text-amber-400"
+                  : "text-emerald-700 dark:text-emerald-400",
             )}
           >
-            <span className="block">{money(s.balance)}</span>
-            {moneySub(s.balance) ? (
+            <span className="block">
+              {s.balance < -0.01
+                ? money(Math.abs(s.balance))
+                : money(s.balance)}
+            </span>
+            {moneySub(Math.abs(s.balance)) ? (
               <span className="text-xs font-normal opacity-80">
-                ≈ {moneySub(s.balance)}
+                ≈ {moneySub(Math.abs(s.balance))}
               </span>
             ) : null}
           </dd>
         </div>
+        {s.balance < -0.01 ? (
+          <p className="text-xs font-normal text-amber-800 dark:text-amber-200">
+            Trop-perçu : seules les nuitées consommées (règle{" "}
+            {s.nightBilling?.checkoutHour ?? 10}h) restent dues — rembourser le
+            reste en caisse.
+          </p>
+        ) : null}
       </dl>
     </div>
   );

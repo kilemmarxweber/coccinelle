@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Printer } from "lucide-react";
+import { CalendarDays, ClipboardList, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +43,14 @@ import {
   type StayFolioStatementViewModel,
 } from "@/components/hotel/stay-folio-statement";
 import { SearchCombobox } from "@/components/ui/search-combobox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { StayPeriodField } from "@/components/hotel/stay-period-field";
 import { cn } from "@/lib/utils";
 
 type Room = {
@@ -167,6 +175,65 @@ function localTodayInputValue() {
   return `${y}-${m}-${d}`;
 }
 
+function addDaysYmd(ymd: string, days: number) {
+  const [y, m, d] = ymd.slice(0, 10).split("-").map(Number);
+  const next = new Date(y!, (m ?? 1) - 1, (d ?? 1) + days);
+  const yy = next.getFullYear();
+  const mm = String(next.getMonth() + 1).padStart(2, "0");
+  const dd = String(next.getDate()).padStart(2, "0");
+  return `${yy}-${mm}-${dd}`;
+}
+
+/** Occupation active (réservé / check-in). */
+function stayOccupiesCell(stay: Stay, cell: Date) {
+  if (stay.status !== "RESERVED" && stay.status !== "CHECKED_IN") {
+    return false;
+  }
+  return stayCoversCalendarDay(stay, cell);
+}
+
+/** Historique check-out (jours passés / période terminée). */
+function stayHistoryCell(stay: Stay, cell: Date) {
+  if (stay.status !== "CHECKED_OUT") return false;
+  return stayCoversCalendarDay(stay, cell);
+}
+
+function stayCoversCalendarDay(stay: Stay, cell: Date) {
+  const start = asUtcDay(stay.checkInDate);
+  const end = asUtcDay(stay.checkOutDate);
+  if (end.getTime() === start.getTime()) {
+    return cell.getTime() === start.getTime();
+  }
+  // Inclure le jour de sortie pour l’historique (checkout)
+  if (stay.status === "CHECKED_OUT") {
+    return cell >= start && cell <= end;
+  }
+  return cell >= start && cell < end;
+}
+
+function formatStayRangeShort(stay: {
+  checkInDate: string | Date;
+  checkOutDate: string | Date;
+}) {
+  const a = asUtcDay(stay.checkInDate);
+  const b = asUtcDay(stay.checkOutDate);
+  const opts: Intl.DateTimeFormatOptions = {
+    day: "numeric",
+    month: "short",
+  };
+  const from = a.toLocaleDateString("fr-FR", opts);
+  const to = b.toLocaleDateString("fr-FR", opts);
+  if (a.getTime() === b.getTime()) return from;
+  return `${from} → ${to}`;
+}
+
+const ROOM_STATUS_LABEL: Record<string, string> = {
+  AVAILABLE: "Libre",
+  OCCUPIED: "Occupée",
+  CLEANING: "Ménage",
+  OUT_OF_ORDER: "HS",
+};
+
 function stayMetrics(stay: Stay, now = new Date()) {
   const checkIn = asUtcDay(stay.checkInDate);
   const checkOut = asUtcDay(stay.checkOutDate);
@@ -231,17 +298,25 @@ export function SejoursClient(props: {
   const [year, setYear] = useState(props.initialYear);
   const [month, setMonth] = useState(props.initialMonth);
   const [view, setView] = useState<"month" | "year">("month");
-  const [form, setForm] = useState({
-    roomId: props.rooms[0]?.id ?? "",
-    guestName: "",
-    guestPhone: "",
-    checkInDate: "",
-    checkOutDate: "",
-    billingMode: "NIGHTLY" as "NIGHTLY" | "FLAT",
-    unitPriceApplied: "",
-    flatAmount: "",
-    plannedHours: "",
-    rateNote: "",
+  const [form, setForm] = useState(() => {
+    const today = localTodayInputValue();
+    const t = new Date();
+    const tomorrow = new Date(t.getFullYear(), t.getMonth(), t.getDate() + 1);
+    const y = tomorrow.getFullYear();
+    const m = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const d = String(tomorrow.getDate()).padStart(2, "0");
+    return {
+      roomId: props.rooms[0]?.id ?? "",
+      guestName: "",
+      guestPhone: "",
+      checkInDate: today,
+      checkOutDate: `${y}-${m}-${d}`,
+      billingMode: "NIGHTLY" as "NIGHTLY" | "FLAT",
+      unitPriceApplied: "",
+      flatAmount: "",
+      plannedHours: "",
+      rateNote: "",
+    };
   });
   const [extendStayId, setExtendStayId] = useState<string | null>(null);
   const [extendDate, setExtendDate] = useState("");
@@ -256,6 +331,8 @@ export function SejoursClient(props: {
     "actifs",
   );
   const [filterDate, setFilterDate] = useState(localTodayInputValue);
+  const [mainTab, setMainTab] = useState("calendrier");
+  const [bookingOpen, setBookingOpen] = useState(false);
 
   useEffect(() => {
     setNow(Date.now());
@@ -334,26 +411,21 @@ export function SejoursClient(props: {
   }
 
   function stayStyle(stay: Stay, day: number) {
-    const start = new Date(stay.checkInDate);
-    const end = new Date(stay.checkOutDate);
     const cell = new Date(Date.UTC(year, month - 1, day));
-    if (cell < start || cell >= end) return null;
+    if (!stayOccupiesCell(stay, cell)) return null;
 
     const key = toDateKey(cell);
-    const outKey = toDateKey(end);
-    const inKey = toDateKey(start);
-    const isOut = key === outKey;
+    const inKey = toDateKey(asUtcDay(stay.checkInDate));
     const isIn = key === inKey;
-    const isHistory = stay.status === "CHECKED_OUT";
 
-    if (isOut) return "bg-red-500 text-white";
-    if (isHistory) {
-      if (isIn) return "bg-slate-400/80 text-white";
-      return "bg-slate-400/35 text-muted-foreground";
+    if (stay.status === "CHECKED_IN") {
+      // Check-in / occupation en cours — signal fort
+      if (isIn) return "bg-orange-500 text-white ring-1 ring-orange-600/40";
+      return "bg-sky-600 text-white";
     }
-    if (isIn) return "bg-orange-500 text-white";
-    if (stay.status === "CHECKED_IN") return "bg-sky-500/80 text-white";
-    return "bg-sky-500/40 text-foreground";
+    // Réservation future
+    if (isIn) return "bg-amber-400/90 text-amber-950";
+    return "bg-sky-400/45 text-sky-950 dark:text-sky-100";
   }
 
   const selectedRoom = useMemo(
@@ -375,15 +447,61 @@ export function SejoursClient(props: {
     if (b.getTime() === a.getTime()) return form.billingMode === "FLAT" ? 0 : 0;
     return nightsBetween(a, b);
   }, [form.checkInDate, form.checkOutDate, form.billingMode]);
+
+  const formCheckInIsToday = useMemo(() => {
+    if (!form.checkInDate) return false;
+    return toDateKey(asUtcDay(form.checkInDate)) === localTodayInputValue();
+  }, [form.checkInDate]);
+
+  const formImmediateCheckIn =
+    form.billingMode === "FLAT" || formCheckInIsToday;
   const negotiatedPct =
     catalogPrice > 0 && Math.abs(appliedNightPrice - catalogPrice) >= 0.01
       ? Math.round(((catalogPrice - appliedNightPrice) / catalogPrice) * 1000) /
         10
       : null;
 
+  function openBookingForm(opts?: { roomId?: string; dateKey?: string }) {
+    const dateKey = opts?.dateKey ?? localTodayInputValue();
+    if (dateKey < localTodayInputValue()) {
+      toast.error("Impossible de réserver à une date antérieure.");
+      return;
+    }
+    const room =
+      props.rooms.find((r) => r.id === opts?.roomId) ??
+      props.rooms.find((r) => r.id === form.roomId) ??
+      props.rooms[0];
+    if (!room) {
+      toast.error("Aucun espace disponible.");
+      return;
+    }
+    const isMeeting = room.roomType.kind === "MEETING";
+    setForm({
+      roomId: room.id,
+      guestName: "",
+      guestPhone: "",
+      checkInDate: dateKey,
+      checkOutDate: isMeeting ? dateKey : addDaysYmd(dateKey, 1),
+      billingMode: isMeeting ? "FLAT" : "NIGHTLY",
+      unitPriceApplied: "",
+      flatAmount: "",
+      plannedHours: isMeeting ? "4" : "",
+      rateNote: "",
+    });
+    setBookingOpen(true);
+  }
+
   function create() {
     start(async () => {
       try {
+        if (!form.checkInDate || !form.checkOutDate) {
+          toast.error("Choisissez la période d’entrée / sortie.");
+          return;
+        }
+        if (form.checkInDate < localTodayInputValue()) {
+          toast.error("Impossible de réserver à une date antérieure.");
+          return;
+        }
         await createStayAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
@@ -405,7 +523,13 @@ export function SejoursClient(props: {
               : null,
           rateNote: form.rateNote.trim() || null,
         });
-        toast.success("Séjour réservé");
+        toast.success(
+          formImmediateCheckIn
+            ? form.billingMode === "FLAT"
+              ? "Passage démarré · check-in effectué"
+              : "Check-in effectué"
+            : "Séjour réservé",
+        );
         setForm((f) => ({
           ...f,
           guestName: "",
@@ -416,6 +540,9 @@ export function SejoursClient(props: {
           rateNote: "",
           billingMode: "NIGHTLY",
         }));
+        setBookingOpen(false);
+        setMainTab("sejours");
+        setListFilter("actifs");
         router.refresh();
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Erreur");
@@ -483,6 +610,17 @@ export function SejoursClient(props: {
           );
           return;
         }
+        if (!res.ok && res.needsRefund) {
+          toast.message(
+            `Remboursement ${formatPrimaryAmount(Math.abs(res.balance), props.rate)} — file caisse`,
+          );
+          setCheckoutStayId(null);
+          setCheckoutStatement(null);
+          router.push(
+            `${branchCaissePath(props.organizationId, props.branchId)}?tab=folios&queue=1`,
+          );
+          return;
+        }
         toast.success("Check-out effectué — imprimez la facture pour signature");
         setCheckoutStayId(null);
         setCheckoutStatement(null);
@@ -507,7 +645,9 @@ export function SejoursClient(props: {
           stayId: checkoutStayId,
         });
         toast.message(
-          `${res.guestName} · ch. ${res.roomNumber} — mis en file d’attente caisse`,
+          res.needsRefund
+            ? `${res.guestName} · ch. ${res.roomNumber} — remboursement en file caisse`
+            : `${res.guestName} · ch. ${res.roomNumber} — mis en file d’attente caisse`,
         );
         setCheckoutStayId(null);
         setCheckoutStatement(null);
@@ -599,77 +739,115 @@ export function SejoursClient(props: {
   }, [props.yearStays, props.rooms.length, year]);
 
   return (
-    <div className="mx-auto max-w-[100vw] space-y-6 px-4 py-6 lg:max-w-7xl">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Séjours</h1>
-          <p className="text-sm text-muted-foreground">
-            Planning · checkout{" "}
-            <span className="font-semibold text-red-500">rouge</span>
-            {" · "}historique{" "}
-            <span className="font-semibold text-slate-500">gris</span>
-            {" · "}libération chambre à{" "}
-            <span className="font-semibold">{HOTEL_CHECKOUT_HOUR}h</span>
-            {props.rate ? (
-              <>
-                {" · "}
-                <span className="font-medium">
-                  {formatConfiguredRateLabel(props.rate)}
-                </span>
-              </>
-            ) : null}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            size="sm"
-            variant={view === "month" ? "default" : "outline"}
-            onClick={() => setView("month")}
-          >
-            Mois
-          </Button>
-          <Button
-            size="sm"
-            variant={view === "year" ? "default" : "outline"}
-            onClick={() => setView("year")}
-          >
-            Année
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => navigate(year - 1, month)}
-          >
-            ← An
-          </Button>
-          <select
-            className="h-8 rounded-md border border-border bg-background px-2 text-sm"
-            value={month}
-            onChange={(e) => navigate(year, Number(e.target.value))}
-          >
-            {MONTHS.map((m, i) => (
-              <option key={m} value={i + 1}>
-                {m}
-              </option>
-            ))}
-          </select>
-          <Input
-            type="number"
-            className="h-8 w-24"
-            value={year}
-            onChange={(e) => navigate(Number(e.target.value) || year, month)}
-          />
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => navigate(year + 1, month)}
-          >
-            An →
-          </Button>
-        </div>
+    <div className="mx-auto flex max-w-[100vw] flex-col gap-4 px-4 py-6 lg:max-w-7xl">
+      <div>
+        <h1 className="text-2xl font-bold">Séjours</h1>
+        <p className="text-sm text-muted-foreground">
+          Planning · check-in · actifs · check-outs
+          {props.rate ? (
+            <>
+              {" · "}
+              <span className="font-medium">
+                {formatConfiguredRateLabel(props.rate)}
+              </span>
+            </>
+          ) : null}
+        </p>
       </div>
 
-      {view === "year" ? (
+      <Tabs
+        value={mainTab}
+        onValueChange={setMainTab}
+        defaultValue="calendrier"
+        className="gap-4"
+      >
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-1 p-1 sm:inline-flex sm:w-fit sm:grid-cols-none">
+          <TabsTrigger value="calendrier" className="gap-1.5 px-3 py-2">
+            <CalendarDays className="size-4" />
+            <span className="hidden sm:inline">Calendrier</span>
+            <span className="sm:hidden">Agenda</span>
+          </TabsTrigger>
+          <TabsTrigger value="sejours" className="gap-1.5 px-3 py-2">
+            <ClipboardList className="size-4" />
+            <span className="hidden sm:inline">
+              Actifs / check-outs
+              {filteredListStays.length > 0
+                ? ` (${filteredListStays.length})`
+                : ""}
+            </span>
+            <span className="sm:hidden">Liste</span>
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="calendrier" className="space-y-4 outline-none">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs text-muted-foreground">
+              <span className="font-semibold text-orange-500">check-in</span>
+              {" · "}
+              <span className="font-semibold text-sky-600">occupé</span>
+              {" · "}
+              <span className="font-semibold text-slate-600 dark:text-slate-300">
+                historique
+              </span>
+              {" · "}
+              <span className="font-semibold text-emerald-600">libre</span>
+              {" · "}
+              <span className="text-muted-foreground">passé vide</span>
+              {" · clic = formulaire · libération "}
+              <span className="font-semibold">{HOTEL_CHECKOUT_HOUR}h</span>
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                size="sm"
+                variant={view === "month" ? "default" : "outline"}
+                onClick={() => setView("month")}
+              >
+                Mois
+              </Button>
+              <Button
+                size="sm"
+                variant={view === "year" ? "default" : "outline"}
+                onClick={() => setView("year")}
+              >
+                Année
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => navigate(year - 1, month)}
+              >
+                ← An
+              </Button>
+              <select
+                className="h-8 rounded-md border border-border bg-background px-2 text-sm"
+                value={month}
+                onChange={(e) => navigate(year, Number(e.target.value))}
+              >
+                {MONTHS.map((m, i) => (
+                  <option key={m} value={i + 1}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+              <Input
+                type="number"
+                className="h-8 w-24"
+                value={year}
+                onChange={(e) =>
+                  navigate(Number(e.target.value) || year, month)
+                }
+              />
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => navigate(year + 1, month)}
+              >
+                An →
+              </Button>
+            </div>
+          </div>
+
+          {view === "year" ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
           {MONTHS.map((m, i) => (
             <button
@@ -690,8 +868,9 @@ export function SejoursClient(props: {
           ))}
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
-          <table className="min-w-max w-full border-collapse text-xs">
+            <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
+              <TooltipProvider delay={150}>
+              <table className="min-w-max w-full border-collapse text-xs">
             <thead>
               <tr className="border-b border-border bg-muted/40">
                 <th className="sticky left-0 z-10 bg-muted/90 px-3 py-2 text-left font-semibold">
@@ -717,57 +896,169 @@ export function SejoursClient(props: {
             <tbody>
               {props.rooms.map((room) => {
                 const roomStays = props.stays.filter((s) => s.roomId === room.id);
+                const roomStatusLabel =
+                  ROOM_STATUS_LABEL[room.status] ?? room.status;
                 return (
                   <tr key={room.id} className="border-b border-border/60">
                     <td className="sticky left-0 z-10 bg-card px-3 py-2 font-medium whitespace-nowrap">
-                      {room.roomType.kind === "MEETING"
-                        ? `Salle ${room.number}`
-                        : room.number}
+                      <span className="inline-flex items-baseline gap-1">
+                        <span>
+                          {room.roomType.kind === "MEETING"
+                            ? `Salle ${room.number}`
+                            : room.number}
+                        </span>
+                        <span className="text-muted-foreground">→</span>
+                        <span
+                          className={cn(
+                            "text-[11px] font-semibold lowercase",
+                            room.status === "AVAILABLE"
+                              ? "text-emerald-700 dark:text-emerald-300"
+                              : room.status === "OCCUPIED"
+                                ? "text-sky-700 dark:text-sky-300"
+                                : room.status === "CLEANING"
+                                  ? "text-muted-foreground"
+                                  : "text-rose-700 dark:text-rose-300",
+                          )}
+                        >
+                          {roomStatusLabel.toLowerCase()}
+                        </span>
+                      </span>
                       <span className="block text-[10px] text-muted-foreground">
                         {room.roomType.name}
                         {room.roomType.kind === "MEETING" ? " · réunion" : ""}
                       </span>
                     </td>
                     {dayCols.map((d) => {
-                      const covering = roomStays.find((s) => {
-                        const start = new Date(s.checkInDate);
-                        const end = new Date(s.checkOutDate);
-                        const cell = new Date(Date.UTC(year, month - 1, d));
-                        return cell >= start && cell < end;
-                      });
+                      const cell = new Date(Date.UTC(year, month - 1, d));
+                      const cellKey = toDateKey(cell);
+                      const isPast = cellKey < todayKey;
+                      const covering = roomStays.find((s) =>
+                        stayOccupiesCell(s, cell),
+                      );
+                      const histories = roomStays
+                        .filter((s) => stayHistoryCell(s, cell))
+                        .sort(
+                          (a, b) =>
+                            asUtcDay(b.checkInDate).getTime() -
+                            asUtcDay(a.checkInDate).getTime(),
+                        );
+                      const history = !covering ? histories[0] : undefined;
                       const style = covering
                         ? stayStyle(covering, d)
-                        : "bg-emerald-500/10";
-                      const outKey = covering
-                        ? toDateKey(new Date(covering.checkOutDate))
-                        : "";
-                      const cellKey = toDateKey(
-                        new Date(Date.UTC(year, month - 1, d)),
+                        : history
+                          ? "bg-slate-400/55 text-slate-800 dark:text-slate-100"
+                          : isPast
+                            ? "bg-muted/50 text-muted-foreground/40"
+                            : "bg-emerald-500/15";
+                      const isIn =
+                        covering &&
+                        cellKey ===
+                          toDateKey(asUtcDay(covering.checkInDate));
+                      const histIn =
+                        history &&
+                        cellKey === toDateKey(asUtcDay(history.checkInDate));
+                      const isFree = !covering && !isPast;
+                      const cellButton = (
+                        <button
+                          type="button"
+                          aria-disabled={!isFree}
+                          onClick={() => {
+                            if (!isFree) return;
+                            openBookingForm({
+                              roomId: room.id,
+                              dateKey: cellKey,
+                            });
+                          }}
+                          className={cn(
+                            "flex h-8 w-full items-center justify-center rounded-sm text-[9px] font-bold",
+                            style,
+                            isPast &&
+                              !covering &&
+                              !history &&
+                              "opacity-60",
+                            isFree &&
+                              "cursor-pointer transition hover:ring-2 hover:ring-emerald-500/60",
+                            !isFree && "cursor-default",
+                          )}
+                        >
+                          {covering && isIn
+                            ? covering.guestName.slice(0, 2).toUpperCase()
+                            : covering && covering.status === "CHECKED_IN"
+                              ? "●"
+                              : history && histIn
+                                ? history.guestName.slice(0, 2).toUpperCase()
+                                : history
+                                  ? histories.length > 1
+                                    ? String(histories.length)
+                                    : "·"
+                                  : null}
+                        </button>
                       );
-                      const isCheckoutMarker = covering && cellKey === outKey;
+                      const showOccupantsTip =
+                        Boolean(covering) || histories.length > 0;
                       return (
                         <td key={d} className="p-0.5">
-                          <div
-                            title={
-                              covering
-                                ? `${covering.guestName} (${covering.status})`
-                                : "Libre"
-                            }
-                            className={cn(
-                              "flex h-8 items-center justify-center rounded-sm",
-                              isCheckoutMarker
-                                ? "bg-red-500 text-[9px] font-bold text-white"
-                                : style,
-                            )}
-                          >
-                            {covering &&
-                            cellKey ===
-                              toDateKey(new Date(covering.checkInDate))
-                              ? covering.guestName.slice(0, 2)
-                              : isCheckoutMarker
-                                ? "OUT"
-                                : null}
-                          </div>
+                          {showOccupantsTip ? (
+                            <Tooltip>
+                              <TooltipTrigger render={cellButton} />
+                              <TooltipContent
+                                side="top"
+                                className="max-w-[220px] flex-col items-stretch gap-1.5 bg-foreground px-2.5 py-2 text-left text-background"
+                              >
+                                {covering ? (
+                                  <div>
+                                    <p className="font-semibold">
+                                      {covering.status === "CHECKED_IN"
+                                        ? "En cours"
+                                        : "Réservé"}
+                                    </p>
+                                    <p className="mt-0.5">
+                                      {covering.guestName}
+                                    </p>
+                                    <p className="text-[10px] opacity-80">
+                                      {formatStayRangeShort(covering)}
+                                    </p>
+                                  </div>
+                                ) : null}
+                                {histories.length > 0 ? (
+                                  <div
+                                    className={cn(
+                                      covering &&
+                                        "border-t border-background/25 pt-1.5",
+                                    )}
+                                  >
+                                    <p className="font-semibold">
+                                      Historique
+                                      {histories.length > 1
+                                        ? ` (${histories.length})`
+                                        : ""}
+                                    </p>
+                                    <ul className="mt-1 space-y-1">
+                                      {histories.map((h) => (
+                                        <li key={h.id}>
+                                          <span className="font-medium">
+                                            {h.guestName}
+                                          </span>
+                                          <span className="block text-[10px] opacity-80">
+                                            {formatStayRangeShort(h)}
+                                          </span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                ) : null}
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : (
+                            <Tooltip>
+                              <TooltipTrigger render={cellButton} />
+                              <TooltipContent>
+                                {isPast
+                                  ? "Passé · aucune activité"
+                                  : "Libre · cliquer pour réserver"}
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
                         </td>
                       );
                     })}
@@ -776,252 +1067,20 @@ export function SejoursClient(props: {
               })}
             </tbody>
           </table>
+              </TooltipProvider>
         </div>
-      )}
+          )}
+        </TabsContent>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <section className="space-y-3 rounded-2xl border border-border bg-card p-5 shadow-sm">
-          <h2 className="font-semibold">Nouvelle réservation</h2>
-          <div className="grid gap-1.5">
-            <Label>Chambre / salle</Label>
-            <SearchCombobox
-              items={props.rooms.map((r) => ({
-                value: r.id,
-                label:
-                  r.roomType.kind === "MEETING"
-                    ? `Salle ${r.number} · ${r.roomType.name} (${fmt(r.roomType.priceNight)}/créneau${
-                        r.roomType.seatsStandard != null ||
-                        r.roomType.seatsVip != null
-                          ? ` · ${r.roomType.seatsStandard ?? 0} simple / ${r.roomType.seatsVip ?? 0} VIP`
-                          : r.roomType.capacity
-                            ? ` · ${r.roomType.capacity} pl.`
-                            : ""
-                      })`
-                    : `Ch. ${r.number} · ${r.roomType.name} (${fmt(r.roomType.priceNight)}/nuit)`,
-              }))}
-              value={form.roomId}
-              onValueChange={(roomId) => {
-                const room = props.rooms.find((r) => r.id === roomId);
-                const isMeeting = room?.roomType.kind === "MEETING";
-                setForm((f) => ({
-                  ...f,
-                  roomId,
-                  unitPriceApplied: "",
-                  ...(isMeeting
-                    ? {
-                        billingMode: "FLAT" as const,
-                        plannedHours: f.plannedHours || "4",
-                      }
-                    : {}),
-                }));
-              }}
-              placeholder="Rechercher chambre ou salle…"
-              emptyText="Aucun espace trouvé."
-            />
-            {selectedRoom ? (
-              <p className="text-[11px] text-muted-foreground">
-                {selectedIsMeeting
-                  ? `Salle de réunion · tarif catalogue ${fmt(catalogPrice)}/créneau · ${
-                      selectedRoom.roomType.seatsStandard != null ||
-                      selectedRoom.roomType.seatsVip != null
-                        ? `${selectedRoom.roomType.seatsStandard ?? 0} places simples · ${selectedRoom.roomType.seatsVip ?? 0} VIP`
-                        : `capacité ${selectedRoom.roomType.capacity ?? "—"}`
-                    }`
-                  : `Tarif catalogue · ${fmt(catalogPrice)}/nuit`}
-              </p>
-            ) : null}
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Client</Label>
-            <Input
-              value={form.guestName}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, guestName: e.target.value }))
-              }
-              required
-            />
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Téléphone</Label>
-            <Input
-              value={form.guestPhone}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, guestPhone: e.target.value }))
-              }
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="grid gap-1.5">
-              <Label>Entrée</Label>
-              <Input
-                type="date"
-                value={form.checkInDate}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, checkInDate: e.target.value }))
-                }
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label>Sortie</Label>
-              <Input
-                type="date"
-                value={form.checkOutDate}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, checkOutDate: e.target.value }))
-                }
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-2 rounded-xl border border-border/70 bg-muted/20 p-3">
-            <Label>Facturation hébergement</Label>
-            <div className="grid grid-cols-2 gap-1 rounded-lg border border-border/60 bg-background/70 p-1">
-              {(
-                [
-                  ["NIGHTLY", "Nuitée(s)"],
-                  ["FLAT", "Forfait / au temps"],
-                ] as const
-              ).map(([id, label]) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() =>
-                    setForm((f) => ({
-                      ...f,
-                      billingMode: id,
-                      rateNote: f.rateNote,
-                    }))
-                  }
-                  className={cn(
-                    "rounded-md px-2 py-2 text-xs font-semibold transition",
-                    form.billingMode === id
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:bg-muted",
-                  )}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-
-            {form.billingMode === "NIGHTLY" ? (
-              <div className="grid gap-2">
-                <div className="grid gap-1.5">
-                  <Label htmlFor="unit-price">Tarif / nuit appliqué</Label>
-                  <Input
-                    id="unit-price"
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    placeholder={catalogPrice ? String(catalogPrice) : "0"}
-                    value={form.unitPriceApplied}
-                    onChange={(e) =>
-                      setForm((f) => ({
-                        ...f,
-                        unitPriceApplied: e.target.value,
-                      }))
-                    }
-                  />
-                  <p className="text-[11px] text-muted-foreground">
-                    Vide = catalogue ({fmt(catalogPrice)}/nuit)
-                    {negotiatedPct != null
-                      ? negotiatedPct > 0
-                        ? ` · négocié −${negotiatedPct} %`
-                        : ` · +${Math.abs(negotiatedPct)} %`
-                      : ""}
-                    {formNights > 0
-                      ? ` · total ${fmt(formNights * appliedNightPrice)}`
-                      : ""}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="grid gap-2">
-                <div className="grid gap-1.5">
-                  <Label htmlFor="flat-amount">Montant forfait</Label>
-                  <Input
-                    id="flat-amount"
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    value={form.flatAmount}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, flatAmount: e.target.value }))
-                    }
-                    required
-                  />
-                </div>
-                <div className="grid gap-1.5">
-                  <Label htmlFor="planned-hours">Durée (heures)</Label>
-                  <Input
-                    id="planned-hours"
-                    type="number"
-                    min={1}
-                    step={1}
-                    value={form.plannedHours}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, plannedHours: e.target.value }))
-                    }
-                    required
-                  />
-                  <p className="text-[11px] text-muted-foreground">
-                    Créneau facturé (ex. 4 h). Pas de règle {HOTEL_CHECKOUT_HOUR}
-                    h — prolongation = même durée au même forfait.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {(form.billingMode === "FLAT" ||
-              (form.unitPriceApplied.trim() !== "" &&
-                Math.abs(appliedNightPrice - catalogPrice) >= 0.01)) && (
-              <div className="grid gap-1.5">
-                <Label htmlFor="rate-note">Motif</Label>
-                <Input
-                  id="rate-note"
-                  value={form.rateNote}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, rateNote: e.target.value }))
-                  }
-                  placeholder={
-                    form.billingMode === "FLAT"
-                      ? "Ex. day use 4 h, accord client…"
-                      : "Ex. réduction fidélité, promo…"
-                  }
-                />
-              </div>
-            )}
-          </div>
-
-          <Button
-            disabled={
-              pending ||
-              !form.guestName ||
-              !form.checkInDate ||
-              !form.checkOutDate ||
-              (form.billingMode === "FLAT" &&
-                (!(Number(form.flatAmount) >= 0) ||
-                  !(Number(form.plannedHours) > 0) ||
-                  !form.rateNote.trim())) ||
-              (form.billingMode === "NIGHTLY" &&
-                form.unitPriceApplied.trim() !== "" &&
-                Math.abs(appliedNightPrice - catalogPrice) >= 0.01 &&
-                !form.rateNote.trim())
-            }
-            onClick={create}
-          >
-            Réserver
-          </Button>
-        </section>
-
-        <section className="space-y-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <h2 className="font-semibold">
-                {listFilter === "actifs"
-                  ? "Séjours actifs"
-                  : "Check-outs du jour"}
-              </h2>
+        <TabsContent value="sejours" className="outline-none">
+          <section className="space-y-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h2 className="font-semibold">
+                  {listFilter === "actifs"
+                    ? "Séjours actifs"
+                    : "Check-outs du jour"}
+                </h2>
               <p className="text-xs text-muted-foreground">
                 {listFilter === "actifs"
                   ? "Réservés et présents (en cours)"
@@ -1176,7 +1235,7 @@ export function SejoursClient(props: {
                                 ? flatSlots > 1
                                   ? `${m.plannedHours} h × ${flatSlots}`
                                   : `${m.plannedHours} h`
-                                : "Forfait"}
+                                : "Passage"}
                             </Badge>
                           ) : (
                             <>
@@ -1207,7 +1266,7 @@ export function SejoursClient(props: {
                             <Badge variant="secondary">Bientôt la fin</Badge>
                           ) : null}
                           {s.billingMode === "FLAT" ? (
-                            <Badge variant="secondary">Forfait</Badge>
+                            <Badge variant="secondary">Passage</Badge>
                           ) : s.unitPriceApplied != null &&
                             Math.abs(
                               (s.unitPriceApplied ?? 0) -
@@ -1226,7 +1285,7 @@ export function SejoursClient(props: {
                           {" · "}
                           solde note {fmtBoth(balance)} ·{" "}
                           {m.isFlat
-                            ? `forfait ${fmt(s.flatAmount ?? 0)}${
+                            ? `passage ${fmt(s.flatAmount ?? 0)}${
                                 m.plannedHours > 0
                                   ? ` · ${m.plannedHours} h`
                                   : ""
@@ -1358,7 +1417,7 @@ export function SejoursClient(props: {
                               title={
                                 s.billingMode === "FLAT" &&
                                 !(s.plannedHours != null && s.plannedHours > 0)
-                                  ? "Durée du forfait manquante"
+                                  ? "Durée du passage manquante"
                                   : undefined
                               }
                               onClick={() => openExtend(s)}
@@ -1390,6 +1449,21 @@ export function SejoursClient(props: {
                               >
                                 Caisse
                               </Button>
+                            ) : balance < -0.01 ? (
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                render={
+                                  <Link
+                                    href={`${branchCaissePath(
+                                      props.organizationId,
+                                      props.branchId,
+                                    )}?tab=folios&queue=1`}
+                                  />
+                                }
+                              >
+                                Rembourser
+                              </Button>
                             ) : null}
                           </>
                         )}
@@ -1400,8 +1474,279 @@ export function SejoursClient(props: {
               })}
             </ul>
           )}
-        </section>
-      </div>
+          </section>
+        </TabsContent>
+      </Tabs>
+
+      <Dialog open={bookingOpen} onOpenChange={setBookingOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              {formImmediateCheckIn
+                ? form.billingMode === "FLAT"
+                  ? "Nouveau passage · check-in"
+                  : "Arrivée aujourd’hui · check-in"
+                : "Nouvelle réservation"}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedRoom
+                ? selectedIsMeeting
+                  ? `Salle ${selectedRoom.number} · entrée ${form.checkInDate}`
+                  : `Ch. ${selectedRoom.number} · entrée ${form.checkInDate}`
+                : `Entrée ${form.checkInDate}`}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+          <div className="grid gap-1.5">
+            <Label>Chambre / salle</Label>
+            <SearchCombobox
+              items={props.rooms.map((r) => ({
+                value: r.id,
+                label:
+                  r.roomType.kind === "MEETING"
+                    ? `Salle ${r.number} · ${r.roomType.name} (${fmt(r.roomType.priceNight)}/créneau${
+                        r.roomType.seatsStandard != null ||
+                        r.roomType.seatsVip != null
+                          ? ` · ${r.roomType.seatsStandard ?? 0} simple / ${r.roomType.seatsVip ?? 0} VIP`
+                          : r.roomType.capacity
+                            ? ` · ${r.roomType.capacity} pl.`
+                            : ""
+                      })`
+                    : `Ch. ${r.number} · ${r.roomType.name} (${fmt(r.roomType.priceNight)}/nuit)`,
+              }))}
+              value={form.roomId}
+              onValueChange={(roomId) => {
+                const room = props.rooms.find((r) => r.id === roomId);
+                const isMeeting = room?.roomType.kind === "MEETING";
+                setForm((f) => ({
+                  ...f,
+                  roomId,
+                  unitPriceApplied: "",
+                  ...(isMeeting
+                    ? {
+                        billingMode: "FLAT" as const,
+                        plannedHours: f.plannedHours || "4",
+                        checkInDate: f.checkInDate || localTodayInputValue(),
+                        checkOutDate:
+                          f.checkInDate || localTodayInputValue(),
+                      }
+                    : {}),
+                }));
+              }}
+              placeholder="Rechercher chambre ou salle…"
+              emptyText="Aucun espace trouvé."
+            />
+            {selectedRoom ? (
+              <p className="text-[11px] text-muted-foreground">
+                {selectedIsMeeting
+                  ? `Salle de réunion · tarif catalogue ${fmt(catalogPrice)}/créneau · ${
+                      selectedRoom.roomType.seatsStandard != null ||
+                      selectedRoom.roomType.seatsVip != null
+                        ? `${selectedRoom.roomType.seatsStandard ?? 0} places simples · ${selectedRoom.roomType.seatsVip ?? 0} VIP`
+                        : `capacité ${selectedRoom.roomType.capacity ?? "—"}`
+                    }`
+                  : `Tarif catalogue · ${fmt(catalogPrice)}/nuit`}
+              </p>
+            ) : null}
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1.2fr_0.8fr]">
+            <div className="grid gap-1.5">
+              <Label>Client</Label>
+              <Input
+                value={form.guestName}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, guestName: e.target.value }))
+                }
+                required
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label>Téléphone</Label>
+              <Input
+                value={form.guestPhone}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, guestPhone: e.target.value }))
+                }
+              />
+            </div>
+          </div>
+          <StayPeriodField
+            checkInDate={form.checkInDate}
+            checkOutDate={form.checkOutDate}
+            allowSameDay={form.billingMode === "FLAT"}
+            onChange={({ checkInDate, checkOutDate }) =>
+              setForm((f) => ({ ...f, checkInDate, checkOutDate }))
+            }
+          />
+
+          <div className="grid gap-2 rounded-xl border border-border/70 bg-muted/20 p-3">
+            <Label>Facturation hébergement</Label>
+            <div className="grid grid-cols-2 gap-1 rounded-lg border border-border/60 bg-background/70 p-1">
+              {(
+                [
+                  ["NIGHTLY", "Nuitée(s)"],
+                  ["FLAT", "Passage"],
+                ] as const
+              ).map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() =>
+                    setForm((f) => {
+                      const today = localTodayInputValue();
+                      if (id === "FLAT") {
+                        return {
+                          ...f,
+                          billingMode: id,
+                          rateNote: f.rateNote,
+                          checkInDate: f.checkInDate || today,
+                          checkOutDate: f.checkInDate || today,
+                          plannedHours: f.plannedHours || "4",
+                        };
+                      }
+                      const inDate = f.checkInDate || today;
+                      let outDate = f.checkOutDate;
+                      if (!outDate || outDate <= inDate) {
+                        const [y, m, d] = inDate.split("-").map(Number);
+                        const next = new Date(y!, (m ?? 1) - 1, (d ?? 1) + 1);
+                        outDate = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}-${String(next.getDate()).padStart(2, "0")}`;
+                      }
+                      return {
+                        ...f,
+                        billingMode: id,
+                        rateNote: f.rateNote,
+                        checkInDate: inDate,
+                        checkOutDate: outDate,
+                      };
+                    })
+                  }
+                  className={cn(
+                    "rounded-md px-2 py-2 text-xs font-semibold transition",
+                    form.billingMode === id
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:bg-muted",
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {form.billingMode === "NIGHTLY" ? (
+              <div className="grid gap-2">
+                <div className="grid gap-1.5">
+                  <Label htmlFor="unit-price">Tarif / nuit appliqué</Label>
+                  <Input
+                    id="unit-price"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder={catalogPrice ? String(catalogPrice) : "0"}
+                    value={form.unitPriceApplied}
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        unitPriceApplied: e.target.value,
+                      }))
+                    }
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Vide = catalogue ({fmt(catalogPrice)}/nuit)
+                    {negotiatedPct != null
+                      ? negotiatedPct > 0
+                        ? ` · négocié −${negotiatedPct} %`
+                        : ` · +${Math.abs(negotiatedPct)} %`
+                      : ""}
+                    {formNights > 0
+                      ? ` · total ${fmt(formNights * appliedNightPrice)}`
+                      : ""}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-2">
+                <div className="grid gap-1.5">
+                  <Label htmlFor="flat-amount">Montant passage</Label>
+                  <Input
+                    id="flat-amount"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={form.flatAmount}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, flatAmount: e.target.value }))
+                    }
+                    required
+                  />
+                </div>
+                <div className="grid gap-1.5">
+                  <Label htmlFor="planned-hours">Durée (heures)</Label>
+                  <Input
+                    id="planned-hours"
+                    type="number"
+                    min={1}
+                    step={1}
+                    value={form.plannedHours}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, plannedHours: e.target.value }))
+                    }
+                    required
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Créneau facturé (ex. 4 h). Pas de règle {HOTEL_CHECKOUT_HOUR}
+                    h — prolongation = même durée au même montant.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {(form.billingMode === "FLAT" ||
+              (form.unitPriceApplied.trim() !== "" &&
+                Math.abs(appliedNightPrice - catalogPrice) >= 0.01)) && (
+              <div className="grid gap-1.5">
+                <Label htmlFor="rate-note">Motif</Label>
+                <Input
+                  id="rate-note"
+                  value={form.rateNote}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, rateNote: e.target.value }))
+                  }
+                  placeholder={
+                    form.billingMode === "FLAT"
+                      ? "Ex. day use 4 h, accord client…"
+                      : "Ex. réduction fidélité, promo…"
+                  }
+                />
+              </div>
+            )}
+          </div>
+
+          <Button
+            disabled={
+              pending ||
+              !form.guestName ||
+              !form.checkInDate ||
+              !form.checkOutDate ||
+              (form.billingMode === "FLAT" &&
+                (!(Number(form.flatAmount) >= 0) ||
+                  !(Number(form.plannedHours) > 0) ||
+                  !form.rateNote.trim())) ||
+              (form.billingMode === "NIGHTLY" &&
+                form.unitPriceApplied.trim() !== "" &&
+                Math.abs(appliedNightPrice - catalogPrice) >= 0.01 &&
+                !form.rateNote.trim())
+            }
+            onClick={create}
+          >
+            {formImmediateCheckIn
+              ? form.billingMode === "FLAT"
+                ? "Check-in passage"
+                : "Check-in"
+                : "Réserver"}
+          </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         open={!!extendTarget}
@@ -1413,12 +1758,12 @@ export function SejoursClient(props: {
           <DialogHeader>
             <DialogTitle>
               {extendTarget?.billingMode === "FLAT"
-                ? "Prolonger le forfait"
+                ? "Prolonger le passage"
                 : "Prolonger le séjour"}
             </DialogTitle>
             <DialogDescription>
               {extendTarget?.billingMode === "FLAT"
-                ? `${extendTarget.guestName} · ch. ${extendTarget.room.number} — ajoute un créneau de ${extendTarget.plannedHours ?? "?"} h au même forfait (sans règle ${HOTEL_CHECKOUT_HOUR}h).`
+                ? `${extendTarget.guestName} · ch. ${extendTarget.room.number} — ajoute un créneau de ${extendTarget.plannedHours ?? "?"} h au même montant (sans règle ${HOTEL_CHECKOUT_HOUR}h).`
                 : extendTarget
                   ? `${extendTarget.guestName} · ch. ${extendTarget.room.number} — les nuitées ajoutées sont facturées sur la note de chambre.`
                   : null}
@@ -1431,7 +1776,7 @@ export function SejoursClient(props: {
                 {fmt(extendTarget.flatAmount ?? 0)}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                Même durée et même montant que le forfait initial.
+                Même durée et même montant que le passage initial.
               </p>
             </div>
           ) : (
@@ -1573,7 +1918,9 @@ export function SejoursClient(props: {
               {checkoutStatement
                 ? checkoutStatement.balance > 0.01
                   ? `Ch. ${checkoutStatement.roomNumber} · solde à mettre en file d’attente caisse.`
-                  : `Ch. ${checkoutStatement.roomNumber} · aucun solde — imprimer la facture générale pour signature client.`
+                  : checkoutStatement.balance < -0.01
+                    ? `Ch. ${checkoutStatement.roomNumber} · trop-perçu · rembourser ${fmt(Math.abs(checkoutStatement.balance))} (nuitées consommées, limite ${HOTEL_CHECKOUT_HOUR}h).`
+                    : `Ch. ${checkoutStatement.roomNumber} · aucun solde — imprimer la facture générale pour signature client.`
                 : `Nuitées recalculées selon les jours consommés (limite ${HOTEL_CHECKOUT_HOUR}h).`}
             </DialogDescription>
           </DialogHeader>
@@ -1597,6 +1944,10 @@ export function SejoursClient(props: {
             {checkoutStatement && checkoutStatement.balance > 0.01 ? (
               <Button disabled={pending} onClick={payCheckoutAtCaisse}>
                 Mettre en file d’attente caisse ({fmt(checkoutStatement.balance)})
+              </Button>
+            ) : checkoutStatement && checkoutStatement.balance < -0.01 ? (
+              <Button disabled={pending} onClick={payCheckoutAtCaisse}>
+                File caisse · rembourser ({fmt(Math.abs(checkoutStatement.balance))})
               </Button>
             ) : (
               <Button disabled={pending} onClick={confirmCheckOut}>

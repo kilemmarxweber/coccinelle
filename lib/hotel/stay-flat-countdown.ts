@@ -103,9 +103,9 @@ export function formatFlatCountdownBanner(
 ) {
   if (opts?.frozen) {
     if (cd.overdue) {
-      return `Forfait clôturé · dépassé ${cd.remainingLabel} · en attente d’encaissement`;
+      return `Passage clôturé · dépassé ${cd.remainingLabel} · en attente d’encaissement`;
     }
-    return `Forfait clôturé · compteur arrêté · en attente d’encaissement`;
+    return `Passage clôturé · compteur arrêté · en attente d’encaissement`;
   }
   if (cd.overdue) {
     return `Temps dépassé ${cd.remainingLabel} · heures supp. à facturer`;

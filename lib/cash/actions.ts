@@ -146,9 +146,21 @@ export async function createPaymentAction(input: {
   orderId?: string;
   amountForeign?: number;
   note?: string;
+  /** Remboursement (montants négatifs) — solde note < 0 après départ anticipé */
+  isRefund?: boolean;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
-  if (!(input.amountCdf > 0)) throw new Error("Montant invalide.");
+  const isRefund = Boolean(input.isRefund);
+  if (isRefund) {
+    if (!(input.amountCdf < -0.01)) {
+      throw new Error("Montant de remboursement invalide.");
+    }
+    if (input.amountForeign != null && !(input.amountForeign < -0.01)) {
+      throw new Error("Montant devises de remboursement invalide.");
+    }
+  } else if (!(input.amountCdf > 0)) {
+    throw new Error("Montant invalide.");
+  }
 
   const cashSession = await getOpenCashSession(input.branchId);
   if (!cashSession) throw new Error("Ouvrez une session de caisse d’abord.");
@@ -170,11 +182,16 @@ export async function createPaymentAction(input: {
         foreignCurrency: rate?.fromCurrency ?? "USD",
         exchangeRateUsed: rate?.rate ?? null,
         cashierUserId: user.id,
-        note: input.note ?? null,
+        note:
+          input.note ??
+          (isRefund ? "Remboursement départ anticipé" : null),
       },
     });
 
     if (input.orderId) {
+      if (isRefund) {
+        throw new Error("Remboursement commande non pris en charge ici.");
+      }
       const existing = await tx.hotelOrder.findFirst({
         where: { id: input.orderId, branchId: input.branchId },
         select: { deliveredAt: true, tableLabel: true },
@@ -208,7 +225,7 @@ export async function createPaymentAction(input: {
       const folio = await tx.folio.findFirst({
         where: { id: input.folioId, branchId: input.branchId },
         include: {
-          stay: true,
+          stay: { include: { room: { include: { roomType: true } } } },
           lines: true,
           payments: true,
         },
@@ -218,18 +235,23 @@ export async function createPaymentAction(input: {
         const paid = folio.payments.reduce(
           (s, pay) =>
             s +
-            (pay.amountForeign != null && pay.amountForeign > 0
+            (pay.amountForeign != null && pay.amountForeign !== 0
               ? pay.amountForeign
               : pay.amountCdf),
           0,
         );
-        if (charges - paid <= 0.01) {
-          // Note soldée : plus rien à encaisser — clôturer + check-out si besoin
+        const folioBalance = charges - paid;
+        if (Math.abs(folioBalance) <= 0.01) {
+          // Note soldée (payée ou remboursée) — clôturer + check-out si besoin
           await tx.folio.update({
             where: { id: folio.id },
             data: { closed: true, checkoutQueuedAt: null },
           });
           if (folio.stay && folio.stay.status === "CHECKED_IN") {
+            const freeStatus =
+              folio.stay.room.roomType.kind === "MEETING"
+                ? "AVAILABLE"
+                : "CLEANING";
             await tx.hotelStay.update({
               where: { id: folio.stay.id },
               data: {
@@ -239,12 +261,14 @@ export async function createPaymentAction(input: {
             });
             await tx.hotelRoom.update({
               where: { id: folio.stay.roomId },
-              data: { status: "CLEANING" },
+              data: { status: freeStatus },
             });
             await tx.branchNotification.create({
               data: {
                 branchId: input.branchId,
-                title: "Check-out après encaissement",
+                title: isRefund
+                  ? "Check-out après remboursement"
+                  : "Check-out après encaissement",
                 body: `${folio.stay.guestName} · note soldée (${receiptNumber})`,
                 kind: "stay_checkout",
                 href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/sejours`,
@@ -277,7 +301,10 @@ export async function getFolioBalance(folioId: string) {
   // Folio hôtel en USD : priorité amountForeign
   const paid = payments.reduce(
     (s, p) =>
-      s + (p.amountForeign != null && p.amountForeign > 0 ? p.amountForeign : p.amountCdf),
+      s +
+      (p.amountForeign != null && p.amountForeign !== 0
+        ? p.amountForeign
+        : p.amountCdf),
     0,
   );
   return charges - paid;
@@ -302,7 +329,7 @@ export async function listOpenFoliosAction(
     const paid = f.payments.reduce(
       (s, p) =>
         s +
-        (p.amountForeign != null && p.amountForeign > 0
+        (p.amountForeign != null && p.amountForeign !== 0
           ? p.amountForeign
           : p.amountCdf),
       0,

@@ -14,7 +14,7 @@ export function isNoteChambreMode(mode: string | null | undefined) {
 
 export const FOLIO_SECTION_LABEL: Record<FolioLineKind, string> = {
   NIGHT: "Nuitées",
-  STAY_FLAT: "Forfait séjour",
+  STAY_FLAT: "Passage",
   STAY_OVERTIME: "Heures supplémentaires",
   FNB: "Consommations",
   PRODUCT: "Produits",
@@ -68,7 +68,7 @@ function paymentUsd(p: {
   amountForeign: number | null;
   amountCdf: number;
 }) {
-  return p.amountForeign != null && p.amountForeign > 0
+  return p.amountForeign != null && p.amountForeign !== 0
     ? p.amountForeign
     : p.amountCdf;
 }

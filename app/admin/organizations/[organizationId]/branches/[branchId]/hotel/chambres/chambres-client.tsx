@@ -446,6 +446,24 @@ export function ChambresClient(props: {
                   <div>
                     <h2 className="text-sm font-semibold">
                       {copy.cardPrefix} {room.number}
+                      <span className="font-normal text-muted-foreground">
+                        {" "}
+                        →{" "}
+                      </span>
+                      <span
+                        className={cn(
+                          "font-semibold lowercase",
+                          meta.className.includes("emerald")
+                            ? "text-emerald-700 dark:text-emerald-300"
+                            : meta.className.includes("sky")
+                              ? "text-sky-700 dark:text-sky-300"
+                              : meta.className.includes("rose")
+                                ? "text-rose-700 dark:text-rose-300"
+                                : "text-muted-foreground",
+                        )}
+                      >
+                        {meta.label.toLowerCase()}
+                      </span>
                     </h2>
                     <p className="mt-0.5 text-sm font-medium tabular-nums text-primary">
                       {fmt(room.roomType.priceNight)}
