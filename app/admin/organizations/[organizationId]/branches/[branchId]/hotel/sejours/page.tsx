@@ -37,11 +37,18 @@ export default async function SejoursPage({ params, searchParams }: PageProps) {
     getActiveExchangeRate(branchId),
   ]);
 
+  const roomsOrdered = [...rooms].sort((a, b) => {
+    const ka = a.roomType.kind === "MEETING" ? 1 : 0;
+    const kb = b.roomType.kind === "MEETING" ? 1 : 0;
+    if (ka !== kb) return ka - kb;
+    return a.number.localeCompare(b.number, "fr");
+  });
+
   return (
     <SejoursClient
       organizationId={organizationId}
       branchId={branchId}
-      rooms={rooms}
+      rooms={roomsOrdered}
       stays={stays}
       yearStays={yearStays}
       initialYear={year}

@@ -28,10 +28,18 @@ export type AggregateHotelStay = {
 
 export type HotelStayAvgAggregateOutputType = {
   adults: number | null
+  catalogUnitPrice: number | null
+  unitPriceApplied: number | null
+  flatAmount: number | null
+  plannedHours: number | null
 }
 
 export type HotelStaySumAggregateOutputType = {
   adults: number | null
+  catalogUnitPrice: number | null
+  unitPriceApplied: number | null
+  flatAmount: number | null
+  plannedHours: number | null
 }
 
 export type HotelStayMinAggregateOutputType = {
@@ -46,6 +54,13 @@ export type HotelStayMinAggregateOutputType = {
   status: $Enums.HotelStayStatus | null
   adults: number | null
   notes: string | null
+  billingMode: $Enums.StayBillingMode | null
+  catalogUnitPrice: number | null
+  unitPriceApplied: number | null
+  flatAmount: number | null
+  plannedHours: number | null
+  rateNote: string | null
+  negotiatedByUserId: string | null
   checkedInAt: Date | null
   checkedOutAt: Date | null
   createdAt: Date | null
@@ -64,6 +79,13 @@ export type HotelStayMaxAggregateOutputType = {
   status: $Enums.HotelStayStatus | null
   adults: number | null
   notes: string | null
+  billingMode: $Enums.StayBillingMode | null
+  catalogUnitPrice: number | null
+  unitPriceApplied: number | null
+  flatAmount: number | null
+  plannedHours: number | null
+  rateNote: string | null
+  negotiatedByUserId: string | null
   checkedInAt: Date | null
   checkedOutAt: Date | null
   createdAt: Date | null
@@ -82,6 +104,13 @@ export type HotelStayCountAggregateOutputType = {
   status: number
   adults: number
   notes: number
+  billingMode: number
+  catalogUnitPrice: number
+  unitPriceApplied: number
+  flatAmount: number
+  plannedHours: number
+  rateNote: number
+  negotiatedByUserId: number
   checkedInAt: number
   checkedOutAt: number
   createdAt: number
@@ -92,10 +121,18 @@ export type HotelStayCountAggregateOutputType = {
 
 export type HotelStayAvgAggregateInputType = {
   adults?: true
+  catalogUnitPrice?: true
+  unitPriceApplied?: true
+  flatAmount?: true
+  plannedHours?: true
 }
 
 export type HotelStaySumAggregateInputType = {
   adults?: true
+  catalogUnitPrice?: true
+  unitPriceApplied?: true
+  flatAmount?: true
+  plannedHours?: true
 }
 
 export type HotelStayMinAggregateInputType = {
@@ -110,6 +147,13 @@ export type HotelStayMinAggregateInputType = {
   status?: true
   adults?: true
   notes?: true
+  billingMode?: true
+  catalogUnitPrice?: true
+  unitPriceApplied?: true
+  flatAmount?: true
+  plannedHours?: true
+  rateNote?: true
+  negotiatedByUserId?: true
   checkedInAt?: true
   checkedOutAt?: true
   createdAt?: true
@@ -128,6 +172,13 @@ export type HotelStayMaxAggregateInputType = {
   status?: true
   adults?: true
   notes?: true
+  billingMode?: true
+  catalogUnitPrice?: true
+  unitPriceApplied?: true
+  flatAmount?: true
+  plannedHours?: true
+  rateNote?: true
+  negotiatedByUserId?: true
   checkedInAt?: true
   checkedOutAt?: true
   createdAt?: true
@@ -146,6 +197,13 @@ export type HotelStayCountAggregateInputType = {
   status?: true
   adults?: true
   notes?: true
+  billingMode?: true
+  catalogUnitPrice?: true
+  unitPriceApplied?: true
+  flatAmount?: true
+  plannedHours?: true
+  rateNote?: true
+  negotiatedByUserId?: true
   checkedInAt?: true
   checkedOutAt?: true
   createdAt?: true
@@ -251,6 +309,13 @@ export type HotelStayGroupByOutputType = {
   status: $Enums.HotelStayStatus
   adults: number
   notes: string | null
+  billingMode: $Enums.StayBillingMode
+  catalogUnitPrice: number
+  unitPriceApplied: number | null
+  flatAmount: number | null
+  plannedHours: number | null
+  rateNote: string | null
+  negotiatedByUserId: string | null
   checkedInAt: Date | null
   checkedOutAt: Date | null
   createdAt: Date
@@ -292,6 +357,13 @@ export type HotelStayWhereInput = {
   status?: Prisma.EnumHotelStayStatusFilter<"HotelStay"> | $Enums.HotelStayStatus
   adults?: Prisma.IntFilter<"HotelStay"> | number
   notes?: Prisma.StringNullableFilter<"HotelStay"> | string | null
+  billingMode?: Prisma.EnumStayBillingModeFilter<"HotelStay"> | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFilter<"HotelStay"> | number
+  unitPriceApplied?: Prisma.FloatNullableFilter<"HotelStay"> | number | null
+  flatAmount?: Prisma.FloatNullableFilter<"HotelStay"> | number | null
+  plannedHours?: Prisma.IntNullableFilter<"HotelStay"> | number | null
+  rateNote?: Prisma.StringNullableFilter<"HotelStay"> | string | null
+  negotiatedByUserId?: Prisma.StringNullableFilter<"HotelStay"> | string | null
   checkedInAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   checkedOutAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"HotelStay"> | Date | string
@@ -314,6 +386,13 @@ export type HotelStayOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   adults?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingMode?: Prisma.SortOrder
+  catalogUnitPrice?: Prisma.SortOrder
+  unitPriceApplied?: Prisma.SortOrderInput | Prisma.SortOrder
+  flatAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  plannedHours?: Prisma.SortOrderInput | Prisma.SortOrder
+  rateNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  negotiatedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   checkedInAt?: Prisma.SortOrderInput | Prisma.SortOrder
   checkedOutAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -339,6 +418,13 @@ export type HotelStayWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumHotelStayStatusFilter<"HotelStay"> | $Enums.HotelStayStatus
   adults?: Prisma.IntFilter<"HotelStay"> | number
   notes?: Prisma.StringNullableFilter<"HotelStay"> | string | null
+  billingMode?: Prisma.EnumStayBillingModeFilter<"HotelStay"> | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFilter<"HotelStay"> | number
+  unitPriceApplied?: Prisma.FloatNullableFilter<"HotelStay"> | number | null
+  flatAmount?: Prisma.FloatNullableFilter<"HotelStay"> | number | null
+  plannedHours?: Prisma.IntNullableFilter<"HotelStay"> | number | null
+  rateNote?: Prisma.StringNullableFilter<"HotelStay"> | string | null
+  negotiatedByUserId?: Prisma.StringNullableFilter<"HotelStay"> | string | null
   checkedInAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   checkedOutAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"HotelStay"> | Date | string
@@ -361,6 +447,13 @@ export type HotelStayOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   adults?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingMode?: Prisma.SortOrder
+  catalogUnitPrice?: Prisma.SortOrder
+  unitPriceApplied?: Prisma.SortOrderInput | Prisma.SortOrder
+  flatAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  plannedHours?: Prisma.SortOrderInput | Prisma.SortOrder
+  rateNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  negotiatedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   checkedInAt?: Prisma.SortOrderInput | Prisma.SortOrder
   checkedOutAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -387,6 +480,13 @@ export type HotelStayScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumHotelStayStatusWithAggregatesFilter<"HotelStay"> | $Enums.HotelStayStatus
   adults?: Prisma.IntWithAggregatesFilter<"HotelStay"> | number
   notes?: Prisma.StringNullableWithAggregatesFilter<"HotelStay"> | string | null
+  billingMode?: Prisma.EnumStayBillingModeWithAggregatesFilter<"HotelStay"> | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatWithAggregatesFilter<"HotelStay"> | number
+  unitPriceApplied?: Prisma.FloatNullableWithAggregatesFilter<"HotelStay"> | number | null
+  flatAmount?: Prisma.FloatNullableWithAggregatesFilter<"HotelStay"> | number | null
+  plannedHours?: Prisma.IntNullableWithAggregatesFilter<"HotelStay"> | number | null
+  rateNote?: Prisma.StringNullableWithAggregatesFilter<"HotelStay"> | string | null
+  negotiatedByUserId?: Prisma.StringNullableWithAggregatesFilter<"HotelStay"> | string | null
   checkedInAt?: Prisma.DateTimeNullableWithAggregatesFilter<"HotelStay"> | Date | string | null
   checkedOutAt?: Prisma.DateTimeNullableWithAggregatesFilter<"HotelStay"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"HotelStay"> | Date | string
@@ -403,6 +503,13 @@ export type HotelStayCreateInput = {
   status?: $Enums.HotelStayStatus
   adults?: number
   notes?: string | null
+  billingMode?: $Enums.StayBillingMode
+  catalogUnitPrice?: number
+  unitPriceApplied?: number | null
+  flatAmount?: number | null
+  plannedHours?: number | null
+  rateNote?: string | null
+  negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
   createdAt?: Date | string
@@ -425,6 +532,13 @@ export type HotelStayUncheckedCreateInput = {
   status?: $Enums.HotelStayStatus
   adults?: number
   notes?: string | null
+  billingMode?: $Enums.StayBillingMode
+  catalogUnitPrice?: number
+  unitPriceApplied?: number | null
+  flatAmount?: number | null
+  plannedHours?: number | null
+  rateNote?: string | null
+  negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
   createdAt?: Date | string
@@ -443,6 +557,13 @@ export type HotelStayUpdateInput = {
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
   adults?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMode?: Prisma.EnumStayBillingModeFieldUpdateOperationsInput | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  unitPriceApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -465,6 +586,13 @@ export type HotelStayUncheckedUpdateInput = {
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
   adults?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMode?: Prisma.EnumStayBillingModeFieldUpdateOperationsInput | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  unitPriceApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -485,6 +613,13 @@ export type HotelStayCreateManyInput = {
   status?: $Enums.HotelStayStatus
   adults?: number
   notes?: string | null
+  billingMode?: $Enums.StayBillingMode
+  catalogUnitPrice?: number
+  unitPriceApplied?: number | null
+  flatAmount?: number | null
+  plannedHours?: number | null
+  rateNote?: string | null
+  negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
   createdAt?: Date | string
@@ -501,6 +636,13 @@ export type HotelStayUpdateManyMutationInput = {
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
   adults?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMode?: Prisma.EnumStayBillingModeFieldUpdateOperationsInput | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  unitPriceApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -519,6 +661,13 @@ export type HotelStayUncheckedUpdateManyInput = {
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
   adults?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMode?: Prisma.EnumStayBillingModeFieldUpdateOperationsInput | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  unitPriceApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -547,6 +696,13 @@ export type HotelStayCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   adults?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  billingMode?: Prisma.SortOrder
+  catalogUnitPrice?: Prisma.SortOrder
+  unitPriceApplied?: Prisma.SortOrder
+  flatAmount?: Prisma.SortOrder
+  plannedHours?: Prisma.SortOrder
+  rateNote?: Prisma.SortOrder
+  negotiatedByUserId?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrder
   checkedOutAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -555,6 +711,10 @@ export type HotelStayCountOrderByAggregateInput = {
 
 export type HotelStayAvgOrderByAggregateInput = {
   adults?: Prisma.SortOrder
+  catalogUnitPrice?: Prisma.SortOrder
+  unitPriceApplied?: Prisma.SortOrder
+  flatAmount?: Prisma.SortOrder
+  plannedHours?: Prisma.SortOrder
 }
 
 export type HotelStayMaxOrderByAggregateInput = {
@@ -569,6 +729,13 @@ export type HotelStayMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   adults?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  billingMode?: Prisma.SortOrder
+  catalogUnitPrice?: Prisma.SortOrder
+  unitPriceApplied?: Prisma.SortOrder
+  flatAmount?: Prisma.SortOrder
+  plannedHours?: Prisma.SortOrder
+  rateNote?: Prisma.SortOrder
+  negotiatedByUserId?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrder
   checkedOutAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -587,6 +754,13 @@ export type HotelStayMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   adults?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  billingMode?: Prisma.SortOrder
+  catalogUnitPrice?: Prisma.SortOrder
+  unitPriceApplied?: Prisma.SortOrder
+  flatAmount?: Prisma.SortOrder
+  plannedHours?: Prisma.SortOrder
+  rateNote?: Prisma.SortOrder
+  negotiatedByUserId?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrder
   checkedOutAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -595,6 +769,10 @@ export type HotelStayMinOrderByAggregateInput = {
 
 export type HotelStaySumOrderByAggregateInput = {
   adults?: Prisma.SortOrder
+  catalogUnitPrice?: Prisma.SortOrder
+  unitPriceApplied?: Prisma.SortOrder
+  flatAmount?: Prisma.SortOrder
+  plannedHours?: Prisma.SortOrder
 }
 
 export type HotelStayNullableScalarRelationFilter = {
@@ -690,6 +868,10 @@ export type EnumHotelStayStatusFieldUpdateOperationsInput = {
   set?: $Enums.HotelStayStatus
 }
 
+export type EnumStayBillingModeFieldUpdateOperationsInput = {
+  set?: $Enums.StayBillingMode
+}
+
 export type HotelStayCreateNestedOneWithoutFolioInput = {
   create?: Prisma.XOR<Prisma.HotelStayCreateWithoutFolioInput, Prisma.HotelStayUncheckedCreateWithoutFolioInput>
   connectOrCreate?: Prisma.HotelStayCreateOrConnectWithoutFolioInput
@@ -732,6 +914,13 @@ export type HotelStayCreateWithoutBranchInput = {
   status?: $Enums.HotelStayStatus
   adults?: number
   notes?: string | null
+  billingMode?: $Enums.StayBillingMode
+  catalogUnitPrice?: number
+  unitPriceApplied?: number | null
+  flatAmount?: number | null
+  plannedHours?: number | null
+  rateNote?: string | null
+  negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
   createdAt?: Date | string
@@ -752,6 +941,13 @@ export type HotelStayUncheckedCreateWithoutBranchInput = {
   status?: $Enums.HotelStayStatus
   adults?: number
   notes?: string | null
+  billingMode?: $Enums.StayBillingMode
+  catalogUnitPrice?: number
+  unitPriceApplied?: number | null
+  flatAmount?: number | null
+  plannedHours?: number | null
+  rateNote?: string | null
+  negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
   createdAt?: Date | string
@@ -801,6 +997,13 @@ export type HotelStayScalarWhereInput = {
   status?: Prisma.EnumHotelStayStatusFilter<"HotelStay"> | $Enums.HotelStayStatus
   adults?: Prisma.IntFilter<"HotelStay"> | number
   notes?: Prisma.StringNullableFilter<"HotelStay"> | string | null
+  billingMode?: Prisma.EnumStayBillingModeFilter<"HotelStay"> | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFilter<"HotelStay"> | number
+  unitPriceApplied?: Prisma.FloatNullableFilter<"HotelStay"> | number | null
+  flatAmount?: Prisma.FloatNullableFilter<"HotelStay"> | number | null
+  plannedHours?: Prisma.IntNullableFilter<"HotelStay"> | number | null
+  rateNote?: Prisma.StringNullableFilter<"HotelStay"> | string | null
+  negotiatedByUserId?: Prisma.StringNullableFilter<"HotelStay"> | string | null
   checkedInAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   checkedOutAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"HotelStay"> | Date | string
@@ -817,6 +1020,13 @@ export type HotelStayCreateWithoutRoomInput = {
   status?: $Enums.HotelStayStatus
   adults?: number
   notes?: string | null
+  billingMode?: $Enums.StayBillingMode
+  catalogUnitPrice?: number
+  unitPriceApplied?: number | null
+  flatAmount?: number | null
+  plannedHours?: number | null
+  rateNote?: string | null
+  negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
   createdAt?: Date | string
@@ -837,6 +1047,13 @@ export type HotelStayUncheckedCreateWithoutRoomInput = {
   status?: $Enums.HotelStayStatus
   adults?: number
   notes?: string | null
+  billingMode?: $Enums.StayBillingMode
+  catalogUnitPrice?: number
+  unitPriceApplied?: number | null
+  flatAmount?: number | null
+  plannedHours?: number | null
+  rateNote?: string | null
+  negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
   createdAt?: Date | string
@@ -881,6 +1098,13 @@ export type HotelStayCreateWithoutFolioInput = {
   status?: $Enums.HotelStayStatus
   adults?: number
   notes?: string | null
+  billingMode?: $Enums.StayBillingMode
+  catalogUnitPrice?: number
+  unitPriceApplied?: number | null
+  flatAmount?: number | null
+  plannedHours?: number | null
+  rateNote?: string | null
+  negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
   createdAt?: Date | string
@@ -902,6 +1126,13 @@ export type HotelStayUncheckedCreateWithoutFolioInput = {
   status?: $Enums.HotelStayStatus
   adults?: number
   notes?: string | null
+  billingMode?: $Enums.StayBillingMode
+  catalogUnitPrice?: number
+  unitPriceApplied?: number | null
+  flatAmount?: number | null
+  plannedHours?: number | null
+  rateNote?: string | null
+  negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
   createdAt?: Date | string
@@ -935,6 +1166,13 @@ export type HotelStayUpdateWithoutFolioInput = {
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
   adults?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMode?: Prisma.EnumStayBillingModeFieldUpdateOperationsInput | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  unitPriceApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -956,6 +1194,13 @@ export type HotelStayUncheckedUpdateWithoutFolioInput = {
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
   adults?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMode?: Prisma.EnumStayBillingModeFieldUpdateOperationsInput | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  unitPriceApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -973,6 +1218,13 @@ export type HotelStayCreateWithoutOrdersInput = {
   status?: $Enums.HotelStayStatus
   adults?: number
   notes?: string | null
+  billingMode?: $Enums.StayBillingMode
+  catalogUnitPrice?: number
+  unitPriceApplied?: number | null
+  flatAmount?: number | null
+  plannedHours?: number | null
+  rateNote?: string | null
+  negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
   createdAt?: Date | string
@@ -994,6 +1246,13 @@ export type HotelStayUncheckedCreateWithoutOrdersInput = {
   status?: $Enums.HotelStayStatus
   adults?: number
   notes?: string | null
+  billingMode?: $Enums.StayBillingMode
+  catalogUnitPrice?: number
+  unitPriceApplied?: number | null
+  flatAmount?: number | null
+  plannedHours?: number | null
+  rateNote?: string | null
+  negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
   createdAt?: Date | string
@@ -1027,6 +1286,13 @@ export type HotelStayUpdateWithoutOrdersInput = {
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
   adults?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMode?: Prisma.EnumStayBillingModeFieldUpdateOperationsInput | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  unitPriceApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1048,6 +1314,13 @@ export type HotelStayUncheckedUpdateWithoutOrdersInput = {
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
   adults?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMode?: Prisma.EnumStayBillingModeFieldUpdateOperationsInput | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  unitPriceApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1066,6 +1339,13 @@ export type HotelStayCreateManyBranchInput = {
   status?: $Enums.HotelStayStatus
   adults?: number
   notes?: string | null
+  billingMode?: $Enums.StayBillingMode
+  catalogUnitPrice?: number
+  unitPriceApplied?: number | null
+  flatAmount?: number | null
+  plannedHours?: number | null
+  rateNote?: string | null
+  negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
   createdAt?: Date | string
@@ -1082,6 +1362,13 @@ export type HotelStayUpdateWithoutBranchInput = {
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
   adults?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMode?: Prisma.EnumStayBillingModeFieldUpdateOperationsInput | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  unitPriceApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1102,6 +1389,13 @@ export type HotelStayUncheckedUpdateWithoutBranchInput = {
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
   adults?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMode?: Prisma.EnumStayBillingModeFieldUpdateOperationsInput | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  unitPriceApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1121,6 +1415,13 @@ export type HotelStayUncheckedUpdateManyWithoutBranchInput = {
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
   adults?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMode?: Prisma.EnumStayBillingModeFieldUpdateOperationsInput | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  unitPriceApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1138,6 +1439,13 @@ export type HotelStayCreateManyRoomInput = {
   status?: $Enums.HotelStayStatus
   adults?: number
   notes?: string | null
+  billingMode?: $Enums.StayBillingMode
+  catalogUnitPrice?: number
+  unitPriceApplied?: number | null
+  flatAmount?: number | null
+  plannedHours?: number | null
+  rateNote?: string | null
+  negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
   createdAt?: Date | string
@@ -1154,6 +1462,13 @@ export type HotelStayUpdateWithoutRoomInput = {
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
   adults?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMode?: Prisma.EnumStayBillingModeFieldUpdateOperationsInput | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  unitPriceApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1174,6 +1489,13 @@ export type HotelStayUncheckedUpdateWithoutRoomInput = {
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
   adults?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMode?: Prisma.EnumStayBillingModeFieldUpdateOperationsInput | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  unitPriceApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1193,6 +1515,13 @@ export type HotelStayUncheckedUpdateManyWithoutRoomInput = {
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
   adults?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMode?: Prisma.EnumStayBillingModeFieldUpdateOperationsInput | $Enums.StayBillingMode
+  catalogUnitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  unitPriceApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1242,6 +1571,13 @@ export type HotelStaySelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   status?: boolean
   adults?: boolean
   notes?: boolean
+  billingMode?: boolean
+  catalogUnitPrice?: boolean
+  unitPriceApplied?: boolean
+  flatAmount?: boolean
+  plannedHours?: boolean
+  rateNote?: boolean
+  negotiatedByUserId?: boolean
   checkedInAt?: boolean
   checkedOutAt?: boolean
   createdAt?: boolean
@@ -1265,6 +1601,13 @@ export type HotelStaySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   status?: boolean
   adults?: boolean
   notes?: boolean
+  billingMode?: boolean
+  catalogUnitPrice?: boolean
+  unitPriceApplied?: boolean
+  flatAmount?: boolean
+  plannedHours?: boolean
+  rateNote?: boolean
+  negotiatedByUserId?: boolean
   checkedInAt?: boolean
   checkedOutAt?: boolean
   createdAt?: boolean
@@ -1285,6 +1628,13 @@ export type HotelStaySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   status?: boolean
   adults?: boolean
   notes?: boolean
+  billingMode?: boolean
+  catalogUnitPrice?: boolean
+  unitPriceApplied?: boolean
+  flatAmount?: boolean
+  plannedHours?: boolean
+  rateNote?: boolean
+  negotiatedByUserId?: boolean
   checkedInAt?: boolean
   checkedOutAt?: boolean
   createdAt?: boolean
@@ -1305,13 +1655,20 @@ export type HotelStaySelectScalar = {
   status?: boolean
   adults?: boolean
   notes?: boolean
+  billingMode?: boolean
+  catalogUnitPrice?: boolean
+  unitPriceApplied?: boolean
+  flatAmount?: boolean
+  plannedHours?: boolean
+  rateNote?: boolean
+  negotiatedByUserId?: boolean
   checkedInAt?: boolean
   checkedOutAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type HotelStayOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "roomId" | "guestName" | "guestPhone" | "guestEmail" | "checkInDate" | "checkOutDate" | "status" | "adults" | "notes" | "checkedInAt" | "checkedOutAt" | "createdAt" | "updatedAt", ExtArgs["result"]["hotelStay"]>
+export type HotelStayOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "roomId" | "guestName" | "guestPhone" | "guestEmail" | "checkInDate" | "checkOutDate" | "status" | "adults" | "notes" | "billingMode" | "catalogUnitPrice" | "unitPriceApplied" | "flatAmount" | "plannedHours" | "rateNote" | "negotiatedByUserId" | "checkedInAt" | "checkedOutAt" | "createdAt" | "updatedAt", ExtArgs["result"]["hotelStay"]>
 export type HotelStayInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   room?: boolean | Prisma.HotelRoomDefaultArgs<ExtArgs>
@@ -1348,6 +1705,31 @@ export type $HotelStayPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     status: $Enums.HotelStayStatus
     adults: number
     notes: string | null
+    /**
+     * NIGHTLY = nuits × tarif · FLAT = forfait / au temps
+     */
+    billingMode: $Enums.StayBillingMode
+    /**
+     * Snapshot du priceNight catalogue à la création
+     */
+    catalogUnitPrice: number
+    /**
+     * Prix / nuit négocié (NIGHTLY) ; null = catalogue
+     */
+    unitPriceApplied: number | null
+    /**
+     * Montant forfait (FLAT)
+     */
+    flatAmount: number | null
+    /**
+     * Durée indicative en heures (FLAT)
+     */
+    plannedHours: number | null
+    /**
+     * Motif de négociation / forfait
+     */
+    rateNote: string | null
+    negotiatedByUserId: string | null
     checkedInAt: Date | null
     checkedOutAt: Date | null
     createdAt: Date
@@ -1790,6 +2172,13 @@ export interface HotelStayFieldRefs {
   readonly status: Prisma.FieldRef<"HotelStay", 'HotelStayStatus'>
   readonly adults: Prisma.FieldRef<"HotelStay", 'Int'>
   readonly notes: Prisma.FieldRef<"HotelStay", 'String'>
+  readonly billingMode: Prisma.FieldRef<"HotelStay", 'StayBillingMode'>
+  readonly catalogUnitPrice: Prisma.FieldRef<"HotelStay", 'Float'>
+  readonly unitPriceApplied: Prisma.FieldRef<"HotelStay", 'Float'>
+  readonly flatAmount: Prisma.FieldRef<"HotelStay", 'Float'>
+  readonly plannedHours: Prisma.FieldRef<"HotelStay", 'Int'>
+  readonly rateNote: Prisma.FieldRef<"HotelStay", 'String'>
+  readonly negotiatedByUserId: Prisma.FieldRef<"HotelStay", 'String'>
   readonly checkedInAt: Prisma.FieldRef<"HotelStay", 'DateTime'>
   readonly checkedOutAt: Prisma.FieldRef<"HotelStay", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"HotelStay", 'DateTime'>

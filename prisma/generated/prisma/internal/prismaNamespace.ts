@@ -3401,7 +3401,10 @@ export const HotelRoomTypeScalarFieldEnum = {
   name: 'name',
   description: 'description',
   capacity: 'capacity',
+  seatsStandard: 'seatsStandard',
+  seatsVip: 'seatsVip',
   priceNight: 'priceNight',
+  kind: 'kind',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -3492,6 +3495,13 @@ export const HotelStayScalarFieldEnum = {
   status: 'status',
   adults: 'adults',
   notes: 'notes',
+  billingMode: 'billingMode',
+  catalogUnitPrice: 'catalogUnitPrice',
+  unitPriceApplied: 'unitPriceApplied',
+  flatAmount: 'flatAmount',
+  plannedHours: 'plannedHours',
+  rateNote: 'rateNote',
+  negotiatedByUserId: 'negotiatedByUserId',
   checkedInAt: 'checkedInAt',
   checkedOutAt: 'checkedOutAt',
   createdAt: 'createdAt',
@@ -3982,6 +3992,20 @@ export type ListEnumBranchMemberStatusFieldRefInput<$PrismaModel> = FieldRefInpu
 
 
 /**
+ * Reference to a field of type 'HotelSpaceKind'
+ */
+export type EnumHotelSpaceKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelSpaceKind'>
+    
+
+
+/**
+ * Reference to a field of type 'HotelSpaceKind[]'
+ */
+export type ListEnumHotelSpaceKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelSpaceKind[]'>
+    
+
+
+/**
  * Reference to a field of type 'HotelRoomStatus'
  */
 export type EnumHotelRoomStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelRoomStatus'>
@@ -4020,6 +4044,20 @@ export type EnumHotelStayStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$
  * Reference to a field of type 'HotelStayStatus[]'
  */
 export type ListEnumHotelStayStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelStayStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'StayBillingMode'
+ */
+export type EnumStayBillingModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StayBillingMode'>
+    
+
+
+/**
+ * Reference to a field of type 'StayBillingMode[]'
+ */
+export type ListEnumStayBillingModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StayBillingMode[]'>
     
 
 

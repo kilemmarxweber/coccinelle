@@ -195,6 +195,8 @@ export type HotelStayStatus = (typeof HotelStayStatus)[keyof typeof HotelStaySta
 
 export const FolioLineKind = {
   NIGHT: 'NIGHT',
+  STAY_FLAT: 'STAY_FLAT',
+  STAY_OVERTIME: 'STAY_OVERTIME',
   FNB: 'FNB',
   PRODUCT: 'PRODUCT',
   TAX: 'TAX',
@@ -202,6 +204,22 @@ export const FolioLineKind = {
 } as const
 
 export type FolioLineKind = (typeof FolioLineKind)[keyof typeof FolioLineKind]
+
+
+export const StayBillingMode = {
+  NIGHTLY: 'NIGHTLY',
+  FLAT: 'FLAT'
+} as const
+
+export type StayBillingMode = (typeof StayBillingMode)[keyof typeof StayBillingMode]
+
+
+export const HotelSpaceKind = {
+  ROOM: 'ROOM',
+  MEETING: 'MEETING'
+} as const
+
+export type HotelSpaceKind = (typeof HotelSpaceKind)[keyof typeof HotelSpaceKind]
 
 
 export const HotelOrderStatus = {

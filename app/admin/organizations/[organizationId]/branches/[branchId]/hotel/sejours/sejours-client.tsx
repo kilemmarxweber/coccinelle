@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -25,6 +25,11 @@ import {
   prepareStayCheckoutBillingAction,
 } from "@/lib/hotel/actions";
 import { HOTEL_CHECKOUT_HOUR } from "@/lib/hotel/constants";
+import {
+  flatStayCountdown,
+  formatFlatCountdownBanner,
+} from "@/lib/hotel/stay-flat-countdown";
+import { computeFlatOvertimeBilling } from "@/lib/hotel/stay-rate";
 import { branchCaissePath } from "@/lib/branch/paths";
 import {
   formatBothAmounts,
@@ -43,7 +48,14 @@ type Room = {
   id: string;
   number: string;
   status: string;
-  roomType: { name: string; priceNight: number };
+  roomType: {
+    name: string;
+    priceNight: number;
+    capacity?: number;
+    kind?: string;
+    seatsStandard?: number | null;
+    seatsVip?: number | null;
+  };
 };
 
 type Stay = {
@@ -53,12 +65,20 @@ type Stay = {
   checkOutDate: string | Date;
   status: string;
   roomId: string;
+  checkedInAt?: string | Date | null;
+  billingMode?: string;
+  catalogUnitPrice?: number;
+  unitPriceApplied?: number | null;
+  flatAmount?: number | null;
+  plannedHours?: number | null;
+  rateNote?: string | null;
   room: {
     number: string;
-    roomType: { name: string; priceNight: number };
+    roomType: { name: string; priceNight: number; kind?: string };
   };
   folio: {
     id: string;
+    checkoutQueuedAt?: string | Date | null;
     lines: {
       amount: number;
       description?: string;
@@ -131,9 +151,13 @@ function stayMetrics(stay: Stay, now = new Date()) {
   const today = new Date(
     Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()),
   );
-  const totalNights = nightsBetween(checkIn, checkOut);
+  const isFlat = stay.billingMode === "FLAT";
+  const totalNights = isFlat
+    ? 0
+    : nightsBetween(checkIn, checkOut);
   const elapsed =
-    stay.status === "CHECKED_IN" || stay.status === "CHECKED_OUT"
+    !isFlat &&
+    (stay.status === "CHECKED_IN" || stay.status === "CHECKED_OUT")
       ? Math.max(
           0,
           Math.min(
@@ -142,18 +166,24 @@ function stayMetrics(stay: Stay, now = new Date()) {
           ),
         )
       : 0;
-  const remaining = Math.max(
-    0,
-    Math.ceil((checkOut.getTime() - today.getTime()) / 86400000),
-  );
-  const isCheckoutDay = toDateKey(today) === toDateKey(checkOut);
+  const remaining = isFlat
+    ? 0
+    : Math.max(
+        0,
+        Math.ceil((checkOut.getTime() - today.getTime()) / 86400000),
+      );
+  const isCheckoutDay =
+    !isFlat && toDateKey(today) === toDateKey(checkOut);
   const pastCheckoutDay = today.getTime() >= checkOut.getTime();
   const lateAfter10 =
+    !isFlat &&
     stay.status === "CHECKED_IN" &&
     pastCheckoutDay &&
     now.getHours() >= HOTEL_CHECKOUT_HOUR;
 
   return {
+    isFlat,
+    plannedHours: stay.plannedHours ?? 0,
     totalNights,
     elapsed,
     remaining,
@@ -185,6 +215,11 @@ export function SejoursClient(props: {
     guestPhone: "",
     checkInDate: "",
     checkOutDate: "",
+    billingMode: "NIGHTLY" as "NIGHTLY" | "FLAT",
+    unitPriceApplied: "",
+    flatAmount: "",
+    plannedHours: "",
+    rateNote: "",
   });
   const [extendStayId, setExtendStayId] = useState<string | null>(null);
   const [extendDate, setExtendDate] = useState("");
@@ -194,6 +229,13 @@ export function SejoursClient(props: {
   const [checkoutStayId, setCheckoutStayId] = useState<string | null>(null);
   const [checkoutStatement, setCheckoutStatement] =
     useState<StayFolioStatementViewModel | null>(null);
+  const [now, setNow] = useState<number | null>(null);
+
+  useEffect(() => {
+    setNow(Date.now());
+    const tick = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(tick);
+  }, []);
 
   function fmt(amountUsd: number) {
     return formatPrimaryAmount(amountUsd, props.rate);
@@ -257,16 +299,66 @@ export function SejoursClient(props: {
     return "bg-sky-500/40 text-foreground";
   }
 
+  const selectedRoom = useMemo(
+    () => props.rooms.find((r) => r.id === form.roomId) ?? null,
+    [props.rooms, form.roomId],
+  );
+  const selectedIsMeeting = selectedRoom?.roomType.kind === "MEETING";
+  const catalogPrice = selectedRoom?.roomType.priceNight ?? 0;
+  const appliedNightPrice = useMemo(() => {
+    if (form.unitPriceApplied.trim() === "") return catalogPrice;
+    const n = Number(form.unitPriceApplied);
+    return Number.isFinite(n) ? n : catalogPrice;
+  }, [form.unitPriceApplied, catalogPrice]);
+  const formNights = useMemo(() => {
+    if (!form.checkInDate || !form.checkOutDate) return 0;
+    const a = asUtcDay(form.checkInDate);
+    const b = asUtcDay(form.checkOutDate);
+    if (b < a) return 0;
+    if (b.getTime() === a.getTime()) return form.billingMode === "FLAT" ? 0 : 0;
+    return nightsBetween(a, b);
+  }, [form.checkInDate, form.checkOutDate, form.billingMode]);
+  const negotiatedPct =
+    catalogPrice > 0 && Math.abs(appliedNightPrice - catalogPrice) >= 0.01
+      ? Math.round(((catalogPrice - appliedNightPrice) / catalogPrice) * 1000) /
+        10
+      : null;
+
   function create() {
     start(async () => {
       try {
         await createStayAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
-          ...form,
+          roomId: form.roomId,
+          guestName: form.guestName,
+          guestPhone: form.guestPhone || undefined,
+          checkInDate: form.checkInDate,
+          checkOutDate: form.checkOutDate,
+          billingMode: form.billingMode,
+          unitPriceApplied:
+            form.billingMode === "NIGHTLY" && form.unitPriceApplied.trim() !== ""
+              ? Number(form.unitPriceApplied)
+              : null,
+          flatAmount:
+            form.billingMode === "FLAT" ? Number(form.flatAmount) : null,
+          plannedHours:
+            form.billingMode === "FLAT" && form.plannedHours.trim() !== ""
+              ? Number(form.plannedHours)
+              : null,
+          rateNote: form.rateNote.trim() || null,
         });
         toast.success("Séjour réservé");
-        setForm((f) => ({ ...f, guestName: "", guestPhone: "" }));
+        setForm((f) => ({
+          ...f,
+          guestName: "",
+          guestPhone: "",
+          unitPriceApplied: "",
+          flatAmount: "",
+          plannedHours: "",
+          rateNote: "",
+          billingMode: "NIGHTLY",
+        }));
         router.refresh();
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Erreur");
@@ -395,25 +487,34 @@ export function SejoursClient(props: {
   }
 
   function openExtend(stay: Stay) {
+    setExtendStayId(stay.id);
+    if (stay.billingMode === "FLAT") {
+      setExtendDate("");
+      return;
+    }
     const out = asUtcDay(stay.checkOutDate);
     const next = new Date(out);
     next.setUTCDate(next.getUTCDate() + 1);
-    setExtendStayId(stay.id);
     setExtendDate(toDateKey(next));
   }
 
   function confirmExtend() {
-    if (!extendStayId || !extendDate) return;
+    if (!extendStayId) return;
+    const target = activeStays.find((s) => s.id === extendStayId);
+    const isFlat = target?.billingMode === "FLAT";
+    if (!isFlat && !extendDate) return;
     start(async () => {
       try {
         const res = await extendStayAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
           stayId: extendStayId,
-          newCheckOutDate: extendDate,
+          newCheckOutDate: isFlat ? undefined : extendDate,
         });
         toast.success(
-          `Prolongé · +${res.extraNights} nuit(s) · ${fmt(res.amount)}`,
+          res.mode === "FLAT"
+            ? `Prolongé · +${res.extraHours} h · ${fmt(res.amount)}`
+            : `Prolongé · +${res.extraNights} nuit(s) · ${fmt(res.amount)}`,
         );
         setExtendStayId(null);
         router.refresh();
@@ -537,7 +638,7 @@ export function SejoursClient(props: {
             <thead>
               <tr className="border-b border-border bg-muted/40">
                 <th className="sticky left-0 z-10 bg-muted/90 px-3 py-2 text-left font-semibold">
-                  Chambre
+                  Espace
                 </th>
                 {dayCols.map((d) => {
                   const key = toDateKey(new Date(Date.UTC(year, month - 1, d)));
@@ -562,9 +663,12 @@ export function SejoursClient(props: {
                 return (
                   <tr key={room.id} className="border-b border-border/60">
                     <td className="sticky left-0 z-10 bg-card px-3 py-2 font-medium whitespace-nowrap">
-                      {room.number}
+                      {room.roomType.kind === "MEETING"
+                        ? `Salle ${room.number}`
+                        : room.number}
                       <span className="block text-[10px] text-muted-foreground">
                         {room.roomType.name}
+                        {room.roomType.kind === "MEETING" ? " · réunion" : ""}
                       </span>
                     </td>
                     {dayCols.map((d) => {
@@ -622,19 +726,53 @@ export function SejoursClient(props: {
         <section className="space-y-3 rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h2 className="font-semibold">Nouvelle réservation</h2>
           <div className="grid gap-1.5">
-            <Label>Chambre</Label>
+            <Label>Chambre / salle</Label>
             <SearchCombobox
               items={props.rooms.map((r) => ({
                 value: r.id,
-                label: `${r.number} · ${r.roomType.name} (${fmt(r.roomType.priceNight)}/nuit)`,
+                label:
+                  r.roomType.kind === "MEETING"
+                    ? `Salle ${r.number} · ${r.roomType.name} (${fmt(r.roomType.priceNight)}/créneau${
+                        r.roomType.seatsStandard != null ||
+                        r.roomType.seatsVip != null
+                          ? ` · ${r.roomType.seatsStandard ?? 0} simple / ${r.roomType.seatsVip ?? 0} VIP`
+                          : r.roomType.capacity
+                            ? ` · ${r.roomType.capacity} pl.`
+                            : ""
+                      })`
+                    : `Ch. ${r.number} · ${r.roomType.name} (${fmt(r.roomType.priceNight)}/nuit)`,
               }))}
               value={form.roomId}
-              onValueChange={(roomId) =>
-                setForm((f) => ({ ...f, roomId }))
-              }
-              placeholder="Rechercher une chambre…"
-              emptyText="Aucune chambre trouvée."
+              onValueChange={(roomId) => {
+                const room = props.rooms.find((r) => r.id === roomId);
+                const isMeeting = room?.roomType.kind === "MEETING";
+                setForm((f) => ({
+                  ...f,
+                  roomId,
+                  unitPriceApplied: "",
+                  ...(isMeeting
+                    ? {
+                        billingMode: "FLAT" as const,
+                        plannedHours: f.plannedHours || "4",
+                      }
+                    : {}),
+                }));
+              }}
+              placeholder="Rechercher chambre ou salle…"
+              emptyText="Aucun espace trouvé."
             />
+            {selectedRoom ? (
+              <p className="text-[11px] text-muted-foreground">
+                {selectedIsMeeting
+                  ? `Salle de réunion · tarif catalogue ${fmt(catalogPrice)}/créneau · ${
+                      selectedRoom.roomType.seatsStandard != null ||
+                      selectedRoom.roomType.seatsVip != null
+                        ? `${selectedRoom.roomType.seatsStandard ?? 0} places simples · ${selectedRoom.roomType.seatsVip ?? 0} VIP`
+                        : `capacité ${selectedRoom.roomType.capacity ?? "—"}`
+                    }`
+                  : `Tarif catalogue · ${fmt(catalogPrice)}/nuit`}
+              </p>
+            ) : null}
           </div>
           <div className="grid gap-1.5">
             <Label>Client</Label>
@@ -677,12 +815,141 @@ export function SejoursClient(props: {
               />
             </div>
           </div>
+
+          <div className="grid gap-2 rounded-xl border border-border/70 bg-muted/20 p-3">
+            <Label>Facturation hébergement</Label>
+            <div className="grid grid-cols-2 gap-1 rounded-lg border border-border/60 bg-background/70 p-1">
+              {(
+                [
+                  ["NIGHTLY", "Nuitée(s)"],
+                  ["FLAT", "Forfait / au temps"],
+                ] as const
+              ).map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() =>
+                    setForm((f) => ({
+                      ...f,
+                      billingMode: id,
+                      rateNote: f.rateNote,
+                    }))
+                  }
+                  className={cn(
+                    "rounded-md px-2 py-2 text-xs font-semibold transition",
+                    form.billingMode === id
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:bg-muted",
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {form.billingMode === "NIGHTLY" ? (
+              <div className="grid gap-2">
+                <div className="grid gap-1.5">
+                  <Label htmlFor="unit-price">Tarif / nuit appliqué</Label>
+                  <Input
+                    id="unit-price"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder={catalogPrice ? String(catalogPrice) : "0"}
+                    value={form.unitPriceApplied}
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        unitPriceApplied: e.target.value,
+                      }))
+                    }
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Vide = catalogue ({fmt(catalogPrice)}/nuit)
+                    {negotiatedPct != null
+                      ? negotiatedPct > 0
+                        ? ` · négocié −${negotiatedPct} %`
+                        : ` · +${Math.abs(negotiatedPct)} %`
+                      : ""}
+                    {formNights > 0
+                      ? ` · total ${fmt(formNights * appliedNightPrice)}`
+                      : ""}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-2">
+                <div className="grid gap-1.5">
+                  <Label htmlFor="flat-amount">Montant forfait</Label>
+                  <Input
+                    id="flat-amount"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={form.flatAmount}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, flatAmount: e.target.value }))
+                    }
+                    required
+                  />
+                </div>
+                <div className="grid gap-1.5">
+                  <Label htmlFor="planned-hours">Durée (heures)</Label>
+                  <Input
+                    id="planned-hours"
+                    type="number"
+                    min={1}
+                    step={1}
+                    value={form.plannedHours}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, plannedHours: e.target.value }))
+                    }
+                    required
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Créneau facturé (ex. 4 h). Pas de règle {HOTEL_CHECKOUT_HOUR}
+                    h — prolongation = même durée au même forfait.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {(form.billingMode === "FLAT" ||
+              (form.unitPriceApplied.trim() !== "" &&
+                Math.abs(appliedNightPrice - catalogPrice) >= 0.01)) && (
+              <div className="grid gap-1.5">
+                <Label htmlFor="rate-note">Motif</Label>
+                <Input
+                  id="rate-note"
+                  value={form.rateNote}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, rateNote: e.target.value }))
+                  }
+                  placeholder={
+                    form.billingMode === "FLAT"
+                      ? "Ex. day use 4 h, accord client…"
+                      : "Ex. réduction fidélité, promo…"
+                  }
+                />
+              </div>
+            )}
+          </div>
+
           <Button
             disabled={
               pending ||
               !form.guestName ||
               !form.checkInDate ||
-              !form.checkOutDate
+              !form.checkOutDate ||
+              (form.billingMode === "FLAT" &&
+                (!(Number(form.flatAmount) >= 0) ||
+                  !(Number(form.plannedHours) > 0) ||
+                  !form.rateNote.trim())) ||
+              (form.billingMode === "NIGHTLY" &&
+                form.unitPriceApplied.trim() !== "" &&
+                Math.abs(appliedNightPrice - catalogPrice) >= 0.01 &&
+                !form.rateNote.trim())
             }
             onClick={create}
           >
@@ -695,8 +962,8 @@ export function SejoursClient(props: {
             <div>
               <h2 className="font-semibold">Séjours actifs</h2>
               <p className="text-xs text-muted-foreground">
-                Statut, durée, jours restants · libération à {HOTEL_CHECKOUT_HOUR}
-                h sinon +1 nuitée
+                Nuitées · libération {HOTEL_CHECKOUT_HOUR}h · forfaits : décompte
+                d’heures après check-in
               </p>
             </div>
             <Badge variant="secondary">{activeStays.length}</Badge>
@@ -720,22 +987,56 @@ export function SejoursClient(props: {
                     0,
                   ) ?? 0;
                 const balance = charges - paid;
+                const flatFrozenAt = s.folio?.checkoutQueuedAt ?? null;
+                const flatFrozen = flatFrozenAt != null;
+                const flatSlots =
+                  s.folio?.lines.filter((l) => l.kind === "STAY_FLAT").length ||
+                  1;
+                const flatCd =
+                  m.isFlat && s.status === "CHECKED_IN"
+                    ? flatStayCountdown({
+                        plannedHours: s.plannedHours,
+                        checkedInAt: s.checkedInAt,
+                        slots: flatSlots,
+                        now,
+                        frozenAt: flatFrozenAt,
+                      })
+                    : null;
+                const flatOt =
+                  flatCd?.overdue
+                    ? computeFlatOvertimeBilling({
+                        plannedHours: s.plannedHours,
+                        flatAmount: s.flatAmount,
+                        checkedInAt: s.checkedInAt,
+                        slots: flatSlots,
+                        endedAt: flatFrozenAt
+                          ? new Date(flatFrozenAt)
+                          : new Date(now),
+                      })
+                    : null;
                 return (
                   <li
                     key={s.id}
                     className={cn(
                       "rounded-xl border px-3 py-3 text-sm",
-                      m.lateAfter10
-                        ? "border-rose-500/40 bg-rose-500/5"
-                        : m.isCheckoutDay
-                          ? "border-amber-500/40 bg-amber-500/5"
-                          : "border-border bg-muted/15",
+                      flatCd?.tone === "critical" || flatCd?.overdue
+                        ? "border-rose-500/45 bg-rose-500/5"
+                        : flatCd?.tone === "warn"
+                          ? "border-amber-500/45 bg-amber-500/5"
+                          : m.lateAfter10
+                            ? "border-rose-500/40 bg-rose-500/5"
+                            : m.isCheckoutDay
+                              ? "border-amber-500/40 bg-amber-500/5"
+                              : "border-border bg-muted/15",
                     )}
                   >
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0 space-y-1">
                         <p className="font-semibold">
-                          {s.guestName} · ch. {s.room.number}
+                          {s.guestName} ·{" "}
+                          {s.room.roomType.kind === "MEETING"
+                            ? `salle ${s.room.number}`
+                            : `ch. ${s.room.number}`}
                         </p>
                         <div className="flex flex-wrap gap-1.5">
                           <Badge
@@ -745,33 +1046,131 @@ export function SejoursClient(props: {
                           >
                             {STATUS_LABEL[s.status] ?? s.status}
                           </Badge>
-                          <Badge variant="outline">
-                            {m.totalNights} jour
-                            {m.totalNights > 1 ? "s" : ""}
-                          </Badge>
-                          <Badge variant="outline">
-                            {m.remaining} restant
-                            {m.remaining > 1 ? "s" : ""}
-                          </Badge>
-                          {m.lateAfter10 ? (
+                          {m.isFlat ? (
+                            <Badge variant="outline">
+                              {m.plannedHours > 0
+                                ? flatSlots > 1
+                                  ? `${m.plannedHours} h × ${flatSlots}`
+                                  : `${m.plannedHours} h`
+                                : "Forfait"}
+                            </Badge>
+                          ) : (
+                            <>
+                              <Badge variant="outline">
+                                {m.totalNights} jour
+                                {m.totalNights > 1 ? "s" : ""}
+                              </Badge>
+                              <Badge variant="outline">
+                                {m.remaining} restant
+                                {m.remaining > 1 ? "s" : ""}
+                              </Badge>
+                            </>
+                          )}
+                          {!m.isFlat && m.lateAfter10 ? (
                             <Badge variant="destructive">
                               Après {HOTEL_CHECKOUT_HOUR}h · nuitée due
                             </Badge>
-                          ) : m.isCheckoutDay ? (
+                          ) : !m.isFlat && m.isCheckoutDay ? (
                             <Badge variant="destructive">
                               Départ aujourd’hui · avant {HOTEL_CHECKOUT_HOUR}h
                             </Badge>
                           ) : null}
+                          {flatCd?.overdue ? (
+                            <Badge variant="destructive">Temps dépassé</Badge>
+                          ) : flatCd?.tone === "critical" ? (
+                            <Badge variant="destructive">Fin imminente</Badge>
+                          ) : flatCd?.tone === "warn" ? (
+                            <Badge variant="secondary">Bientôt la fin</Badge>
+                          ) : null}
+                          {s.billingMode === "FLAT" ? (
+                            <Badge variant="secondary">Forfait</Badge>
+                          ) : s.unitPriceApplied != null &&
+                            Math.abs(
+                              (s.unitPriceApplied ?? 0) -
+                                (s.catalogUnitPrice ??
+                                  s.room.roomType.priceNight),
+                            ) >= 0.01 ? (
+                            <Badge variant="secondary">Tarif négocié</Badge>
+                          ) : null}
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {toDateKey(m.checkIn)} → {toDateKey(m.checkOut)}
-                          {s.status === "CHECKED_IN"
+                          {toDateKey(m.checkIn)}
+                          {m.isFlat ? "" : ` → ${toDateKey(m.checkOut)}`}
+                          {s.status === "CHECKED_IN" && !m.isFlat
                             ? ` · ${m.elapsed} nuit(s) écoulée(s)`
                             : ""}
                           {" · "}
                           solde note {fmtBoth(balance)} ·{" "}
-                          {fmt(s.room.roomType.priceNight)}/nuit
+                          {m.isFlat
+                            ? `forfait ${fmt(s.flatAmount ?? 0)}${
+                                m.plannedHours > 0
+                                  ? ` · ${m.plannedHours} h`
+                                  : ""
+                              }`
+                            : `${fmt(
+                                s.unitPriceApplied ??
+                                  s.catalogUnitPrice ??
+                                  s.room.roomType.priceNight,
+                              )}/nuit`}
                         </p>
+                        {m.isFlat && s.status === "CHECKED_IN" ? (
+                          flatCd ? (
+                            <div
+                              className={cn(
+                                "mt-1.5 rounded-lg border px-2.5 py-2 text-xs",
+                                flatCd.overdue || flatCd.tone === "critical"
+                                  ? "border-rose-500/40 bg-rose-500/10 text-rose-900 dark:text-rose-100"
+                                  : flatCd.tone === "warn"
+                                    ? "border-amber-500/40 bg-amber-500/10 text-amber-950 dark:text-amber-100"
+                                    : "border-sky-500/30 bg-sky-500/10 text-sky-950 dark:text-sky-100",
+                              )}
+                            >
+                              <p className="font-semibold tabular-nums">
+                                {formatFlatCountdownBanner(flatCd, {
+                                  frozen: flatFrozen,
+                                })}
+                              </p>
+                              <p className="mt-0.5 opacity-90">
+                                Écoulé {flatCd.elapsedLabel}
+                                {flatSlots > 1
+                                  ? ` · ${flatSlots} créneaux`
+                                  : ""}{" "}
+                                · fin prévue{" "}
+                                {flatCd.endsAt.toLocaleTimeString("fr-FR", {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </p>
+                              {flatOt && flatOt.extraHours > 0 ? (
+                                <p className="mt-1 font-medium tabular-nums">
+                                  +{flatOt.extraHours} h supp. ·{" "}
+                                  {fmt(flatOt.amount)} (
+                                  {fmt(flatOt.hourlyRate)}/h)
+                                </p>
+                              ) : null}
+                              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-background/60">
+                                <div
+                                  className={cn(
+                                    "h-full rounded-full transition-[width]",
+                                    flatCd.overdue || flatCd.tone === "critical"
+                                      ? "bg-rose-600"
+                                      : flatCd.tone === "warn"
+                                        ? "bg-amber-500"
+                                        : "bg-sky-500",
+                                  )}
+                                  style={{
+                                    width: `${Math.round(flatCd.progress * 100)}%`,
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="mt-1 text-xs text-amber-800 dark:text-amber-200">
+                              Décompte après check-in (heure de début
+                              manquante).
+                            </p>
+                          )
+                        ) : null}
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {s.status === "RESERVED" ? (
@@ -795,7 +1194,17 @@ export function SejoursClient(props: {
                         <Button
                           size="sm"
                           variant="outline"
-                          disabled={pending}
+                          disabled={
+                            pending ||
+                            (s.billingMode === "FLAT" &&
+                              !(s.plannedHours != null && s.plannedHours > 0))
+                          }
+                          title={
+                            s.billingMode === "FLAT" &&
+                            !(s.plannedHours != null && s.plannedHours > 0)
+                              ? "Durée du forfait manquante"
+                              : undefined
+                          }
                           onClick={() => openExtend(s)}
                         >
                           Prolongation
@@ -844,48 +1253,70 @@ export function SejoursClient(props: {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Prolonger le séjour</DialogTitle>
+            <DialogTitle>
+              {extendTarget?.billingMode === "FLAT"
+                ? "Prolonger le forfait"
+                : "Prolonger le séjour"}
+            </DialogTitle>
             <DialogDescription>
-              {extendTarget
-                ? `${extendTarget.guestName} · ch. ${extendTarget.room.number} — les nuitées ajoutées sont facturées sur la note de chambre.`
-                : null}
+              {extendTarget?.billingMode === "FLAT"
+                ? `${extendTarget.guestName} · ch. ${extendTarget.room.number} — ajoute un créneau de ${extendTarget.plannedHours ?? "?"} h au même forfait (sans règle ${HOTEL_CHECKOUT_HOUR}h).`
+                : extendTarget
+                  ? `${extendTarget.guestName} · ch. ${extendTarget.room.number} — les nuitées ajoutées sont facturées sur la note de chambre.`
+                  : null}
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-2 py-2">
-            <Label htmlFor="extend-date">Nouvelle date de sortie</Label>
-            <Input
-              id="extend-date"
-              type="date"
-              value={extendDate}
-              min={
-                extendTarget
-                  ? toDateKey(
-                      new Date(
-                        asUtcDay(extendTarget.checkOutDate).getTime() + 86400000,
-                      ),
-                    )
-                  : undefined
-              }
-              onChange={(e) => setExtendDate(e.target.value)}
-            />
-            {extendTarget && extendDate ? (
-              <p className="text-xs text-muted-foreground">
-                +
-                {nightsBetween(
-                  asUtcDay(extendTarget.checkOutDate),
-                  asUtcDay(extendDate),
-                )}{" "}
-                nuit(s) ·{" "}
-                {fmtBoth(
-                  nightsBetween(
+          {extendTarget?.billingMode === "FLAT" ? (
+            <div className="rounded-xl border border-border bg-muted/30 px-3 py-3 text-sm">
+              <p className="font-semibold">
+                +{extendTarget.plannedHours} h ·{" "}
+                {fmt(extendTarget.flatAmount ?? 0)}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Même durée et même montant que le forfait initial.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-2 py-2">
+              <Label htmlFor="extend-date">Nouvelle date de sortie</Label>
+              <Input
+                id="extend-date"
+                type="date"
+                value={extendDate}
+                min={
+                  extendTarget
+                    ? toDateKey(
+                        new Date(
+                          asUtcDay(extendTarget.checkOutDate).getTime() +
+                            86400000,
+                        ),
+                      )
+                    : undefined
+                }
+                onChange={(e) => setExtendDate(e.target.value)}
+              />
+              {extendTarget && extendDate ? (
+                <p className="text-xs text-muted-foreground">
+                  +
+                  {nightsBetween(
                     asUtcDay(extendTarget.checkOutDate),
                     asUtcDay(extendDate),
-                  ) * extendTarget.room.roomType.priceNight,
-                )}{" "}
-                à facturer
-              </p>
-            ) : null}
-          </div>
+                  )}{" "}
+                  nuit(s) ·{" "}
+                  {fmtBoth(
+                    nightsBetween(
+                      asUtcDay(extendTarget.checkOutDate),
+                      asUtcDay(extendDate),
+                    ) *
+                      (extendTarget.unitPriceApplied ??
+                        extendTarget.catalogUnitPrice ??
+                        extendTarget.room.roomType.priceNight),
+                  )}{" "}
+                  à facturer
+                </p>
+              ) : null}
+            </div>
+          )}
           <DialogFooter>
             <Button
               variant="outline"
@@ -894,7 +1325,18 @@ export function SejoursClient(props: {
             >
               Annuler
             </Button>
-            <Button disabled={pending || !extendDate} onClick={confirmExtend}>
+            <Button
+              disabled={
+                pending ||
+                (extendTarget?.billingMode === "FLAT"
+                  ? !(
+                      extendTarget.plannedHours != null &&
+                      extendTarget.plannedHours > 0
+                    )
+                  : !extendDate)
+              }
+              onClick={confirmExtend}
+            >
               Confirmer la prolongation
             </Button>
           </DialogFooter>

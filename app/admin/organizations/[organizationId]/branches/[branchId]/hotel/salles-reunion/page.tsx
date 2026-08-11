@@ -4,13 +4,13 @@ import {
   listRoomTypesAction,
   listRoomsWithTypesAction,
 } from "@/lib/hotel/actions";
-import { ChambresClient } from "./chambres-client";
+import { ChambresClient } from "../chambres/chambres-client";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
 };
 
-export default async function ChambresPage({ params }: PageProps) {
+export default async function SallesReunionPage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
   await requireBranchContext({
     organizationId,
@@ -19,8 +19,8 @@ export default async function ChambresPage({ params }: PageProps) {
     requireHospitality: "stays",
   });
   const [rooms, roomTypes, rate] = await Promise.all([
-    listRoomsWithTypesAction(organizationId, branchId, { kind: "ROOM" }),
-    listRoomTypesAction(organizationId, branchId, { kind: "ROOM" }),
+    listRoomsWithTypesAction(organizationId, branchId, { kind: "MEETING" }),
+    listRoomTypesAction(organizationId, branchId, { kind: "MEETING" }),
     getActiveExchangeRate(branchId),
   ]);
   return (
@@ -30,7 +30,7 @@ export default async function ChambresPage({ params }: PageProps) {
       rooms={rooms}
       roomTypes={roomTypes}
       rate={rate}
-      spaceKind="ROOM"
+      spaceKind="MEETING"
     />
   );
 }

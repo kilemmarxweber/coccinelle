@@ -11,6 +11,7 @@ import {
 import { branchBasePath } from "@/lib/branch/paths";
 import prisma from "@/lib/prisma";
 import type { Prisma } from "@/prisma/generated/prisma/client";
+import { FolioLineKind } from "@/prisma/generated/prisma/enums";
 import { DEFAULT_HOTEL_MENU } from "@/lib/hotel/default-menu";
 import { HOTEL_CHECKOUT_HOUR } from "@/lib/hotel/constants";
 import {
@@ -30,6 +31,17 @@ import {
   nightChargeDescription,
   nightsBetween,
 } from "@/lib/hotel/stay-nights";
+import {
+  STAY_BILLING,
+  assertStayRateInput,
+  computeFlatOvertimeBilling,
+  flatOvertimeDescription,
+  flatStayDescription,
+  isNegotiatedNightRate,
+  nightlyStayDescription,
+  resolveStayUnitPrice,
+  type StayBillingMode,
+} from "@/lib/hotel/stay-rate";
 
 async function ctx(
   organizationId: string,
@@ -54,6 +66,7 @@ function revalidateHotel(organizationId: string, branchId: string) {
   const base = branchBasePath(organizationId, branchId);
   revalidatePath(`${base}/hotel/sejours`);
   revalidatePath(`${base}/hotel/chambres`);
+  revalidatePath(`${base}/hotel/salles-reunion`);
   revalidatePath(`${base}/hotel/produits`);
   revalidatePath(`${base}/hotel/livraison`);
   revalidatePath(`${base}/hotel/restauration`);
@@ -76,6 +89,7 @@ function parseDateOnly(value: string | Date) {
 /**
  * Recalcule les lignes NIGHT du folio selon les jours réellement consommés
  * (règle sortie avant/après 10h). Idempotent.
+ * Ignoré pour les séjours en mode forfait (FLAT).
  */
 async function reconcileStayNightCharges(stayId: string, branchId: string) {
   const stay = await prisma.hotelStay.findFirst({
@@ -86,12 +100,26 @@ async function reconcileStayNightCharges(stayId: string, branchId: string) {
     },
   });
   if (!stay?.folio) return null;
+  if (stay.billingMode === STAY_BILLING.FLAT) {
+    return { billing: null, amount: stay.flatAmount ?? 0, unit: 0, unchanged: true as const, flat: true as const };
+  }
 
   const billing = computeStayNightBilling({
     checkInDate: stay.checkInDate,
     plannedCheckOutDate: stay.checkOutDate,
   });
-  const unit = stay.room.roomType.priceNight;
+  const catalog =
+    stay.catalogUnitPrice > 0
+      ? stay.catalogUnitPrice
+      : stay.room.roomType.priceNight;
+  const unit = resolveStayUnitPrice({
+    catalogUnitPrice: catalog,
+    unitPriceApplied: stay.unitPriceApplied,
+  });
+  const negotiated = isNegotiatedNightRate({
+    catalogUnitPrice: catalog,
+    unitPriceApplied: stay.unitPriceApplied,
+  });
   const amount = billing.nights * unit;
   const description = nightChargeDescription({
     nights: billing.nights,
@@ -99,6 +127,20 @@ async function reconcileStayNightCharges(stayId: string, branchId: string) {
     roomTypeName: stay.room.roomType.name,
     billing,
   });
+  const fullDescription = negotiated
+    ? nightlyStayDescription({
+        nights: billing.nights,
+        roomNumber: stay.room.number,
+        roomTypeName: stay.room.roomType.name,
+        negotiated: true,
+        catalogUnitPrice: catalog,
+        unitPriceApplied: unit,
+        rateNote: stay.rateNote,
+        suffix: description.includes(" · ")
+          ? description.split(" · ").slice(2).join(" · ")
+          : undefined,
+      })
+    : description;
 
   const nightLines = stay.folio.lines.filter((l) => l.kind === "NIGHT");
   const currentNightAmount = nightLines.reduce((s, l) => s + l.amount, 0);
@@ -109,7 +151,7 @@ async function reconcileStayNightCharges(stayId: string, branchId: string) {
     stay.checkOutDate.getTime() === billing.effectiveCheckOutDate.getTime();
 
   if (sameCharges && nightLines.length === 1) {
-    return { billing, amount, unit, unchanged: true as const };
+    return { billing, amount, unit, unchanged: true as const, flat: false as const };
   }
 
   await prisma.$transaction(async (tx) => {
@@ -125,7 +167,7 @@ async function reconcileStayNightCharges(stayId: string, branchId: string) {
       data: {
         folioId: stay.folio!.id,
         kind: "NIGHT",
-        description,
+        description: fullDescription,
         quantity: billing.nights,
         unitPrice: unit,
         amount,
@@ -141,19 +183,334 @@ async function reconcileStayNightCharges(stayId: string, branchId: string) {
     });
   });
 
-  return { billing, amount, unit, unchanged: false as const };
+  return { billing, amount, unit, unchanged: false as const, flat: false as const };
+}
+
+/**
+ * Ajoute / met à jour les heures supplémentaires si le forfait est dépassé.
+ * Tarif = flatAmount / plannedHours ; chaque heure entamée après le forfait est facturée.
+ */
+async function reconcileFlatOvertimeCharges(stayId: string, branchId: string) {
+  const stay = await prisma.hotelStay.findFirst({
+    where: { id: stayId, branchId, status: "CHECKED_IN" },
+    include: {
+      room: { include: { roomType: true } },
+      folio: { include: { lines: true } },
+    },
+  });
+  if (!stay?.folio) return null;
+  if (stay.folio.closed) {
+    return { overtime: null, unchanged: true as const };
+  }
+  if (stay.billingMode !== STAY_BILLING.FLAT) {
+    return { overtime: null, unchanged: true as const };
+  }
+
+  const packageSlots = Math.max(
+    1,
+    stay.folio.lines.filter((l) => l.kind === "STAY_FLAT").length,
+  );
+  const overtime = computeFlatOvertimeBilling({
+    plannedHours: stay.plannedHours,
+    flatAmount: stay.flatAmount,
+    checkedInAt: stay.checkedInAt,
+    slots: packageSlots,
+    // Figé dès la mise en file caisse — plus d’heures qui s’ajoutent après
+    endedAt: stay.folio.checkoutQueuedAt ?? stay.checkedOutAt ?? undefined,
+  });
+  if (!overtime) {
+    return { overtime: null, unchanged: true as const };
+  }
+
+  const existing = stay.folio.lines.filter((l) => l.kind === "STAY_OVERTIME");
+  const targetAmount = overtime.amount;
+  const targetQty = overtime.extraHours;
+
+  if (targetQty <= 0 || targetAmount <= 0) {
+    if (!existing.length) {
+      return { overtime, unchanged: true as const };
+    }
+    await prisma.folioLine.deleteMany({
+      where: { folioId: stay.folio.id, kind: FolioLineKind.STAY_OVERTIME },
+    });
+    await prisma.folio.update({
+      where: { id: stay.folio.id },
+      data: { updatedAt: new Date() },
+    });
+    return { overtime, unchanged: false as const };
+  }
+
+  const description = flatOvertimeDescription({
+    roomNumber: stay.room.number,
+    roomTypeName: stay.room.roomType.name,
+    extraHours: overtime.extraHours,
+    hourlyRate: overtime.hourlyRate,
+    overdueMinutes: overtime.overdueMinutes,
+  });
+
+  const same =
+    existing.length === 1 &&
+    Math.abs(existing[0]!.amount - targetAmount) < 0.01 &&
+    Math.abs(existing[0]!.quantity - targetQty) < 0.01;
+
+  if (same) {
+    return { overtime, unchanged: true as const };
+  }
+
+  await prisma.$transaction(async (tx) => {
+    if (existing.length) {
+      await tx.folioLine.deleteMany({
+        where: { folioId: stay.folio!.id, kind: FolioLineKind.STAY_OVERTIME },
+      });
+    }
+    await tx.folioLine.create({
+      data: {
+        folioId: stay.folio!.id,
+        kind: FolioLineKind.STAY_OVERTIME,
+        description,
+        quantity: targetQty,
+        unitPrice: overtime.hourlyRate,
+        amount: targetAmount,
+      },
+    });
+    await tx.folio.update({
+      where: { id: stay.folio!.id },
+      data: { updatedAt: new Date() },
+    });
+  });
+
+  return { overtime, unchanged: false as const };
+}
+
+/** Recalcule nuitées (NIGHTLY) ou heures supp. (FLAT) avant check-out / caisse. */
+async function reconcileStayCheckoutCharges(stayId: string, branchId: string) {
+  const night = await reconcileStayNightCharges(stayId, branchId);
+  const overtime = await reconcileFlatOvertimeCharges(stayId, branchId);
+  return { night, overtime };
 }
 
 export async function listRoomsWithTypesAction(
   organizationId: string,
   branchId: string,
+  opts?: { kind?: "ROOM" | "MEETING" },
 ) {
   await ctx(organizationId, branchId, "stays");
   return prisma.hotelRoom.findMany({
-    where: { roomType: { branchId } },
+    where: {
+      roomType: {
+        branchId,
+        ...(opts?.kind ? { kind: opts.kind } : {}),
+      },
+    },
     include: { roomType: true },
     orderBy: [{ roomType: { name: "asc" } }, { number: "asc" }],
   });
+}
+
+export async function listRoomTypesAction(
+  organizationId: string,
+  branchId: string,
+  opts?: { kind?: "ROOM" | "MEETING" },
+) {
+  await ctx(organizationId, branchId, "stays");
+  return prisma.hotelRoomType.findMany({
+    where: {
+      branchId,
+      ...(opts?.kind ? { kind: opts.kind } : {}),
+    },
+    orderBy: { name: "asc" },
+  });
+}
+
+export async function createHotelRoomAction(input: {
+  organizationId: string;
+  branchId: string;
+  number: string;
+  floor?: string | null;
+  roomTypeId?: string | null;
+  /** ROOM (défaut) | MEETING — pour nouveau type */
+  spaceKind?: "ROOM" | "MEETING";
+  /** Créer un type en même temps si aucun roomTypeId */
+  newType?: {
+    name: string;
+    capacity?: number;
+    seatsStandard?: number | null;
+    seatsVip?: number | null;
+    priceNight: number;
+    description?: string | null;
+  } | null;
+}) {
+  await ctx(input.organizationId, input.branchId, "stays");
+  const number = input.number.trim();
+  if (!number) throw new Error("Numéro requis.");
+  const spaceKind = input.spaceKind === "MEETING" ? "MEETING" : "ROOM";
+
+  const existingNumber = await prisma.hotelRoom.findFirst({
+    where: {
+      number,
+      roomType: { branchId: input.branchId },
+    },
+  });
+  if (existingNumber) {
+    throw new Error(
+      spaceKind === "MEETING"
+        ? `La salle ${number} existe déjà sur cette branche.`
+        : `La chambre ${number} existe déjà sur cette branche.`,
+    );
+  }
+
+  let roomTypeId = input.roomTypeId?.trim() || "";
+  if (!roomTypeId) {
+    const name = input.newType?.name?.trim() || "";
+    const priceNight = Number(input.newType?.priceNight);
+    const seatsStandard =
+      spaceKind === "MEETING" &&
+      input.newType?.seatsStandard != null &&
+      Number.isFinite(Number(input.newType.seatsStandard))
+        ? Math.max(0, Math.round(Number(input.newType.seatsStandard)))
+        : null;
+    const seatsVip =
+      spaceKind === "MEETING" &&
+      input.newType?.seatsVip != null &&
+      Number.isFinite(Number(input.newType.seatsVip))
+        ? Math.max(0, Math.round(Number(input.newType.seatsVip)))
+        : null;
+    const capacityFromSeats =
+      seatsStandard != null || seatsVip != null
+        ? (seatsStandard ?? 0) + (seatsVip ?? 0)
+        : null;
+    const capacity = Math.round(
+      Number(
+        capacityFromSeats != null && capacityFromSeats > 0
+          ? capacityFromSeats
+          : (input.newType?.capacity ?? 2),
+      ),
+    );
+    if (!name) {
+      throw new Error(
+        spaceKind === "MEETING"
+          ? "Type de salle requis."
+          : "Type de chambre requis.",
+      );
+    }
+    if (!Number.isFinite(priceNight) || priceNight < 0) {
+      throw new Error("Tarif invalide.");
+    }
+    if (!Number.isFinite(capacity) || capacity < 1) {
+      throw new Error("Capacité invalide.");
+    }
+    const createdType = await prisma.hotelRoomType.create({
+      data: {
+        branchId: input.branchId,
+        name,
+        capacity,
+        seatsStandard: spaceKind === "MEETING" ? seatsStandard : null,
+        seatsVip: spaceKind === "MEETING" ? seatsVip : null,
+        priceNight,
+        kind: spaceKind,
+        description: input.newType?.description?.trim() || null,
+      },
+    });
+    roomTypeId = createdType.id;
+  } else {
+    const type = await prisma.hotelRoomType.findFirst({
+      where: {
+        id: roomTypeId,
+        branchId: input.branchId,
+        kind: spaceKind,
+      },
+    });
+    if (!type) {
+      throw new Error(
+        spaceKind === "MEETING"
+          ? "Type de salle introuvable."
+          : "Type de chambre introuvable.",
+      );
+    }
+  }
+
+  const room = await prisma.hotelRoom.create({
+    data: {
+      roomTypeId,
+      number,
+      floor: input.floor?.trim() || null,
+      status: "AVAILABLE",
+    },
+    include: { roomType: true },
+  });
+  revalidateHotel(input.organizationId, input.branchId);
+  return room;
+}
+
+export async function updateHotelRoomAction(input: {
+  organizationId: string;
+  branchId: string;
+  roomId: string;
+  number: string;
+  floor?: string | null;
+  roomTypeId: string;
+  spaceKind?: "ROOM" | "MEETING";
+  status?: "AVAILABLE" | "OCCUPIED" | "CLEANING" | "OUT_OF_ORDER";
+}) {
+  await ctx(input.organizationId, input.branchId, "stays");
+  const spaceKind = input.spaceKind === "MEETING" ? "MEETING" : "ROOM";
+  const room = await prisma.hotelRoom.findFirst({
+    where: {
+      id: input.roomId,
+      roomType: { branchId: input.branchId, kind: spaceKind },
+    },
+  });
+  if (!room) {
+    throw new Error(
+      spaceKind === "MEETING" ? "Salle introuvable." : "Chambre introuvable.",
+    );
+  }
+
+  const number = input.number.trim();
+  if (!number) throw new Error("Numéro requis.");
+
+  const type = await prisma.hotelRoomType.findFirst({
+    where: {
+      id: input.roomTypeId,
+      branchId: input.branchId,
+      kind: spaceKind,
+    },
+  });
+  if (!type) {
+    throw new Error(
+      spaceKind === "MEETING"
+        ? "Type de salle introuvable."
+        : "Type de chambre introuvable.",
+    );
+  }
+
+  const clash = await prisma.hotelRoom.findFirst({
+    where: {
+      id: { not: room.id },
+      number,
+      roomType: { branchId: input.branchId },
+    },
+  });
+  if (clash) {
+    throw new Error(
+      spaceKind === "MEETING"
+        ? `La salle ${number} existe déjà sur cette branche.`
+        : `La chambre ${number} existe déjà sur cette branche.`,
+    );
+  }
+
+  const updated = await prisma.hotelRoom.update({
+    where: { id: room.id },
+    data: {
+      number,
+      floor: input.floor?.trim() || null,
+      roomTypeId: type.id,
+      ...(input.status ? { status: input.status } : {}),
+    },
+    include: { roomType: true },
+  });
+  revalidateHotel(input.organizationId, input.branchId);
+  return updated;
 }
 
 export async function updateRoomStatusAction(input: {
@@ -233,30 +590,109 @@ export async function createStayAction(input: {
   checkOutDate: string;
   adults?: number;
   notes?: string;
+  /** NIGHTLY (défaut) | FLAT */
+  billingMode?: StayBillingMode;
+  /** Tarif / nuit appliqué (NIGHTLY) ; défaut = catalogue */
+  unitPriceApplied?: number | null;
+  /** Montant forfait (FLAT) */
+  flatAmount?: number | null;
+  plannedHours?: number | null;
+  rateNote?: string | null;
 }) {
-  await ctx(input.organizationId, input.branchId, "stays");
+  const { user } = await ctx(input.organizationId, input.branchId, "stays");
   const checkIn = parseDateOnly(input.checkInDate);
   const checkOut = parseDateOnly(input.checkOutDate);
-  if (!(checkOut > checkIn)) throw new Error("Dates invalides.");
-
   const room = await prisma.hotelRoom.findFirst({
     where: { id: input.roomId, roomType: { branchId: input.branchId } },
     include: { roomType: true },
   });
-  if (!room) throw new Error("Chambre introuvable.");
+  if (!room) throw new Error("Espace introuvable.");
 
-  const overlap = await prisma.hotelStay.findFirst({
+  const isMeeting = room.roomType.kind === "MEETING";
+  const billingMode: StayBillingMode =
+    input.billingMode === STAY_BILLING.FLAT || isMeeting
+      ? STAY_BILLING.FLAT
+      : STAY_BILLING.NIGHTLY;
+
+  if (billingMode === STAY_BILLING.FLAT) {
+    if (checkOut < checkIn) throw new Error("Dates invalides.");
+  } else if (!(checkOut > checkIn)) {
+    throw new Error("Dates invalides.");
+  }
+
+  const overlapStay = await prisma.hotelStay.findFirst({
     where: {
       roomId: room.id,
       status: { in: ["RESERVED", "CHECKED_IN"] },
-      checkInDate: { lt: checkOut },
-      checkOutDate: { gt: checkIn },
+      ...(checkOut.getTime() === checkIn.getTime()
+        ? {
+            OR: [
+              {
+                checkInDate: { lte: checkIn },
+                checkOutDate: { gt: checkIn },
+              },
+              { checkInDate: checkIn, checkOutDate: checkIn },
+            ],
+          }
+        : {
+            checkInDate: { lt: checkOut },
+            checkOutDate: { gt: checkIn },
+          }),
     },
   });
-  if (overlap) throw new Error("Chambre déjà réservée sur cette période.");
+  if (overlapStay) {
+    throw new Error(
+      isMeeting
+        ? "Salle déjà réservée sur cette période."
+        : "Chambre déjà réservée sur cette période.",
+    );
+  }
 
-  const nights = nightsBetween(checkIn, checkOut);
-  const nightAmount = nights * room.roomType.priceNight;
+  const catalogUnitPrice = room.roomType.priceNight;
+  const unitPriceApplied =
+    billingMode === STAY_BILLING.NIGHTLY &&
+    input.unitPriceApplied != null &&
+    Number.isFinite(input.unitPriceApplied)
+      ? Number(input.unitPriceApplied)
+      : null;
+  const flatAmount =
+    billingMode === STAY_BILLING.FLAT &&
+    input.flatAmount != null &&
+    Number.isFinite(input.flatAmount)
+      ? Number(input.flatAmount)
+      : null;
+  const rateNote = input.rateNote?.trim() || null;
+  const plannedHours =
+    billingMode === STAY_BILLING.FLAT &&
+    input.plannedHours != null &&
+    Number.isFinite(input.plannedHours)
+      ? Math.max(0, Math.round(Number(input.plannedHours)))
+      : null;
+
+  assertStayRateInput({
+    billingMode,
+    catalogUnitPrice,
+    unitPriceApplied,
+    flatAmount,
+    plannedHours,
+    rateNote,
+  });
+
+  const negotiated =
+    billingMode === STAY_BILLING.NIGHTLY &&
+    isNegotiatedNightRate({ catalogUnitPrice, unitPriceApplied });
+  const appliedUnit = resolveStayUnitPrice({
+    catalogUnitPrice,
+    unitPriceApplied,
+  });
+  const nights =
+    billingMode === STAY_BILLING.NIGHTLY
+      ? nightsBetween(checkIn, checkOut)
+      : 1;
+  const nightAmount =
+    billingMode === STAY_BILLING.NIGHTLY
+      ? nights * appliedUnit
+      : (flatAmount ?? 0);
 
   const stay = await prisma.$transaction(async (tx) => {
     const s = await tx.hotelStay.create({
@@ -266,10 +702,23 @@ export async function createStayAction(input: {
         guestName: input.guestName.trim(),
         guestPhone: input.guestPhone?.trim() || null,
         checkInDate: checkIn,
-        checkOutDate: checkOut,
+        checkOutDate:
+          billingMode === STAY_BILLING.FLAT &&
+          checkOut.getTime() === checkIn.getTime()
+            ? checkIn
+            : checkOut,
         adults: input.adults ?? 1,
         notes: input.notes ?? null,
         status: "RESERVED",
+        billingMode,
+        catalogUnitPrice,
+        unitPriceApplied:
+          billingMode === STAY_BILLING.NIGHTLY ? unitPriceApplied : null,
+        flatAmount: billingMode === STAY_BILLING.FLAT ? flatAmount : null,
+        plannedHours,
+        rateNote,
+        negotiatedByUserId:
+          negotiated || billingMode === STAY_BILLING.FLAT ? user.id : null,
       },
     });
     await tx.folio.create({
@@ -278,13 +727,36 @@ export async function createStayAction(input: {
         stayId: s.id,
         label: `Séjour ${input.guestName.trim()}`,
         lines: {
-          create: {
-            kind: "NIGHT",
-            description: `${nights} nuit(s) · ${room.roomType.name} ${room.number}`,
-            quantity: nights,
-            unitPrice: room.roomType.priceNight,
-            amount: nightAmount,
-          },
+          create:
+            billingMode === STAY_BILLING.FLAT
+              ? {
+                  kind: "STAY_FLAT",
+                  description: flatStayDescription({
+                    roomNumber: room.number,
+                    roomTypeName: room.roomType.name,
+                    flatAmount: flatAmount ?? 0,
+                    plannedHours,
+                    rateNote,
+                  }),
+                  quantity: 1,
+                  unitPrice: flatAmount ?? 0,
+                  amount: flatAmount ?? 0,
+                }
+              : {
+                  kind: "NIGHT",
+                  description: nightlyStayDescription({
+                    nights,
+                    roomNumber: room.number,
+                    roomTypeName: room.roomType.name,
+                    negotiated,
+                    catalogUnitPrice,
+                    unitPriceApplied: appliedUnit,
+                    rateNote,
+                  }),
+                  quantity: nights,
+                  unitPrice: appliedUnit,
+                  amount: nightAmount,
+                },
         },
       },
     });
@@ -344,8 +816,8 @@ export async function checkOutStayAction(input: {
   stayId: string;
 }) {
   await ctx(input.organizationId, input.branchId, "stays");
-  // Facture = nuitées consommées (règle 10h) + conso déjà sur la note
-  await reconcileStayNightCharges(input.stayId, input.branchId);
+  // Facture = nuitées (règle 10h) ou forfait + heures supp. + conso déjà sur la note
+  await reconcileStayCheckoutCharges(input.stayId, input.branchId);
 
   const stay = await prisma.hotelStay.findFirst({
     where: { id: input.stayId, branchId: input.branchId },
@@ -425,13 +897,16 @@ export async function checkOutStayAction(input: {
 }
 
 /**
- * Prolongation de séjour : décale la date de sortie et facture les nuitées ajoutées.
+ * Prolongation de séjour :
+ * - NIGHTLY : décale la sortie et facture les nuitées ajoutées
+ * - FLAT : ajoute un créneau de même durée / même forfait (pas de règle 10h)
  */
 export async function extendStayAction(input: {
   organizationId: string;
   branchId: string;
   stayId: string;
-  newCheckOutDate: string;
+  /** Requis en mode NIGHTLY */
+  newCheckOutDate?: string;
 }) {
   await ctx(input.organizationId, input.branchId, "stays");
   const stay = await prisma.hotelStay.findFirst({
@@ -444,6 +919,65 @@ export async function extendStayAction(input: {
   if (!stay) throw new Error("Séjour introuvable.");
   if (stay.status !== "RESERVED" && stay.status !== "CHECKED_IN") {
     throw new Error("Séjour non prolongeable.");
+  }
+
+  if (stay.billingMode === STAY_BILLING.FLAT) {
+    const hours = stay.plannedHours;
+    const amount = stay.flatAmount;
+    if (hours == null || !(hours > 0)) {
+      throw new Error("Durée du forfait introuvable — impossible de prolonger.");
+    }
+    if (amount == null || !(amount >= 0)) {
+      throw new Error("Montant forfait introuvable — impossible de prolonger.");
+    }
+
+    await prisma.$transaction(async (tx) => {
+      if (stay.folio) {
+        await tx.folioLine.create({
+          data: {
+            folioId: stay.folio.id,
+            kind: "STAY_FLAT",
+            description: flatStayDescription({
+              roomNumber: stay.room.number,
+              roomTypeName: stay.room.roomType.name,
+              flatAmount: amount,
+              plannedHours: hours,
+              rateNote: stay.rateNote,
+              prolongation: true,
+            }),
+            quantity: 1,
+            unitPrice: amount,
+            amount,
+          },
+        });
+        await tx.folio.update({
+          where: { id: stay.folio.id },
+          data: { closed: false },
+        });
+      }
+      await tx.branchNotification.create({
+        data: {
+          branchId: input.branchId,
+          title: "Forfait prolongé",
+          body: `${stay.guestName} · +${hours} h · ch. ${stay.room.number}`,
+          kind: "stay_extended",
+          href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/sejours`,
+        },
+      });
+    });
+
+    revalidateHotel(input.organizationId, input.branchId);
+    return {
+      mode: "FLAT" as const,
+      extraNights: 0,
+      extraHours: hours,
+      amount,
+      newCheckOutDate: stay.checkOutDate.toISOString().slice(0, 10),
+    };
+  }
+
+  if (!input.newCheckOutDate) {
+    throw new Error("Nouvelle date de sortie requise.");
   }
 
   const currentOut = parseDateOnly(stay.checkOutDate);
@@ -466,8 +1000,19 @@ export async function extendStayAction(input: {
   }
 
   const extraNights = nightsBetween(currentOut, newOut);
-  const unit = stay.room.roomType.priceNight;
+  const catalog =
+    stay.catalogUnitPrice > 0
+      ? stay.catalogUnitPrice
+      : stay.room.roomType.priceNight;
+  const unit = resolveStayUnitPrice({
+    catalogUnitPrice: catalog,
+    unitPriceApplied: stay.unitPriceApplied,
+  });
   const amount = extraNights * unit;
+  const negotiated = isNegotiatedNightRate({
+    catalogUnitPrice: catalog,
+    unitPriceApplied: stay.unitPriceApplied,
+  });
 
   await prisma.$transaction(async (tx) => {
     await tx.hotelStay.update({
@@ -479,7 +1024,16 @@ export async function extendStayAction(input: {
         data: {
           folioId: stay.folio.id,
           kind: "NIGHT",
-          description: `Prolongation · ${extraNights} nuit(s) · ch. ${stay.room.number}`,
+          description: nightlyStayDescription({
+            nights: extraNights,
+            roomNumber: stay.room.number,
+            roomTypeName: stay.room.roomType.name,
+            negotiated,
+            catalogUnitPrice: catalog,
+            unitPriceApplied: unit,
+            rateNote: stay.rateNote,
+            suffix: "prolongation",
+          }),
           quantity: extraNights,
           unitPrice: unit,
           amount,
@@ -502,7 +1056,13 @@ export async function extendStayAction(input: {
   });
 
   revalidateHotel(input.organizationId, input.branchId);
-  return { extraNights, amount, newCheckOutDate: newOut.toISOString().slice(0, 10) };
+  return {
+    mode: "NIGHTLY" as const,
+    extraNights,
+    extraHours: 0,
+    amount,
+    newCheckOutDate: newOut.toISOString().slice(0, 10),
+  };
 }
 
 /**
@@ -527,6 +1087,7 @@ export async function applyLateCheckoutFeesAction(
     where: {
       branchId,
       status: "CHECKED_IN",
+      billingMode: "NIGHTLY",
       checkOutDate: { lte: today },
     },
     select: { id: true, guestName: true, room: { select: { number: true } } },
@@ -535,7 +1096,7 @@ export async function applyLateCheckoutFeesAction(
   let charged = 0;
   for (const stay of stays) {
     const res = await reconcileStayNightCharges(stay.id, branchId);
-    if (res && !res.unchanged && res.billing.lateDeparture) {
+    if (res && !res.unchanged && res.billing?.lateDeparture) {
       charged += 1;
       await prisma.branchNotification.create({
         data: {
@@ -1102,20 +1663,46 @@ export async function getStayFolioStatementAction(
 
   let nightBilling: ReturnType<typeof computeStayNightBilling> | null = null;
   let folioForStatement = stay.folio;
+  const catalog =
+    stay.catalogUnitPrice > 0
+      ? stay.catalogUnitPrice
+      : stay.room.roomType.priceNight;
+  const appliedUnit = resolveStayUnitPrice({
+    catalogUnitPrice: catalog,
+    unitPriceApplied: stay.unitPriceApplied,
+  });
+  const negotiated = isNegotiatedNightRate({
+    catalogUnitPrice: catalog,
+    unitPriceApplied: stay.unitPriceApplied,
+  });
 
-  if (opts?.forCheckout && stay.status === "CHECKED_IN") {
+  if (
+    opts?.forCheckout &&
+    stay.status === "CHECKED_IN" &&
+    stay.billingMode !== STAY_BILLING.FLAT
+  ) {
     nightBilling = computeStayNightBilling({
       checkInDate: stay.checkInDate,
       plannedCheckOutDate: stay.checkOutDate,
     });
-    const unit = stay.room.roomType.priceNight;
-    const amount = nightBilling.nights * unit;
+    const amount = nightBilling.nights * appliedUnit;
     const description = nightChargeDescription({
       nights: nightBilling.nights,
       roomNumber: stay.room.number,
       roomTypeName: stay.room.roomType.name,
       billing: nightBilling,
     });
+    const fullDescription = negotiated
+      ? nightlyStayDescription({
+          nights: nightBilling.nights,
+          roomNumber: stay.room.number,
+          roomTypeName: stay.room.roomType.name,
+          negotiated: true,
+          catalogUnitPrice: catalog,
+          unitPriceApplied: appliedUnit,
+          rateNote: stay.rateNote,
+        })
+      : description;
     const nonNight = stay.folio.lines.filter((l) => l.kind !== "NIGHT");
     folioForStatement = {
       ...stay.folio,
@@ -1124,9 +1711,9 @@ export async function getStayFolioStatementAction(
           id: "preview-night",
           folioId: stay.folio.id,
           kind: "NIGHT" as const,
-          description,
+          description: fullDescription,
           quantity: nightBilling.nights,
-          unitPrice: unit,
+          unitPrice: appliedUnit,
           amount,
           createdAt: new Date(),
         },
@@ -1135,12 +1722,78 @@ export async function getStayFolioStatementAction(
     };
   }
 
+  let flatOvertimePreview: ReturnType<typeof computeFlatOvertimeBilling> = null;
+  if (
+    opts?.forCheckout &&
+    stay.status === "CHECKED_IN" &&
+    stay.billingMode === STAY_BILLING.FLAT
+  ) {
+    const packageSlots = Math.max(
+      1,
+      stay.folio.lines.filter((l) => l.kind === "STAY_FLAT").length,
+    );
+    flatOvertimePreview = computeFlatOvertimeBilling({
+      plannedHours: stay.plannedHours,
+      flatAmount: stay.flatAmount,
+      checkedInAt: stay.checkedInAt,
+      slots: packageSlots,
+      endedAt: stay.folio.checkoutQueuedAt ?? undefined,
+    });
+    const withoutOvertime = stay.folio.lines.filter(
+      (l) => l.kind !== "STAY_OVERTIME",
+    );
+    if (
+      flatOvertimePreview &&
+      flatOvertimePreview.extraHours > 0 &&
+      flatOvertimePreview.amount > 0
+    ) {
+      folioForStatement = {
+        ...stay.folio,
+        lines: [
+          ...withoutOvertime,
+          {
+            id: "preview-overtime",
+            folioId: stay.folio.id,
+            kind: "STAY_OVERTIME" as const,
+            description: flatOvertimeDescription({
+              roomNumber: stay.room.number,
+              roomTypeName: stay.room.roomType.name,
+              extraHours: flatOvertimePreview.extraHours,
+              hourlyRate: flatOvertimePreview.hourlyRate,
+              overdueMinutes: flatOvertimePreview.overdueMinutes,
+            }),
+            quantity: flatOvertimePreview.extraHours,
+            unitPrice: flatOvertimePreview.hourlyRate,
+            amount: flatOvertimePreview.amount,
+            createdAt: new Date(),
+          },
+        ],
+      };
+    } else {
+      folioForStatement = { ...stay.folio, lines: withoutOvertime };
+    }
+  }
+
   const statement = buildStayFolioStatement({
     stay,
     folio: folioForStatement,
   });
   return {
     ...statement,
+    rateInfo: {
+      billingMode: stay.billingMode,
+      catalogUnitPrice: catalog,
+      unitPriceApplied: stay.unitPriceApplied,
+      appliedUnit:
+        stay.billingMode === STAY_BILLING.FLAT
+          ? (stay.flatAmount ?? 0)
+          : appliedUnit,
+      flatAmount: stay.flatAmount,
+      plannedHours: stay.plannedHours,
+      rateNote: stay.rateNote,
+      negotiated:
+        stay.billingMode === STAY_BILLING.FLAT || negotiated,
+    },
     nightBilling: nightBilling
       ? {
           nights: nightBilling.nights,
@@ -1149,6 +1802,14 @@ export async function getStayFolioStatementAction(
           earlyDeparture: nightBilling.earlyDeparture,
           lateDeparture: nightBilling.lateDeparture,
           checkoutHour: nightBilling.checkoutHour,
+        }
+      : null,
+    flatOvertime: flatOvertimePreview
+      ? {
+          extraHours: flatOvertimePreview.extraHours,
+          hourlyRate: flatOvertimePreview.hourlyRate,
+          amount: flatOvertimePreview.amount,
+          overdueMinutes: flatOvertimePreview.overdueMinutes,
         }
       : null,
   };
@@ -1161,7 +1822,7 @@ export async function prepareStayCheckoutBillingAction(input: {
   stayId: string;
 }) {
   await ctx(input.organizationId, input.branchId, "stays");
-  const res = await reconcileStayNightCharges(input.stayId, input.branchId);
+  const res = await reconcileStayCheckoutCharges(input.stayId, input.branchId);
 
   const stay = await prisma.hotelStay.findFirst({
     where: { id: input.stayId, branchId: input.branchId },

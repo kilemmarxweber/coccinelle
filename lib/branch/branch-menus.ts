@@ -17,6 +17,7 @@ import {
   LayoutDashboard,
   Package,
   Plane,
+  Presentation,
   ShoppingCart,
   Truck,
   Users,
@@ -201,14 +202,24 @@ export function menuSectionsForBranch(
 
     const stockItems: BranchMenuItem[] = [];
     if (hasStays) {
-      stockItems.push({
-        title: "Chambres",
-        description: "Types, inventaire et statuts.",
-        href: hotelRoutes.chambres(organizationId, branchId),
-        icon: BedDouble,
-        iconBg: "bg-sky-500/15",
-        iconColor: "text-sky-400",
-      });
+      stockItems.push(
+        {
+          title: "Chambres",
+          description: "Types, inventaire et statuts.",
+          href: hotelRoutes.chambres(organizationId, branchId),
+          icon: BedDouble,
+          iconBg: "bg-sky-500/15",
+          iconColor: "text-sky-400",
+        },
+        {
+          title: "Salles de réunion",
+          description: "Salles, capacité et réservations.",
+          href: hotelRoutes.sallesReunion(organizationId, branchId),
+          icon: Presentation,
+          iconBg: "bg-indigo-500/15",
+          iconColor: "text-indigo-400",
+        },
+      );
     }
     if (hasRestaurant) {
       stockItems.push({

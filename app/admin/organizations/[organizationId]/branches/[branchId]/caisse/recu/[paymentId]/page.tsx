@@ -58,6 +58,8 @@ export default async function ReceiptPage({ params }: PageProps) {
 
   const kindOrder: FolioLineKind[] = [
     "NIGHT",
+    "STAY_FLAT",
+    "STAY_OVERTIME",
     "FNB",
     "PRODUCT",
     "TAX",

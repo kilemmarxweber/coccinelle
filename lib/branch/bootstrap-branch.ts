@@ -164,6 +164,7 @@ export async function bootstrapBranchByType(
         description: "Lit double, salle d’eau, Wi-Fi",
         capacity: 2,
         priceNight: 85,
+        kind: "ROOM",
         rooms: {
           create: [
             { number: "101", floor: "1" },
@@ -181,14 +182,54 @@ export async function bootstrapBranchByType(
         description: "Salon + chambre, mini-bar",
         capacity: 3,
         priceNight: 160,
+        kind: "ROOM",
         rooms: {
           create: [{ number: "301", floor: "3" }],
         },
       },
       include: { rooms: true },
     });
-    result.roomTypesCreated = 2;
-    result.roomsCreated = standard.rooms.length + suite.rooms.length;
+    const meeting = await db.hotelRoomType.create({
+      data: {
+        branchId: input.branchId,
+        name: "Salle conférence",
+        description: "Vidéoprojecteur · places simples + VIP",
+        capacity: 24,
+        seatsStandard: 20,
+        seatsVip: 4,
+        priceNight: 120,
+        kind: "MEETING",
+        rooms: {
+          create: [
+            { number: "R1", floor: "RDC" },
+            { number: "R2", floor: "1" },
+          ],
+        },
+      },
+      include: { rooms: true },
+    });
+    const boardroom = await db.hotelRoomType.create({
+      data: {
+        branchId: input.branchId,
+        name: "Boardroom VIP",
+        description: "Salon direction · majoritairement VIP",
+        capacity: 12,
+        seatsStandard: 4,
+        seatsVip: 8,
+        priceNight: 200,
+        kind: "MEETING",
+        rooms: {
+          create: [{ number: "VIP-A", floor: "2" }],
+        },
+      },
+      include: { rooms: true },
+    });
+    result.roomTypesCreated = 4;
+    result.roomsCreated =
+      standard.rooms.length +
+      suite.rooms.length +
+      meeting.rooms.length +
+      boardroom.rooms.length;
   }
 
   if (isHospitality(input.type) && hasRestaurant) {

@@ -626,6 +626,23 @@ export type EnumBranchMemberStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumBranchMemberStatusFilter<$PrismaModel>
 }
 
+export type EnumHotelSpaceKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelSpaceKind | Prisma.EnumHotelSpaceKindFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelSpaceKind[] | Prisma.ListEnumHotelSpaceKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelSpaceKind[] | Prisma.ListEnumHotelSpaceKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelSpaceKindFilter<$PrismaModel> | $Enums.HotelSpaceKind
+}
+
+export type EnumHotelSpaceKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelSpaceKind | Prisma.EnumHotelSpaceKindFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelSpaceKind[] | Prisma.ListEnumHotelSpaceKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelSpaceKind[] | Prisma.ListEnumHotelSpaceKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelSpaceKindWithAggregatesFilter<$PrismaModel> | $Enums.HotelSpaceKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHotelSpaceKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHotelSpaceKindFilter<$PrismaModel>
+}
+
 export type EnumHotelRoomStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.HotelRoomStatus | Prisma.EnumHotelRoomStatusFieldRefInput<$PrismaModel>
   in?: $Enums.HotelRoomStatus[] | Prisma.ListEnumHotelRoomStatusFieldRefInput<$PrismaModel>
@@ -667,6 +684,13 @@ export type EnumHotelStayStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumHotelStayStatusFilter<$PrismaModel> | $Enums.HotelStayStatus
 }
 
+export type EnumStayBillingModeFilter<$PrismaModel = never> = {
+  equals?: $Enums.StayBillingMode | Prisma.EnumStayBillingModeFieldRefInput<$PrismaModel>
+  in?: $Enums.StayBillingMode[] | Prisma.ListEnumStayBillingModeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StayBillingMode[] | Prisma.ListEnumStayBillingModeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStayBillingModeFilter<$PrismaModel> | $Enums.StayBillingMode
+}
+
 export type EnumHotelStayStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.HotelStayStatus | Prisma.EnumHotelStayStatusFieldRefInput<$PrismaModel>
   in?: $Enums.HotelStayStatus[] | Prisma.ListEnumHotelStayStatusFieldRefInput<$PrismaModel>
@@ -675,6 +699,16 @@ export type EnumHotelStayStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumHotelStayStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumHotelStayStatusFilter<$PrismaModel>
+}
+
+export type EnumStayBillingModeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.StayBillingMode | Prisma.EnumStayBillingModeFieldRefInput<$PrismaModel>
+  in?: $Enums.StayBillingMode[] | Prisma.ListEnumStayBillingModeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StayBillingMode[] | Prisma.ListEnumStayBillingModeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStayBillingModeWithAggregatesFilter<$PrismaModel> | $Enums.StayBillingMode
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumStayBillingModeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumStayBillingModeFilter<$PrismaModel>
 }
 
 export type EnumFolioLineKindFilter<$PrismaModel = never> = {
@@ -1277,6 +1311,23 @@ export type NestedEnumBranchMemberStatusWithAggregatesFilter<$PrismaModel = neve
   _max?: Prisma.NestedEnumBranchMemberStatusFilter<$PrismaModel>
 }
 
+export type NestedEnumHotelSpaceKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelSpaceKind | Prisma.EnumHotelSpaceKindFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelSpaceKind[] | Prisma.ListEnumHotelSpaceKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelSpaceKind[] | Prisma.ListEnumHotelSpaceKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelSpaceKindFilter<$PrismaModel> | $Enums.HotelSpaceKind
+}
+
+export type NestedEnumHotelSpaceKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HotelSpaceKind | Prisma.EnumHotelSpaceKindFieldRefInput<$PrismaModel>
+  in?: $Enums.HotelSpaceKind[] | Prisma.ListEnumHotelSpaceKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HotelSpaceKind[] | Prisma.ListEnumHotelSpaceKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHotelSpaceKindWithAggregatesFilter<$PrismaModel> | $Enums.HotelSpaceKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHotelSpaceKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHotelSpaceKindFilter<$PrismaModel>
+}
+
 export type NestedEnumHotelRoomStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.HotelRoomStatus | Prisma.EnumHotelRoomStatusFieldRefInput<$PrismaModel>
   in?: $Enums.HotelRoomStatus[] | Prisma.ListEnumHotelRoomStatusFieldRefInput<$PrismaModel>
@@ -1318,6 +1369,13 @@ export type NestedEnumHotelStayStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumHotelStayStatusFilter<$PrismaModel> | $Enums.HotelStayStatus
 }
 
+export type NestedEnumStayBillingModeFilter<$PrismaModel = never> = {
+  equals?: $Enums.StayBillingMode | Prisma.EnumStayBillingModeFieldRefInput<$PrismaModel>
+  in?: $Enums.StayBillingMode[] | Prisma.ListEnumStayBillingModeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StayBillingMode[] | Prisma.ListEnumStayBillingModeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStayBillingModeFilter<$PrismaModel> | $Enums.StayBillingMode
+}
+
 export type NestedEnumHotelStayStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.HotelStayStatus | Prisma.EnumHotelStayStatusFieldRefInput<$PrismaModel>
   in?: $Enums.HotelStayStatus[] | Prisma.ListEnumHotelStayStatusFieldRefInput<$PrismaModel>
@@ -1326,6 +1384,16 @@ export type NestedEnumHotelStayStatusWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumHotelStayStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumHotelStayStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumStayBillingModeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.StayBillingMode | Prisma.EnumStayBillingModeFieldRefInput<$PrismaModel>
+  in?: $Enums.StayBillingMode[] | Prisma.ListEnumStayBillingModeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StayBillingMode[] | Prisma.ListEnumStayBillingModeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStayBillingModeWithAggregatesFilter<$PrismaModel> | $Enums.StayBillingMode
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumStayBillingModeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumStayBillingModeFilter<$PrismaModel>
 }
 
 export type NestedEnumFolioLineKindFilter<$PrismaModel = never> = {

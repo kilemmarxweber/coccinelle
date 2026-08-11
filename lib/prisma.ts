@@ -6,7 +6,7 @@ const adapter = new PrismaPg({
 });
 
 /** Incrémenter après tout changement de modèle Prisma pour invalider le singleton HMR. */
-const PRISMA_SCHEMA_REV = 14;
+const PRISMA_SCHEMA_REV = 19;
 
 const globalForPrisma = global as unknown as {
   prisma: PrismaClient | undefined;
@@ -44,6 +44,32 @@ function modelHasField(
   return true;
 }
 
+function enumHasValue(
+  client: PrismaClient,
+  enumName: string,
+  value: string,
+): boolean {
+  const enums = (
+    client as {
+      _runtimeDataModel?: {
+        enums?: Record<
+          string,
+          { values?: Array<{ name?: string } | string> } | string[]
+        >;
+      };
+    }
+  )._runtimeDataModel?.enums?.[enumName];
+  if (!enums) return true;
+  const values = Array.isArray(enums)
+    ? enums
+    : Array.isArray(enums.values)
+      ? enums.values
+      : [];
+  return values.some((v) =>
+    typeof v === "string" ? v === value : v?.name === value,
+  );
+}
+
 /**
  * Recrée le client si le singleton HMR est resté sur un schéma plus ancien
  * (ex. après ajout de champs HotelOrder.preparedByUserId).
@@ -68,7 +94,13 @@ function resolvePrisma(): PrismaClient {
       !modelHasField(existing, "Branch", "hasAvion") ||
       !modelHasField(existing, "Branch", "hasShop") ||
       !modelHasField(existing, "HotelOrder", "settlementMode") ||
-      !modelHasField(existing, "Folio", "checkoutQueuedAt"));
+      !modelHasField(existing, "Folio", "checkoutQueuedAt") ||
+      !modelHasField(existing, "HotelStay", "billingMode") ||
+      !modelHasField(existing, "HotelStay", "catalogUnitPrice") ||
+      !modelHasField(existing, "HotelRoomType", "kind") ||
+      !modelHasField(existing, "HotelRoomType", "seatsVip") ||
+      !modelHasField(existing, "HotelRoomType", "seatsStandard") ||
+      !enumHasValue(existing, "FolioLineKind", "STAY_OVERTIME"));
 
   if (existing && (staleRev || staleDelegate || staleFields)) {
     void existing.$disconnect().catch(() => undefined);

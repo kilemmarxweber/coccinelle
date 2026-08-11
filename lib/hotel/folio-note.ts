@@ -14,6 +14,8 @@ export function isNoteChambreMode(mode: string | null | undefined) {
 
 export const FOLIO_SECTION_LABEL: Record<FolioLineKind, string> = {
   NIGHT: "Nuitées",
+  STAY_FLAT: "Forfait séjour",
+  STAY_OVERTIME: "Heures supplémentaires",
   FNB: "Consommations",
   PRODUCT: "Produits",
   TAX: "Taxes",
@@ -130,6 +132,8 @@ export function buildStayFolioStatement(input: {
 
   const kindOrder: FolioLineKind[] = [
     "NIGHT",
+    "STAY_FLAT",
+    "STAY_OVERTIME",
     "FNB",
     "PRODUCT",
     "TAX",

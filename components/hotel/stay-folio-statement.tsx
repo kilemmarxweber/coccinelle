@@ -35,6 +35,16 @@ export type StayFolioStatementViewModel = {
   charges: number;
   paid: number;
   balance: number;
+  rateInfo?: {
+    billingMode: string;
+    catalogUnitPrice: number;
+    unitPriceApplied?: number | null;
+    appliedUnit: number;
+    flatAmount?: number | null;
+    plannedHours?: number | null;
+    rateNote?: string | null;
+    negotiated: boolean;
+  } | null;
   nightBilling?: {
     nights: number;
     plannedNights: number;
@@ -82,6 +92,43 @@ export function StayFolioStatementView(props: {
           </p>
         ) : null}
       </header>
+
+      {s.rateInfo ? (
+        <div className="rounded-xl border border-border bg-muted/30 px-3 py-2.5 text-xs">
+          {s.rateInfo.billingMode === "FLAT" ? (
+            <>
+              <p className="font-semibold">Forfait / au temps</p>
+              <p className="mt-0.5 text-muted-foreground">
+                Durée {s.rateInfo.plannedHours ?? "—"} h · montant{" "}
+                {money(s.rateInfo.flatAmount ?? s.rateInfo.appliedUnit)}
+              </p>
+              <p className="mt-0.5 text-[11px] text-muted-foreground">
+                Sans règle de sortie 10h — prolongation = même durée / même
+                forfait.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="font-semibold">
+                {s.rateInfo.negotiated
+                  ? "Tarif nuitée négocié"
+                  : "Tarif nuitée catalogue"}
+              </p>
+              <p className="mt-0.5 text-muted-foreground">
+                Appliqué {money(s.rateInfo.appliedUnit)}/nuit
+                {s.rateInfo.negotiated
+                  ? ` · catalogue ${money(s.rateInfo.catalogUnitPrice)}/nuit`
+                  : ""}
+              </p>
+            </>
+          )}
+          {s.rateInfo.rateNote ? (
+            <p className="mt-1 text-muted-foreground">
+              Motif · {s.rateInfo.rateNote}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
 
       {s.nightBilling ? (
         <div

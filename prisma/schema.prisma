@@ -137,10 +137,23 @@ enum HotelStayStatus {
 
 enum FolioLineKind {
   NIGHT
+  STAY_FLAT
+  STAY_OVERTIME
   FNB
   PRODUCT
   TAX
   OTHER
+}
+
+enum StayBillingMode {
+  NIGHTLY
+  FLAT
+}
+
+/// Chambre d’hébergement vs salle de réunion (même inventaire / réservation)
+enum HotelSpaceKind {
+  ROOM
+  MEETING
 }
 
 enum HotelOrderStatus {
@@ -566,18 +579,25 @@ model BranchMember {
 }
 
 model HotelRoomType {
-  id          String      @id @default(uuid())
+  id          String         @id @default(uuid())
   branchId    String
   name        String
   description String?
-  capacity    Int         @default(2)
+  capacity    Int            @default(2)
+  /// Places simples (salles de réunion) — optionnel
+  seatsStandard Int?
+  /// Places VIP (salles de réunion) — optionnel
+  seatsVip      Int?
   priceNight  Float
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  branch      Branch      @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  /// ROOM = chambre · MEETING = salle de réunion
+  kind        HotelSpaceKind @default(ROOM)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  branch      Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
   rooms       HotelRoom[]
 
   @@index([branchId])
+  @@index([branchId, kind])
 }
 
 model HotelRoom {
@@ -659,25 +679,38 @@ model CashSession {
 }
 
 model HotelStay {
-  id           String          @id @default(uuid())
-  branchId     String
-  roomId       String
-  guestName    String
-  guestPhone   String?
-  guestEmail   String?
-  checkInDate  DateTime        @db.Date
-  checkOutDate DateTime        @db.Date
-  status       HotelStayStatus @default(RESERVED)
-  adults       Int             @default(1)
-  notes        String?
-  checkedInAt  DateTime?
-  checkedOutAt DateTime?
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-  branch       Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  room         HotelRoom       @relation(fields: [roomId], references: [id], onDelete: Restrict)
-  folio        Folio?
-  orders       HotelOrder[]
+  id                 String          @id @default(uuid())
+  branchId           String
+  roomId             String
+  guestName          String
+  guestPhone         String?
+  guestEmail         String?
+  checkInDate        DateTime        @db.Date
+  checkOutDate       DateTime        @db.Date
+  status             HotelStayStatus @default(RESERVED)
+  adults             Int             @default(1)
+  notes              String?
+  /// NIGHTLY = nuits × tarif · FLAT = forfait / au temps
+  billingMode        StayBillingMode @default(NIGHTLY)
+  /// Snapshot du priceNight catalogue à la création
+  catalogUnitPrice   Float           @default(0)
+  /// Prix / nuit négocié (NIGHTLY) ; null = catalogue
+  unitPriceApplied   Float?
+  /// Montant forfait (FLAT)
+  flatAmount         Float?
+  /// Durée indicative en heures (FLAT)
+  plannedHours       Int?
+  /// Motif de négociation / forfait
+  rateNote           String?
+  negotiatedByUserId String?
+  checkedInAt        DateTime?
+  checkedOutAt       DateTime?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  branch             Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  room               HotelRoom       @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  folio              Folio?
+  orders             HotelOrder[]
 
   @@index([branchId, checkInDate, checkOutDate])
   @@index([roomId, status])

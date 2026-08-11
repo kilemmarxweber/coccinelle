@@ -205,24 +205,59 @@ export async function createPaymentAction(input: {
     }
 
     if (input.folioId) {
-      const [lines, payments] = await Promise.all([
-        tx.folioLine.findMany({ where: { folioId: input.folioId } }),
-        tx.payment.findMany({ where: { folioId: input.folioId } }),
-      ]);
-      const charges = lines.reduce((s, l) => s + l.amount, 0);
-      const paid = payments.reduce(
-        (s, pay) =>
-          s +
-          (pay.amountForeign != null && pay.amountForeign > 0
-            ? pay.amountForeign
-            : pay.amountCdf),
-        0,
-      );
-      if (charges - paid <= 0.01) {
-        await tx.folio.update({
-          where: { id: input.folioId },
-          data: { checkoutQueuedAt: null },
-        });
+      const folio = await tx.folio.findFirst({
+        where: { id: input.folioId, branchId: input.branchId },
+        include: {
+          stay: true,
+          lines: true,
+          payments: true,
+        },
+      });
+      if (folio) {
+        const charges = folio.lines.reduce((s, l) => s + l.amount, 0);
+        const paid = folio.payments.reduce(
+          (s, pay) =>
+            s +
+            (pay.amountForeign != null && pay.amountForeign > 0
+              ? pay.amountForeign
+              : pay.amountCdf),
+          0,
+        );
+        if (charges - paid <= 0.01) {
+          // Note soldée : plus rien à encaisser — clôturer + check-out si besoin
+          await tx.folio.update({
+            where: { id: folio.id },
+            data: { closed: true, checkoutQueuedAt: null },
+          });
+          if (folio.stay && folio.stay.status === "CHECKED_IN") {
+            await tx.hotelStay.update({
+              where: { id: folio.stay.id },
+              data: {
+                status: "CHECKED_OUT",
+                checkedOutAt: new Date(),
+              },
+            });
+            await tx.hotelRoom.update({
+              where: { id: folio.stay.roomId },
+              data: { status: "CLEANING" },
+            });
+            await tx.branchNotification.create({
+              data: {
+                branchId: input.branchId,
+                title: "Check-out après encaissement",
+                body: `${folio.stay.guestName} · note soldée (${receiptNumber})`,
+                kind: "stay_checkout",
+                href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/sejours`,
+              },
+            });
+          }
+        } else if (folio.checkoutQueuedAt) {
+          // Solde partiel : garder en file, compteur reste figé
+          await tx.folio.update({
+            where: { id: folio.id },
+            data: { updatedAt: new Date() },
+          });
+        }
       }
     }
 

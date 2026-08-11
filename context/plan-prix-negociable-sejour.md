@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | `draft` |
+| **Status** | `done` (Phases A–B) |
 | **Périmètre** | Branche `hasStays` — création / prolongation / check-out séjour |
 | **Contexte** | Aujourd’hui le montant nuitée = `roomType.priceNight × nuits` (catalogue fixe). Besoin : réduction négociée **et** séjour au temps (pas seulement nuitée calendaire). |
 | **Lié** | [`plan-sejour-note-chambre.md`](./plan-sejour-note-chambre.md), [`plan-hotel-caisse-sejours-restauration.md`](./plan-hotel-caisse-sejours-restauration.md), `lib/hotel/stay-nights.ts`, `reconcileStayNightCharges` |
