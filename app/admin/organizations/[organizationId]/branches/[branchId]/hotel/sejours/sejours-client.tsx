@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Printer } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -66,6 +67,7 @@ type Stay = {
   status: string;
   roomId: string;
   checkedInAt?: string | Date | null;
+  checkedOutAt?: string | Date | null;
   billingMode?: string;
   catalogUnitPrice?: number;
   unitPriceApplied?: number | null;
@@ -143,6 +145,26 @@ function nightsBetween(checkIn: Date, checkOut: Date) {
 
 function daysInMonth(year: number, month: number) {
   return new Date(year, month, 0).getDate();
+}
+
+function stayCheckoutDayKey(stay: Stay) {
+  if (stay.checkedOutAt) {
+    const d = new Date(stay.checkedOutAt);
+    if (Number.isFinite(d.getTime())) {
+      return toDateKey(
+        new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())),
+      );
+    }
+  }
+  return toDateKey(asUtcDay(stay.checkOutDate));
+}
+
+function localTodayInputValue() {
+  const n = new Date();
+  const y = n.getFullYear();
+  const m = String(n.getMonth() + 1).padStart(2, "0");
+  const d = String(n.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 function stayMetrics(stay: Stay, now = new Date()) {
@@ -230,6 +252,10 @@ export function SejoursClient(props: {
   const [checkoutStatement, setCheckoutStatement] =
     useState<StayFolioStatementViewModel | null>(null);
   const [now, setNow] = useState<number | null>(null);
+  const [listFilter, setListFilter] = useState<"actifs" | "checkouts">(
+    "actifs",
+  );
+  const [filterDate, setFilterDate] = useState(localTodayInputValue);
 
   useEffect(() => {
     setNow(Date.now());
@@ -263,6 +289,37 @@ export function SejoursClient(props: {
         ),
     [props.stays],
   );
+
+  const filteredListStays = useMemo(() => {
+    const dayKey = filterDate.slice(0, 10);
+    if (listFilter === "actifs") {
+      // En cours = réservés + présents (pas de filtre date)
+      return props.stays
+        .filter((s) => s.status === "RESERVED" || s.status === "CHECKED_IN")
+        .sort(
+          (a, b) =>
+            asUtcDay(a.checkOutDate).getTime() -
+            asUtcDay(b.checkOutDate).getTime(),
+        );
+    }
+    return props.stays
+      .filter(
+        (s) =>
+          s.status === "CHECKED_OUT" && stayCheckoutDayKey(s) === dayKey,
+      )
+      .sort((a, b) => {
+        const ta = a.checkedOutAt
+          ? new Date(a.checkedOutAt).getTime()
+          : asUtcDay(a.checkOutDate).getTime();
+        const tb = b.checkedOutAt
+          ? new Date(b.checkedOutAt).getTime()
+          : asUtcDay(b.checkOutDate).getTime();
+        return tb - ta;
+      });
+  }, [props.stays, listFilter, filterDate]);
+
+  const notePrintHref = (stayId: string) =>
+    `/admin/organizations/${props.organizationId}/branches/${props.branchId}/hotel/sejours/note/${stayId}?sign=1`;
 
   const extendTarget = useMemo(
     () => activeStays.find((s) => s.id === extendStayId) ?? null,
@@ -960,20 +1017,84 @@ export function SejoursClient(props: {
         <section className="space-y-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <h2 className="font-semibold">Séjours actifs</h2>
+              <h2 className="font-semibold">
+                {listFilter === "actifs"
+                  ? "Séjours actifs"
+                  : "Check-outs du jour"}
+              </h2>
               <p className="text-xs text-muted-foreground">
-                Nuitées · libération {HOTEL_CHECKOUT_HOUR}h · forfaits : décompte
-                d’heures après check-in
+                {listFilter === "actifs"
+                  ? "Réservés et présents (en cours)"
+                  : "Factures à remettre au client pour signature"}
               </p>
             </div>
-            <Badge variant="secondary">{activeStays.length}</Badge>
+            <Badge variant="secondary">{filteredListStays.length}</Badge>
           </div>
 
-          {activeStays.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Aucun séjour actif.</p>
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="grid grid-cols-2 gap-1 rounded-lg border border-border/60 bg-muted/20 p-1">
+              <button
+                type="button"
+                onClick={() => setListFilter("actifs")}
+                className={cn(
+                  "rounded-md px-3 py-1.5 text-xs font-semibold transition",
+                  listFilter === "actifs"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-muted",
+                )}
+              >
+                Actifs
+              </button>
+              <button
+                type="button"
+                onClick={() => setListFilter("checkouts")}
+                className={cn(
+                  "rounded-md px-3 py-1.5 text-xs font-semibold transition",
+                  listFilter === "checkouts"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-muted",
+                )}
+              >
+                Check-outs
+              </button>
+            </div>
+            {listFilter === "checkouts" ? (
+              <>
+                <div className="grid gap-1">
+                  <Label htmlFor="stay-filter-date" className="text-xs">
+                    Date
+                  </Label>
+                  <Input
+                    id="stay-filter-date"
+                    type="date"
+                    className="h-8 w-auto"
+                    value={filterDate}
+                    onChange={(e) => setFilterDate(e.target.value)}
+                  />
+                </div>
+                {filterDate !== localTodayInputValue() ? (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setFilterDate(localTodayInputValue())}
+                  >
+                    Aujourd’hui
+                  </Button>
+                ) : null}
+              </>
+            ) : null}
+          </div>
+
+          {filteredListStays.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              {listFilter === "actifs"
+                ? "Aucun séjour en cours."
+                : "Aucun check-out pour cette date."}
+            </p>
           ) : (
             <ul className="space-y-3">
-              {activeStays.map((s) => {
+              {filteredListStays.map((s) => {
                 const m = stayMetrics(s);
                 const charges =
                   s.folio?.lines.reduce((a, l) => a + l.amount, 0) ?? 0;
@@ -987,6 +1108,7 @@ export function SejoursClient(props: {
                     0,
                   ) ?? 0;
                 const balance = charges - paid;
+                const isCheckoutRow = s.status === "CHECKED_OUT";
                 const flatFrozenAt = s.folio?.checkoutQueuedAt ?? null;
                 const flatFrozen = flatFrozenAt != null;
                 const flatSlots =
@@ -1019,15 +1141,17 @@ export function SejoursClient(props: {
                     key={s.id}
                     className={cn(
                       "rounded-xl border px-3 py-3 text-sm",
-                      flatCd?.tone === "critical" || flatCd?.overdue
-                        ? "border-rose-500/45 bg-rose-500/5"
-                        : flatCd?.tone === "warn"
-                          ? "border-amber-500/45 bg-amber-500/5"
-                          : m.lateAfter10
-                            ? "border-rose-500/40 bg-rose-500/5"
-                            : m.isCheckoutDay
-                              ? "border-amber-500/40 bg-amber-500/5"
-                              : "border-border bg-muted/15",
+                      isCheckoutRow
+                        ? "border-border bg-muted/10"
+                        : flatCd?.tone === "critical" || flatCd?.overdue
+                          ? "border-rose-500/45 bg-rose-500/5"
+                          : flatCd?.tone === "warn"
+                            ? "border-amber-500/45 bg-amber-500/5"
+                            : m.lateAfter10
+                              ? "border-rose-500/40 bg-rose-500/5"
+                              : m.isCheckoutDay
+                                ? "border-amber-500/40 bg-amber-500/5"
+                                : "border-border bg-muted/15",
                     )}
                   >
                     <div className="flex flex-wrap items-start justify-between gap-3">
@@ -1173,68 +1297,102 @@ export function SejoursClient(props: {
                         ) : null}
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {s.status === "RESERVED" ? (
-                          <Button
-                            size="sm"
-                            disabled={pending}
-                            onClick={() => checkIn(s.id)}
-                          >
-                            Check-in
-                          </Button>
+                        {isCheckoutRow ? (
+                          <>
+                            <Button
+                              size="sm"
+                              className="gap-1.5"
+                              render={
+                                <a
+                                  href={notePrintHref(s.id)}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                />
+                              }
+                            >
+                              <Printer className="size-3.5" />
+                              Reçu
+                            </Button>
+                            {s.folio ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={pending}
+                                onClick={() => openNote(s.id)}
+                              >
+                                Voir la note
+                              </Button>
+                            ) : null}
+                          </>
                         ) : (
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            disabled={pending}
-                            onClick={() => checkOut(s.id)}
-                          >
-                            Check-out
-                          </Button>
+                          <>
+                            {s.status === "RESERVED" ? (
+                              <Button
+                                size="sm"
+                                disabled={pending}
+                                onClick={() => checkIn(s.id)}
+                              >
+                                Check-in
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                disabled={pending}
+                                onClick={() => checkOut(s.id)}
+                              >
+                                Check-out
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={
+                                pending ||
+                                (s.billingMode === "FLAT" &&
+                                  !(
+                                    s.plannedHours != null &&
+                                    s.plannedHours > 0
+                                  ))
+                              }
+                              title={
+                                s.billingMode === "FLAT" &&
+                                !(s.plannedHours != null && s.plannedHours > 0)
+                                  ? "Durée du forfait manquante"
+                                  : undefined
+                              }
+                              onClick={() => openExtend(s)}
+                            >
+                              Prolongation
+                            </Button>
+                            {s.folio ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={pending}
+                                onClick={() => openNote(s.id)}
+                              >
+                                Voir la note
+                              </Button>
+                            ) : null}
+                            {balance > 0.01 ? (
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                render={
+                                  <Link
+                                    href={`${branchCaissePath(
+                                      props.organizationId,
+                                      props.branchId,
+                                    )}?tab=folios`}
+                                  />
+                                }
+                              >
+                                Caisse
+                              </Button>
+                            ) : null}
+                          </>
                         )}
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={
-                            pending ||
-                            (s.billingMode === "FLAT" &&
-                              !(s.plannedHours != null && s.plannedHours > 0))
-                          }
-                          title={
-                            s.billingMode === "FLAT" &&
-                            !(s.plannedHours != null && s.plannedHours > 0)
-                              ? "Durée du forfait manquante"
-                              : undefined
-                          }
-                          onClick={() => openExtend(s)}
-                        >
-                          Prolongation
-                        </Button>
-                        {s.folio ? (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={pending}
-                            onClick={() => openNote(s.id)}
-                          >
-                            Voir la note
-                          </Button>
-                        ) : null}
-                        {balance > 0.01 ? (
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            render={
-                              <Link
-                                href={`${branchCaissePath(
-                                  props.organizationId,
-                                  props.branchId,
-                                )}?tab=folios`}
-                              />
-                            }
-                          >
-                            Caisse
-                          </Button>
-                        ) : null}
                       </div>
                     </div>
                   </li>

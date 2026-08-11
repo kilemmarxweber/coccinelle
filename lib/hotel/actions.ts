@@ -544,8 +544,20 @@ export async function listStaysForMonthAction(
     where: {
       branchId,
       status: { notIn: ["CANCELLED", "NO_SHOW"] },
-      checkInDate: { lt: end },
-      checkOutDate: { gt: start },
+      OR: [
+        {
+          checkInDate: { lt: end },
+          checkOutDate: { gt: start },
+        },
+        {
+          checkedOutAt: { gte: start, lt: end },
+        },
+        // Forfait même jour (checkIn === checkOut) : gt start exclut le 1er du mois
+        {
+          checkInDate: { gte: start, lt: end },
+          checkOutDate: { gte: start, lt: end },
+        },
+      ],
     },
     include: {
       room: { include: { roomType: true } },
