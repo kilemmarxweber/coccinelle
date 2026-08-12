@@ -161,6 +161,8 @@ enum FolioLineKind {
   PRODUCT
   TAX
   OTHER
+  /// Caution / dépôt (montant négatif = crédit client)
+  DEPOSIT
 }
 
 enum StayBillingMode {
@@ -804,6 +806,9 @@ model HotelStay {
   plannedHours       Int?
   /// Motif de négociation / forfait
   rateNote           String?
+  /// Caution consommation attendue (salle) — saisie manuelle
+  depositAmountExpected Float?
+  depositCollectedAt DateTime?
   negotiatedByUserId String?
   checkedInAt        DateTime?
   checkedOutAt       DateTime?

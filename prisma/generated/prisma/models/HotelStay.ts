@@ -32,6 +32,7 @@ export type HotelStayAvgAggregateOutputType = {
   unitPriceApplied: number | null
   flatAmount: number | null
   plannedHours: number | null
+  depositAmountExpected: number | null
 }
 
 export type HotelStaySumAggregateOutputType = {
@@ -40,6 +41,7 @@ export type HotelStaySumAggregateOutputType = {
   unitPriceApplied: number | null
   flatAmount: number | null
   plannedHours: number | null
+  depositAmountExpected: number | null
 }
 
 export type HotelStayMinAggregateOutputType = {
@@ -60,6 +62,8 @@ export type HotelStayMinAggregateOutputType = {
   flatAmount: number | null
   plannedHours: number | null
   rateNote: string | null
+  depositAmountExpected: number | null
+  depositCollectedAt: Date | null
   negotiatedByUserId: string | null
   checkedInAt: Date | null
   checkedOutAt: Date | null
@@ -85,6 +89,8 @@ export type HotelStayMaxAggregateOutputType = {
   flatAmount: number | null
   plannedHours: number | null
   rateNote: string | null
+  depositAmountExpected: number | null
+  depositCollectedAt: Date | null
   negotiatedByUserId: string | null
   checkedInAt: Date | null
   checkedOutAt: Date | null
@@ -110,6 +116,8 @@ export type HotelStayCountAggregateOutputType = {
   flatAmount: number
   plannedHours: number
   rateNote: number
+  depositAmountExpected: number
+  depositCollectedAt: number
   negotiatedByUserId: number
   checkedInAt: number
   checkedOutAt: number
@@ -125,6 +133,7 @@ export type HotelStayAvgAggregateInputType = {
   unitPriceApplied?: true
   flatAmount?: true
   plannedHours?: true
+  depositAmountExpected?: true
 }
 
 export type HotelStaySumAggregateInputType = {
@@ -133,6 +142,7 @@ export type HotelStaySumAggregateInputType = {
   unitPriceApplied?: true
   flatAmount?: true
   plannedHours?: true
+  depositAmountExpected?: true
 }
 
 export type HotelStayMinAggregateInputType = {
@@ -153,6 +163,8 @@ export type HotelStayMinAggregateInputType = {
   flatAmount?: true
   plannedHours?: true
   rateNote?: true
+  depositAmountExpected?: true
+  depositCollectedAt?: true
   negotiatedByUserId?: true
   checkedInAt?: true
   checkedOutAt?: true
@@ -178,6 +190,8 @@ export type HotelStayMaxAggregateInputType = {
   flatAmount?: true
   plannedHours?: true
   rateNote?: true
+  depositAmountExpected?: true
+  depositCollectedAt?: true
   negotiatedByUserId?: true
   checkedInAt?: true
   checkedOutAt?: true
@@ -203,6 +217,8 @@ export type HotelStayCountAggregateInputType = {
   flatAmount?: true
   plannedHours?: true
   rateNote?: true
+  depositAmountExpected?: true
+  depositCollectedAt?: true
   negotiatedByUserId?: true
   checkedInAt?: true
   checkedOutAt?: true
@@ -315,6 +331,8 @@ export type HotelStayGroupByOutputType = {
   flatAmount: number | null
   plannedHours: number | null
   rateNote: string | null
+  depositAmountExpected: number | null
+  depositCollectedAt: Date | null
   negotiatedByUserId: string | null
   checkedInAt: Date | null
   checkedOutAt: Date | null
@@ -363,6 +381,8 @@ export type HotelStayWhereInput = {
   flatAmount?: Prisma.FloatNullableFilter<"HotelStay"> | number | null
   plannedHours?: Prisma.IntNullableFilter<"HotelStay"> | number | null
   rateNote?: Prisma.StringNullableFilter<"HotelStay"> | string | null
+  depositAmountExpected?: Prisma.FloatNullableFilter<"HotelStay"> | number | null
+  depositCollectedAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   negotiatedByUserId?: Prisma.StringNullableFilter<"HotelStay"> | string | null
   checkedInAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   checkedOutAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
@@ -392,6 +412,8 @@ export type HotelStayOrderByWithRelationInput = {
   flatAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   plannedHours?: Prisma.SortOrderInput | Prisma.SortOrder
   rateNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  depositAmountExpected?: Prisma.SortOrderInput | Prisma.SortOrder
+  depositCollectedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   negotiatedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   checkedInAt?: Prisma.SortOrderInput | Prisma.SortOrder
   checkedOutAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -424,6 +446,8 @@ export type HotelStayWhereUniqueInput = Prisma.AtLeast<{
   flatAmount?: Prisma.FloatNullableFilter<"HotelStay"> | number | null
   plannedHours?: Prisma.IntNullableFilter<"HotelStay"> | number | null
   rateNote?: Prisma.StringNullableFilter<"HotelStay"> | string | null
+  depositAmountExpected?: Prisma.FloatNullableFilter<"HotelStay"> | number | null
+  depositCollectedAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   negotiatedByUserId?: Prisma.StringNullableFilter<"HotelStay"> | string | null
   checkedInAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   checkedOutAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
@@ -453,6 +477,8 @@ export type HotelStayOrderByWithAggregationInput = {
   flatAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   plannedHours?: Prisma.SortOrderInput | Prisma.SortOrder
   rateNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  depositAmountExpected?: Prisma.SortOrderInput | Prisma.SortOrder
+  depositCollectedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   negotiatedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   checkedInAt?: Prisma.SortOrderInput | Prisma.SortOrder
   checkedOutAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -486,6 +512,8 @@ export type HotelStayScalarWhereWithAggregatesInput = {
   flatAmount?: Prisma.FloatNullableWithAggregatesFilter<"HotelStay"> | number | null
   plannedHours?: Prisma.IntNullableWithAggregatesFilter<"HotelStay"> | number | null
   rateNote?: Prisma.StringNullableWithAggregatesFilter<"HotelStay"> | string | null
+  depositAmountExpected?: Prisma.FloatNullableWithAggregatesFilter<"HotelStay"> | number | null
+  depositCollectedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"HotelStay"> | Date | string | null
   negotiatedByUserId?: Prisma.StringNullableWithAggregatesFilter<"HotelStay"> | string | null
   checkedInAt?: Prisma.DateTimeNullableWithAggregatesFilter<"HotelStay"> | Date | string | null
   checkedOutAt?: Prisma.DateTimeNullableWithAggregatesFilter<"HotelStay"> | Date | string | null
@@ -509,6 +537,8 @@ export type HotelStayCreateInput = {
   flatAmount?: number | null
   plannedHours?: number | null
   rateNote?: string | null
+  depositAmountExpected?: number | null
+  depositCollectedAt?: Date | string | null
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
@@ -538,6 +568,8 @@ export type HotelStayUncheckedCreateInput = {
   flatAmount?: number | null
   plannedHours?: number | null
   rateNote?: string | null
+  depositAmountExpected?: number | null
+  depositCollectedAt?: Date | string | null
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
@@ -563,6 +595,8 @@ export type HotelStayUpdateInput = {
   flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  depositAmountExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  depositCollectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -592,6 +626,8 @@ export type HotelStayUncheckedUpdateInput = {
   flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  depositAmountExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  depositCollectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -619,6 +655,8 @@ export type HotelStayCreateManyInput = {
   flatAmount?: number | null
   plannedHours?: number | null
   rateNote?: string | null
+  depositAmountExpected?: number | null
+  depositCollectedAt?: Date | string | null
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
@@ -642,6 +680,8 @@ export type HotelStayUpdateManyMutationInput = {
   flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  depositAmountExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  depositCollectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -667,6 +707,8 @@ export type HotelStayUncheckedUpdateManyInput = {
   flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  depositAmountExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  depositCollectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -702,6 +744,8 @@ export type HotelStayCountOrderByAggregateInput = {
   flatAmount?: Prisma.SortOrder
   plannedHours?: Prisma.SortOrder
   rateNote?: Prisma.SortOrder
+  depositAmountExpected?: Prisma.SortOrder
+  depositCollectedAt?: Prisma.SortOrder
   negotiatedByUserId?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrder
   checkedOutAt?: Prisma.SortOrder
@@ -715,6 +759,7 @@ export type HotelStayAvgOrderByAggregateInput = {
   unitPriceApplied?: Prisma.SortOrder
   flatAmount?: Prisma.SortOrder
   plannedHours?: Prisma.SortOrder
+  depositAmountExpected?: Prisma.SortOrder
 }
 
 export type HotelStayMaxOrderByAggregateInput = {
@@ -735,6 +780,8 @@ export type HotelStayMaxOrderByAggregateInput = {
   flatAmount?: Prisma.SortOrder
   plannedHours?: Prisma.SortOrder
   rateNote?: Prisma.SortOrder
+  depositAmountExpected?: Prisma.SortOrder
+  depositCollectedAt?: Prisma.SortOrder
   negotiatedByUserId?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrder
   checkedOutAt?: Prisma.SortOrder
@@ -760,6 +807,8 @@ export type HotelStayMinOrderByAggregateInput = {
   flatAmount?: Prisma.SortOrder
   plannedHours?: Prisma.SortOrder
   rateNote?: Prisma.SortOrder
+  depositAmountExpected?: Prisma.SortOrder
+  depositCollectedAt?: Prisma.SortOrder
   negotiatedByUserId?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrder
   checkedOutAt?: Prisma.SortOrder
@@ -773,6 +822,7 @@ export type HotelStaySumOrderByAggregateInput = {
   unitPriceApplied?: Prisma.SortOrder
   flatAmount?: Prisma.SortOrder
   plannedHours?: Prisma.SortOrder
+  depositAmountExpected?: Prisma.SortOrder
 }
 
 export type HotelStayNullableScalarRelationFilter = {
@@ -920,6 +970,8 @@ export type HotelStayCreateWithoutBranchInput = {
   flatAmount?: number | null
   plannedHours?: number | null
   rateNote?: string | null
+  depositAmountExpected?: number | null
+  depositCollectedAt?: Date | string | null
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
@@ -947,6 +999,8 @@ export type HotelStayUncheckedCreateWithoutBranchInput = {
   flatAmount?: number | null
   plannedHours?: number | null
   rateNote?: string | null
+  depositAmountExpected?: number | null
+  depositCollectedAt?: Date | string | null
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
@@ -1003,6 +1057,8 @@ export type HotelStayScalarWhereInput = {
   flatAmount?: Prisma.FloatNullableFilter<"HotelStay"> | number | null
   plannedHours?: Prisma.IntNullableFilter<"HotelStay"> | number | null
   rateNote?: Prisma.StringNullableFilter<"HotelStay"> | string | null
+  depositAmountExpected?: Prisma.FloatNullableFilter<"HotelStay"> | number | null
+  depositCollectedAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   negotiatedByUserId?: Prisma.StringNullableFilter<"HotelStay"> | string | null
   checkedInAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   checkedOutAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
@@ -1026,6 +1082,8 @@ export type HotelStayCreateWithoutRoomInput = {
   flatAmount?: number | null
   plannedHours?: number | null
   rateNote?: string | null
+  depositAmountExpected?: number | null
+  depositCollectedAt?: Date | string | null
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
@@ -1053,6 +1111,8 @@ export type HotelStayUncheckedCreateWithoutRoomInput = {
   flatAmount?: number | null
   plannedHours?: number | null
   rateNote?: string | null
+  depositAmountExpected?: number | null
+  depositCollectedAt?: Date | string | null
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
@@ -1104,6 +1164,8 @@ export type HotelStayCreateWithoutFolioInput = {
   flatAmount?: number | null
   plannedHours?: number | null
   rateNote?: string | null
+  depositAmountExpected?: number | null
+  depositCollectedAt?: Date | string | null
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
@@ -1132,6 +1194,8 @@ export type HotelStayUncheckedCreateWithoutFolioInput = {
   flatAmount?: number | null
   plannedHours?: number | null
   rateNote?: string | null
+  depositAmountExpected?: number | null
+  depositCollectedAt?: Date | string | null
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
@@ -1172,6 +1236,8 @@ export type HotelStayUpdateWithoutFolioInput = {
   flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  depositAmountExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  depositCollectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1200,6 +1266,8 @@ export type HotelStayUncheckedUpdateWithoutFolioInput = {
   flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  depositAmountExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  depositCollectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1224,6 +1292,8 @@ export type HotelStayCreateWithoutOrdersInput = {
   flatAmount?: number | null
   plannedHours?: number | null
   rateNote?: string | null
+  depositAmountExpected?: number | null
+  depositCollectedAt?: Date | string | null
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
@@ -1252,6 +1322,8 @@ export type HotelStayUncheckedCreateWithoutOrdersInput = {
   flatAmount?: number | null
   plannedHours?: number | null
   rateNote?: string | null
+  depositAmountExpected?: number | null
+  depositCollectedAt?: Date | string | null
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
@@ -1292,6 +1364,8 @@ export type HotelStayUpdateWithoutOrdersInput = {
   flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  depositAmountExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  depositCollectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1320,6 +1394,8 @@ export type HotelStayUncheckedUpdateWithoutOrdersInput = {
   flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  depositAmountExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  depositCollectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1345,6 +1421,8 @@ export type HotelStayCreateManyBranchInput = {
   flatAmount?: number | null
   plannedHours?: number | null
   rateNote?: string | null
+  depositAmountExpected?: number | null
+  depositCollectedAt?: Date | string | null
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
@@ -1368,6 +1446,8 @@ export type HotelStayUpdateWithoutBranchInput = {
   flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  depositAmountExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  depositCollectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1395,6 +1475,8 @@ export type HotelStayUncheckedUpdateWithoutBranchInput = {
   flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  depositAmountExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  depositCollectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1421,6 +1503,8 @@ export type HotelStayUncheckedUpdateManyWithoutBranchInput = {
   flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  depositAmountExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  depositCollectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1445,6 +1529,8 @@ export type HotelStayCreateManyRoomInput = {
   flatAmount?: number | null
   plannedHours?: number | null
   rateNote?: string | null
+  depositAmountExpected?: number | null
+  depositCollectedAt?: Date | string | null
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
@@ -1468,6 +1554,8 @@ export type HotelStayUpdateWithoutRoomInput = {
   flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  depositAmountExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  depositCollectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1495,6 +1583,8 @@ export type HotelStayUncheckedUpdateWithoutRoomInput = {
   flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  depositAmountExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  depositCollectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1521,6 +1611,8 @@ export type HotelStayUncheckedUpdateManyWithoutRoomInput = {
   flatAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   plannedHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rateNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  depositAmountExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  depositCollectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1577,6 +1669,8 @@ export type HotelStaySelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   flatAmount?: boolean
   plannedHours?: boolean
   rateNote?: boolean
+  depositAmountExpected?: boolean
+  depositCollectedAt?: boolean
   negotiatedByUserId?: boolean
   checkedInAt?: boolean
   checkedOutAt?: boolean
@@ -1607,6 +1701,8 @@ export type HotelStaySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   flatAmount?: boolean
   plannedHours?: boolean
   rateNote?: boolean
+  depositAmountExpected?: boolean
+  depositCollectedAt?: boolean
   negotiatedByUserId?: boolean
   checkedInAt?: boolean
   checkedOutAt?: boolean
@@ -1634,6 +1730,8 @@ export type HotelStaySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   flatAmount?: boolean
   plannedHours?: boolean
   rateNote?: boolean
+  depositAmountExpected?: boolean
+  depositCollectedAt?: boolean
   negotiatedByUserId?: boolean
   checkedInAt?: boolean
   checkedOutAt?: boolean
@@ -1661,6 +1759,8 @@ export type HotelStaySelectScalar = {
   flatAmount?: boolean
   plannedHours?: boolean
   rateNote?: boolean
+  depositAmountExpected?: boolean
+  depositCollectedAt?: boolean
   negotiatedByUserId?: boolean
   checkedInAt?: boolean
   checkedOutAt?: boolean
@@ -1668,7 +1768,7 @@ export type HotelStaySelectScalar = {
   updatedAt?: boolean
 }
 
-export type HotelStayOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "roomId" | "guestName" | "guestPhone" | "guestEmail" | "checkInDate" | "checkOutDate" | "status" | "adults" | "notes" | "billingMode" | "catalogUnitPrice" | "unitPriceApplied" | "flatAmount" | "plannedHours" | "rateNote" | "negotiatedByUserId" | "checkedInAt" | "checkedOutAt" | "createdAt" | "updatedAt", ExtArgs["result"]["hotelStay"]>
+export type HotelStayOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "roomId" | "guestName" | "guestPhone" | "guestEmail" | "checkInDate" | "checkOutDate" | "status" | "adults" | "notes" | "billingMode" | "catalogUnitPrice" | "unitPriceApplied" | "flatAmount" | "plannedHours" | "rateNote" | "depositAmountExpected" | "depositCollectedAt" | "negotiatedByUserId" | "checkedInAt" | "checkedOutAt" | "createdAt" | "updatedAt", ExtArgs["result"]["hotelStay"]>
 export type HotelStayInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   room?: boolean | Prisma.HotelRoomDefaultArgs<ExtArgs>
@@ -1729,6 +1829,11 @@ export type $HotelStayPayload<ExtArgs extends runtime.Types.Extensions.InternalA
      * Motif de négociation / forfait
      */
     rateNote: string | null
+    /**
+     * Caution consommation attendue (salle) — saisie manuelle
+     */
+    depositAmountExpected: number | null
+    depositCollectedAt: Date | null
     negotiatedByUserId: string | null
     checkedInAt: Date | null
     checkedOutAt: Date | null
@@ -2178,6 +2283,8 @@ export interface HotelStayFieldRefs {
   readonly flatAmount: Prisma.FieldRef<"HotelStay", 'Float'>
   readonly plannedHours: Prisma.FieldRef<"HotelStay", 'Int'>
   readonly rateNote: Prisma.FieldRef<"HotelStay", 'String'>
+  readonly depositAmountExpected: Prisma.FieldRef<"HotelStay", 'Float'>
+  readonly depositCollectedAt: Prisma.FieldRef<"HotelStay", 'DateTime'>
   readonly negotiatedByUserId: Prisma.FieldRef<"HotelStay", 'String'>
   readonly checkedInAt: Prisma.FieldRef<"HotelStay", 'DateTime'>
   readonly checkedOutAt: Prisma.FieldRef<"HotelStay", 'DateTime'>

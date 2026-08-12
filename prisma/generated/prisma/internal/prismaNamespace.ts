@@ -3788,6 +3788,8 @@ export const HotelStayScalarFieldEnum = {
   flatAmount: 'flatAmount',
   plannedHours: 'plannedHours',
   rateNote: 'rateNote',
+  depositAmountExpected: 'depositAmountExpected',
+  depositCollectedAt: 'depositCollectedAt',
   negotiatedByUserId: 'negotiatedByUserId',
   checkedInAt: 'checkedInAt',
   checkedOutAt: 'checkedOutAt',

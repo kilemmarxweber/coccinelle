@@ -1,4 +1,9 @@
 import type { FolioLineKind, Prisma } from "@/prisma/generated/prisma/client";
+import {
+  folioBalanceWithDeposit,
+  folioPaidTowardBalance,
+  meetingCheckoutSettlement,
+} from "@/lib/hotel/meeting-deposit";
 
 export const ORDER_SETTLEMENT = {
   COMPTANT: "COMPTANT",
@@ -20,6 +25,7 @@ export const FOLIO_SECTION_LABEL: Record<FolioLineKind, string> = {
   PRODUCT: "Produits",
   TAX: "Taxes",
   OTHER: "Autres",
+  DEPOSIT: "Caution",
 };
 
 export type FolioStatementLine = {
@@ -62,6 +68,14 @@ export type StayFolioStatement = {
   charges: number;
   paid: number;
   balance: number;
+  depositSummary?: {
+    cautionAmount: number;
+    consumptionAmount: number;
+    depositRemainder: number;
+    refundDeposit: number;
+    collectOverrun: number;
+    locationBalance: number;
+  } | null;
 };
 
 function paymentUsd(p: {
@@ -136,6 +150,7 @@ export function buildStayFolioStatement(input: {
     "STAY_OVERTIME",
     "FNB",
     "PRODUCT",
+    "DEPOSIT",
     "TAX",
     "OTHER",
   ];
@@ -159,7 +174,22 @@ export function buildStayFolioStatement(input: {
     });
 
   const charges = lines.reduce((s, l) => s + l.amount, 0);
-  const paid = payments.reduce((s, p) => s + p.amountUsd, 0);
+  const paid = folioPaidTowardBalance(input.folio.payments);
+  const balance = folioBalanceWithDeposit({
+    lines: input.folio.lines,
+    payments: input.folio.payments,
+  });
+  const hasDeposit =
+    input.folio.lines.some((l) => l.kind === "DEPOSIT") ||
+    input.folio.payments.some((p) =>
+      (p.note ?? "").toLowerCase().includes("caution"),
+    );
+  const settlement = hasDeposit
+    ? meetingCheckoutSettlement({
+        lines: input.folio.lines,
+        payments: input.folio.payments,
+      })
+    : null;
 
   return {
     stayId: input.stay.id,
@@ -175,7 +205,17 @@ export function buildStayFolioStatement(input: {
     sections,
     charges,
     paid,
-    balance: charges - paid,
+    balance,
+    depositSummary: settlement
+      ? {
+          cautionAmount: settlement.cautionAmount,
+          consumptionAmount: settlement.consumptionAmount,
+          depositRemainder: settlement.depositRemainder,
+          refundDeposit: settlement.refundDeposit,
+          collectOverrun: settlement.collectOverrun,
+          locationBalance: settlement.locationBalance,
+        }
+      : null,
   };
 }
 

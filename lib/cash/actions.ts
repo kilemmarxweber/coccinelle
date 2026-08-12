@@ -7,6 +7,10 @@ import { canAccessBranch } from "@/lib/branch/user-branches";
 import { branchBasePath } from "@/lib/branch/paths";
 import prisma from "@/lib/prisma";
 import { normalizeUsdCdfRate } from "@/lib/cash/exchange";
+import {
+  folioBalanceWithDeposit,
+  MEETING_PAYMENT_NOTES,
+} from "@/lib/hotel/meeting-deposit";
 
 async function ctx(organizationId: string, branchId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -184,7 +188,7 @@ export async function createPaymentAction(input: {
         cashierUserId: user.id,
         note:
           input.note ??
-          (isRefund ? "Remboursement départ anticipé" : null),
+          (isRefund ? MEETING_PAYMENT_NOTES.cautionRefund : null),
       },
     });
 
@@ -231,16 +235,10 @@ export async function createPaymentAction(input: {
         },
       });
       if (folio) {
-        const charges = folio.lines.reduce((s, l) => s + l.amount, 0);
-        const paid = folio.payments.reduce(
-          (s, pay) =>
-            s +
-            (pay.amountForeign != null && pay.amountForeign !== 0
-              ? pay.amountForeign
-              : pay.amountCdf),
-          0,
-        );
-        const folioBalance = charges - paid;
+        const folioBalance = folioBalanceWithDeposit({
+          lines: folio.lines,
+          payments: folio.payments,
+        });
         if (Math.abs(folioBalance) <= 0.01) {
           // Note soldée (payée ou remboursée) — clôturer + check-out si besoin
           await tx.folio.update({
@@ -297,17 +295,7 @@ export async function getFolioBalance(folioId: string) {
     prisma.folioLine.findMany({ where: { folioId } }),
     prisma.payment.findMany({ where: { folioId } }),
   ]);
-  const charges = lines.reduce((s, l) => s + l.amount, 0);
-  // Folio hôtel en USD : priorité amountForeign
-  const paid = payments.reduce(
-    (s, p) =>
-      s +
-      (p.amountForeign != null && p.amountForeign !== 0
-        ? p.amountForeign
-        : p.amountCdf),
-    0,
-  );
-  return charges - paid;
+  return folioBalanceWithDeposit({ lines, payments });
 }
 
 export async function listOpenFoliosAction(
@@ -325,18 +313,13 @@ export async function listOpenFoliosAction(
     orderBy: [{ checkoutQueuedAt: "asc" }, { updatedAt: "desc" }],
   });
   return folios.map((f) => {
-    const charges = f.lines.reduce((s, l) => s + l.amount, 0);
-    const paid = f.payments.reduce(
-      (s, p) =>
-        s +
-        (p.amountForeign != null && p.amountForeign !== 0
-          ? p.amountForeign
-          : p.amountCdf),
-      0,
-    );
+    const balance = folioBalanceWithDeposit({
+      lines: f.lines,
+      payments: f.payments,
+    });
     return {
       ...f,
-      balance: charges - paid,
+      balance,
       inCheckoutQueue: f.checkoutQueuedAt != null,
     };
   });

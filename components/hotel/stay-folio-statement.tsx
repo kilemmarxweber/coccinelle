@@ -53,6 +53,14 @@ export type StayFolioStatementViewModel = {
     lateDeparture: boolean;
     checkoutHour: number;
   } | null;
+  depositSummary?: {
+    cautionAmount: number;
+    consumptionAmount: number;
+    depositRemainder: number;
+    refundDeposit: number;
+    collectOverrun: number;
+    locationBalance: number;
+  } | null;
 };
 
 /** Facture séjour / note de chambre (sections nuitées, conso, paiements, solde). */
@@ -154,6 +162,28 @@ export function StayFolioStatementView(props: {
                 ? `Départ anticipé — facturé selon les jours consommés (limite ${s.nightBilling.checkoutHour}h)`
                 : `Sortie avant ${s.nightBilling.checkoutHour}h — nuitées selon le séjour`}
           </p>
+        </div>
+      ) : null}
+
+      {s.depositSummary && s.depositSummary.cautionAmount > 0.01 ? (
+        <div className="rounded-xl border border-violet-500/30 bg-violet-500/10 px-3 py-2.5 text-xs text-violet-950 dark:text-violet-100">
+          <p className="font-semibold">Caution consommation</p>
+          <p className="mt-0.5 opacity-90">
+            Caution {money(s.depositSummary.cautionAmount)}
+            {" · "}
+            consommé {money(s.depositSummary.consumptionAmount)}
+            {" · "}
+            {s.depositSummary.refundDeposit > 0.01
+              ? `à rembourser ${money(s.depositSummary.refundDeposit)}`
+              : s.depositSummary.collectOverrun > 0.01
+                ? `dépassement ${money(s.depositSummary.collectOverrun)}`
+                : "reliquat 0"}
+          </p>
+          {s.depositSummary.locationBalance > 0.01 ? (
+            <p className="mt-0.5 opacity-90">
+              Solde location encore dû · {money(s.depositSummary.locationBalance)}
+            </p>
+          ) : null}
         </div>
       ) : null}
 

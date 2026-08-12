@@ -126,6 +126,7 @@ type PaymentRow = {
   method: string;
   paidAt: string | Date;
   exchangeRateUsed: number | null;
+  note?: string | null;
 };
 
 type Props = {
@@ -294,6 +295,14 @@ export function CaisseClient(props: Props) {
   const caJour = useMemo(() => {
     return props.todayPayments.reduce(
       (acc, p) => {
+        const note = (p.note ?? "").toLowerCase();
+        // Caution / remboursement caution ≠ CA ventes
+        if (
+          note.includes("caution consommation") ||
+          note.startsWith("remboursement caution")
+        ) {
+          return acc;
+        }
         if (p.amountForeign != null && p.amountForeign !== 0) {
           acc.usd += p.amountForeign;
           acc.cdf += p.amountCdf;
@@ -387,6 +396,9 @@ export function CaisseClient(props: Props) {
         const amountCdf = props.rate
           ? signedUsd * props.rate.rate
           : signedUsd;
+        const hasDepositLine = (target?.lines ?? []).some(
+          (l: { kind: string }) => l.kind === "DEPOSIT",
+        );
         const p = await createPaymentAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
@@ -396,7 +408,9 @@ export function CaisseClient(props: Props) {
           method,
           isRefund,
           note: isRefund
-            ? "Remboursement départ anticipé"
+            ? hasDepositLine
+              ? "Remboursement caution consommation"
+              : "Remboursement départ anticipé"
             : isPartial
               ? "Acompte note de chambre"
               : "Règlement note de chambre",

@@ -43,6 +43,15 @@ import {
   resolveStayUnitPrice,
   type StayBillingMode,
 } from "@/lib/hotel/stay-rate";
+import {
+  MEETING_PAYMENT_NOTES,
+  folioBalanceWithDeposit,
+  meetingCheckoutSettlement,
+} from "@/lib/hotel/meeting-deposit";
+import {
+  getActiveExchangeRate,
+  getOpenCashSession,
+} from "@/lib/cash/actions";
 
 async function ctx(
   organizationId: string,
@@ -662,6 +671,13 @@ export async function createStayAction(input: {
   flatAmount?: number | null;
   plannedHours?: number | null;
   rateNote?: string | null;
+  /**
+   * Salle MEETING : paiement location obligatoire (acompte ou total), USD note.
+   */
+  locationPaymentUsd?: number;
+  paymentMethod?: "CASH" | "MOBILE_MONEY" | "CARTE";
+  /** Caution consommation optionnelle (USD note), saisie manuelle */
+  depositAmountUsd?: number | null;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId, "stays");
   const checkIn = parseDateOnly(input.checkInDate);
@@ -674,7 +690,7 @@ export async function createStayAction(input: {
 
   const isMeeting = room.roomType.kind === "MEETING";
   const billingMode: StayBillingMode =
-    input.billingMode === STAY_BILLING.FLAT || isMeeting
+    input.billingMode === STAY_BILLING.FLAT
       ? STAY_BILLING.FLAT
       : STAY_BILLING.NIGHTLY;
 
@@ -766,16 +782,53 @@ export async function createStayAction(input: {
       ? nights * appliedUnit
       : (flatAmount ?? 0);
 
+  let locationPaymentUsd = 0;
+  let depositAmountUsd = 0;
+  let paymentMethod: "CASH" | "MOBILE_MONEY" | "CARTE" = "CASH";
+  let cashSessionId: string | null = null;
+  let exchangeRate: number | null = null;
+  let foreignCurrency = "USD";
+
+  if (isMeeting) {
+    locationPaymentUsd = Number(input.locationPaymentUsd);
+    if (!(locationPaymentUsd > 0)) {
+      throw new Error(
+        "Réservation salle : encaisser un acompte ou le total de la location.",
+      );
+    }
+    const due =
+      billingMode === STAY_BILLING.FLAT
+        ? (flatAmount ?? 0)
+        : nights * appliedUnit;
+    if (locationPaymentUsd > due + 0.01) {
+      throw new Error("Paiement location supérieur au montant dû.");
+    }
+    depositAmountUsd =
+      input.depositAmountUsd != null && Number.isFinite(input.depositAmountUsd)
+        ? Math.max(0, Number(input.depositAmountUsd))
+        : 0;
+    paymentMethod = input.paymentMethod ?? "CASH";
+    const cashSession = await getOpenCashSession(input.branchId);
+    if (!cashSession) {
+      throw new Error(
+        "Ouvrez une session de caisse pour encaisser la location / caution.",
+      );
+    }
+    cashSessionId = cashSession.id;
+    const rate = await getActiveExchangeRate(input.branchId);
+    exchangeRate = rate?.rate ?? null;
+    foreignCurrency = rate?.fromCurrency ?? "USD";
+  }
+
   const stay = await prisma.$transaction(async (tx) => {
     const today = new Date();
     const todayUtc = new Date(
       Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()),
     );
     const checkInIsToday = checkIn.getTime() === todayUtc.getTime();
-    // Forfait / au temps : toujours check-in immédiat.
-    // Nuitée avec entrée aujourd’hui : check-in direct (pas de réservation).
-    const immediateCheckIn =
-      billingMode === STAY_BILLING.FLAT || checkInIsToday;
+    // Check-in immédiat uniquement le jour d’entrée (passage ou nuitée).
+    // Une réservation à une date future reste RESERVED.
+    const immediateCheckIn = checkInIsToday;
     const now = new Date();
     const s = await tx.hotelStay.create({
       data: {
@@ -800,6 +853,10 @@ export async function createStayAction(input: {
         flatAmount: billingMode === STAY_BILLING.FLAT ? flatAmount : null,
         plannedHours,
         rateNote,
+        depositAmountExpected:
+          isMeeting && depositAmountUsd > 0 ? depositAmountUsd : null,
+        depositCollectedAt:
+          isMeeting && depositAmountUsd > 0 ? now : null,
         negotiatedByUserId:
           negotiated || billingMode === STAY_BILLING.FLAT ? user.id : null,
       },
@@ -810,56 +867,134 @@ export async function createStayAction(input: {
         data: { status: "OCCUPIED" },
       });
     }
-    await tx.folio.create({
+    const folioLines: Prisma.FolioLineCreateWithoutFolioInput[] = [
+      billingMode === STAY_BILLING.FLAT
+        ? {
+            kind: "STAY_FLAT",
+            description: flatStayDescription({
+              roomNumber: room.number,
+              roomTypeName: room.roomType.name,
+              flatAmount: flatAmount ?? 0,
+              plannedHours,
+              rateNote,
+            }),
+            quantity: 1,
+            unitPrice: flatAmount ?? 0,
+            amount: flatAmount ?? 0,
+          }
+        : {
+            kind: "NIGHT",
+            description: nightlyStayDescription({
+              nights,
+              roomNumber: room.number,
+              roomTypeName: room.roomType.name,
+              negotiated,
+              catalogUnitPrice,
+              unitPriceApplied: appliedUnit,
+              rateNote,
+            }),
+            quantity: nights,
+            unitPrice: appliedUnit,
+            amount: nightAmount,
+          },
+    ];
+    if (isMeeting && depositAmountUsd > 0.01) {
+      folioLines.push({
+        kind: "DEPOSIT",
+        description: "Caution consommation · saisie manuelle",
+        quantity: 1,
+        unitPrice: -depositAmountUsd,
+        amount: -depositAmountUsd,
+      });
+    }
+    const folio = await tx.folio.create({
       data: {
         branchId: input.branchId,
         stayId: s.id,
-        label: `Séjour ${input.guestName.trim()}`,
-        lines: {
-          create:
-            billingMode === STAY_BILLING.FLAT
-              ? {
-                  kind: "STAY_FLAT",
-                  description: flatStayDescription({
-                    roomNumber: room.number,
-                    roomTypeName: room.roomType.name,
-                    flatAmount: flatAmount ?? 0,
-                    plannedHours,
-                    rateNote,
-                  }),
-                  quantity: 1,
-                  unitPrice: flatAmount ?? 0,
-                  amount: flatAmount ?? 0,
-                }
-              : {
-                  kind: "NIGHT",
-                  description: nightlyStayDescription({
-                    nights,
-                    roomNumber: room.number,
-                    roomTypeName: room.roomType.name,
-                    negotiated,
-                    catalogUnitPrice,
-                    unitPriceApplied: appliedUnit,
-                    rateNote,
-                  }),
-                  quantity: nights,
-                  unitPrice: appliedUnit,
-                  amount: nightAmount,
-                },
-        },
+        label: isMeeting
+          ? `Salle ${room.number} · ${input.guestName.trim()}`
+          : `Séjour ${input.guestName.trim()}`,
+        lines: { create: folioLines },
       },
     });
+
+    if (isMeeting && cashSessionId) {
+      const payCount = await tx.payment.count({
+        where: { branchId: input.branchId },
+      });
+      let receiptSeq = payCount;
+      const rateVal = exchangeRate && exchangeRate > 0 ? exchangeRate : 1;
+      const locNote =
+        locationPaymentUsd + 0.01 >= nightAmount
+          ? MEETING_PAYMENT_NOTES.locationFull
+          : MEETING_PAYMENT_NOTES.locationAcompte;
+      receiptSeq += 1;
+      await tx.payment.create({
+        data: {
+          branchId: input.branchId,
+          cashSessionId,
+          folioId: folio.id,
+          receiptNumber: `RC-${String(receiptSeq).padStart(5, "0")}`,
+          method: paymentMethod,
+          amountCdf: locationPaymentUsd * rateVal,
+          amountForeign: locationPaymentUsd,
+          foreignCurrency,
+          exchangeRateUsed: exchangeRate,
+          cashierUserId: user.id,
+          note: locNote,
+        },
+      });
+      if (depositAmountUsd > 0.01) {
+        receiptSeq += 1;
+        await tx.payment.create({
+          data: {
+            branchId: input.branchId,
+            cashSessionId,
+            folioId: folio.id,
+            receiptNumber: `RC-${String(receiptSeq).padStart(5, "0")}`,
+            method: paymentMethod,
+            amountCdf: depositAmountUsd * rateVal,
+            amountForeign: depositAmountUsd,
+            foreignCurrency,
+            exchangeRateUsed: exchangeRate,
+            cashierUserId: user.id,
+            note: MEETING_PAYMENT_NOTES.caution,
+          },
+        });
+      }
+    }
+
     await tx.branchNotification.create({
       data: {
         branchId: input.branchId,
         title: immediateCheckIn
           ? billingMode === STAY_BILLING.FLAT
-            ? "Passage démarré"
+            ? isMeeting
+              ? "Salle démarrée · encaissée"
+              : "Passage démarré"
             : "Check-in effectué"
-          : "Nouvelle réservation",
+          : isMeeting
+            ? "Nouvelle réservation salle"
+            : "Nouvelle réservation",
         body: immediateCheckIn
-          ? `${input.guestName.trim()} · ${isMeeting ? "salle" : "ch."} ${room.number} · check-in`
-          : `${input.guestName.trim()} · ch. ${room.number}`,
+          ? `${input.guestName.trim()} · ${isMeeting ? "salle" : "ch."} ${room.number} · check-in${
+              isMeeting
+                ? ` · loc. ${locationPaymentUsd.toFixed(2)}$${
+                    depositAmountUsd > 0
+                      ? ` · caution ${depositAmountUsd.toFixed(2)}$`
+                      : ""
+                  }`
+                : ""
+            }`
+          : `${input.guestName.trim()} · ${isMeeting ? "salle" : "ch."} ${room.number} · entrée ${input.checkInDate}${
+              isMeeting
+                ? ` · loc. ${locationPaymentUsd.toFixed(2)}$${
+                    depositAmountUsd > 0
+                      ? ` · caution ${depositAmountUsd.toFixed(2)}$`
+                      : ""
+                  }`
+                : ""
+            }`,
         kind: immediateCheckIn ? "stay_checkin" : "stay_reserved",
         href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/sejours`,
       },
@@ -924,17 +1059,20 @@ export async function checkOutStayAction(input: {
   if (!stay) throw new Error("Séjour introuvable.");
   if (stay.status !== "CHECKED_IN") throw new Error("Check-out impossible.");
 
-  const charges = stay.folio?.lines.reduce((s, l) => s + l.amount, 0) ?? 0;
-  const paid =
-    stay.folio?.payments.reduce(
-      (s, p) =>
-        s +
-        (p.amountForeign != null && p.amountForeign !== 0
-          ? p.amountForeign
-          : p.amountCdf),
-      0,
-    ) ?? 0;
-  const balance = charges - paid;
+  const balance =
+    stay.folio != null
+      ? folioBalanceWithDeposit({
+          lines: stay.folio.lines,
+          payments: stay.folio.payments,
+        })
+      : 0;
+  const meetingSettle =
+    stay.room.roomType.kind === "MEETING" && stay.folio
+      ? meetingCheckoutSettlement({
+          lines: stay.folio.lines,
+          payments: stay.folio.payments,
+        })
+      : null;
   if (balance > 0.01) {
     if (stay.folio) {
       await prisma.$transaction([
@@ -964,6 +1102,10 @@ export async function checkOutStayAction(input: {
 
   if (balance < -0.01) {
     if (stay.folio) {
+      const refundLabel =
+        meetingSettle && meetingSettle.refundDeposit > 0.01
+          ? `à rembourser caution ${meetingSettle.refundDeposit.toFixed(2)} $`
+          : `à rembourser ${Math.abs(balance).toFixed(2)} $`;
       await prisma.$transaction([
         prisma.folio.update({
           where: { id: stay.folio.id },
@@ -972,8 +1114,11 @@ export async function checkOutStayAction(input: {
         prisma.branchNotification.create({
           data: {
             branchId: input.branchId,
-            title: "Remboursement check-out",
-            body: `${stay.guestName} · à rembourser ${Math.abs(balance).toFixed(2)} $ (nuitées consommées, règle ${HOTEL_CHECKOUT_HOUR}h)`,
+            title:
+              meetingSettle && meetingSettle.refundDeposit > 0.01
+                ? "Remboursement caution salle"
+                : "Remboursement check-out",
+            body: `${stay.guestName} · ${refundLabel}`,
             kind: "checkout_refund",
             href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/caisse?tab=folios&queue=1`,
           },
@@ -2009,24 +2154,25 @@ export async function prepareStayCheckoutBillingAction(input: {
   const stay = await prisma.hotelStay.findFirst({
     where: { id: input.stayId, branchId: input.branchId },
     include: {
-      room: true,
+      room: { include: { roomType: true } },
       folio: { include: { lines: true, payments: true } },
     },
   });
   if (!stay?.folio) throw new Error("Note de chambre introuvable.");
 
-  const charges = stay.folio.lines.reduce((s, l) => s + l.amount, 0);
-  const paid = stay.folio.payments.reduce(
-    (s, p) =>
-      s +
-      (p.amountForeign != null && p.amountForeign !== 0
-        ? p.amountForeign
-        : p.amountCdf),
-    0,
-  );
-  const balance = charges - paid;
+  const balance = folioBalanceWithDeposit({
+    lines: stay.folio.lines,
+    payments: stay.folio.payments,
+  });
   const needsPayment = balance > 0.01;
   const needsRefund = balance < -0.01;
+  const meetingSettle =
+    stay.room.roomType.kind === "MEETING"
+      ? meetingCheckoutSettlement({
+          lines: stay.folio.lines,
+          payments: stay.folio.payments,
+        })
+      : null;
 
   if (needsPayment || needsRefund) {
     await prisma.$transaction([
@@ -2038,10 +2184,14 @@ export async function prepareStayCheckoutBillingAction(input: {
         data: {
           branchId: input.branchId,
           title: needsRefund
-            ? "Remboursement check-out"
+            ? meetingSettle && meetingSettle.refundDeposit > 0.01
+              ? "Remboursement caution salle"
+              : "Remboursement check-out"
             : "File d’attente check-out",
           body: needsRefund
-            ? `${stay.guestName} · ch. ${stay.room.number} · à rembourser ${Math.abs(balance).toFixed(2)} $ (nuitées consommées, règle ${HOTEL_CHECKOUT_HOUR}h)`
+            ? meetingSettle && meetingSettle.refundDeposit > 0.01
+              ? `${stay.guestName} · ch. ${stay.room.number} · caution à rembourser ${meetingSettle.refundDeposit.toFixed(2)} $`
+              : `${stay.guestName} · ch. ${stay.room.number} · à rembourser ${Math.abs(balance).toFixed(2)} $ (nuitées consommées, règle ${HOTEL_CHECKOUT_HOUR}h)`
             : `${stay.guestName} · ch. ${stay.room.number} · solde ${balance.toFixed(2)} $`,
           kind: needsRefund ? "checkout_refund" : "checkout_queue",
           href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/caisse?tab=folios&queue=1`,
@@ -2059,6 +2209,16 @@ export async function prepareStayCheckoutBillingAction(input: {
     balance,
     needsPayment,
     needsRefund,
+    depositSummary: meetingSettle
+      ? {
+          cautionAmount: meetingSettle.cautionAmount,
+          consumptionAmount: meetingSettle.consumptionAmount,
+          depositRemainder: meetingSettle.depositRemainder,
+          refundDeposit: meetingSettle.refundDeposit,
+          collectOverrun: meetingSettle.collectOverrun,
+          locationBalance: meetingSettle.locationBalance,
+        }
+      : null,
   };
 }
 

@@ -227,7 +227,8 @@ export const FolioLineKind = {
   FNB: 'FNB',
   PRODUCT: 'PRODUCT',
   TAX: 'TAX',
-  OTHER: 'OTHER'
+  OTHER: 'OTHER',
+  DEPOSIT: 'DEPOSIT'
 } as const
 
 export type FolioLineKind = (typeof FolioLineKind)[keyof typeof FolioLineKind]

@@ -55,6 +55,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { StayPeriodField } from "@/components/hotel/stay-period-field";
+import { PosPayMethodPicker } from "@/components/pos/pos-terminal";
+import { meetingCheckoutSettlement } from "@/lib/hotel/meeting-deposit";
 import { cn } from "@/lib/utils";
 
 type Room = {
@@ -86,6 +88,7 @@ type Stay = {
   flatAmount?: number | null;
   plannedHours?: number | null;
   rateNote?: string | null;
+  depositAmountExpected?: number | null;
   room: {
     number: string;
     roomType: { name: string; priceNight: number; kind?: string };
@@ -99,7 +102,7 @@ type Stay = {
       kind?: string;
       quantity?: number;
     }[];
-    payments?: { amountCdf: number; amountForeign?: number | null }[];
+    payments?: { amountCdf: number; amountForeign?: number | null; note?: string | null }[];
   } | null;
 };
 
@@ -320,6 +323,9 @@ export function SejoursClient(props: {
       flatAmount: "",
       plannedHours: "",
       rateNote: "",
+      locationPayment: "",
+      depositAmount: "",
+      paymentMethod: "CASH" as "CASH" | "MOBILE_MONEY" | "CARTE",
     };
   });
   const [extendStayId, setExtendStayId] = useState<string | null>(null);
@@ -461,8 +467,7 @@ export function SejoursClient(props: {
     return toDateKey(asUtcDay(form.checkInDate)) === localTodayInputValue();
   }, [form.checkInDate]);
 
-  const formImmediateCheckIn =
-    form.billingMode === "FLAT" || formCheckInIsToday;
+  const formImmediateCheckIn = formCheckInIsToday;
   const negotiatedPct =
     catalogPrice > 0 && Math.abs(appliedNightPrice - catalogPrice) >= 0.01
       ? Math.round(((catalogPrice - appliedNightPrice) / catalogPrice) * 1000) /
@@ -484,17 +489,29 @@ export function SejoursClient(props: {
       return;
     }
     const isMeeting = room.roomType.kind === "MEETING";
+    const catalog = room.roomType.priceNight;
+    const catalogInput = formatUsdPrimaryInputValue(catalog, props.rate);
+    const outDate = isMeeting ? dateKey : addDaysYmd(dateKey, 1);
+    // Salle : passage par défaut ; nuitées possibles via le sélecteur
+    const mode = isMeeting ? ("FLAT" as const) : ("NIGHTLY" as const);
+    const nightlyOut =
+      mode === "NIGHTLY" && outDate <= dateKey
+        ? addDaysYmd(dateKey, 1)
+        : outDate;
     setForm({
       roomId: room.id,
       guestName: "",
       guestPhone: "",
       checkInDate: dateKey,
-      checkOutDate: isMeeting ? dateKey : addDaysYmd(dateKey, 1),
-      billingMode: isMeeting ? "FLAT" : "NIGHTLY",
-      unitPriceApplied: "",
-      flatAmount: "",
-      plannedHours: isMeeting ? "4" : "",
-      rateNote: "",
+      checkOutDate: mode === "FLAT" ? dateKey : nightlyOut,
+      billingMode: mode,
+      unitPriceApplied: catalogInput,
+      flatAmount: mode === "FLAT" ? catalogInput : "",
+      plannedHours: mode === "FLAT" ? "4" : "",
+      rateNote: isMeeting ? "Réservation salle" : "",
+      locationPayment: isMeeting ? catalogInput : "",
+      depositAmount: "",
+      paymentMethod: "CASH",
     });
     setBookingOpen(true);
   }
@@ -510,6 +527,29 @@ export function SejoursClient(props: {
           toast.error("Impossible de réserver à une date antérieure.");
           return;
         }
+        const isMeeting = selectedIsMeeting;
+        const flatUsd =
+          form.billingMode === "FLAT"
+            ? primaryAmountToUsd(Number(form.flatAmount), props.rate)
+            : null;
+        const dueUsd =
+          form.billingMode === "FLAT"
+            ? (flatUsd ?? 0)
+            : formNights * appliedNightPrice;
+        if (isMeeting) {
+          const locPay = primaryAmountToUsd(
+            Number(form.locationPayment),
+            props.rate,
+          );
+          if (!(locPay > 0)) {
+            toast.error("Saisissez le paiement location (acompte ou total).");
+            return;
+          }
+          if (locPay > dueUsd + 0.01) {
+            toast.error("Paiement location supérieur au montant dû.");
+            return;
+          }
+        }
         await createStayAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
@@ -523,22 +563,37 @@ export function SejoursClient(props: {
             form.billingMode === "NIGHTLY" && form.unitPriceApplied.trim() !== ""
               ? primaryAmountToUsd(Number(form.unitPriceApplied), props.rate)
               : null,
-          flatAmount:
-            form.billingMode === "FLAT"
-              ? primaryAmountToUsd(Number(form.flatAmount), props.rate)
-              : null,
+          flatAmount: flatUsd,
           plannedHours:
             form.billingMode === "FLAT" && form.plannedHours.trim() !== ""
               ? Number(form.plannedHours)
               : null,
           rateNote: form.rateNote.trim() || null,
+          ...(isMeeting
+            ? {
+                locationPaymentUsd: primaryAmountToUsd(
+                  Number(form.locationPayment),
+                  props.rate,
+                ),
+                paymentMethod: form.paymentMethod,
+                depositAmountUsd:
+                  form.depositAmount.trim() !== ""
+                    ? primaryAmountToUsd(
+                        Number(form.depositAmount),
+                        props.rate,
+                      )
+                    : null,
+              }
+            : {}),
         });
         toast.success(
-          formImmediateCheckIn
-            ? form.billingMode === "FLAT"
-              ? "Passage démarré · check-in effectué"
-              : "Check-in effectué"
-            : "Séjour réservé",
+          isMeeting
+            ? "Salle réservée · encaissement enregistré"
+            : formImmediateCheckIn
+              ? form.billingMode === "FLAT"
+                ? "Passage démarré · check-in effectué"
+                : "Check-in effectué"
+              : "Séjour réservé",
         );
         setForm((f) => ({
           ...f,
@@ -549,6 +604,9 @@ export function SejoursClient(props: {
           plannedHours: "",
           rateNote: "",
           billingMode: "NIGHTLY",
+          locationPayment: "",
+          depositAmount: "",
+          paymentMethod: "CASH",
         }));
         setBookingOpen(false);
         setMainTab("sejours");
@@ -1285,6 +1343,44 @@ export function SejoursClient(props: {
                             ) >= 0.01 ? (
                             <Badge variant="secondary">Tarif négocié</Badge>
                           ) : null}
+                          {s.folio &&
+                          s.room.roomType.kind === "MEETING" &&
+                          s.folio.lines.some((l) => l.kind === "DEPOSIT")
+                            ? (() => {
+                                const dep = meetingCheckoutSettlement({
+                                  lines: s.folio!.lines.map((l) => ({
+                                    kind: l.kind ?? "OTHER",
+                                    amount: l.amount,
+                                  })),
+                                  payments: (s.folio!.payments ?? []).map(
+                                    (p) => ({
+                                      amountCdf: p.amountCdf,
+                                      amountForeign: p.amountForeign,
+                                      note: p.note,
+                                    }),
+                                  ),
+                                });
+                                return (
+                                  <Badge
+                                    variant="secondary"
+                                    className={
+                                      dep.collectOverrun > 0.01
+                                        ? "bg-rose-500/15 text-rose-800"
+                                        : "bg-violet-500/15 text-violet-900"
+                                    }
+                                  >
+                                    Caution {fmt(dep.cautionAmount)}
+                                    {" · "}
+                                    conso {fmt(dep.consumptionAmount)}
+                                    {dep.refundDeposit > 0.01
+                                      ? ` · remb. ${fmt(dep.refundDeposit)}`
+                                      : dep.collectOverrun > 0.01
+                                        ? ` · +${fmt(dep.collectOverrun)}`
+                                        : ""}
+                                  </Badge>
+                                );
+                              })()
+                            : null}
                         </div>
                         <p className="text-xs text-muted-foreground">
                           {toDateKey(m.checkIn)}
@@ -1489,12 +1585,14 @@ export function SejoursClient(props: {
       </Tabs>
 
       <Dialog open={bookingOpen} onOpenChange={setBookingOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+        <DialogContent className="max-h-[92svh] overflow-visible sm:max-w-4xl">
           <DialogHeader>
             <DialogTitle>
               {formImmediateCheckIn
                 ? form.billingMode === "FLAT"
-                  ? "Nouveau passage · check-in"
+                  ? selectedIsMeeting
+                    ? "Réservation salle · check-in"
+                    : "Nouveau passage · check-in"
                   : "Arrivée aujourd’hui · check-in"
                 : "Nouvelle réservation"}
             </DialogTitle>
@@ -1506,262 +1604,464 @@ export function SejoursClient(props: {
                 : `Entrée ${form.checkInDate}`}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-3">
-          <div className="grid gap-1.5">
-            <Label>Chambre / salle</Label>
-            <SearchCombobox
-              items={props.rooms.map((r) => ({
-                value: r.id,
-                label:
-                  r.roomType.kind === "MEETING"
-                    ? `Salle ${r.number} · ${r.roomType.name} (${fmt(r.roomType.priceNight)}/créneau${
-                        r.roomType.seatsStandard != null ||
-                        r.roomType.seatsVip != null
-                          ? ` · ${r.roomType.seatsStandard ?? 0} simple / ${r.roomType.seatsVip ?? 0} VIP`
-                          : r.roomType.capacity
-                            ? ` · ${r.roomType.capacity} pl.`
-                            : ""
-                      })`
-                    : `Ch. ${r.number} · ${r.roomType.name} (${fmt(r.roomType.priceNight)}/nuit)`,
-              }))}
-              value={form.roomId}
-              onValueChange={(roomId) => {
-                const room = props.rooms.find((r) => r.id === roomId);
-                const isMeeting = room?.roomType.kind === "MEETING";
-                setForm((f) => ({
-                  ...f,
-                  roomId,
-                  unitPriceApplied: "",
-                  ...(isMeeting
-                    ? {
-                        billingMode: "FLAT" as const,
-                        plannedHours: f.plannedHours || "4",
-                        checkInDate: f.checkInDate || localTodayInputValue(),
-                        checkOutDate:
-                          f.checkInDate || localTodayInputValue(),
-                      }
-                    : {}),
-                }));
-              }}
-              placeholder="Rechercher chambre ou salle…"
-              emptyText="Aucun espace trouvé."
-            />
-            {selectedRoom ? (
-              <p className="text-[11px] text-muted-foreground">
-                {selectedIsMeeting
-                  ? `Salle de réunion · tarif catalogue ${fmt(catalogPrice)}/créneau · ${
-                      selectedRoom.roomType.seatsStandard != null ||
-                      selectedRoom.roomType.seatsVip != null
-                        ? `${selectedRoom.roomType.seatsStandard ?? 0} places simples · ${selectedRoom.roomType.seatsVip ?? 0} VIP`
-                        : `capacité ${selectedRoom.roomType.capacity ?? "—"}`
-                    }`
-                  : `Tarif catalogue · ${fmt(catalogPrice)}/nuit`}
-              </p>
-            ) : null}
-          </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1.2fr_0.8fr]">
-            <div className="grid gap-1.5">
-              <Label>Client</Label>
-              <Input
-                value={form.guestName}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, guestName: e.target.value }))
-                }
-                required
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label>Téléphone</Label>
-              <Input
-                value={form.guestPhone}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, guestPhone: e.target.value }))
-                }
-              />
-            </div>
-          </div>
-          <StayPeriodField
-            checkInDate={form.checkInDate}
-            checkOutDate={form.checkOutDate}
-            allowSameDay={form.billingMode === "FLAT"}
-            onChange={({ checkInDate, checkOutDate }) =>
-              setForm((f) => ({ ...f, checkInDate, checkOutDate }))
-            }
-          />
-
-          <div className="grid gap-2 rounded-xl border border-border/70 bg-muted/20 p-3">
-            <Label>Facturation hébergement</Label>
-            <div className="grid grid-cols-2 gap-1 rounded-lg border border-border/60 bg-background/70 p-1">
-              {(
-                [
-                  ["NIGHTLY", "Nuitée(s)"],
-                  ["FLAT", "Passage"],
-                ] as const
-              ).map(([id, label]) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() =>
+          <div className="mt-2 grid gap-4 lg:grid-cols-2">
+            <div className="space-y-3">
+              <div className="grid gap-1.5">
+                <Label>Chambre / salle</Label>
+                <SearchCombobox
+                  items={props.rooms.map((r) => ({
+                    value: r.id,
+                    label:
+                      r.roomType.kind === "MEETING"
+                        ? `Salle ${r.number} · ${r.roomType.name} (${fmt(r.roomType.priceNight)}/créneau${
+                            r.roomType.seatsStandard != null ||
+                            r.roomType.seatsVip != null
+                              ? ` · ${r.roomType.seatsStandard ?? 0} simple / ${r.roomType.seatsVip ?? 0} VIP`
+                              : r.roomType.capacity
+                                ? ` · ${r.roomType.capacity} pl.`
+                                : ""
+                          })`
+                        : `Ch. ${r.number} · ${r.roomType.name} (${fmt(r.roomType.priceNight)}/nuit)`,
+                  }))}
+                  value={form.roomId}
+                  onValueChange={(roomId) => {
+                    const room = props.rooms.find((r) => r.id === roomId);
+                    const isMeeting = room?.roomType.kind === "MEETING";
+                    const catalog = room?.roomType.priceNight ?? 0;
+                    const catalogInput = formatUsdPrimaryInputValue(
+                      catalog,
+                      props.rate,
+                    );
                     setForm((f) => {
-                      const today = localTodayInputValue();
-                      if (id === "FLAT") {
-                        return {
-                          ...f,
-                          billingMode: id,
-                          rateNote: f.rateNote,
-                          checkInDate: f.checkInDate || today,
-                          checkOutDate: f.checkInDate || today,
-                          plannedHours: f.plannedHours || "4",
-                        };
-                      }
-                      const inDate = f.checkInDate || today;
-                      let outDate = f.checkOutDate;
-                      if (!outDate || outDate <= inDate) {
-                        const [y, m, d] = inDate.split("-").map(Number);
-                        const next = new Date(y!, (m ?? 1) - 1, (d ?? 1) + 1);
-                        outDate = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}-${String(next.getDate()).padStart(2, "0")}`;
-                      }
+                      const mode = isMeeting
+                        ? f.billingMode === "NIGHTLY"
+                          ? ("NIGHTLY" as const)
+                          : ("FLAT" as const)
+                        : f.billingMode;
+                      const inDate = f.checkInDate || localTodayInputValue();
+                      const outDate =
+                        mode === "FLAT"
+                          ? inDate
+                          : f.checkOutDate && f.checkOutDate > inDate
+                            ? f.checkOutDate
+                            : addDaysYmd(inDate, 1);
+                      const nights =
+                        mode === "NIGHTLY"
+                          ? Math.max(
+                              1,
+                              nightsBetween(asUtcDay(inDate), asUtcDay(outDate)),
+                            )
+                          : 1;
                       return {
                         ...f,
-                        billingMode: id,
-                        rateNote: f.rateNote,
-                        checkInDate: inDate,
-                        checkOutDate: outDate,
+                        roomId,
+                        ...(isMeeting
+                          ? {
+                              billingMode: mode,
+                              plannedHours:
+                                mode === "FLAT"
+                                  ? f.plannedHours || "4"
+                                  : f.plannedHours,
+                              checkInDate: inDate,
+                              checkOutDate: outDate,
+                              unitPriceApplied: catalogInput,
+                              flatAmount:
+                                mode === "FLAT" ? catalogInput : f.flatAmount,
+                              locationPayment:
+                                mode === "FLAT"
+                                  ? catalogInput
+                                  : formatUsdPrimaryInputValue(
+                                      catalog * nights,
+                                      props.rate,
+                                    ),
+                              rateNote: f.rateNote || "Réservation salle",
+                            }
+                          : {
+                              unitPriceApplied: "",
+                            }),
                       };
-                    })
-                  }
-                  className={cn(
-                    "rounded-md px-2 py-2 text-xs font-semibold transition",
-                    form.billingMode === id
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:bg-muted",
-                  )}
-                >
-                  {label}
-                </button>
-              ))}
+                    });
+                  }}
+                  placeholder="Rechercher chambre ou salle…"
+                  emptyText="Aucun espace trouvé."
+                />
+                {selectedRoom ? (
+                  <p className="text-[11px] text-muted-foreground">
+                    {selectedIsMeeting
+                      ? `Salle de réunion · tarif catalogue ${fmt(catalogPrice)}/créneau · ${
+                          selectedRoom.roomType.seatsStandard != null ||
+                          selectedRoom.roomType.seatsVip != null
+                            ? `${selectedRoom.roomType.seatsStandard ?? 0} places simples · ${selectedRoom.roomType.seatsVip ?? 0} VIP`
+                            : `capacité ${selectedRoom.roomType.capacity ?? "—"}`
+                        }`
+                      : `Tarif catalogue · ${fmt(catalogPrice)}/nuit`}
+                  </p>
+                ) : null}
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1.2fr_0.8fr]">
+                <div className="grid gap-1.5">
+                  <Label>Client</Label>
+                  <Input
+                    value={form.guestName}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, guestName: e.target.value }))
+                    }
+                    required
+                  />
+                </div>
+                <div className="grid gap-1.5">
+                  <Label>Téléphone</Label>
+                  <Input
+                    value={form.guestPhone}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, guestPhone: e.target.value }))
+                    }
+                  />
+                </div>
+              </div>
+              <StayPeriodField
+                checkInDate={form.checkInDate}
+                checkOutDate={form.checkOutDate}
+                allowSameDay={form.billingMode === "FLAT"}
+                onChange={({ checkInDate, checkOutDate }) =>
+                  setForm((f) => {
+                    if (
+                      !selectedIsMeeting ||
+                      f.billingMode !== "NIGHTLY" ||
+                      !checkInDate ||
+                      !checkOutDate ||
+                      checkOutDate <= checkInDate
+                    ) {
+                      return { ...f, checkInDate, checkOutDate };
+                    }
+                    const nights = Math.max(
+                      1,
+                      nightsBetween(asUtcDay(checkInDate), asUtcDay(checkOutDate)),
+                    );
+                    const unitPrimaryRaw = f.unitPriceApplied.trim();
+                    const unitPrimary = Number(unitPrimaryRaw);
+                    const unitUsd =
+                      unitPrimaryRaw !== "" && Number.isFinite(unitPrimary)
+                        ? primaryAmountToUsd(unitPrimary, props.rate)
+                        : catalogPrice;
+                    return {
+                      ...f,
+                      checkInDate,
+                      checkOutDate,
+                      locationPayment: formatUsdPrimaryInputValue(
+                        unitUsd * nights,
+                        props.rate,
+                      ),
+                    };
+                  })
+                }
+              />
             </div>
 
-            {form.billingMode === "NIGHTLY" ? (
-              <div className="grid gap-2">
-                <div className="grid gap-1.5">
-                  <Label htmlFor="unit-price">
-                    Tarif / nuit appliqué ({priceCurrency})
-                  </Label>
-                  <Input
-                    id="unit-price"
-                    type="number"
-                    min={0}
-                    step={priceStep}
-                    placeholder={
-                      catalogPrice
-                        ? formatUsdPrimaryInputValue(catalogPrice, props.rate)
-                        : "0"
-                    }
-                    value={form.unitPriceApplied}
-                    onChange={(e) =>
-                      setForm((f) => ({
-                        ...f,
-                        unitPriceApplied: e.target.value,
-                      }))
-                    }
-                  />
-                  <p className="text-[11px] text-muted-foreground">
-                    Vide = catalogue ({fmt(catalogPrice)}/nuit)
-                    {negotiatedPct != null
-                      ? negotiatedPct > 0
-                        ? ` · négocié −${negotiatedPct} %`
-                        : ` · +${Math.abs(negotiatedPct)} %`
-                      : ""}
-                    {formNights > 0
-                      ? ` · total ${fmt(formNights * appliedNightPrice)}`
-                      : ""}
-                  </p>
+            <div className="space-y-3">
+              <div className="grid gap-2 rounded-xl border border-border/70 bg-muted/20 p-3">
+                <Label>Facturation hébergement</Label>
+                <div className="grid grid-cols-2 gap-1 rounded-lg border border-border/60 bg-background/70 p-1">
+                  {(
+                    [
+                      ["NIGHTLY", "Nuitée(s)"],
+                      ["FLAT", "Passage"],
+                    ] as const
+                  ).map(([id, label]) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() =>
+                        setForm((f) => {
+                          const today = localTodayInputValue();
+                          const catalogInput = formatUsdPrimaryInputValue(
+                            catalogPrice,
+                            props.rate,
+                          );
+                          if (id === "FLAT") {
+                            const inDate = f.checkInDate || today;
+                            return {
+                              ...f,
+                              billingMode: id,
+                              rateNote:
+                                f.rateNote ||
+                                (selectedIsMeeting
+                                  ? "Réservation salle"
+                                  : f.rateNote),
+                              checkInDate: inDate,
+                              checkOutDate: inDate,
+                              plannedHours: f.plannedHours || "4",
+                              flatAmount: f.flatAmount || catalogInput,
+                              unitPriceApplied:
+                                f.unitPriceApplied || catalogInput,
+                              locationPayment: selectedIsMeeting
+                                ? f.flatAmount || catalogInput
+                                : f.locationPayment,
+                            };
+                          }
+                          const inDate = f.checkInDate || today;
+                          let outDate = f.checkOutDate;
+                          if (!outDate || outDate <= inDate) {
+                            outDate = addDaysYmd(inDate, 1);
+                          }
+                          const nights = Math.max(
+                            1,
+                            nightsBetween(asUtcDay(inDate), asUtcDay(outDate)),
+                          );
+                          const duePrimary = formatUsdPrimaryInputValue(
+                            catalogPrice * nights,
+                            props.rate,
+                          );
+                          return {
+                            ...f,
+                            billingMode: id,
+                            rateNote: selectedIsMeeting
+                              ? f.rateNote || "Réservation salle"
+                              : f.rateNote,
+                            checkInDate: inDate,
+                            checkOutDate: outDate,
+                            unitPriceApplied: catalogInput,
+                            locationPayment: selectedIsMeeting
+                              ? duePrimary
+                              : f.locationPayment,
+                          };
+                        })
+                      }
+                      className={cn(
+                        "rounded-md px-2 py-2 text-xs font-semibold transition",
+                        form.billingMode === id
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "text-muted-foreground hover:bg-muted",
+                      )}
+                    >
+                      {label}
+                    </button>
+                  ))}
                 </div>
-              </div>
-            ) : (
-              <div className="grid gap-2">
-                <div className="grid gap-1.5">
-                  <Label htmlFor="flat-amount">
-                    Montant passage ({priceCurrency})
-                  </Label>
-                  <Input
-                    id="flat-amount"
-                    type="number"
-                    min={0}
-                    step={priceStep}
-                    value={form.flatAmount}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, flatAmount: e.target.value }))
-                    }
-                    required
-                  />
-                </div>
-                <div className="grid gap-1.5">
-                  <Label htmlFor="planned-hours">Durée (heures)</Label>
-                  <Input
-                    id="planned-hours"
-                    type="number"
-                    min={1}
-                    step={1}
-                    value={form.plannedHours}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, plannedHours: e.target.value }))
-                    }
-                    required
-                  />
-                  <p className="text-[11px] text-muted-foreground">
-                    Créneau facturé (ex. 4 h). Pas de règle {HOTEL_CHECKOUT_HOUR}
-                    h — prolongation = même durée au même montant.
-                  </p>
-                </div>
-              </div>
-            )}
 
-            {(form.billingMode === "FLAT" ||
-              (form.unitPriceApplied.trim() !== "" &&
-                Math.abs(appliedNightPrice - catalogPrice) >= 0.01)) && (
-              <div className="grid gap-1.5">
-                <Label htmlFor="rate-note">Motif</Label>
-                <Input
-                  id="rate-note"
-                  value={form.rateNote}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, rateNote: e.target.value }))
-                  }
-                  placeholder={
-                    form.billingMode === "FLAT"
-                      ? "Ex. day use 4 h, accord client…"
-                      : "Ex. réduction fidélité, promo…"
-                  }
-                />
-              </div>
-            )}
-          </div>
+                {form.billingMode === "NIGHTLY" ? (
+                  <div className="grid gap-1.5">
+                    <Label htmlFor="unit-price">
+                      Tarif / nuit appliqué ({priceCurrency})
+                    </Label>
+                    <Input
+                      id="unit-price"
+                      type="number"
+                      min={0}
+                      step={priceStep}
+                      placeholder={
+                        catalogPrice
+                          ? formatUsdPrimaryInputValue(catalogPrice, props.rate)
+                          : "0"
+                      }
+                      value={form.unitPriceApplied}
+                      onChange={(e) => {
+                        const next = e.target.value;
+                        setForm((f) => {
+                          if (
+                            !selectedIsMeeting ||
+                            f.billingMode !== "NIGHTLY" ||
+                            formNights < 1
+                          ) {
+                            return { ...f, unitPriceApplied: next };
+                          }
+                          const primary = Number(next);
+                          const unitUsd = Number.isFinite(primary)
+                            ? primaryAmountToUsd(primary, props.rate)
+                            : catalogPrice;
+                          return {
+                            ...f,
+                            unitPriceApplied: next,
+                            locationPayment: formatUsdPrimaryInputValue(
+                              unitUsd * formNights,
+                              props.rate,
+                            ),
+                          };
+                        });
+                      }}
+                    />
+                    <p className="text-[11px] text-muted-foreground">
+                      Vide = catalogue ({fmt(catalogPrice)}/nuit)
+                      {negotiatedPct != null
+                        ? negotiatedPct > 0
+                          ? ` · négocié −${negotiatedPct} %`
+                          : ` · +${Math.abs(negotiatedPct)} %`
+                        : ""}
+                      {formNights > 0
+                        ? ` · total ${fmt(formNights * appliedNightPrice)}`
+                        : ""}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="grid gap-1.5">
+                      <Label htmlFor="flat-amount">
+                        Montant passage ({priceCurrency})
+                      </Label>
+                      <Input
+                        id="flat-amount"
+                        type="number"
+                        min={0}
+                        step={priceStep}
+                        value={form.flatAmount}
+                        onChange={(e) => {
+                          const next = e.target.value;
+                          setForm((f) => ({
+                            ...f,
+                            flatAmount: next,
+                            ...(selectedIsMeeting
+                              ? { locationPayment: next }
+                              : {}),
+                          }));
+                        }}
+                        required
+                      />
+                    </div>
+                    <div className="grid gap-1.5">
+                      <Label htmlFor="planned-hours">Durée (heures)</Label>
+                      <Input
+                        id="planned-hours"
+                        type="number"
+                        min={1}
+                        step={1}
+                        value={form.plannedHours}
+                        onChange={(e) =>
+                          setForm((f) => ({
+                            ...f,
+                            plannedHours: e.target.value,
+                          }))
+                        }
+                        required
+                      />
+                    </div>
+                    <p className="col-span-2 text-[11px] text-muted-foreground">
+                      Créneau facturé (ex. 4 h). Pas de règle{" "}
+                      {HOTEL_CHECKOUT_HOUR}h — prolongation = même durée au même
+                      montant.
+                    </p>
+                  </div>
+                )}
 
-          <Button
-            disabled={
-              pending ||
-              !form.guestName ||
-              !form.checkInDate ||
-              !form.checkOutDate ||
-              (form.billingMode === "FLAT" &&
-                (!(Number(form.flatAmount) >= 0) ||
-                  !(Number(form.plannedHours) > 0) ||
-                  !form.rateNote.trim())) ||
-              (form.billingMode === "NIGHTLY" &&
-                form.unitPriceApplied.trim() !== "" &&
-                Math.abs(appliedNightPrice - catalogPrice) >= 0.01 &&
-                !form.rateNote.trim())
-            }
-            onClick={create}
-          >
-            {formImmediateCheckIn
-              ? form.billingMode === "FLAT"
-                ? "Check-in passage"
-                : "Check-in"
-                : "Réserver"}
-          </Button>
+                {(form.billingMode === "FLAT" ||
+                  (form.unitPriceApplied.trim() !== "" &&
+                    Math.abs(appliedNightPrice - catalogPrice) >= 0.01)) && (
+                  <div className="grid gap-1.5">
+                    <Label htmlFor="rate-note">Motif</Label>
+                    <Input
+                      id="rate-note"
+                      value={form.rateNote}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, rateNote: e.target.value }))
+                      }
+                      placeholder={
+                        form.billingMode === "FLAT"
+                          ? "Ex. day use 4 h, accord client…"
+                          : "Ex. réduction fidélité, promo…"
+                      }
+                    />
+                  </div>
+                )}
+              </div>
+
+              {selectedIsMeeting ? (
+                <div className="grid gap-3 rounded-xl border border-violet-500/25 bg-violet-500/5 p-3">
+                  <p className="text-xs font-semibold tracking-wide text-violet-900 uppercase dark:text-violet-200">
+                    Encaissement salle (obligatoire)
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="grid gap-1.5">
+                      <Label htmlFor="location-pay">
+                        Paiement location ({priceCurrency})
+                      </Label>
+                      <Input
+                        id="location-pay"
+                        type="number"
+                        min={0.01}
+                        step={priceStep}
+                        value={form.locationPayment}
+                        onChange={(e) =>
+                          setForm((f) => ({
+                            ...f,
+                            locationPayment: e.target.value,
+                          }))
+                        }
+                        required
+                      />
+                      <p className="text-[11px] text-muted-foreground">
+                        Dû{" "}
+                        {fmt(
+                          form.billingMode === "FLAT"
+                            ? primaryAmountToUsd(
+                                Number(form.flatAmount) || 0,
+                                props.rate,
+                              )
+                            : formNights * appliedNightPrice,
+                        )}
+                        {form.billingMode === "NIGHTLY" && formNights > 0
+                          ? ` · ${formNights} nuit(s)`
+                          : ""}
+                      </p>
+                    </div>
+                    <div className="grid gap-1.5">
+                      <Label htmlFor="deposit-amount">
+                        Caution ({priceCurrency}) — optionnel
+                      </Label>
+                      <Input
+                        id="deposit-amount"
+                        type="number"
+                        min={0}
+                        step={priceStep}
+                        value={form.depositAmount}
+                        onChange={(e) =>
+                          setForm((f) => ({
+                            ...f,
+                            depositAmount: e.target.value,
+                          }))
+                        }
+                        placeholder="Saisie manuelle"
+                      />
+                      <p className="text-[11px] text-muted-foreground">
+                        Décomptée Sur note · reliquat à la clôture
+                      </p>
+                    </div>
+                  </div>
+                  <PosPayMethodPicker
+                    value={form.paymentMethod}
+                    onChange={(m) =>
+                      setForm((f) => ({ ...f, paymentMethod: m }))
+                    }
+                  />
+                </div>
+              ) : null}
+
+              <Button
+                className="w-full"
+                disabled={
+                  pending ||
+                  !form.guestName ||
+                  !form.checkInDate ||
+                  !form.checkOutDate ||
+                  (form.billingMode === "FLAT" &&
+                    (!(Number(form.flatAmount) >= 0) ||
+                      !(Number(form.plannedHours) > 0) ||
+                      !form.rateNote.trim())) ||
+                  (form.billingMode === "NIGHTLY" &&
+                    form.unitPriceApplied.trim() !== "" &&
+                    Math.abs(appliedNightPrice - catalogPrice) >= 0.01 &&
+                    !form.rateNote.trim()) ||
+                  (selectedIsMeeting && !(Number(form.locationPayment) > 0))
+                }
+                onClick={create}
+              >
+                {formImmediateCheckIn
+                  ? form.billingMode === "FLAT"
+                    ? selectedIsMeeting
+                      ? "Réserver · check-in salle"
+                      : "Check-in passage"
+                    : "Check-in"
+                  : "Réserver"}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
