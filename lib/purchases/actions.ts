@@ -878,13 +878,17 @@ export async function createExpenseAction(input: {
       ? "Dépôt bancaire"
       : kind === "REMISE_PROPRIETAIRE"
         ? "Remise au propriétaire"
-        : "");
+        : kind === "PRET_PROPRIETAIRE"
+          ? "Prêt / avance propriétaire"
+          : "");
   if (!label) throw new Error("Libellé requis.");
   const amountUsd = roundMoney(Number(input.amountUsd));
   if (!(amountUsd > 0)) throw new Error("Montant invalide.");
   const beneficiary = input.beneficiary?.trim() || null;
   if (
-    (kind === "DEPOT_BANQUE" || kind === "REMISE_PROPRIETAIRE") &&
+    (kind === "DEPOT_BANQUE" ||
+      kind === "REMISE_PROPRIETAIRE" ||
+      kind === "PRET_PROPRIETAIRE") &&
     !beneficiary
   ) {
     throw new Error(
@@ -897,6 +901,8 @@ export async function createExpenseAction(input: {
   const number = await nextExpenseNumber(input.branchId, kind);
   const category =
     input.category?.trim() || defaultExpenseCategory(kind);
+  const signedAmount =
+    amountUsd * (kind === "PRET_PROPRIETAIRE" ? 1 : -1);
 
   const expense = await prisma.branchExpense.create({
     data: {
@@ -915,7 +921,7 @@ export async function createExpenseAction(input: {
   await createCashMovement({
     branchId: input.branchId,
     userId: user.id,
-    amountUsd: -amountUsd,
+    amountUsd: signedAmount,
     note: expenseCashNote(kind, label),
     expenseId: expense.id,
     method: input.method,

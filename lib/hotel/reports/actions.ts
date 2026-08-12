@@ -525,19 +525,21 @@ export async function getFinanceReportAction(input: PeriodInput) {
   const expenses = pays
     .filter(
       (p) =>
-        p.expenseId ||
-        (p.note ?? "").startsWith("Dépense ·") ||
-        (p.note ?? "").startsWith("Dépôt à la banque ·") ||
-        (p.note ?? "").startsWith("Remise au propriétaire ·"),
+        p.usd < 0 &&
+        (p.expenseId ||
+          (p.note ?? "").startsWith("Dépense ·") ||
+          (p.note ?? "").startsWith("Dépôt à la banque ·") ||
+          (p.note ?? "").startsWith("Remise au propriétaire ·")),
     )
     .reduce((s, p) => s + Math.abs(p.usd), 0);
   const expensesPrev = prevPays
     .filter(
       (p) =>
-        p.expenseId ||
-        (p.note ?? "").startsWith("Dépense ·") ||
-        (p.note ?? "").startsWith("Dépôt à la banque ·") ||
-        (p.note ?? "").startsWith("Remise au propriétaire ·"),
+        p.usd < 0 &&
+        (p.expenseId ||
+          (p.note ?? "").startsWith("Dépense ·") ||
+          (p.note ?? "").startsWith("Dépôt à la banque ·") ||
+          (p.note ?? "").startsWith("Remise au propriétaire ·")),
     )
     .reduce((s, p) => s + Math.abs(p.usd), 0);
   const purchases = pays

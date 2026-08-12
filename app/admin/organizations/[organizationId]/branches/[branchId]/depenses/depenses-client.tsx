@@ -33,6 +33,7 @@ import {
   expenseBeneficiaryRole,
   expenseDocumentTitle,
   expenseKindLabel,
+  isOwnerAdvanceKind,
   normalizeExpenseKind,
   type ExpenseKind,
 } from "@/lib/expenses/kinds";
@@ -64,6 +65,10 @@ const KIND_OPTIONS: { value: ExpenseKind; hint: string }[] = [
     value: "REMISE_PROPRIETAIRE",
     hint: "Remise d’espèces au propriétaire",
   },
+  {
+    value: "PRET_PROPRIETAIRE",
+    hint: "Le propriétaire avance des fonds (caisse vide ou insuffisante)",
+  },
 ];
 
 function money(n: number, rate: NormalizedUsdCdfRate | null) {
@@ -82,6 +87,16 @@ function buildExpenseHtml(
   const date = new Date(e.createdAt).toLocaleString("fr-FR");
   const beneficiaryRole = expenseBeneficiaryRole(kind);
   const receipt = e.payment?.receiptNumber ?? "—";
+  const isAdvance = isOwnerAdvanceKind(kind);
+  const amountLine = isAdvance
+    ? `Montant entré en caisse : ${amount}`
+    : `Montant sorti de caisse : ${amount}`;
+  const legal = isAdvance
+    ? "Document comptable établissant l’avance / prêt du propriétaire à l’entreprise (branche). Alimente la caisse. À conserver après signature."
+    : "Document comptable établissant le décaissement de la caisse. À conserver après signature.";
+  const footer = isAdvance
+    ? `Coccinelle · ${e.number} · Entrée de fonds (prêt propriétaire) — n’est pas une charge d’exploitation.`
+    : `Coccinelle · ${e.number} · Sortie de fonds considérée comme dépense (impact solde caisse / rapport financier).`;
 
   return `<!doctype html><html><head><meta charset="utf-8"/><title>${e.number}</title>
     <style>
@@ -113,15 +128,15 @@ function buildExpenseHtml(
           : ""
       }
       ${e.note ? `<div class="row"><div><div class="label">Note</div><div class="value" style="font-weight:400">${e.note}</div></div></div>` : ""}
-      <p class="amount">Montant sorti de caisse : ${amount}</p>
+      <p class="amount">${amountLine}</p>
       <p class="muted">${both}</p>
-      <p class="muted" style="margin-top:12px">Document comptable établissant le décaissement de la caisse. À conserver après signature.</p>
+      <p class="muted" style="margin-top:12px">${legal}</p>
     </div>
     <div class="sigs">
       <div class="sig"><b>Caissier / Gérant</b><span>Nom &amp; signature</span></div>
       <div class="sig"><b>${beneficiaryRole}</b><span>${e.beneficiary ? `${e.beneficiary} — ` : ""}Nom &amp; signature</span></div>
     </div>
-    <p class="footer">Coccinelle · ${e.number} · Sortie de fonds considérée comme dépense (impact solde caisse / rapport financier).</p>
+    <p class="footer">${footer}</p>
     </body></html>`;
 }
 
@@ -191,16 +206,30 @@ export function DepensesClient(props: {
   const hasOpenCashSession = Boolean(props.cashDrawer);
   const currency = primaryCurrencyLabel(props.rate);
   const step = primaryPriceInputStep(props.rate);
-  const total = useMemo(
-    () => props.expenses.reduce((s, e) => s + e.amountUsd, 0),
+  const totalOutflows = useMemo(
+    () =>
+      props.expenses
+        .filter((e) => !isOwnerAdvanceKind(normalizeExpenseKind(e.kind)))
+        .reduce((s, e) => s + e.amountUsd, 0),
+    [props.expenses],
+  );
+  const totalAdvances = useMemo(
+    () =>
+      props.expenses
+        .filter((e) => isOwnerAdvanceKind(normalizeExpenseKind(e.kind)))
+        .reduce((s, e) => s + e.amountUsd, 0),
     [props.expenses],
   );
 
   const draftAmountUsd = primaryAmountToUsd(Number(amount) || 0, props.rate);
+  const isAdvanceDraft = isOwnerAdvanceKind(kind);
   const balanceAfter =
     props.cashDrawer && draftAmountUsd > 0
-      ? props.cashDrawer.balanceUsd - draftAmountUsd
-      : props.cashDrawer?.balanceUsd ?? null;
+      ? props.cashDrawer.balanceUsd +
+        (isAdvanceDraft ? draftAmountUsd : -draftAmountUsd)
+      : (props.cashDrawer?.balanceUsd ?? null);
+  const cashLow =
+    props.cashDrawer != null && props.cashDrawer.balanceUsd < 0.01;
 
   function onKindChange(next: ExpenseKind) {
     setKind(next);
@@ -209,7 +238,8 @@ export function DepensesClient(props: {
     if (def) setLabel(def);
     else if (
       label === defaultExpenseLabel("DEPOT_BANQUE") ||
-      label === defaultExpenseLabel("REMISE_PROPRIETAIRE")
+      label === defaultExpenseLabel("REMISE_PROPRIETAIRE") ||
+      label === defaultExpenseLabel("PRET_PROPRIETAIRE")
     ) {
       setLabel("");
     }
@@ -229,7 +259,11 @@ export function DepensesClient(props: {
           note: note || null,
           method,
         });
-        toast.success("Sortie de caisse enregistrée");
+        toast.success(
+          isOwnerAdvanceKind(kind)
+            ? "Prêt enregistré · caisse alimentée"
+            : "Sortie de caisse enregistrée",
+        );
         setOpen(false);
         setLabel("");
         setKind("DEPENSE");
@@ -250,7 +284,9 @@ export function DepensesClient(props: {
   }
 
   const needsBeneficiary =
-    kind === "DEPOT_BANQUE" || kind === "REMISE_PROPRIETAIRE";
+    kind === "DEPOT_BANQUE" ||
+    kind === "REMISE_PROPRIETAIRE" ||
+    kind === "PRET_PROPRIETAIRE";
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-6">
@@ -264,8 +300,8 @@ export function DepensesClient(props: {
           </Link>
           <h1 className="text-xl font-semibold tracking-tight">Dépenses</h1>
           <p className="text-sm text-muted-foreground">
-            {props.branchName} · dépense, dépôt banque ou remise propriétaire —
-            chaque sortie débite la caisse · document à signer
+            {props.branchName} · sorties, dépôt banque, remise ou prêt
+            propriétaire (alimente la caisse) · document à signer
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -285,7 +321,7 @@ export function DepensesClient(props: {
             </Button>
           ) : null}
           <Button onClick={() => setOpen(true)}>
-            <Plus className="mr-1.5 size-4" /> Nouvelle sortie
+            <Plus className="mr-1.5 size-4" /> Nouvelle opération
           </Button>
         </div>
       </div>
@@ -333,29 +369,52 @@ export function DepensesClient(props: {
         </div>
       ) : (
         <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-amber-950 dark:text-amber-100">
-          Aucune session de caisse ouverte — ouvrez la caisse avant une sortie
-          de fonds.
+          Aucune session de caisse ouverte — ouvrez la caisse avant une
+          opération de fonds.
         </div>
       )}
 
-      <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 px-4 py-3 text-sm">
-        Total sorties listées :{" "}
-        <span className="font-semibold">
-          {formatPrimaryAmount(total, props.rate)}
-        </span>
-        <span className="ml-2 text-xs text-muted-foreground">
-          {formatBothAmounts(total, props.rate)}
-        </span>
+      {cashLow && hasOpenCashSession ? (
+        <div className="rounded-xl border border-sky-500/30 bg-sky-500/5 px-4 py-3 text-sm">
+          Caisse vide ou quasi vide — le propriétaire peut enregistrer un{" "}
+          <button
+            type="button"
+            className="font-semibold text-sky-800 underline underline-offset-2 dark:text-sky-200"
+            onClick={() => {
+              onKindChange("PRET_PROPRIETAIRE");
+              setOpen(true);
+            }}
+          >
+            prêt / avance
+          </button>{" "}
+          pour alimenter la branche, puis faire les dépenses.
+        </div>
+      ) : null}
+
+      <div className="grid gap-2 sm:grid-cols-2">
+        <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 px-4 py-3 text-sm">
+          Total sorties :{" "}
+          <span className="font-semibold">
+            {formatPrimaryAmount(totalOutflows, props.rate)}
+          </span>
+        </div>
+        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-sm">
+          Total prêts propriétaire :{" "}
+          <span className="font-semibold">
+            {formatPrimaryAmount(totalAdvances, props.rate)}
+          </span>
+        </div>
       </div>
 
       <ul className="space-y-2">
         {props.expenses.length === 0 ? (
           <li className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-            Aucune sortie enregistrée.
+            Aucune opération enregistrée.
           </li>
         ) : (
           props.expenses.map((e) => {
             const k = normalizeExpenseKind(e.kind);
+            const advance = isOwnerAdvanceKind(k);
             return (
               <li
                 key={e.id}
@@ -379,8 +438,16 @@ export function DepensesClient(props: {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <p className="font-semibold text-rose-700 dark:text-rose-300">
-                    −{formatPrimaryAmount(e.amountUsd, props.rate)}
+                  <p
+                    className={cn(
+                      "font-semibold",
+                      advance
+                        ? "text-emerald-700 dark:text-emerald-300"
+                        : "text-rose-700 dark:text-rose-300",
+                    )}
+                  >
+                    {advance ? "+" : "−"}
+                    {formatPrimaryAmount(e.amountUsd, props.rate)}
                   </p>
                   <Button
                     size="sm"
@@ -399,11 +466,10 @@ export function DepensesClient(props: {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-h-[94svh] overflow-y-auto sm:max-w-3xl">
           <DialogHeader>
-            <DialogTitle>Nouvelle sortie de caisse</DialogTitle>
+            <DialogTitle>Nouvelle opération de caisse</DialogTitle>
             <DialogDescription>
-              Dépense, dépôt bancaire ou remise au propriétaire — le montant est
-              décaissé immédiatement. Un document comptable est disponible pour
-              signature.
+              Sortie (dépense, banque, remise) ou entrée via prêt propriétaire
+              quand la caisse est vide. Document comptable pour signature.
             </DialogDescription>
           </DialogHeader>
 
@@ -436,7 +502,7 @@ export function DepensesClient(props: {
               </div>
               <div>
                 <p className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
-                  Après cette sortie
+                  Après cette opération
                 </p>
                 <p
                   className={cn(
@@ -458,10 +524,17 @@ export function DepensesClient(props: {
             </div>
           )}
 
+          {cashLow ? (
+            <p className="rounded-lg border border-sky-500/25 bg-sky-500/5 px-3 py-2 text-xs text-muted-foreground">
+              Astuce : choisissez « Prêt propriétaire » pour injecter des fonds,
+              puis enregistrez vos dépenses.
+            </p>
+          ) : null}
+
           <div className="grid gap-4">
             <div className="grid gap-2">
-              <Label>Type de sortie</Label>
-              <div className="grid gap-2 sm:grid-cols-3">
+              <Label>Type d’opération</Label>
+              <div className="grid gap-2 sm:grid-cols-2">
                 {KIND_OPTIONS.map((opt) => (
                   <button
                     key={opt.value}
@@ -544,10 +617,13 @@ export function DepensesClient(props: {
                 {draftAmountUsd > 0 ? (
                   <p className="text-[11px] text-muted-foreground">
                     {formatBothAmounts(draftAmountUsd, props.rate)}
-                    {props.cashDrawer &&
+                    {!isAdvanceDraft &&
+                    props.cashDrawer &&
                     draftAmountUsd > props.cashDrawer.balanceUsd + 0.01
-                      ? " · dépasse le solde caisse"
-                      : ""}
+                      ? " · dépasse le solde — enregistrez d’abord un prêt propriétaire"
+                      : isAdvanceDraft
+                        ? " · entrée en caisse"
+                        : ""}
                   </p>
                 ) : null}
               </div>
@@ -573,7 +649,9 @@ export function DepensesClient(props: {
               }
               onClick={submit}
             >
-              Enregistrer · produire le document
+              {isAdvanceDraft
+                ? "Enregistrer le prêt · produire le document"
+                : "Enregistrer · produire le document"}
             </Button>
           </div>
         </DialogContent>
@@ -643,8 +721,22 @@ export function DepensesClient(props: {
                     </div>
                   ) : null}
                   <div className="flex justify-between gap-3 border-t border-border pt-2">
-                    <dt className="text-muted-foreground">Montant décaissé</dt>
-                    <dd className="text-lg font-bold text-rose-700 dark:text-rose-300">
+                    <dt className="text-muted-foreground">
+                      {isOwnerAdvanceKind(normalizeExpenseKind(preview.kind))
+                        ? "Montant entré en caisse"
+                        : "Montant décaissé"}
+                    </dt>
+                    <dd
+                      className={cn(
+                        "text-lg font-bold",
+                        isOwnerAdvanceKind(normalizeExpenseKind(preview.kind))
+                          ? "text-emerald-700 dark:text-emerald-300"
+                          : "text-rose-700 dark:text-rose-300",
+                      )}
+                    >
+                      {isOwnerAdvanceKind(normalizeExpenseKind(preview.kind))
+                        ? "+"
+                        : "−"}
                       {money(preview.amountUsd, props.rate)}
                     </dd>
                   </div>

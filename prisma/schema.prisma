@@ -1075,13 +1075,13 @@ model PurchaseOrderItem {
   @@index([purchaseOrderId])
 }
 
-/** Sortie de caisse (dépense, dépôt banque, remise propriétaire). */
+/** Sortie / entrée de caisse (dépense, banque, remise ou prêt propriétaire). */
 model BranchExpense {
   id              String   @id @default(uuid())
   branchId        String
   /// Réf. document : DEP-00001 / DBQ-00001 / RPR-00001
   number          String
-  /// DEPENSE | DEPOT_BANQUE | REMISE_PROPRIETAIRE
+  /// DEPENSE | DEPOT_BANQUE | REMISE_PROPRIETAIRE | PRET_PROPRIETAIRE
   kind            String   @default("DEPENSE")
   label           String
   category        String   @default("Divers")
