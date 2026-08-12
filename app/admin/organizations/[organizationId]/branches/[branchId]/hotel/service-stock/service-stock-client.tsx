@@ -31,7 +31,13 @@ import {
 import {
   buildServiceStockClosingHtml,
   buildServiceStockOpeningHtml,
+  summarizeRecover,
 } from "@/lib/hotel/service-stock-print";
+import {
+  DualBarChart,
+  SimpleBarChart,
+  TrendAreaChart,
+} from "@/components/reports/report-charts";
 import { cn } from "@/lib/utils";
 
 type Staff = { userId: string; name: string; role: string };
@@ -84,7 +90,13 @@ type HistoryRow = {
   vendorDisplayName: string;
   openedAt: string | Date;
   closedAt: string | Date | null;
-  lines: { qtyAttributed: number; qtySold: number; unitPriceUsd: number }[];
+  lines: {
+    qtyAttributed: number;
+    qtyOpeningCounted: number | null;
+    qtySold: number;
+    qtyLoss: number;
+    unitPriceUsd: number;
+  }[];
 };
 
 function printHtml(html: string) {
@@ -176,6 +188,135 @@ export function ServiceStockClient(props: {
     }));
   }, [session]);
 
+  const liveSummary = useMemo(() => {
+    if (!session) return summarizeRecover([]);
+    if (needsConfirm) {
+      const preview = session.lines.map((l) => ({
+        name: l.menuItem.name,
+        sourceZone: l.sourceZone,
+        qtyAttributed: l.qtyAttributed,
+        qtyOpeningCounted: Math.round(
+          Number(openingCounts[l.id] ?? l.qtyAttributed) || 0,
+        ),
+        qtySold: l.qtySold,
+        qtyLoss: l.qtyLoss,
+        unitPriceUsd: l.unitPriceUsd,
+      }));
+      return summarizeRecover(preview);
+    }
+    return summarizeRecover(docLines);
+  }, [session, needsConfirm, openingCounts, docLines]);
+
+  /** CA par session (historique) pour courbe. */
+  const salesTrend = useMemo(() => {
+    return [...props.history]
+      .filter((h) => h.status === "CLOSED")
+      .reverse()
+      .slice(-14)
+      .map((h) => {
+        const ca = summarizeRecover(h.lines.map((l) => ({
+          name: "",
+          sourceZone: "",
+          qtyAttributed: l.qtyAttributed,
+          qtyOpeningCounted: l.qtyOpeningCounted,
+          qtySold: l.qtySold,
+          qtyLoss: l.qtyLoss,
+          unitPriceUsd: l.unitPriceUsd,
+        }))).sold;
+        const d =
+          h.closedAt instanceof Date
+            ? h.closedAt
+            : new Date(h.closedAt ?? h.openedAt);
+        const day = d.toISOString().slice(0, 10);
+        return { day, value: Math.round(ca * 100) / 100 };
+      });
+  }, [props.history]);
+
+  /** Efficacité vendeur : CA + taux de recouvrement. */
+  const vendorStats = useMemo(() => {
+    const map = new Map<
+      string,
+      { toRecover: number; sold: number; sessions: number }
+    >();
+    for (const h of props.history) {
+      const key = h.vendorDisplayName || "Entrant";
+      const cur = map.get(key) ?? {
+        toRecover: 0,
+        sold: 0,
+        sessions: 0,
+      };
+      cur.sessions += 1;
+      const s = summarizeRecover(
+        h.lines.map((l) => ({
+          name: "",
+          sourceZone: "",
+          qtyAttributed: l.qtyAttributed,
+          qtyOpeningCounted: l.qtyOpeningCounted,
+          qtySold: l.qtySold,
+          qtyLoss: l.qtyLoss,
+          unitPriceUsd: l.unitPriceUsd,
+        })),
+      );
+      cur.toRecover += s.toRecover;
+      cur.sold += s.sold;
+      map.set(key, cur);
+    }
+    return [...map.entries()]
+      .map(([name, v]) => ({
+        name: name.length > 14 ? `${name.slice(0, 12)}…` : name,
+        fullName: name,
+        ca: Math.round(v.sold * 100) / 100,
+        rate:
+          v.toRecover > 0.0001
+            ? Math.round((v.sold / v.toRecover) * 1000) / 10
+            : 0,
+        sessions: v.sessions,
+      }))
+      .sort((a, b) => b.ca - a.ca);
+  }, [props.history]);
+
+  const vendorRateChart = useMemo(
+    () =>
+      vendorStats.map((v) => ({
+        name: v.name,
+        value: v.rate,
+      })),
+    [vendorStats],
+  );
+
+  const vendorCaChart = useMemo(
+    () =>
+      vendorStats.map((v) => ({
+        name: v.name,
+        value: v.ca,
+      })),
+    [vendorStats],
+  );
+
+  const productSalesChart = useMemo(() => {
+    if (!session) return [] as { name: string; value: number }[];
+    return session.lines
+      .filter((l) => l.qtySold > 0)
+      .map((l) => ({
+        name:
+          l.menuItem.name.length > 14
+            ? `${l.menuItem.name.slice(0, 12)}…`
+            : l.menuItem.name,
+        value: Math.round(l.qtySold * l.unitPriceUsd * 100) / 100,
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 8);
+  }, [session]);
+
+  const sessionQtyChart = useMemo(() => {
+    if (!session) return [] as { day: string; entrees: number; sorties: number }[];
+    return session.lines.map((l) => ({
+      day: l.menuItem.name.slice(0, 10),
+      entrees: l.qtyAttributed,
+      sorties: l.qtySold,
+    }));
+  }, [session]);
+
   function printOpening(updatedNote?: string) {
     if (!session) return;
     printHtml(
@@ -186,6 +327,7 @@ export function ServiceStockClient(props: {
         managerName: props.currentUserName,
         openedAt: session.openedAt,
         lines: docLines,
+        formatMoney: money,
         updatedNote,
       }),
     );
@@ -238,6 +380,7 @@ export function ServiceStockClient(props: {
             Number(openingCounts[l.id] ?? l.qtyAttributed) || 0,
           ),
         }));
+        const countById = new Map(counts.map((c) => [c.lineId, c]));
         await confirmServiceStockOpeningAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
@@ -245,8 +388,36 @@ export function ServiceStockClient(props: {
           counts,
         });
         toast.success("État des lieux confirmé");
+        printHtml(
+          buildServiceStockOpeningHtml({
+            branchName: props.branchName,
+            number: session.number,
+            vendorDisplayName: session.vendorDisplayName,
+            managerName: props.currentUserName,
+            openedAt: session.openedAt,
+            formatMoney: money,
+            lines: session.lines.map((l) => ({
+              name: l.menuItem.name,
+              sourceZone: l.sourceZone,
+              qtyAttributed: l.qtyAttributed,
+              qtyOpeningCounted: countById.get(l.id)!.qtyOpeningCounted,
+              qtySold: l.qtySold,
+              unitPriceUsd: l.unitPriceUsd,
+            })),
+          }),
+        );
+        start(async () => {
+          try {
+            await markOpeningDocumentPrintedAction({
+              organizationId: props.organizationId,
+              branchId: props.branchId,
+              sessionId: session.id,
+            });
+          } catch {
+            /* ignore */
+          }
+        });
         router.refresh();
-        window.setTimeout(() => printOpening(), 300);
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Erreur");
       }
@@ -337,7 +508,7 @@ export function ServiceStockClient(props: {
   }
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-6">
+    <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <Link
@@ -401,6 +572,41 @@ export function ServiceStockClient(props: {
             </p>
           </div>
 
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-xl border border-border bg-card px-4 py-3">
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                À recouvrir
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular-nums">
+                {money(liveSummary.toRecover)}
+              </p>
+            </div>
+            <div className="rounded-xl border border-border bg-card px-4 py-3">
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                Recouvré (vendu)
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular-nums">
+                {money(liveSummary.sold)}
+              </p>
+            </div>
+            <div className="rounded-xl border border-border bg-card px-4 py-3">
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                Restant (valeur)
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular-nums">
+                {money(liveSummary.remainingValue)}
+              </p>
+            </div>
+            <div className="rounded-xl border border-border bg-card px-4 py-3">
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                Taux de recouvrement
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular-nums">
+                {liveSummary.recoverRate.toLocaleString("fr-FR")} %
+              </p>
+            </div>
+          </div>
+
           {needsConfirm ? (
             <div className="rounded-xl border border-sky-500/30 bg-sky-500/5 p-4 space-y-3">
               <h2 className="font-medium">État des lieux — ouverture</h2>
@@ -443,42 +649,173 @@ export function ServiceStockClient(props: {
 
           {isLive ? (
             <div className="overflow-x-auto rounded-xl border border-border">
-              <table className="w-full min-w-[520px] text-sm">
+              <table className="w-full min-w-[640px] text-sm">
                 <thead>
                   <tr className="text-left text-xs text-muted-foreground">
                     <th className="px-3 py-2">Produit</th>
+                    <th className="px-3 py-2 text-right">P.U.</th>
                     <th className="px-3 py-2 text-right">Attribué</th>
+                    <th className="px-3 py-2 text-right">À recouvrir</th>
                     <th className="px-3 py-2 text-right">Vendu</th>
+                    <th className="px-3 py-2 text-right">Recouvré</th>
                     <th className="px-3 py-2 text-right">Restant</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {session.lines.map((l) => (
-                    <tr key={l.id} className="border-t border-border/70">
-                      <td className="px-3 py-2">{l.menuItem.name}</td>
-                      <td className="px-3 py-2 text-right">
-                        {l.qtyAttributed}
-                      </td>
-                      <td className="px-3 py-2 text-right">{l.qtySold}</td>
-                      <td className="px-3 py-2 text-right font-medium">
-                        {remaining(l)}
-                      </td>
-                    </tr>
-                  ))}
+                  {session.lines.map((l) => {
+                    const qty =
+                      l.qtyOpeningCounted != null
+                        ? l.qtyOpeningCounted
+                        : l.qtyAttributed;
+                    return (
+                      <tr key={l.id} className="border-t border-border/70">
+                        <td className="px-3 py-2">{l.menuItem.name}</td>
+                        <td className="px-3 py-2 text-right tabular-nums">
+                          {money(l.unitPriceUsd)}
+                        </td>
+                        <td className="px-3 py-2 text-right">{l.qtyAttributed}</td>
+                        <td className="px-3 py-2 text-right tabular-nums">
+                          {money(qty * l.unitPriceUsd)}
+                        </td>
+                        <td className="px-3 py-2 text-right">{l.qtySold}</td>
+                        <td className="px-3 py-2 text-right tabular-nums">
+                          {money(l.qtySold * l.unitPriceUsd)}
+                        </td>
+                        <td className="px-3 py-2 text-right font-medium">
+                          {remaining(l)}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
+            </div>
+          ) : null}
+
+          {isLive && sessionQtyChart.length > 0 ? (
+            <div className="grid gap-3 lg:grid-cols-2">
+              <div className="rounded-xl border border-border bg-card p-4">
+                <h3 className="text-sm font-semibold">
+                  Situation de vente (session)
+                </h3>
+                <p className="mb-3 text-xs text-muted-foreground">
+                  Attribué vs vendu par produit
+                </p>
+                <div className="h-[220px]">
+                  <DualBarChart
+                    data={sessionQtyChart}
+                    entreesLabel="Attribué"
+                    sortiesLabel="Vendu"
+                  />
+                </div>
+              </div>
+              <div className="rounded-xl border border-border bg-card p-4">
+                <h3 className="text-sm font-semibold">CA par produit</h3>
+                <p className="mb-3 text-xs text-muted-foreground">
+                  Montant recouvré sur cette session
+                </p>
+                <div className="h-[220px]">
+                  {productSalesChart.length > 0 ? (
+                    <SimpleBarChart data={productSalesChart} color="#0d9488" />
+                  ) : (
+                    <p className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                      Pas encore de vente
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
           ) : null}
         </div>
       )}
 
+      <div className="space-y-3">
+        <h2 className="text-sm font-semibold">Statistiques de vente</h2>
+        <div className="grid gap-3 lg:grid-cols-2">
+          <div className="rounded-xl border border-border bg-card p-4">
+            <h3 className="text-sm font-medium">CA des sessions clôturées</h3>
+            <p className="mb-3 text-xs text-muted-foreground">
+              Évolution récente (14 dernières)
+            </p>
+            <div className="h-[220px]">
+              {salesTrend.length > 0 ? (
+                <TrendAreaChart
+                  data={salesTrend}
+                  color="#0d9488"
+                  valueLabel="CA"
+                />
+              ) : (
+                <p className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                  Aucune session clôturée
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="rounded-xl border border-border bg-card p-4">
+            <h3 className="text-sm font-medium">Efficacité vendeurs (CA)</h3>
+            <p className="mb-3 text-xs text-muted-foreground">
+              Montant recouvré cumulé par entrant
+            </p>
+            <div className="h-[220px]">
+              {vendorCaChart.length > 0 ? (
+                <SimpleBarChart data={vendorCaChart} color="#0369a1" />
+              ) : (
+                <p className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                  Pas encore d’historique
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="rounded-xl border border-border bg-card p-4 lg:col-span-2">
+            <h3 className="text-sm font-medium">
+              Taux de recouvrement par vendeur
+            </h3>
+            <p className="mb-3 text-xs text-muted-foreground">
+              Vendu ÷ valeur à recouvrir (efficacité)
+            </p>
+            <div className="h-[240px]">
+              {vendorRateChart.length > 0 ? (
+                <SimpleBarChart data={vendorRateChart} color="#b45309" />
+              ) : (
+                <p className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                  Pas encore d’historique
+                </p>
+              )}
+            </div>
+            {vendorStats.length > 0 ? (
+              <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                {vendorStats.map((v) => (
+                  <li
+                    key={v.fullName}
+                    className="flex items-center justify-between rounded-lg border border-border/70 px-3 py-2 text-xs"
+                  >
+                    <span className="font-medium">{v.fullName}</span>
+                    <span className="text-muted-foreground tabular-nums">
+                      {money(v.ca)} · {v.rate.toLocaleString("fr-FR")} % ·{" "}
+                      {v.sessions} sess.
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
       <div>
         <h2 className="mb-2 text-sm font-semibold">Historique</h2>
         <ul className="space-y-2">
           {props.history.map((h) => {
-            const ca = h.lines.reduce(
-              (s, l) => s + l.qtySold * l.unitPriceUsd,
-              0,
+            const s = summarizeRecover(
+              h.lines.map((l) => ({
+                name: "",
+                sourceZone: "",
+                qtyAttributed: l.qtyAttributed,
+                qtyOpeningCounted: l.qtyOpeningCounted,
+                qtySold: l.qtySold,
+                qtyLoss: l.qtyLoss,
+                unitPriceUsd: l.unitPriceUsd,
+              })),
             );
             return (
               <li
@@ -488,8 +825,9 @@ export function ServiceStockClient(props: {
                 <span>
                   {h.number} · {h.vendorDisplayName} · {h.status}
                 </span>
-                <span className="text-muted-foreground">
-                  CA {money(ca)}
+                <span className="text-muted-foreground tabular-nums">
+                  À recouvrir {money(s.toRecover)} · Recouvré {money(s.sold)} ·{" "}
+                  {s.recoverRate.toLocaleString("fr-FR")} %
                 </span>
               </li>
             );

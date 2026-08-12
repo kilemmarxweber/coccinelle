@@ -29,6 +29,41 @@ export type ServiceStockDocLine = {
   unitPriceUsd: number;
 };
 
+/** Qté de référence pour la valeur à recouvrir (état des lieux si confirmé). */
+export function qtyForRecover(line: ServiceStockDocLine) {
+  if (line.qtyOpeningCounted != null && line.qtyOpeningCounted >= 0) {
+    return line.qtyOpeningCounted;
+  }
+  return line.qtyAttributed;
+}
+
+export function lineRecoverValue(line: ServiceStockDocLine) {
+  return qtyForRecover(line) * line.unitPriceUsd;
+}
+
+export function lineSoldValue(line: ServiceStockDocLine) {
+  return (line.qtySold ?? 0) * line.unitPriceUsd;
+}
+
+export function summarizeRecover(lines: ServiceStockDocLine[]) {
+  const toRecover = lines.reduce((s, l) => s + lineRecoverValue(l), 0);
+  const sold = lines.reduce((s, l) => s + lineSoldValue(l), 0);
+  const remainingQtyValue = lines.reduce((s, l) => {
+    const rem = Math.max(
+      0,
+      qtyForRecover(l) - (l.qtySold ?? 0) - (l.qtyLoss ?? 0),
+    );
+    return s + rem * l.unitPriceUsd;
+  }, 0);
+  const rate = toRecover > 0.0001 ? (sold / toRecover) * 100 : 0;
+  return {
+    toRecover: Math.round(toRecover * 100) / 100,
+    sold: Math.round(sold * 100) / 100,
+    remainingValue: Math.round(remainingQtyValue * 100) / 100,
+    recoverRate: Math.round(rate * 10) / 10,
+  };
+}
+
 export function buildServiceStockOpeningHtml(input: {
   branchName: string;
   number: string;
@@ -36,17 +71,23 @@ export function buildServiceStockOpeningHtml(input: {
   managerName: string;
   openedAt: string | Date;
   lines: ServiceStockDocLine[];
+  formatMoney: (n: number) => string;
   updatedNote?: string | null;
 }) {
+  const summary = summarizeRecover(input.lines);
   const rows = input.lines
-    .map(
-      (l) => `<tr>
+    .map((l) => {
+      const qty = qtyForRecover(l);
+      const val = qty * l.unitPriceUsd;
+      return `<tr>
       <td style="padding:8px;border-bottom:1px solid #ddd">${escapeHtml(l.name)}</td>
       <td style="padding:8px;border-bottom:1px solid #ddd">${escapeHtml(l.sourceZone)}</td>
       <td style="padding:8px;border-bottom:1px solid #ddd;text-align:right">${l.qtyAttributed}</td>
       <td style="padding:8px;border-bottom:1px solid #ddd;text-align:right">${l.qtyOpeningCounted ?? "—"}</td>
-    </tr>`,
-    )
+      <td style="padding:8px;border-bottom:1px solid #ddd;text-align:right">${input.formatMoney(l.unitPriceUsd)}</td>
+      <td style="padding:8px;border-bottom:1px solid #ddd;text-align:right">${input.formatMoney(val)}</td>
+    </tr>`;
+    })
     .join("");
 
   return `<!doctype html><html><head><meta charset="utf-8"/><title>${escapeHtml(input.number)} — Ouverture</title>
@@ -55,6 +96,8 @@ export function buildServiceStockOpeningHtml(input: {
     h1{margin:0 0 6px;font-size:20px} .muted{color:#555;font-size:13px}
     table{width:100%;border-collapse:collapse;margin-top:16px}
     th{text-align:left;padding:8px;border-bottom:2px solid #111;font-size:12px}
+    .box{border:1px solid #222;padding:12px 14px;margin-top:18px}
+    .amount{font-size:22px;font-weight:700;margin:6px 0 0}
     .sigs{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:48px}
     .sig{border-top:1px solid #333;padding-top:8px;min-height:72px;font-size:13px}
   </style></head><body>
@@ -64,15 +107,22 @@ export function buildServiceStockOpeningHtml(input: {
   <p><strong>Entrant :</strong> ${escapeHtml(input.vendorDisplayName)}</p>
   <p><strong>Manager :</strong> ${escapeHtml(input.managerName)}</p>
   ${input.updatedNote ? `<p class="muted">${escapeHtml(input.updatedNote)}</p>` : ""}
+  <div class="box">
+    <div class="muted">Montant à recouvrir (état × prix de vente)</div>
+    <p class="amount">${input.formatMoney(summary.toRecover)}</p>
+    <p class="muted">L’entrant est responsable de ce montant via les ventes du service.</p>
+  </div>
   <table>
     <thead><tr>
       <th>Produit</th><th>Zone</th>
-      <th style="text-align:right">Qté attribuée</th>
-      <th style="text-align:right">Qté confirmée</th>
+      <th style="text-align:right">Attribué</th>
+      <th style="text-align:right">Confirmé</th>
+      <th style="text-align:right">P.U.</th>
+      <th style="text-align:right">Valeur</th>
     </tr></thead>
     <tbody>${rows}</tbody>
   </table>
-  <p style="margin-top:20px;font-size:13px">Je soussigné(e) <strong>${escapeHtml(input.vendorDisplayName)}</strong>, reconnais avoir pris en charge le stock ci-dessus pour le service.</p>
+  <p style="margin-top:20px;font-size:13px">Je soussigné(e) <strong>${escapeHtml(input.vendorDisplayName)}</strong>, reconnais avoir pris en charge le stock ci-dessus pour une valeur à recouvrir de <strong>${input.formatMoney(summary.toRecover)}</strong>.</p>
   <div class="sigs">
     <div class="sig"><b>Entrant</b><span>Nom &amp; signature</span></div>
     <div class="sig"><b>Manager</b><span>Nom &amp; signature</span></div>
@@ -90,6 +140,7 @@ export function buildServiceStockClosingHtml(input: {
   lines: ServiceStockDocLine[];
   formatMoney: (n: number) => string;
 }) {
+  const summary = summarizeRecover(input.lines);
   const salesRows = input.lines
     .filter((l) => (l.qtySold ?? 0) > 0)
     .map((l) => {
@@ -104,15 +155,10 @@ export function buildServiceStockClosingHtml(input: {
     })
     .join("");
 
-  const ca = input.lines.reduce(
-    (s, l) => s + (l.qtySold ?? 0) * l.unitPriceUsd,
-    0,
-  );
-
   const stockRows = input.lines
     .map((l) => {
       const theo =
-        l.qtyAttributed - (l.qtySold ?? 0) - (l.qtyLoss ?? 0);
+        qtyForRecover(l) - (l.qtySold ?? 0) - (l.qtyLoss ?? 0);
       const counted = l.qtyClosingCounted ?? 0;
       const ecart = counted - theo;
       return `<tr>
@@ -133,16 +179,24 @@ export function buildServiceStockClosingHtml(input: {
     h1{margin:0 0 6px;font-size:20px} h2{margin:24px 0 8px;font-size:16px}
     .muted{color:#555;font-size:13px} table{width:100%;border-collapse:collapse;margin-top:12px}
     th{text-align:left;padding:8px;border-bottom:2px solid #111;font-size:12px}
+    .box{border:1px solid #222;padding:12px 14px;margin-top:14px}
+    .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px}
+    .k{font-size:12px;color:#555;text-transform:uppercase;letter-spacing:.03em}
+    .v{font-size:18px;font-weight:700;margin-top:4px}
     .sigs{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:48px}
     .sig{border-top:1px solid #333;padding-top:8px;min-height:72px;font-size:13px}
-    .total{font-size:18px;font-weight:700;margin-top:12px}
   </style></head><body>
   <h1>Rapport de clôture — fin de service</h1>
   <p class="muted">${escapeHtml(input.branchName)} · ${escapeHtml(input.number)}</p>
   <p class="muted">Ouverture ${formatWhen(input.openedAt)} · Fermeture ${formatWhen(input.closedAt)}</p>
   <p><strong>Entrant :</strong> ${escapeHtml(input.vendorDisplayName)}</p>
   <p><strong>Manager clôture :</strong> ${escapeHtml(input.managerName)}</p>
-  <p class="total">Montant vendu : ${input.formatMoney(ca)}</p>
+  <div class="grid">
+    <div class="box"><div class="k">À recouvrir</div><div class="v">${input.formatMoney(summary.toRecover)}</div></div>
+    <div class="box"><div class="k">Recouvré (vendu)</div><div class="v">${input.formatMoney(summary.sold)}</div></div>
+    <div class="box"><div class="k">Taux de recouvrement</div><div class="v">${summary.recoverRate.toLocaleString("fr-FR")} %</div></div>
+  </div>
+  <p class="muted" style="margin-top:10px">Valeur théorique restant float : ${input.formatMoney(summary.remainingValue)}</p>
   <h2>Détail des ventes</h2>
   <table>
     <thead><tr>

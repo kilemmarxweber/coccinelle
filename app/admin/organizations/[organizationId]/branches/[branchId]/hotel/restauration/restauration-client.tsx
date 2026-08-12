@@ -48,6 +48,11 @@ import {
 } from "@/lib/hotel/order-time";
 import { SearchCombobox } from "@/components/ui/search-combobox";
 import { cn } from "@/lib/utils";
+import {
+  ServiceStockOpsPanel,
+  type ServiceStockOpsHistoryRow,
+  type ServiceStockOpsSession,
+} from "@/components/hotel/service-stock-ops-panel";
 
 type MenuItem = {
   id: string;
@@ -138,12 +143,17 @@ function isOnNote(order: Order) {
 export function RestaurationClient(props: {
   organizationId: string;
   branchId: string;
+  branchName: string;
   menuItems: MenuItem[];
   orders: Order[];
   activeStays?: ActiveStay[];
   hasStays?: boolean;
   rate?: NormalizedUsdCdfRate | null;
   initialView?: "commande" | "suivi";
+  currentUserName: string;
+  stockReady: boolean;
+  stockSession: ServiceStockOpsSession | null;
+  stockHistory: ServiceStockOpsHistoryRow[];
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -924,6 +934,18 @@ export function RestaurationClient(props: {
           ) : null}
         </SheetContent>
       </Sheet>
+
+      <ServiceStockOpsPanel
+        organizationId={props.organizationId}
+        branchId={props.branchId}
+        branchName={props.branchName}
+        currentUserName={props.currentUserName}
+        rate={props.rate ?? null}
+        ready={props.stockReady}
+        session={props.stockSession}
+        history={props.stockHistory}
+        title="Stats service & fermeture restaurant"
+      />
     </div>
   );
 }

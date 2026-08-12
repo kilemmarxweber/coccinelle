@@ -15,12 +15,13 @@ Aujourd’hui le stock F&B est un **seul compteur** (`HotelMenuItem.stockQty`) :
 
 1. Le **dépôt** (magasin + **congélateur**) détient le stock « vrai ».
 2. À **l’ouverture** du service, le manager **attribue** au **nouvel entrant** (vendeur / serveur du shift) un **float** précis — **pas** tout le dépôt.
-3. Le système **produit obligatoirement un document d’ouverture** : **nom de l’entrant**, état des lieux du float, quantités attribuées, zones (magasin / congélateur), signatures.
-4. L’entrant **confirme** l’état des lieux (comptage) avant de vendre ; impression / aperçu du document d’ouverture.
-5. **Pendant le service**, si le float est insuffisant / rupture, le **manager peut rajouter des produits** depuis le dépôt **s’il reste du stock** (réassort mid-shift) — chaque ajout met à jour le float et peut générer un **avenant** (ou réimpression de l’état).
+3. Le système **produit obligatoirement un document d’ouverture** : **nom de l’entrant**, état des lieux du float, quantités attribuées, **P.U. / valeur**, **montant à recouvrir**, zones (magasin / congélateur), signatures.
+4. L’entrant **confirme** l’état des lieux (comptage) avant de vendre ; impression / aperçu du document d’ouverture (avec montant à recouvrir).
+5. **Pendant le service**, si le float est insuffisant / rupture, le **manager peut rajouter des produits** depuis le dépôt **s’il reste du stock** (réassort mid-shift) — chaque ajout met à jour le float et peut générer un **avenant** (ou réimpression de l’état). KPIs live : à recouvrir / recouvré / taux.
 6. Seules les ventes / commandes **hors cuisine** débitent le float.
 7. Le **restaurant** n’encaisse pas : il exécute les commandes. L’argent = caisse / vente rapide.
-8. À la **fermeture**, document de **clôture** : état restant, montant vendu, détail produit / PU / qté, écarts — signatures **entrant + manager**.
+8. À la **fermeture**, document de **clôture** : à recouvrir / recouvré / taux, état restant, détail produit / PU / qté, écarts — signatures **entrant + manager**.
+9. Page Service stock + bas de **Restauration** / **Vente rapide** : KPIs, graphiques, bouton **Fermer le service** + rapport de fermeture.
 
 Analogie : **session caisse** → **session stock service** (ouverture documentée + clôture signée).
 

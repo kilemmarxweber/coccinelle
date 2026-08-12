@@ -142,13 +142,19 @@ export async function getServiceStockGateAction(
     include: {
       lines: {
         select: {
+          id: true,
           menuItemId: true,
           qtyAttributed: true,
+          qtyOpeningCounted: true,
           qtySold: true,
           qtyLoss: true,
           unitPriceUsd: true,
-          menuItem: { select: { name: true, needsKitchen: true } },
+          sourceZone: true,
+          menuItem: {
+            select: { id: true, name: true, needsKitchen: true },
+          },
         },
+        orderBy: { createdAt: "asc" },
       },
     },
     orderBy: { openedAt: "desc" },
@@ -172,6 +178,7 @@ export async function getServiceStockGateAction(
       vendorDisplayName: session.vendorDisplayName,
       openedAt: session.openedAt,
       openingConfirmedAt: session.openingConfirmedAt,
+      lines: session.lines,
     },
     floatByItemId,
   };
@@ -187,7 +194,15 @@ export async function listServiceStockSessionsAction(
     orderBy: { openedAt: "desc" },
     take: 30,
     include: {
-      lines: { select: { qtyAttributed: true, qtySold: true, unitPriceUsd: true } },
+      lines: {
+        select: {
+          qtyAttributed: true,
+          qtyOpeningCounted: true,
+          qtySold: true,
+          qtyLoss: true,
+          unitPriceUsd: true,
+        },
+      },
     },
   });
 }

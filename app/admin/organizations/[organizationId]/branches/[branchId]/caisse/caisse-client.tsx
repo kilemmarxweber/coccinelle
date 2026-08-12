@@ -63,6 +63,11 @@ import {
 } from "@/lib/cash/exchange";
 import { SearchCombobox } from "@/components/ui/search-combobox";
 import { cn } from "@/lib/utils";
+import {
+  ServiceStockOpsPanel,
+  type ServiceStockOpsHistoryRow,
+  type ServiceStockOpsSession,
+} from "@/components/hotel/service-stock-ops-panel";
 
 type FolioRow = {
   id: string;
@@ -149,6 +154,10 @@ type Props = {
   activeStays?: ActiveStay[];
   hasStays?: boolean;
   hasRestaurant?: boolean;
+  currentUserName?: string;
+  stockReady?: boolean;
+  stockSession?: ServiceStockOpsSession | null;
+  stockHistory?: ServiceStockOpsHistoryRow[];
 };
 
 type HubTab = "fnb" | "vente" | "folios" | "paiements";
@@ -1651,6 +1660,20 @@ export function CaisseClient(props: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {hasRestaurant ? (
+        <ServiceStockOpsPanel
+          organizationId={props.organizationId}
+          branchId={props.branchId}
+          branchName={props.branchName}
+          currentUserName={props.currentUserName ?? "Manager"}
+          rate={props.rate}
+          ready={Boolean(props.stockReady)}
+          session={props.stockSession ?? null}
+          history={props.stockHistory ?? []}
+          title="Stats service & fermeture (vente rapide)"
+        />
+      ) : null}
     </div>
   );
 }

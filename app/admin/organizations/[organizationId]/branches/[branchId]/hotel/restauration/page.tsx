@@ -1,8 +1,10 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import { headers } from "next/headers";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { canAccessStays } from "@/lib/branch/hospitality";
 import { hotelRoutes } from "@/lib/branch/paths";
+import { auth } from "@/lib/auth";
 import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
   ensureHotelMenuSeedAction,
@@ -10,7 +12,10 @@ import {
   listMenuItemsAction,
   listOrdersByStatusAction,
 } from "@/lib/hotel/actions";
-import { getServiceStockGateAction } from "@/lib/hotel/service-stock";
+import {
+  getServiceStockGateAction,
+  listServiceStockSessionsAction,
+} from "@/lib/hotel/service-stock";
 import { RestaurationClient } from "./restauration-client";
 
 type PageProps = {
@@ -32,7 +37,8 @@ export default async function RestaurationPage({
   });
   await ensureHotelMenuSeedAction(organizationId, branchId);
   const hasStays = canAccessStays(branch);
-  const [menuItemsRaw, orders, rate, activeStays, stockGate] =
+  const sessionAuth = await auth.api.getSession({ headers: await headers() });
+  const [menuItemsRaw, orders, rate, activeStays, stockGate, stockHistory] =
     await Promise.all([
       listMenuItemsAction(organizationId, branchId),
       listOrdersByStatusAction(organizationId, branchId, [
@@ -48,6 +54,7 @@ export default async function RestaurationPage({
         ? listActiveStaysForChargeAction(organizationId, branchId)
         : Promise.resolve([]),
       getServiceStockGateAction(organizationId, branchId),
+      listServiceStockSessionsAction(organizationId, branchId),
     ]);
 
   const menuItems = menuItemsRaw.map((item) => {
@@ -84,12 +91,21 @@ export default async function RestaurationPage({
       <RestaurationClient
         organizationId={organizationId}
         branchId={branchId}
+        branchName={branch.name}
         menuItems={menuItems}
         orders={orders}
         activeStays={activeStays}
         hasStays={hasStays}
         rate={rate}
         initialView={view === "suivi" ? "suivi" : undefined}
+        currentUserName={
+          sessionAuth?.user?.name?.trim() ||
+          sessionAuth?.user?.email ||
+          "Manager"
+        }
+        stockReady={stockGate.ready}
+        stockSession={stockGate.session}
+        stockHistory={stockHistory}
       />
     </Suspense>
   );

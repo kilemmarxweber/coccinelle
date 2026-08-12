@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import Link from "next/link";
+import { headers } from "next/headers";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { isHospitality } from "@/lib/branch/hospitality";
 import { boutiqueRoutes, hotelRoutes } from "@/lib/branch/paths";
+import { auth } from "@/lib/auth";
 import {
   getActiveExchangeRate,
   getOpenCashSession,
@@ -16,7 +18,10 @@ import {
   listActiveStaysForChargeAction,
   listMenuItemsAction,
 } from "@/lib/hotel/actions";
-import { getServiceStockGateAction } from "@/lib/hotel/service-stock";
+import {
+  getServiceStockGateAction,
+  listServiceStockSessionsAction,
+} from "@/lib/hotel/service-stock";
 import { CaisseClient } from "./caisse-client";
 
 type PageProps = {
@@ -39,6 +44,8 @@ export default async function BranchCaissePage({ params }: PageProps) {
     await ensureHotelMenuSeedAction(organizationId, branchId);
   }
 
+  const sessionAuth = await auth.api.getSession({ headers: await headers() });
+
   const [
     cashSession,
     rate,
@@ -48,6 +55,7 @@ export default async function BranchCaissePage({ params }: PageProps) {
     menuItemsRaw,
     activeStays,
     stockGate,
+    stockHistory,
   ] = await Promise.all([
     getOpenCashSession(branchId),
     getActiveExchangeRate(branchId),
@@ -71,6 +79,9 @@ export default async function BranchCaissePage({ params }: PageProps) {
           session: null,
           floatByItemId: {} as Record<string, number>,
         }),
+    hasRestaurant
+      ? listServiceStockSessionsAction(organizationId, branchId)
+      : Promise.resolve([]),
   ]);
 
   const menuItems = menuItemsRaw.map((item) => {
@@ -110,6 +121,14 @@ export default async function BranchCaissePage({ params }: PageProps) {
         activeStays={activeStays}
         hasStays={hasStays}
         hasRestaurant={hasRestaurant}
+        currentUserName={
+          sessionAuth?.user?.name?.trim() ||
+          sessionAuth?.user?.email ||
+          "Manager"
+        }
+        stockReady={hasRestaurant ? stockGate.ready : false}
+        stockSession={stockGate.session}
+        stockHistory={stockHistory}
       />
     </Suspense>
   );
