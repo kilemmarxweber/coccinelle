@@ -1910,6 +1910,22 @@ function FinancePanel(props: {
             delta: data.kpis.revenueDelta,
           },
           {
+            label: "Dépenses",
+            value: money(data.kpis.expenses),
+            delta: data.kpis.expensesDelta,
+            hint: `${data.kpis.expensesCount} sortie(s) de caisse`,
+          },
+          {
+            label: "Achats (BC)",
+            value: money(data.kpis.purchases),
+            hint: `${data.kpis.purchasesCount} bon(s) · fonds nets`,
+          },
+          {
+            label: "Solde net",
+            value: money(data.kpis.netCash),
+            hint: "Revenus − dépenses − achats",
+          },
+          {
             label: "Entrées stock",
             value: formatQty(data.kpis.qtyIn),
             delta: data.kpis.qtyInDelta,
@@ -1978,7 +1994,7 @@ function FinancePanel(props: {
         <div className="border-b border-border px-4 py-3">
           <h2 className="text-sm font-semibold">Détail des encaissements</h2>
           <p className="text-xs text-muted-foreground">
-            Rupture par type de branche · Total {money(data.linesTotal)}
+            Hors dépenses et bons de commande · Total {money(data.linesTotal)}
           </p>
         </div>
         <div className="overflow-x-auto">
@@ -2063,6 +2079,296 @@ function FinancePanel(props: {
                     className="px-3 py-8 text-center text-muted-foreground"
                   >
                     Aucun encaissement sur la période.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div className="grid gap-4 lg:grid-cols-5">
+        <ChartCard
+          title="Sorties de caisse"
+          description="Dépenses vs fonds bons de commande"
+          className="lg:col-span-3"
+        >
+          <DualBarChart
+            data={data.cashOutByDay.map((d) => ({
+              day: d.day,
+              entrees: d.depenses,
+              sorties: d.bons,
+            }))}
+            entreesLabel="Dépenses"
+            sortiesLabel="Bons de commande"
+          />
+        </ChartCard>
+        <ChartCard
+          title="Nature des dépenses"
+          description="Dépense · dépôt banque · remise propriétaire"
+          className="lg:col-span-2"
+        >
+          {data.expensesByKind.length > 0 ? (
+            <DonutChart data={data.expensesByKind} />
+          ) : (
+            <p className="flex h-full items-center justify-center text-sm text-muted-foreground">
+              Aucune dépense sur la période.
+            </p>
+          )}
+        </ChartCard>
+      </div>
+
+      <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="border-b border-border px-4 py-3">
+          <h2 className="text-sm font-semibold">Gestion des dépenses</h2>
+          <p className="text-xs text-muted-foreground">
+            Sorties de caisse (dépense, dépôt bancaire, remise propriétaire) ·
+            Total {money(data.expenses.linesTotal)}
+          </p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[720px] text-sm">
+            <thead className="bg-muted/40 text-left text-xs text-muted-foreground">
+              <tr>
+                <th className="px-3 py-2 font-medium">Jour</th>
+                <th className="px-3 py-2 font-medium">Branche</th>
+                <th className="px-3 py-2 font-medium">N°</th>
+                <th className="px-3 py-2 font-medium">Nature</th>
+                <th className="px-3 py-2 font-medium">Libellé</th>
+                <th className="px-3 py-2 font-medium">Bénéficiaire</th>
+                <th className="px-3 py-2 font-medium">Saisi par</th>
+                <th className="px-3 py-2 text-right font-medium">Montant</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.expenses.groupsByBranchType.map((g) => (
+                <Fragment key={`exp-${g.type}`}>
+                  <tr className="border-t border-border bg-muted/60">
+                    <td
+                      colSpan={8}
+                      className="px-3 py-2 text-xs font-bold tracking-wide uppercase"
+                    >
+                      {g.typeLabel}
+                      <span className="ml-2 font-normal normal-case text-muted-foreground">
+                        · {g.totals.count} ligne(s)
+                      </span>
+                    </td>
+                  </tr>
+                  {g.lines.map((l) => (
+                    <tr key={l.id} className="border-t border-border">
+                      <td className="px-3 py-2 tabular-nums text-muted-foreground">
+                        {l.day}
+                      </td>
+                      <td className="px-3 py-2 font-medium">{l.branchName}</td>
+                      <td className="px-3 py-2 tabular-nums">{l.number}</td>
+                      <td className="px-3 py-2">
+                        <Badge variant="outline">{l.kindLabel}</Badge>
+                      </td>
+                      <td className="px-3 py-2">
+                        <div className="font-medium">{l.label}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {l.category}
+                        </div>
+                      </td>
+                      <td className="px-3 py-2 text-muted-foreground">
+                        {l.beneficiary}
+                      </td>
+                      <td className="px-3 py-2 text-muted-foreground">
+                        {l.userName}
+                      </td>
+                      <td className="px-3 py-2 text-right font-semibold tabular-nums text-rose-600">
+                        −{money(l.amountUsd)}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr className="border-t border-border bg-muted/30">
+                    <td
+                      colSpan={7}
+                      className="px-3 py-2.5 text-sm font-semibold"
+                    >
+                      Total {g.typeLabel}
+                    </td>
+                    <td className="px-3 py-2.5 text-right text-sm font-bold tabular-nums text-rose-600">
+                      −{money(g.totals.amount)}
+                    </td>
+                  </tr>
+                </Fragment>
+              ))}
+              {data.expenses.lines.length > 0 ? (
+                <tr className="border-t-2 border-border bg-muted/50">
+                  <td
+                    colSpan={7}
+                    className="px-3 py-3 text-sm font-bold uppercase tracking-wide"
+                  >
+                    Total dépenses
+                  </td>
+                  <td className="px-3 py-3 text-right text-sm font-bold tabular-nums text-rose-600">
+                    −{money(data.expenses.linesTotal)}
+                  </td>
+                </tr>
+              ) : (
+                <tr>
+                  <td
+                    colSpan={8}
+                    className="px-3 py-8 text-center text-muted-foreground"
+                  >
+                    Aucune dépense sur la période.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <ChartCard
+          title="Statuts des bons"
+          description="Répartition des bons de commande"
+        >
+          {data.purchasesByStatus.length > 0 ? (
+            <DonutChart data={data.purchasesByStatus} />
+          ) : (
+            <p className="flex h-full items-center justify-center text-sm text-muted-foreground">
+              Aucun bon de commande sur la période.
+            </p>
+          )}
+        </ChartCard>
+        <ChartCard
+          title="Fonds bons de commande"
+          description="Total demandé vs fonds sortis"
+        >
+          <SimpleBarChart
+            data={[
+              {
+                name: "Demandé",
+                value: data.purchaseOrders.linesTotal,
+              },
+              {
+                name: "Fonds sortis",
+                value: data.purchaseOrders.fundsTotal,
+              },
+              {
+                name: "Net caisse (BC)",
+                value: data.kpis.purchases,
+              },
+            ]}
+            color="#f43f5e"
+          />
+        </ChartCard>
+      </div>
+
+      <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="border-b border-border px-4 py-3">
+          <h2 className="text-sm font-semibold">
+            Gestion des bons de commande
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Achats fournisseurs · Total demandé{" "}
+            {money(data.purchaseOrders.linesTotal)} · Fonds sortis{" "}
+            {money(data.purchaseOrders.fundsTotal)}
+          </p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[800px] text-sm">
+            <thead className="bg-muted/40 text-left text-xs text-muted-foreground">
+              <tr>
+                <th className="px-3 py-2 font-medium">Jour</th>
+                <th className="px-3 py-2 font-medium">Branche</th>
+                <th className="px-3 py-2 font-medium">N° bon</th>
+                <th className="px-3 py-2 font-medium">Statut</th>
+                <th className="px-3 py-2 font-medium">Fournisseur</th>
+                <th className="px-3 py-2 font-medium">Articles</th>
+                <th className="px-3 py-2 text-right font-medium">Demandé</th>
+                <th className="px-3 py-2 text-right font-medium">Fonds</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.purchaseOrders.groupsByBranchType.map((g) => (
+                <Fragment key={`po-${g.type}`}>
+                  <tr className="border-t border-border bg-muted/60">
+                    <td
+                      colSpan={8}
+                      className="px-3 py-2 text-xs font-bold tracking-wide uppercase"
+                    >
+                      {g.typeLabel}
+                      <span className="ml-2 font-normal normal-case text-muted-foreground">
+                        · {g.totals.count} bon(s)
+                      </span>
+                    </td>
+                  </tr>
+                  {g.lines.map((l) => (
+                    <tr key={l.id} className="border-t border-border">
+                      <td className="px-3 py-2 tabular-nums text-muted-foreground">
+                        {l.day}
+                      </td>
+                      <td className="px-3 py-2 font-medium">{l.branchName}</td>
+                      <td className="px-3 py-2 tabular-nums">{l.number}</td>
+                      <td className="px-3 py-2">
+                        <Badge
+                          variant={
+                            l.status === "VALIDE"
+                              ? "default"
+                              : l.status === "ANNULE"
+                                ? "destructive"
+                                : "secondary"
+                          }
+                        >
+                          {l.statusLabel}
+                        </Badge>
+                      </td>
+                      <td className="px-3 py-2">{l.supplierName}</td>
+                      <td className="max-w-[240px] truncate px-3 py-2 text-muted-foreground">
+                        {l.itemsLabel}
+                      </td>
+                      <td className="px-3 py-2 text-right tabular-nums">
+                        {money(l.totalAmountUsd)}
+                      </td>
+                      <td className="px-3 py-2 text-right font-semibold tabular-nums text-rose-600">
+                        {l.fundsReleasedUsd > 0
+                          ? `−${money(l.fundsReleasedUsd)}`
+                          : "—"}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr className="border-t border-border bg-muted/30">
+                    <td
+                      colSpan={6}
+                      className="px-3 py-2.5 text-sm font-semibold"
+                    >
+                      Total {g.typeLabel}
+                    </td>
+                    <td className="px-3 py-2.5 text-right text-sm font-bold tabular-nums">
+                      {money(g.totals.total)}
+                    </td>
+                    <td className="px-3 py-2.5 text-right text-sm font-bold tabular-nums text-rose-600">
+                      −{money(g.totals.funds)}
+                    </td>
+                  </tr>
+                </Fragment>
+              ))}
+              {data.purchaseOrders.lines.length > 0 ? (
+                <tr className="border-t-2 border-border bg-muted/50">
+                  <td
+                    colSpan={6}
+                    className="px-3 py-3 text-sm font-bold uppercase tracking-wide"
+                  >
+                    Total bons de commande
+                  </td>
+                  <td className="px-3 py-3 text-right text-sm font-bold tabular-nums">
+                    {money(data.purchaseOrders.linesTotal)}
+                  </td>
+                  <td className="px-3 py-3 text-right text-sm font-bold tabular-nums text-rose-600">
+                    −{money(data.purchaseOrders.fundsTotal)}
+                  </td>
+                </tr>
+              ) : (
+                <tr>
+                  <td
+                    colSpan={8}
+                    className="px-3 py-8 text-center text-muted-foreground"
+                  >
+                    Aucun bon de commande sur la période.
                   </td>
                 </tr>
               )}
