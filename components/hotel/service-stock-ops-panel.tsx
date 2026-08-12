@@ -20,16 +20,18 @@ import {
   SimpleBarChart,
   TrendAreaChart,
 } from "@/components/reports/report-charts";
-import {
-  formatPrimaryAmount,
-  type NormalizedUsdCdfRate,
-} from "@/lib/cash/exchange";
+import { formatPrimaryAmount } from "@/lib/cash/exchange";
 import { hotelRoutes } from "@/lib/branch/paths";
 import { closeServiceStockSessionAction } from "@/lib/hotel/service-stock";
 import {
   buildServiceStockClosingHtml,
   summarizeRecover,
 } from "@/lib/hotel/service-stock-print";
+
+type MoneyRate = {
+  rate: number;
+  configuredFrom?: string;
+} | null;
 
 export type ServiceStockOpsLine = {
   id: string;
@@ -106,7 +108,7 @@ export function ServiceStockOpsPanel(props: {
   branchId: string;
   branchName: string;
   currentUserName: string;
-  rate: NormalizedUsdCdfRate | null;
+  rate: MoneyRate;
   ready: boolean;
   session: ServiceStockOpsSession | null;
   history?: ServiceStockOpsHistoryRow[];
@@ -120,7 +122,16 @@ export function ServiceStockOpsPanel(props: {
   );
   const [closingLoss, setClosingLoss] = useState<Record<string, string>>({});
 
-  const money = (n: number) => formatPrimaryAmount(n, props.rate);
+  const money = (n: number) =>
+    formatPrimaryAmount(
+      n,
+      props.rate
+        ? {
+            rate: props.rate.rate,
+            configuredFrom: props.rate.configuredFrom ?? "USD",
+          }
+        : null,
+    );
   const session = props.session;
   const history = props.history ?? [];
   const stockHref = hotelRoutes.serviceStock(
@@ -294,11 +305,14 @@ export function ServiceStockOpsPanel(props: {
           Aucune session ouverte. Ouvrez le service stock pour vendre hors
           cuisine, suivre le montant à recouvrir et clôturer avec rapport.
         </p>
-        <Button asChild className="mt-3" variant="outline" size="sm">
-          <Link href={stockHref}>
-            Ouvrir le service stock
-            <ExternalLink className="ml-1.5 size-3.5" />
-          </Link>
+        <Button
+          className="mt-3"
+          variant="outline"
+          size="sm"
+          render={<Link href={stockHref} />}
+        >
+          Ouvrir le service stock
+          <ExternalLink className="ml-1.5 size-3.5" />
         </Button>
       </section>
     );
@@ -317,11 +331,13 @@ export function ServiceStockOpsPanel(props: {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button asChild variant="outline" size="sm">
-            <Link href={stockHref}>
-              Détail service stock
-              <ExternalLink className="ml-1.5 size-3.5" />
-            </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            render={<Link href={stockHref} />}
+          >
+            Détail service stock
+            <ExternalLink className="ml-1.5 size-3.5" />
           </Button>
           <Button
             size="sm"
