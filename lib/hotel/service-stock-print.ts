@@ -139,8 +139,15 @@ export function buildServiceStockClosingHtml(input: {
   closedAt: string | Date;
   lines: ServiceStockDocLine[];
   formatMoney: (n: number) => string;
+  disposition?: "HANDOVER" | "RETURN_DEPOT" | null;
 }) {
   const summary = summarizeRecover(input.lines);
+  const dispositionLabel =
+    input.disposition === "RETURN_DEPOT"
+      ? "Restant retourné au dépôt"
+      : input.disposition === "HANDOVER"
+        ? "Restant transmis au prochain entrant (héritage à l’ouverture)"
+        : null;
   const salesRows = input.lines
     .filter((l) => (l.qtySold ?? 0) > 0)
     .map((l) => {
@@ -197,6 +204,7 @@ export function buildServiceStockClosingHtml(input: {
     <div class="box"><div class="k">Taux de recouvrement</div><div class="v">${summary.recoverRate.toLocaleString("fr-FR")} %</div></div>
   </div>
   <p class="muted" style="margin-top:10px">Valeur théorique restant float : ${input.formatMoney(summary.remainingValue)}</p>
+  ${dispositionLabel ? `<p><strong>Disposition du restant :</strong> ${escapeHtml(dispositionLabel)}</p>` : ""}
   <h2>Détail des ventes</h2>
   <table>
     <thead><tr>

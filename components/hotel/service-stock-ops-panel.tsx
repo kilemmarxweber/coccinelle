@@ -117,6 +117,9 @@ export function ServiceStockOpsPanel(props: {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [closeOpen, setCloseOpen] = useState(false);
+  const [closeDisposition, setCloseDisposition] = useState<
+    "HANDOVER" | "RETURN_DEPOT"
+  >("HANDOVER");
   const [closingCounts, setClosingCounts] = useState<Record<string, string>>(
     {},
   );
@@ -261,7 +264,10 @@ export function ServiceStockOpsPanel(props: {
         qtyOpeningCounted: l.qtyOpeningCounted,
         qtySold: l.qtySold,
         qtyClosingCounted: c.qtyClosingCounted,
-        qtyReturnedToDepot: Math.min(c.qtyClosingCounted, theo),
+        qtyReturnedToDepot:
+          closeDisposition === "RETURN_DEPOT"
+            ? Math.min(c.qtyClosingCounted, theo)
+            : 0,
         qtyLoss: c.qtyLoss,
         unitPriceUsd: l.unitPriceUsd,
       };
@@ -272,9 +278,14 @@ export function ServiceStockOpsPanel(props: {
           organizationId: props.organizationId,
           branchId: props.branchId,
           sessionId: session.id,
+          disposition: closeDisposition,
           counts,
         });
-        toast.success("Service restaurant clôturé");
+        toast.success(
+          closeDisposition === "HANDOVER"
+            ? "Service clôturé — restant transmis au prochain entrant"
+            : "Service clôturé — restant retourné au dépôt",
+        );
         setCloseOpen(false);
         printHtml(
           buildServiceStockClosingHtml({
@@ -286,6 +297,7 @@ export function ServiceStockOpsPanel(props: {
             closedAt: new Date(),
             lines: linesForDoc,
             formatMoney: money,
+            disposition: closeDisposition,
           }),
         );
         router.refresh();
@@ -481,6 +493,40 @@ export function ServiceStockOpsPanel(props: {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
+            <div className="space-y-2 rounded-xl border border-border p-3">
+              <Label>Disposition du restant</Label>
+              <label className="flex items-start gap-2 text-sm">
+                <input
+                  type="radio"
+                  className="mt-1"
+                  name="ops-close-disposition"
+                  checked={closeDisposition === "HANDOVER"}
+                  onChange={() => setCloseDisposition("HANDOVER")}
+                />
+                <span>
+                  <strong>Transmettre au prochain entrant</strong>
+                  <span className="block text-xs text-muted-foreground">
+                    À la prochaine ouverture, l’entrant hérite du restant et
+                    peut continuer ou demander un réassort.
+                  </span>
+                </span>
+              </label>
+              <label className="flex items-start gap-2 text-sm">
+                <input
+                  type="radio"
+                  className="mt-1"
+                  name="ops-close-disposition"
+                  checked={closeDisposition === "RETURN_DEPOT"}
+                  onChange={() => setCloseDisposition("RETURN_DEPOT")}
+                />
+                <span>
+                  <strong>Retourner au dépôt</strong>
+                  <span className="block text-xs text-muted-foreground">
+                    Remise magasin / congélateur.
+                  </span>
+                </span>
+              </label>
+            </div>
             <div className="grid gap-2 rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm sm:grid-cols-3">
               <div>
                 <p className="text-[11px] text-muted-foreground">À recouvrir</p>

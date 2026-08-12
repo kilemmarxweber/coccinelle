@@ -981,6 +981,12 @@ model ServiceStockSession {
   openingConfirmedAt       DateTime?
   openingDocumentPrintedAt DateTime?
   closingDocumentPrintedAt DateTime?
+  /// RETURN_DEPOT | HANDOVER — disposition du restant à la clôture
+  closeDisposition         String?
+  /// Session précédente dont le float a été hérité (transmission)
+  inheritedFromSessionId   String?
+  /// Rempli quand le float HANDOVER a été repris par une nouvelle session
+  handoverClaimedBySessionId String?
   notes                    String?
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
@@ -991,6 +997,7 @@ model ServiceStockSession {
   @@unique([branchId, number])
   @@index([branchId, status])
   @@index([branchId, openedAt])
+  @@index([branchId, closeDisposition, handoverClaimedBySessionId])
 }
 
 model ServiceStockLine {

@@ -207,6 +207,59 @@ export async function listServiceStockSessionsAction(
   });
 }
 
+/** Float restant transmis (clôture HANDOVER non encore reprise). */
+export async function getPendingHandoverFloatAction(
+  organizationId: string,
+  branchId: string,
+) {
+  await ctx(organizationId, branchId);
+  const session = await prisma.serviceStockSession.findFirst({
+    where: {
+      branchId,
+      status: "CLOSED",
+      closeDisposition: "HANDOVER",
+      handoverClaimedBySessionId: null,
+    },
+    orderBy: { closedAt: "desc" },
+    include: {
+      lines: {
+        where: { qtyClosingCounted: { gt: 0 } },
+        include: {
+          menuItem: {
+            select: {
+              id: true,
+              name: true,
+              category: true,
+              price: true,
+              stockQty: true,
+              storageZone: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  if (!session) return null;
+  const lines = session.lines
+    .map((l) => ({
+      menuItemId: l.menuItemId,
+      name: l.menuItem.name,
+      quantity: l.qtyClosingCounted ?? 0,
+      unitPriceUsd: l.unitPriceUsd,
+      sourceZone: l.sourceZone,
+      storageZone: l.menuItem.storageZone,
+    }))
+    .filter((l) => l.quantity > 0);
+  if (lines.length === 0) return null;
+  return {
+    sessionId: session.id,
+    number: session.number,
+    vendorDisplayName: session.vendorDisplayName,
+    closedAt: session.closedAt,
+    lines,
+  };
+}
+
 export async function openServiceStockSessionAction(input: {
   organizationId: string;
   branchId: string;
@@ -216,6 +269,8 @@ export async function openServiceStockSessionAction(input: {
     quantity: number;
     sourceZone?: string;
   }[];
+  /** Reprendre le float restant de la dernière clôture « transmission ». */
+  inheritHandover?: boolean;
   notes?: string | null;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
@@ -250,6 +305,47 @@ export async function openServiceStockSessionAction(input: {
     member.member.user.email ||
     "Entrant";
 
+  const handover = input.inheritHandover
+    ? await prisma.serviceStockSession.findFirst({
+        where: {
+          branchId: input.branchId,
+          status: "CLOSED",
+          closeDisposition: "HANDOVER",
+          handoverClaimedBySessionId: null,
+        },
+        orderBy: { closedAt: "desc" },
+        include: {
+          lines: {
+            where: { qtyClosingCounted: { gt: 0 } },
+            include: {
+              menuItem: {
+                select: {
+                  id: true,
+                  name: true,
+                  price: true,
+                  storageZone: true,
+                  active: true,
+                  isConsumable: true,
+                  needsKitchen: true,
+                },
+              },
+            },
+          },
+        },
+      })
+    : null;
+
+  const inheritLines =
+    handover?.lines
+      .map((l) => ({
+        menuItemId: l.menuItemId,
+        quantity: Math.max(0, Math.round(l.qtyClosingCounted ?? 0)),
+        sourceZone: normalizeZone(l.sourceZone),
+        unitPriceUsd: l.unitPriceUsd || l.menuItem.price,
+        name: l.menuItem.name,
+      }))
+      .filter((l) => l.quantity > 0) ?? [];
+
   const cleaned = input.lines
     .map((l) => ({
       menuItemId: l.menuItemId,
@@ -257,21 +353,27 @@ export async function openServiceStockSessionAction(input: {
       sourceZone: normalizeZone(l.sourceZone),
     }))
     .filter((l) => l.quantity > 0);
-  if (cleaned.length === 0) {
-    throw new Error("Attribuez au moins un produit hors cuisine.");
+
+  if (inheritLines.length === 0 && cleaned.length === 0) {
+    throw new Error(
+      "Attribuez au moins un produit hors cuisine, ou héritez du float transmis.",
+    );
   }
 
-  const ids = [...new Set(cleaned.map((l) => l.menuItemId))];
-  const items = await prisma.hotelMenuItem.findMany({
-    where: {
-      branchId: input.branchId,
-      id: { in: ids },
-      active: true,
-      isConsumable: false,
-      needsKitchen: false,
-    },
-  });
-  if (items.length !== ids.length) {
+  const depotIds = [...new Set(cleaned.map((l) => l.menuItemId))];
+  const items =
+    depotIds.length > 0
+      ? await prisma.hotelMenuItem.findMany({
+          where: {
+            branchId: input.branchId,
+            id: { in: depotIds },
+            active: true,
+            isConsumable: false,
+            needsKitchen: false,
+          },
+        })
+      : [];
+  if (items.length !== depotIds.length) {
     throw new Error(
       "Un ou plusieurs articles sont invalides (hors cuisine / actifs uniquement).",
     );
@@ -287,6 +389,12 @@ export async function openServiceStockSessionAction(input: {
   }
 
   const number = await nextSessionNumber(input.branchId);
+  const noteParts = [
+    input.notes?.trim() || null,
+    handover && inheritLines.length > 0
+      ? `Hérité de ${handover.number} (${handover.vendorDisplayName})`
+      : null,
+  ].filter(Boolean);
 
   const session = await prisma.$transaction(async (tx) => {
     const created = await tx.serviceStockSession.create({
@@ -297,9 +405,28 @@ export async function openServiceStockSessionAction(input: {
         vendorUserId,
         vendorDisplayName,
         openedByUserId: user.id,
-        notes: input.notes?.trim() || null,
+        inheritedFromSessionId: handover?.id ?? null,
+        notes: noteParts.length > 0 ? noteParts.join(" · ") : null,
       },
     });
+
+    const attributed = new Map<
+      string,
+      { qty: number; sourceZone: StorageZone; unitPriceUsd: number }
+    >();
+
+    for (const line of inheritLines) {
+      const cur = attributed.get(line.menuItemId);
+      if (cur) {
+        cur.qty += line.quantity;
+      } else {
+        attributed.set(line.menuItemId, {
+          qty: line.quantity,
+          sourceZone: line.sourceZone,
+          unitPriceUsd: line.unitPriceUsd,
+        });
+      }
+    }
 
     for (const line of cleaned) {
       const item = byId.get(line.menuItemId)!;
@@ -321,16 +448,38 @@ export async function openServiceStockSessionAction(input: {
           createdByUserId: user.id,
         },
       });
+      item.stockQty = stockAfter;
+      const cur = attributed.get(line.menuItemId);
+      if (cur) {
+        cur.qty += line.quantity;
+        cur.sourceZone = line.sourceZone;
+        cur.unitPriceUsd = item.price;
+      } else {
+        attributed.set(line.menuItemId, {
+          qty: line.quantity,
+          sourceZone: line.sourceZone || normalizeZone(item.storageZone),
+          unitPriceUsd: item.price,
+        });
+      }
+    }
+
+    for (const [menuItemId, row] of attributed) {
       await tx.serviceStockLine.create({
         data: {
           sessionId: created.id,
-          menuItemId: item.id,
-          qtyAttributed: line.quantity,
-          unitPriceUsd: item.price,
-          sourceZone: line.sourceZone || normalizeZone(item.storageZone),
+          menuItemId,
+          qtyAttributed: row.qty,
+          unitPriceUsd: row.unitPriceUsd,
+          sourceZone: row.sourceZone,
         },
       });
-      item.stockQty = stockAfter;
+    }
+
+    if (handover && inheritLines.length > 0) {
+      await tx.serviceStockSession.update({
+        where: { id: handover.id },
+        data: { handoverClaimedBySessionId: created.id },
+      });
     }
 
     return created;
@@ -513,6 +662,8 @@ export async function closeServiceStockSessionAction(input: {
   organizationId: string;
   branchId: string;
   sessionId: string;
+  /** HANDOVER = float restant transmis au prochain entrant ; RETURN_DEPOT = retour magasin. */
+  disposition?: "HANDOVER" | "RETURN_DEPOT";
   counts: {
     lineId: string;
     qtyClosingCounted: number;
@@ -520,6 +671,7 @@ export async function closeServiceStockSessionAction(input: {
   }[];
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
+  const disposition = input.disposition === "RETURN_DEPOT" ? "RETURN_DEPOT" : "HANDOVER";
   const session = await prisma.serviceStockSession.findFirst({
     where: {
       id: input.sessionId,
@@ -553,8 +705,11 @@ export async function closeServiceStockSessionAction(input: {
         qtySold: line.qtySold,
         qtyLoss: c.qtyLoss,
       });
-      // Retour dépôt = min(compté, théorique) pour éviter de recréer du stock fantôme
-      const toReturn = Math.min(c.qtyClosingCounted, theoretical);
+      const counted = c.qtyClosingCounted;
+      const toReturn =
+        disposition === "RETURN_DEPOT"
+          ? Math.min(counted, theoretical)
+          : 0;
       if (toReturn > 0) {
         const stockBefore = line.menuItem.stockQty;
         const stockAfter = stockBefore + toReturn;
@@ -579,7 +734,7 @@ export async function closeServiceStockSessionAction(input: {
       await tx.serviceStockLine.update({
         where: { id: line.id },
         data: {
-          qtyClosingCounted: c.qtyClosingCounted,
+          qtyClosingCounted: counted,
           qtyLoss: c.qtyLoss,
           qtyReturnedToDepot: toReturn,
         },
@@ -592,12 +747,13 @@ export async function closeServiceStockSessionAction(input: {
         closedAt: new Date(),
         closedByManagerUserId: user.id,
         closingDocumentPrintedAt: new Date(),
+        closeDisposition: disposition,
       },
     });
   });
 
   revalidateServiceStock(input.organizationId, input.branchId);
-  return { ok: true };
+  return { ok: true, disposition };
 }
 
 /** Décrémente le float (hors cuisine) dans une transaction vente/commande. */

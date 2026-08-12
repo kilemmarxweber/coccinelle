@@ -99,6 +99,20 @@ type HistoryRow = {
   }[];
 };
 
+type PendingHandover = {
+  sessionId: string;
+  number: string;
+  vendorDisplayName: string;
+  closedAt: string | Date | null;
+  lines: {
+    menuItemId: string;
+    name: string;
+    quantity: number;
+    unitPriceUsd: number;
+    sourceZone: string;
+  }[];
+} | null;
+
 function printHtml(html: string) {
   const iframe = document.createElement("iframe");
   iframe.setAttribute("aria-hidden", "true");
@@ -140,6 +154,7 @@ export function ServiceStockClient(props: {
   staff: Staff[];
   depotItems: DepotItem[];
   history: HistoryRow[];
+  pendingHandover: PendingHandover;
   rate: NormalizedUsdCdfRate | null;
   currentUserName: string;
 }) {
@@ -151,6 +166,12 @@ export function ServiceStockClient(props: {
   const [vendorUserId, setVendorUserId] = useState(
     props.staff[0]?.userId ?? "",
   );
+  const [inheritHandover, setInheritHandover] = useState(
+    Boolean(props.pendingHandover),
+  );
+  const [closeDisposition, setCloseDisposition] = useState<
+    "HANDOVER" | "RETURN_DEPOT"
+  >("HANDOVER");
   const [alloc, setAlloc] = useState<Record<string, string>>({});
   const [openingCounts, setOpeningCounts] = useState<Record<string, string>>(
     {},
@@ -359,8 +380,15 @@ export function ServiceStockClient(props: {
           branchId: props.branchId,
           vendorUserId,
           lines,
+          inheritHandover: Boolean(
+            inheritHandover && props.pendingHandover,
+          ),
         });
-        toast.success("Session créée — confirmez l’état des lieux");
+        toast.success(
+          inheritHandover && props.pendingHandover
+            ? "Session créée — float hérité (+ ajouts dépôt)"
+            : "Session créée — confirmez l’état des lieux",
+        );
         setOpenWizard(false);
         setAlloc({});
         router.refresh();
@@ -473,7 +501,10 @@ export function ServiceStockClient(props: {
         qtyOpeningCounted: l.qtyOpeningCounted,
         qtySold: l.qtySold,
         qtyClosingCounted: c.qtyClosingCounted,
-        qtyReturnedToDepot: Math.min(c.qtyClosingCounted, theo),
+        qtyReturnedToDepot:
+          closeDisposition === "RETURN_DEPOT"
+            ? Math.min(c.qtyClosingCounted, theo)
+            : 0,
         qtyLoss: c.qtyLoss,
         unitPriceUsd: l.unitPriceUsd,
       };
@@ -484,9 +515,14 @@ export function ServiceStockClient(props: {
           organizationId: props.organizationId,
           branchId: props.branchId,
           sessionId: session.id,
+          disposition: closeDisposition,
           counts,
         });
-        toast.success("Service clôturé");
+        toast.success(
+          closeDisposition === "HANDOVER"
+            ? "Service clôturé — restant transmis au prochain entrant"
+            : "Service clôturé — restant retourné au dépôt",
+        );
         setCloseOpen(false);
         printHtml(
           buildServiceStockClosingHtml({
@@ -498,6 +534,7 @@ export function ServiceStockClient(props: {
             closedAt: new Date(),
             lines: linesForDoc,
             formatMoney: money,
+            disposition: closeDisposition,
           }),
         );
         router.refresh();
@@ -552,6 +589,13 @@ export function ServiceStockClient(props: {
         <div className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
           Aucune session active. Ouvrez le service, choisissez l’entrant et
           attribuez le float depuis le dépôt.
+          {props.pendingHandover ? (
+            <p className="mt-3 text-emerald-700 dark:text-emerald-300">
+              Float en transmission disponible ({props.pendingHandover.number} ·{" "}
+              {props.pendingHandover.vendorDisplayName}) — l’ouverture peut
+              l’hériter.
+            </p>
+          ) : null}
         </div>
       ) : (
         <div className="space-y-4">
@@ -840,8 +884,8 @@ export function ServiceStockClient(props: {
           <DialogHeader>
             <DialogTitle>Ouvrir le service stock</DialogTitle>
             <DialogDescription>
-              Choisissez l’entrant et attribuez des quantités depuis le dépôt
-              (hors cuisine uniquement).
+              Choisissez l’entrant. Héritez du float transmis à la clôture
+              précédente, et/ou ajoutez depuis le dépôt.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4">
@@ -859,8 +903,50 @@ export function ServiceStockClient(props: {
                 ))}
               </select>
             </div>
+            {props.pendingHandover ? (
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 space-y-2">
+                <label className="flex items-start gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    checked={inheritHandover}
+                    onChange={(e) => setInheritHandover(e.target.checked)}
+                  />
+                  <span>
+                    <strong>Hériter du restant</strong> —{" "}
+                    {props.pendingHandover.number} (
+                    {props.pendingHandover.vendorDisplayName})
+                    <span className="block text-xs text-muted-foreground">
+                      Le nouvel entrant reprend le float compté à la clôture et
+                      peut continuer à vendre. Réassort dépôt possible ci-dessous
+                      ou pendant le service.
+                    </span>
+                  </span>
+                </label>
+                {inheritHandover ? (
+                  <ul className="space-y-1 text-xs text-muted-foreground">
+                    {props.pendingHandover.lines.map((l) => (
+                      <li key={l.menuItemId} className="flex justify-between gap-2">
+                        <span>{l.name}</span>
+                        <span className="tabular-nums font-medium text-foreground">
+                          {l.quantity}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Aucun float en transmission. Attribuez depuis le dépôt.
+              </p>
+            )}
             <div className="space-y-2">
-              <Label>Attribution dépôt → float</Label>
+              <Label>
+                {props.pendingHandover && inheritHandover
+                  ? "Ajout dépôt (optionnel / réassort)"
+                  : "Attribution dépôt → float"}
+              </Label>
               {props.depotItems.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
                   Aucun produit hors cuisine actif.
@@ -963,6 +1049,40 @@ export function ServiceStockClient(props: {
           </DialogHeader>
           {session ? (
             <div className="space-y-3">
+              <div className="space-y-2 rounded-xl border border-border p-3">
+                <Label>Disposition du restant</Label>
+                <label className="flex items-start gap-2 text-sm">
+                  <input
+                    type="radio"
+                    className="mt-1"
+                    name="close-disposition"
+                    checked={closeDisposition === "HANDOVER"}
+                    onChange={() => setCloseDisposition("HANDOVER")}
+                  />
+                  <span>
+                    <strong>Transmettre au prochain entrant</strong>
+                    <span className="block text-xs text-muted-foreground">
+                      Le float compté reste en service — la prochaine ouverture
+                      peut l’hériter et continuer (ou demander un réassort).
+                    </span>
+                  </span>
+                </label>
+                <label className="flex items-start gap-2 text-sm">
+                  <input
+                    type="radio"
+                    className="mt-1"
+                    name="close-disposition"
+                    checked={closeDisposition === "RETURN_DEPOT"}
+                    onChange={() => setCloseDisposition("RETURN_DEPOT")}
+                  />
+                  <span>
+                    <strong>Retourner au dépôt</strong>
+                    <span className="block text-xs text-muted-foreground">
+                      Remise en magasin / congélateur (fin de journée).
+                    </span>
+                  </span>
+                </label>
+              </div>
               {session.lines.map((l) => (
                 <div
                   key={l.id}

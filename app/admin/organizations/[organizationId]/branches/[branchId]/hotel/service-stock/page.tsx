@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
   getOpenServiceStockSessionAction,
+  getPendingHandoverFloatAction,
   listBranchStaffForServiceStockAction,
   listDepotSellableItemsAction,
   listServiceStockSessionsAction,
@@ -23,13 +24,15 @@ export default async function ServiceStockPage({ params }: PageProps) {
     requireHospitality: "restaurant",
   });
   const sessionAuth = await auth.api.getSession({ headers: await headers() });
-  const [session, staff, depotItems, history, rate] = await Promise.all([
-    getOpenServiceStockSessionAction(organizationId, branchId),
-    listBranchStaffForServiceStockAction(organizationId, branchId),
-    listDepotSellableItemsAction(organizationId, branchId),
-    listServiceStockSessionsAction(organizationId, branchId),
-    getActiveExchangeRate(branchId),
-  ]);
+  const [session, staff, depotItems, history, rate, pendingHandover] =
+    await Promise.all([
+      getOpenServiceStockSessionAction(organizationId, branchId),
+      listBranchStaffForServiceStockAction(organizationId, branchId),
+      listDepotSellableItemsAction(organizationId, branchId),
+      listServiceStockSessionsAction(organizationId, branchId),
+      getActiveExchangeRate(branchId),
+      getPendingHandoverFloatAction(organizationId, branchId),
+    ]);
 
   return (
     <ServiceStockClient
@@ -40,6 +43,7 @@ export default async function ServiceStockPage({ params }: PageProps) {
       staff={staff}
       depotItems={depotItems}
       history={history}
+      pendingHandover={pendingHandover}
       rate={rate}
       currentUserName={
         sessionAuth?.user?.name?.trim() ||

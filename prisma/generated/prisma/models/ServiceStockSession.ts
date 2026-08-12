@@ -38,6 +38,9 @@ export type ServiceStockSessionMinAggregateOutputType = {
   openingConfirmedAt: Date | null
   openingDocumentPrintedAt: Date | null
   closingDocumentPrintedAt: Date | null
+  closeDisposition: string | null
+  inheritedFromSessionId: string | null
+  handoverClaimedBySessionId: string | null
   notes: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -57,6 +60,9 @@ export type ServiceStockSessionMaxAggregateOutputType = {
   openingConfirmedAt: Date | null
   openingDocumentPrintedAt: Date | null
   closingDocumentPrintedAt: Date | null
+  closeDisposition: string | null
+  inheritedFromSessionId: string | null
+  handoverClaimedBySessionId: string | null
   notes: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -76,6 +82,9 @@ export type ServiceStockSessionCountAggregateOutputType = {
   openingConfirmedAt: number
   openingDocumentPrintedAt: number
   closingDocumentPrintedAt: number
+  closeDisposition: number
+  inheritedFromSessionId: number
+  handoverClaimedBySessionId: number
   notes: number
   createdAt: number
   updatedAt: number
@@ -97,6 +106,9 @@ export type ServiceStockSessionMinAggregateInputType = {
   openingConfirmedAt?: true
   openingDocumentPrintedAt?: true
   closingDocumentPrintedAt?: true
+  closeDisposition?: true
+  inheritedFromSessionId?: true
+  handoverClaimedBySessionId?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -116,6 +128,9 @@ export type ServiceStockSessionMaxAggregateInputType = {
   openingConfirmedAt?: true
   openingDocumentPrintedAt?: true
   closingDocumentPrintedAt?: true
+  closeDisposition?: true
+  inheritedFromSessionId?: true
+  handoverClaimedBySessionId?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -135,6 +150,9 @@ export type ServiceStockSessionCountAggregateInputType = {
   openingConfirmedAt?: true
   openingDocumentPrintedAt?: true
   closingDocumentPrintedAt?: true
+  closeDisposition?: true
+  inheritedFromSessionId?: true
+  handoverClaimedBySessionId?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -227,6 +245,9 @@ export type ServiceStockSessionGroupByOutputType = {
   openingConfirmedAt: Date | null
   openingDocumentPrintedAt: Date | null
   closingDocumentPrintedAt: Date | null
+  closeDisposition: string | null
+  inheritedFromSessionId: string | null
+  handoverClaimedBySessionId: string | null
   notes: string | null
   createdAt: Date
   updatedAt: Date
@@ -267,6 +288,9 @@ export type ServiceStockSessionWhereInput = {
   openingConfirmedAt?: Prisma.DateTimeNullableFilter<"ServiceStockSession"> | Date | string | null
   openingDocumentPrintedAt?: Prisma.DateTimeNullableFilter<"ServiceStockSession"> | Date | string | null
   closingDocumentPrintedAt?: Prisma.DateTimeNullableFilter<"ServiceStockSession"> | Date | string | null
+  closeDisposition?: Prisma.StringNullableFilter<"ServiceStockSession"> | string | null
+  inheritedFromSessionId?: Prisma.StringNullableFilter<"ServiceStockSession"> | string | null
+  handoverClaimedBySessionId?: Prisma.StringNullableFilter<"ServiceStockSession"> | string | null
   notes?: Prisma.StringNullableFilter<"ServiceStockSession"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ServiceStockSession"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ServiceStockSession"> | Date | string
@@ -289,6 +313,9 @@ export type ServiceStockSessionOrderByWithRelationInput = {
   openingConfirmedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   openingDocumentPrintedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   closingDocumentPrintedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  closeDisposition?: Prisma.SortOrderInput | Prisma.SortOrder
+  inheritedFromSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  handoverClaimedBySessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -315,6 +342,9 @@ export type ServiceStockSessionWhereUniqueInput = Prisma.AtLeast<{
   openingConfirmedAt?: Prisma.DateTimeNullableFilter<"ServiceStockSession"> | Date | string | null
   openingDocumentPrintedAt?: Prisma.DateTimeNullableFilter<"ServiceStockSession"> | Date | string | null
   closingDocumentPrintedAt?: Prisma.DateTimeNullableFilter<"ServiceStockSession"> | Date | string | null
+  closeDisposition?: Prisma.StringNullableFilter<"ServiceStockSession"> | string | null
+  inheritedFromSessionId?: Prisma.StringNullableFilter<"ServiceStockSession"> | string | null
+  handoverClaimedBySessionId?: Prisma.StringNullableFilter<"ServiceStockSession"> | string | null
   notes?: Prisma.StringNullableFilter<"ServiceStockSession"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ServiceStockSession"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ServiceStockSession"> | Date | string
@@ -337,6 +367,9 @@ export type ServiceStockSessionOrderByWithAggregationInput = {
   openingConfirmedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   openingDocumentPrintedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   closingDocumentPrintedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  closeDisposition?: Prisma.SortOrderInput | Prisma.SortOrder
+  inheritedFromSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  handoverClaimedBySessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -362,6 +395,9 @@ export type ServiceStockSessionScalarWhereWithAggregatesInput = {
   openingConfirmedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ServiceStockSession"> | Date | string | null
   openingDocumentPrintedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ServiceStockSession"> | Date | string | null
   closingDocumentPrintedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ServiceStockSession"> | Date | string | null
+  closeDisposition?: Prisma.StringNullableWithAggregatesFilter<"ServiceStockSession"> | string | null
+  inheritedFromSessionId?: Prisma.StringNullableWithAggregatesFilter<"ServiceStockSession"> | string | null
+  handoverClaimedBySessionId?: Prisma.StringNullableWithAggregatesFilter<"ServiceStockSession"> | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"ServiceStockSession"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ServiceStockSession"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ServiceStockSession"> | Date | string
@@ -380,6 +416,9 @@ export type ServiceStockSessionCreateInput = {
   openingConfirmedAt?: Date | string | null
   openingDocumentPrintedAt?: Date | string | null
   closingDocumentPrintedAt?: Date | string | null
+  closeDisposition?: string | null
+  inheritedFromSessionId?: string | null
+  handoverClaimedBySessionId?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -402,6 +441,9 @@ export type ServiceStockSessionUncheckedCreateInput = {
   openingConfirmedAt?: Date | string | null
   openingDocumentPrintedAt?: Date | string | null
   closingDocumentPrintedAt?: Date | string | null
+  closeDisposition?: string | null
+  inheritedFromSessionId?: string | null
+  handoverClaimedBySessionId?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -422,6 +464,9 @@ export type ServiceStockSessionUpdateInput = {
   openingConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   closingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closeDisposition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inheritedFromSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  handoverClaimedBySessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -444,6 +489,9 @@ export type ServiceStockSessionUncheckedUpdateInput = {
   openingConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   closingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closeDisposition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inheritedFromSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  handoverClaimedBySessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -465,6 +513,9 @@ export type ServiceStockSessionCreateManyInput = {
   openingConfirmedAt?: Date | string | null
   openingDocumentPrintedAt?: Date | string | null
   closingDocumentPrintedAt?: Date | string | null
+  closeDisposition?: string | null
+  inheritedFromSessionId?: string | null
+  handoverClaimedBySessionId?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -483,6 +534,9 @@ export type ServiceStockSessionUpdateManyMutationInput = {
   openingConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   closingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closeDisposition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inheritedFromSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  handoverClaimedBySessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -502,6 +556,9 @@ export type ServiceStockSessionUncheckedUpdateManyInput = {
   openingConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   closingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closeDisposition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inheritedFromSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  handoverClaimedBySessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -536,6 +593,9 @@ export type ServiceStockSessionCountOrderByAggregateInput = {
   openingConfirmedAt?: Prisma.SortOrder
   openingDocumentPrintedAt?: Prisma.SortOrder
   closingDocumentPrintedAt?: Prisma.SortOrder
+  closeDisposition?: Prisma.SortOrder
+  inheritedFromSessionId?: Prisma.SortOrder
+  handoverClaimedBySessionId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -555,6 +615,9 @@ export type ServiceStockSessionMaxOrderByAggregateInput = {
   openingConfirmedAt?: Prisma.SortOrder
   openingDocumentPrintedAt?: Prisma.SortOrder
   closingDocumentPrintedAt?: Prisma.SortOrder
+  closeDisposition?: Prisma.SortOrder
+  inheritedFromSessionId?: Prisma.SortOrder
+  handoverClaimedBySessionId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -574,6 +637,9 @@ export type ServiceStockSessionMinOrderByAggregateInput = {
   openingConfirmedAt?: Prisma.SortOrder
   openingDocumentPrintedAt?: Prisma.SortOrder
   closingDocumentPrintedAt?: Prisma.SortOrder
+  closeDisposition?: Prisma.SortOrder
+  inheritedFromSessionId?: Prisma.SortOrder
+  handoverClaimedBySessionId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -667,6 +733,9 @@ export type ServiceStockSessionCreateWithoutBranchInput = {
   openingConfirmedAt?: Date | string | null
   openingDocumentPrintedAt?: Date | string | null
   closingDocumentPrintedAt?: Date | string | null
+  closeDisposition?: string | null
+  inheritedFromSessionId?: string | null
+  handoverClaimedBySessionId?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -687,6 +756,9 @@ export type ServiceStockSessionUncheckedCreateWithoutBranchInput = {
   openingConfirmedAt?: Date | string | null
   openingDocumentPrintedAt?: Date | string | null
   closingDocumentPrintedAt?: Date | string | null
+  closeDisposition?: string | null
+  inheritedFromSessionId?: string | null
+  handoverClaimedBySessionId?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -737,6 +809,9 @@ export type ServiceStockSessionScalarWhereInput = {
   openingConfirmedAt?: Prisma.DateTimeNullableFilter<"ServiceStockSession"> | Date | string | null
   openingDocumentPrintedAt?: Prisma.DateTimeNullableFilter<"ServiceStockSession"> | Date | string | null
   closingDocumentPrintedAt?: Prisma.DateTimeNullableFilter<"ServiceStockSession"> | Date | string | null
+  closeDisposition?: Prisma.StringNullableFilter<"ServiceStockSession"> | string | null
+  inheritedFromSessionId?: Prisma.StringNullableFilter<"ServiceStockSession"> | string | null
+  handoverClaimedBySessionId?: Prisma.StringNullableFilter<"ServiceStockSession"> | string | null
   notes?: Prisma.StringNullableFilter<"ServiceStockSession"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ServiceStockSession"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ServiceStockSession"> | Date | string
@@ -755,6 +830,9 @@ export type ServiceStockSessionCreateWithoutLinesInput = {
   openingConfirmedAt?: Date | string | null
   openingDocumentPrintedAt?: Date | string | null
   closingDocumentPrintedAt?: Date | string | null
+  closeDisposition?: string | null
+  inheritedFromSessionId?: string | null
+  handoverClaimedBySessionId?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -776,6 +854,9 @@ export type ServiceStockSessionUncheckedCreateWithoutLinesInput = {
   openingConfirmedAt?: Date | string | null
   openingDocumentPrintedAt?: Date | string | null
   closingDocumentPrintedAt?: Date | string | null
+  closeDisposition?: string | null
+  inheritedFromSessionId?: string | null
+  handoverClaimedBySessionId?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -811,6 +892,9 @@ export type ServiceStockSessionUpdateWithoutLinesInput = {
   openingConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   closingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closeDisposition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inheritedFromSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  handoverClaimedBySessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -832,6 +916,9 @@ export type ServiceStockSessionUncheckedUpdateWithoutLinesInput = {
   openingConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   closingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closeDisposition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inheritedFromSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  handoverClaimedBySessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -851,6 +938,9 @@ export type ServiceStockSessionCreateWithoutTopUpsInput = {
   openingConfirmedAt?: Date | string | null
   openingDocumentPrintedAt?: Date | string | null
   closingDocumentPrintedAt?: Date | string | null
+  closeDisposition?: string | null
+  inheritedFromSessionId?: string | null
+  handoverClaimedBySessionId?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -872,6 +962,9 @@ export type ServiceStockSessionUncheckedCreateWithoutTopUpsInput = {
   openingConfirmedAt?: Date | string | null
   openingDocumentPrintedAt?: Date | string | null
   closingDocumentPrintedAt?: Date | string | null
+  closeDisposition?: string | null
+  inheritedFromSessionId?: string | null
+  handoverClaimedBySessionId?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -907,6 +1000,9 @@ export type ServiceStockSessionUpdateWithoutTopUpsInput = {
   openingConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   closingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closeDisposition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inheritedFromSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  handoverClaimedBySessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -928,6 +1024,9 @@ export type ServiceStockSessionUncheckedUpdateWithoutTopUpsInput = {
   openingConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   closingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closeDisposition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inheritedFromSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  handoverClaimedBySessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -947,6 +1046,9 @@ export type ServiceStockSessionCreateManyBranchInput = {
   openingConfirmedAt?: Date | string | null
   openingDocumentPrintedAt?: Date | string | null
   closingDocumentPrintedAt?: Date | string | null
+  closeDisposition?: string | null
+  inheritedFromSessionId?: string | null
+  handoverClaimedBySessionId?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -965,6 +1067,9 @@ export type ServiceStockSessionUpdateWithoutBranchInput = {
   openingConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   closingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closeDisposition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inheritedFromSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  handoverClaimedBySessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -985,6 +1090,9 @@ export type ServiceStockSessionUncheckedUpdateWithoutBranchInput = {
   openingConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   closingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closeDisposition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inheritedFromSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  handoverClaimedBySessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1005,6 +1113,9 @@ export type ServiceStockSessionUncheckedUpdateManyWithoutBranchInput = {
   openingConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   closingDocumentPrintedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closeDisposition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inheritedFromSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  handoverClaimedBySessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1064,6 +1175,9 @@ export type ServiceStockSessionSelect<ExtArgs extends runtime.Types.Extensions.I
   openingConfirmedAt?: boolean
   openingDocumentPrintedAt?: boolean
   closingDocumentPrintedAt?: boolean
+  closeDisposition?: boolean
+  inheritedFromSessionId?: boolean
+  handoverClaimedBySessionId?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1087,6 +1201,9 @@ export type ServiceStockSessionSelectCreateManyAndReturn<ExtArgs extends runtime
   openingConfirmedAt?: boolean
   openingDocumentPrintedAt?: boolean
   closingDocumentPrintedAt?: boolean
+  closeDisposition?: boolean
+  inheritedFromSessionId?: boolean
+  handoverClaimedBySessionId?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1107,6 +1224,9 @@ export type ServiceStockSessionSelectUpdateManyAndReturn<ExtArgs extends runtime
   openingConfirmedAt?: boolean
   openingDocumentPrintedAt?: boolean
   closingDocumentPrintedAt?: boolean
+  closeDisposition?: boolean
+  inheritedFromSessionId?: boolean
+  handoverClaimedBySessionId?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1127,12 +1247,15 @@ export type ServiceStockSessionSelectScalar = {
   openingConfirmedAt?: boolean
   openingDocumentPrintedAt?: boolean
   closingDocumentPrintedAt?: boolean
+  closeDisposition?: boolean
+  inheritedFromSessionId?: boolean
+  handoverClaimedBySessionId?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ServiceStockSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "number" | "status" | "vendorUserId" | "vendorDisplayName" | "openedByUserId" | "closedByManagerUserId" | "openedAt" | "closedAt" | "openingConfirmedAt" | "openingDocumentPrintedAt" | "closingDocumentPrintedAt" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceStockSession"]>
+export type ServiceStockSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "number" | "status" | "vendorUserId" | "vendorDisplayName" | "openedByUserId" | "closedByManagerUserId" | "openedAt" | "closedAt" | "openingConfirmedAt" | "openingDocumentPrintedAt" | "closingDocumentPrintedAt" | "closeDisposition" | "inheritedFromSessionId" | "handoverClaimedBySessionId" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceStockSession"]>
 export type ServiceStockSessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   lines?: boolean | Prisma.ServiceStockSession$linesArgs<ExtArgs>
@@ -1170,6 +1293,18 @@ export type $ServiceStockSessionPayload<ExtArgs extends runtime.Types.Extensions
     openingConfirmedAt: Date | null
     openingDocumentPrintedAt: Date | null
     closingDocumentPrintedAt: Date | null
+    /**
+     * RETURN_DEPOT | HANDOVER — disposition du restant à la clôture
+     */
+    closeDisposition: string | null
+    /**
+     * Session précédente dont le float a été hérité (transmission)
+     */
+    inheritedFromSessionId: string | null
+    /**
+     * Rempli quand le float HANDOVER a été repris par une nouvelle session
+     */
+    handoverClaimedBySessionId: string | null
     notes: string | null
     createdAt: Date
     updatedAt: Date
@@ -1612,6 +1747,9 @@ export interface ServiceStockSessionFieldRefs {
   readonly openingConfirmedAt: Prisma.FieldRef<"ServiceStockSession", 'DateTime'>
   readonly openingDocumentPrintedAt: Prisma.FieldRef<"ServiceStockSession", 'DateTime'>
   readonly closingDocumentPrintedAt: Prisma.FieldRef<"ServiceStockSession", 'DateTime'>
+  readonly closeDisposition: Prisma.FieldRef<"ServiceStockSession", 'String'>
+  readonly inheritedFromSessionId: Prisma.FieldRef<"ServiceStockSession", 'String'>
+  readonly handoverClaimedBySessionId: Prisma.FieldRef<"ServiceStockSession", 'String'>
   readonly notes: Prisma.FieldRef<"ServiceStockSession", 'String'>
   readonly createdAt: Prisma.FieldRef<"ServiceStockSession", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ServiceStockSession", 'DateTime'>

@@ -22,6 +22,7 @@ Aujourd’hui le stock F&B est un **seul compteur** (`HotelMenuItem.stockQty`) :
 7. Le **restaurant** n’encaisse pas : il exécute les commandes. L’argent = caisse / vente rapide.
 8. À la **fermeture**, document de **clôture** : à recouvrir / recouvré / taux, état restant, détail produit / PU / qté, écarts — signatures **entrant + manager**.
 9. Page Service stock + bas de **Restauration** / **Vente rapide** : KPIs, graphiques, bouton **Fermer le service** + rapport de fermeture.
+10. **Transmission / héritage** — à la clôture, disposition **Transmettre** (float restant pour le prochain entrant) ou **Retour dépôt**. À l’ouverture suivante : hériter du restant + ajouts dépôt / réassort optionnels.
 
 Analogie : **session caisse** → **session stock service** (ouverture documentée + clôture signée).
 

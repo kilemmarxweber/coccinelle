@@ -726,6 +726,9 @@ export const ServiceStockSessionScalarFieldEnum = {
   openingConfirmedAt: 'openingConfirmedAt',
   openingDocumentPrintedAt: 'openingDocumentPrintedAt',
   closingDocumentPrintedAt: 'closingDocumentPrintedAt',
+  closeDisposition: 'closeDisposition',
+  inheritedFromSessionId: 'inheritedFromSessionId',
+  handoverClaimedBySessionId: 'handoverClaimedBySessionId',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
