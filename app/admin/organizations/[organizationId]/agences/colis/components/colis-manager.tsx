@@ -20,10 +20,12 @@ import { formatMontantFc } from "@/lib/reservation/labels";
 import { cn } from "@/lib/utils";
 import {
   advanceColisStatutAction,
+} from "../actions";
+import {
   COLIS_STATUTS,
   type ColisListItem,
   type ColisStatut,
-} from "../actions";
+} from "../colis-shared";
 
 const STATUT_LABELS: Record<ColisStatut, string> = {
   EN_ATTENTE: "En attente",

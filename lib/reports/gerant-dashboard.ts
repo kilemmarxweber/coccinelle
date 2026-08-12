@@ -17,7 +17,7 @@ export type GerantProchainDepart = {
   id: string;
   villeDepart: string;
   villeArrivee: string;
-  modeTransport: "BUS" | "AVION";
+  modeTransport: "BUS" | "AVION" | "BATEAU";
   dateDepart: string;
   heureDepart: string;
   capacitePlaces: number;

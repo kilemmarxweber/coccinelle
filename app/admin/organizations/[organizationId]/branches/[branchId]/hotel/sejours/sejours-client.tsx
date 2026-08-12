@@ -1192,7 +1192,7 @@ export function SejoursClient(props: {
                         slots: flatSlots,
                         endedAt: flatFrozenAt
                           ? new Date(flatFrozenAt)
-                          : new Date(now),
+                          : new Date(now ?? Date.now()),
                       })
                     : null;
                 return (

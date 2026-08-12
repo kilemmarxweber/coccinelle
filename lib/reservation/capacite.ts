@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma";
 export const CAPACITE_DEFAUT: Record<ModeTransport, number> = {
   BUS: 50,
   AVION: 180,
+  BATEAU: 80,
 };
 
 export function capaciteDefautPourMode(mode: ModeTransport): number {

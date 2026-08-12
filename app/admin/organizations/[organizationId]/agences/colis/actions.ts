@@ -3,30 +3,15 @@
 import { revalidatePath } from "next/cache";
 import { assertOrganizationPermission } from "@/lib/auth/organization-permission";
 import prisma from "@/lib/prisma";
-
-export const COLIS_STATUTS = ["EN_ATTENTE", "EXPEDIE", "LIVRE"] as const;
-export type ColisStatut = (typeof COLIS_STATUTS)[number];
+import {
+  COLIS_STATUTS,
+  type ColisListItem,
+  type ColisStatut,
+} from "./colis-shared";
 
 const NEXT_STATUT: Partial<Record<ColisStatut, ColisStatut>> = {
   EN_ATTENTE: "EXPEDIE",
   EXPEDIE: "LIVRE",
-};
-
-export type ColisListItem = {
-  id: string;
-  codeUnique: string;
-  statut: ColisStatut;
-  poids: number;
-  montantAPayer: number;
-  destinataireNom: string | null;
-  destinataireTel: string | null;
-  destinataireId: string | null;
-  type: string;
-  createdAt: string;
-  trajet: { villeDepart: string; villeArrivee: string };
-  trajetDepartId: string | null;
-  reservationId: string | null;
-  reservationCode: string | null;
 };
 
 async function assertColisRead(organizationId: string) {

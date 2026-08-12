@@ -248,7 +248,10 @@ export function formatMoney(
   } | null,
 ) {
   if (rate && rate.rate > 0) {
-    return formatBothAmounts(amountUsd, rate);
+    return formatBothAmounts(amountUsd, {
+      rate: rate.rate,
+      configuredFrom: rate.configuredFrom ?? "USD",
+    });
   }
   return `${amountUsd.toLocaleString("fr-FR", {
     minimumFractionDigits: 2,
