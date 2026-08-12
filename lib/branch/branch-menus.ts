@@ -97,8 +97,8 @@ function bonsCommandeCard(
     description: "Achats fournisseur, impression et validation caisse.",
     href: sharedBranchRoutes.bonsCommande(organizationId, branchId),
     icon: ClipboardList,
-    iconBg: "bg-teal-500/15",
-    iconColor: "text-teal-400",
+    iconBg: "bg-primary/15",
+    iconColor: "text-primary",
   };
 }
 
@@ -111,8 +111,8 @@ function depensesCard(
     description: "Sorties de caisse et suivi du solde net.",
     href: sharedBranchRoutes.depenses(organizationId, branchId),
     icon: Receipt,
-    iconBg: "bg-rose-500/15",
-    iconColor: "text-rose-400",
+    iconBg: "bg-muted",
+    iconColor: "text-muted-foreground",
   };
 }
 
@@ -124,25 +124,25 @@ function rapportsSections(
   return [
     {
       title: "ANALYSES & RAPPORTS",
-      titleColor: "text-teal-400",
+      titleColor: "text-primary",
       icon: Globe2,
-      iconColor: "text-teal-400",
+      iconColor: "text-primary",
       items: [
         {
           title: "Tableau de Bord",
           description: "Statistiques et indicateurs clés.",
           href: sharedBranchRoutes.tableauBord(organizationId, branchId),
           icon: LayoutDashboard,
-          iconBg: "bg-violet-500/15",
-          iconColor: "text-violet-400",
+          iconBg: "bg-muted",
+          iconColor: "text-muted-foreground",
         },
         {
           title: "Rapport Ventes",
           description: "CA, tickets, méthodes — graphs & comparaison.",
           href: sharedBranchRoutes.ventes(organizationId, branchId),
           icon: FileBarChart,
-          iconBg: "bg-sky-500/15",
-          iconColor: "text-sky-400",
+          iconBg: "bg-muted",
+          iconColor: "text-muted-foreground",
         },
         {
           title: "Rapport Achats",
@@ -157,8 +157,8 @@ function rapportsSections(
           description: "Revenus croisés aux flux d’appro / décompte.",
           href: sharedBranchRoutes.financier(organizationId, branchId),
           icon: FileText,
-          iconBg: "bg-sky-500/15",
-          iconColor: "text-sky-400",
+          iconBg: "bg-muted",
+          iconColor: "text-muted-foreground",
         },
         {
           title: "Rapport Article",
@@ -203,8 +203,8 @@ export function menuSectionsForBranch(
         description: "Réservations, check-in / check-out.",
         href: hotelRoutes.sejours(organizationId, branchId),
         icon: ClipboardList,
-        iconBg: "bg-emerald-500/15",
-        iconColor: "text-emerald-400",
+        iconBg: "bg-primary/15",
+        iconColor: "text-primary",
       });
     }
     if (hasRestaurant) {
@@ -214,16 +214,16 @@ export function menuSectionsForBranch(
           description: "Commandes F&B et additions.",
           href: hotelRoutes.restauration(organizationId, branchId),
           icon: UtensilsCrossed,
-          iconBg: "bg-violet-500/15",
-          iconColor: "text-violet-400",
+          iconBg: "bg-muted",
+          iconColor: "text-muted-foreground",
         },
         {
           title: "Cuisine",
           description: "File de préparation — marquer prêt.",
           href: hotelRoutes.cuisine(organizationId, branchId),
           icon: ChefHat,
-          iconBg: "bg-orange-500/15",
-          iconColor: "text-orange-400",
+          iconBg: "bg-primary/15",
+          iconColor: "text-primary",
         },
       );
     }
@@ -239,16 +239,16 @@ export function menuSectionsForBranch(
           description: "Types, inventaire et statuts.",
           href: hotelRoutes.chambres(organizationId, branchId),
           icon: BedDouble,
-          iconBg: "bg-sky-500/15",
-          iconColor: "text-sky-400",
+          iconBg: "bg-muted",
+          iconColor: "text-muted-foreground",
         },
         {
           title: "Salles de réunion",
           description: "Salles, capacité et réservations.",
           href: hotelRoutes.sallesReunion(organizationId, branchId),
           icon: Presentation,
-          iconBg: "bg-indigo-500/15",
-          iconColor: "text-indigo-400",
+          iconBg: "bg-muted",
+          iconColor: "text-muted-foreground",
         },
       );
     }
@@ -259,16 +259,16 @@ export function menuSectionsForBranch(
           description: "Carte F&B, photos, stock et cuisine.",
           href: hotelRoutes.produits(organizationId, branchId),
           icon: Package,
-          iconBg: "bg-sky-500/15",
-          iconColor: "text-sky-400",
+          iconBg: "bg-muted",
+          iconColor: "text-muted-foreground",
         },
         {
           title: "Service stock",
           description: "Float vendeur — ouverture, réassort, clôture signée.",
           href: hotelRoutes.serviceStock(organizationId, branchId),
           icon: ClipboardList,
-          iconBg: "bg-amber-500/15",
-          iconColor: "text-amber-500",
+          iconBg: "bg-primary/15",
+          iconColor: "text-primary",
         },
       );
     }
@@ -277,23 +277,23 @@ export function menuSectionsForBranch(
       description: "Consommables — entrées et décompte stock.",
       href: hotelRoutes.livraison(organizationId, branchId),
       icon: Truck,
-      iconBg: "bg-sky-500/15",
-      iconColor: "text-sky-400",
+      iconBg: "bg-muted",
+      iconColor: "text-muted-foreground",
     });
 
     return [
       {
         title: "OPÉRATIONS AU QUOTIDIEN",
-        titleColor: "text-emerald-400",
+        titleColor: "text-primary",
         icon: Wallet,
-        iconColor: "text-emerald-400",
+        iconColor: "text-primary",
         items: dailyItems,
       },
       {
         title: hasStays && !hasRestaurant ? "HÉBERGEMENT" : hasRestaurant && !hasStays ? "RESTAURANT & STOCK" : "HÉBERGEMENT & STOCK",
-        titleColor: "text-sky-400",
+        titleColor: "text-muted-foreground",
         icon: hasStays ? BedDouble : UtensilsCrossed,
-        iconColor: "text-sky-400",
+        iconColor: "text-muted-foreground",
         items: stockItems,
       },
       ...shared,
@@ -304,17 +304,17 @@ export function menuSectionsForBranch(
     return [
       {
         title: "OPÉRATIONS, CATALOGUE & STOCK",
-        titleColor: "text-emerald-400",
+        titleColor: "text-primary",
         icon: ShoppingCart,
-        iconColor: "text-emerald-400",
+        iconColor: "text-primary",
         items: [
           {
             title: "Point de vente",
             description: "Panier rapide, tickets en attente et encaissement.",
             href: boutiqueRoutes.pos(organizationId, branchId),
             icon: ShoppingCart,
-            iconBg: "bg-emerald-500/15",
-            iconColor: "text-emerald-400",
+            iconBg: "bg-primary/15",
+            iconColor: "text-primary",
             primary: true,
           },
           tauxChangeCard(organizationId, branchId),
@@ -325,16 +325,16 @@ export function menuSectionsForBranch(
             description: "Articles, plats, prix et promotions.",
             href: boutiqueRoutes.produits(organizationId, branchId),
             icon: Box,
-            iconBg: "bg-violet-500/15",
-            iconColor: "text-violet-400",
+            iconBg: "bg-muted",
+            iconColor: "text-muted-foreground",
           },
           {
             title: "Stock",
             description: "Niveaux et mouvements.",
             href: boutiqueRoutes.stock(organizationId, branchId),
             icon: Package,
-            iconBg: "bg-sky-500/15",
-            iconColor: "text-sky-400",
+            iconBg: "bg-muted",
+            iconColor: "text-muted-foreground",
           },
         ],
       },
@@ -346,9 +346,9 @@ export function menuSectionsForBranch(
   return [
     {
       title: "OPÉRATIONS AU QUOTIDIEN",
-      titleColor: "text-emerald-400",
+      titleColor: "text-primary",
       icon: Wallet,
-      iconColor: "text-emerald-400",
+      iconColor: "text-primary",
       items: [
         caisseVentesCard(
           organizationId,
@@ -360,24 +360,24 @@ export function menuSectionsForBranch(
           description: "Vendre un billet au comptoir.",
           href: agenceRoutes.guichet(organizationId, branchId),
           icon: ShoppingCart,
-          iconBg: "bg-emerald-500/15",
-          iconColor: "text-emerald-400",
+          iconBg: "bg-primary/15",
+          iconColor: "text-primary",
         },
         {
           title: "Réservations",
           description: "Liste et suivi des dossiers.",
           href: agenceRoutes.reservations(organizationId, branchId),
           icon: ClipboardList,
-          iconBg: "bg-violet-500/15",
-          iconColor: "text-violet-400",
+          iconBg: "bg-muted",
+          iconColor: "text-muted-foreground",
         },
         {
           title: "Clients",
           description: "Portefeuille voyageurs.",
           href: agenceRoutes.clients(organizationId, branchId),
           icon: Users,
-          iconBg: "bg-violet-500/15",
-          iconColor: "text-violet-400",
+          iconBg: "bg-muted",
+          iconColor: "text-muted-foreground",
         },
         tauxChangeCard(organizationId, branchId),
         bonsCommandeCard(organizationId, branchId),
@@ -386,17 +386,17 @@ export function menuSectionsForBranch(
     },
     {
       title: "EXPLOITATION VOYAGE",
-      titleColor: "text-sky-400",
+      titleColor: "text-muted-foreground",
       icon: Plane,
-      iconColor: "text-sky-400",
+      iconColor: "text-muted-foreground",
       items: [
         {
           title: "Trajets",
           description: "Lignes et tarifs de la branche.",
           href: agenceRoutes.trajets(organizationId, branchId),
           icon: Plane,
-          iconBg: "bg-sky-500/15",
-          iconColor: "text-sky-400",
+          iconBg: "bg-muted",
+          iconColor: "text-muted-foreground",
         },
         {
           title: "Colis",
@@ -411,8 +411,8 @@ export function menuSectionsForBranch(
           description: "Scan QR et passages.",
           href: agenceRoutes.passages(organizationId, branchId),
           icon: Users,
-          iconBg: "bg-rose-500/15",
-          iconColor: "text-rose-400",
+          iconBg: "bg-muted",
+          iconColor: "text-muted-foreground",
         },
       ],
     },

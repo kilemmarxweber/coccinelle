@@ -10,6 +10,19 @@ interface EmptyStateProps {
   className?: string
 }
 
+/**
+ * État vide pour listes / modules branche.
+ *
+ * @example
+ * ```tsx
+ * <EmptyState
+ *   icon={ClipboardList}
+ *   title="Aucun bon de commande"
+ *   description="Créez un bon pour démarrer."
+ *   action={<Button>Nouveau bon</Button>}
+ * />
+ * ```
+ */
 export function EmptyState({
   icon: Icon,
   title,

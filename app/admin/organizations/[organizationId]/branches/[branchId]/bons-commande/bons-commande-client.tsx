@@ -3,12 +3,14 @@
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Plus, Printer, Trash2 } from "lucide-react";
+import { ClipboardList, Plus, Printer, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
+import { ModulePageChrome } from "@/components/layout/module-page-chrome";
+import { EmptyState } from "@/components/ui/empty-state";
+import { StatusBadge, type StatusBadgeTone } from "@/components/ui/status-badge";
 import {
   Dialog,
   DialogContent,
@@ -31,7 +33,6 @@ import {
 } from "@/lib/cash/exchange";
 import {
   branchCaissePath,
-  branchDashboardPath,
   boutiqueRoutes,
   hotelRoutes,
 } from "@/lib/branch/paths";
@@ -42,7 +43,6 @@ import {
   syncPurchaseOrderCatalogAction,
   validatePurchaseOrderAction,
 } from "@/lib/purchases/actions";
-import { cn } from "@/lib/utils";
 
 type CatalogItem = {
   id: string;
@@ -101,6 +101,14 @@ function statusLabel(s: string) {
   if (s === "VALIDE") return "Validé";
   if (s === "ANNULE") return "Annulé";
   return s;
+}
+
+function statusTone(s: string): StatusBadgeTone {
+  if (s === "EN_ATTENTE") return "pending";
+  if (s === "FONDS_SORTIS") return "info";
+  if (s === "VALIDE") return "success";
+  if (s === "ANNULE") return "muted";
+  return "muted";
 }
 
 function buildPurchaseOrderHtml(
@@ -454,44 +462,51 @@ export function BonsCommandeClient(props: {
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <Link
-            href={branchDashboardPath(props.organizationId, props.branchId)}
-            className="mb-2 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="size-3.5" /> Dashboard
-          </Link>
-          <h1 className="text-xl font-semibold tracking-tight">
-            Bons de commande
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {props.branchName} · catalogue de cette branche uniquement · à la
-            validation : crée ou met à jour le stock des produits ici
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant="outline"
-            render={<Link href={productsHref} />}
-          >
-            Produits branche
-          </Button>
-          {!props.hasOpenCashSession ? (
-            <Button variant="outline" render={<Link href={branchCaissePath(props.organizationId, props.branchId)} />}>
-              Ouvrir la caisse
+      <ModulePageChrome
+        organizationId={props.organizationId}
+        branchId={props.branchId}
+        title="Bons de commande"
+        subtitle={`${props.branchName} · catalogue de cette branche uniquement · à la validation : crée ou met à jour le stock des produits ici`}
+        actions={
+          <>
+            <Button variant="outline" render={<Link href={productsHref} />}>
+              Produits branche
             </Button>
-          ) : null}
-          <Button onClick={() => setCreateOpen(true)}>
-            <Plus className="mr-1.5 size-4" /> Nouveau bon
-          </Button>
-        </div>
-      </div>
+            {!props.hasOpenCashSession ? (
+              <Button
+                variant="outline"
+                render={
+                  <Link
+                    href={branchCaissePath(
+                      props.organizationId,
+                      props.branchId,
+                    )}
+                  />
+                }
+              >
+                Ouvrir la caisse
+              </Button>
+            ) : null}
+            <Button onClick={() => setCreateOpen(true)}>
+              <Plus className="mr-1.5 size-4" /> Nouveau bon
+            </Button>
+          </>
+        }
+      />
 
-      <ul className="space-y-3">
+      <ul className="flex flex-col gap-3">
         {props.orders.length === 0 ? (
-          <li className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-            Aucun bon de commande.
+          <li>
+            <EmptyState
+              icon={ClipboardList}
+              title="Aucun bon de commande"
+              description="Créez un bon pour commander auprès d’un fournisseur."
+              action={
+                <Button onClick={() => setCreateOpen(true)}>
+                  <Plus className="mr-1.5 size-4" /> Nouveau bon
+                </Button>
+              }
+            />
           </li>
         ) : (
           props.orders.map((po) => (
@@ -503,17 +518,9 @@ export function BonsCommandeClient(props: {
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="font-semibold">{po.number}</p>
-                    <Badge
-                      variant="secondary"
-                      className={cn(
-                        po.status === "EN_ATTENTE" && "bg-amber-500/15 text-amber-800",
-                        po.status === "FONDS_SORTIS" && "bg-sky-500/15 text-sky-800",
-                        po.status === "VALIDE" && "bg-emerald-500/15 text-emerald-800",
-                        po.status === "ANNULE" && "bg-muted text-muted-foreground",
-                      )}
-                    >
+                    <StatusBadge tone={statusTone(po.status)}>
                       {statusLabel(po.status)}
-                    </Badge>
+                    </StatusBadge>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {po.supplierName ? `${po.supplierName} · ` : ""}
@@ -608,9 +615,12 @@ export function BonsCommandeClient(props: {
                         <td className="py-1.5">
                           {i.name}
                           {i.createProduct ? (
-                            <span className="ml-1 text-[10px] text-amber-700">
-                              (nouveau)
-                            </span>
+                            <StatusBadge
+                              tone="pending"
+                              className="ml-1 text-[10px]"
+                            >
+                              Nouveau
+                            </StatusBadge>
                           ) : null}
                         </td>
                         <td className="py-1.5 text-muted-foreground">

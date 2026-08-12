@@ -90,21 +90,23 @@ export function BranchDashboard({
         aria-hidden={!showWelcome}
       >
         <div className="overflow-hidden">
-          <section className="relative mb-8 overflow-hidden rounded-2xl bg-primary px-6 py-7 shadow-sm shadow-primary/20 sm:px-8">
-            <div className="pr-16">
-              <h2 className="text-2xl font-bold text-primary-foreground sm:text-3xl">
-                Bonjour, {userName} 👋
-              </h2>
-              <p className="mt-2 max-w-2xl text-sm text-primary-foreground/85 sm:text-base">
-                Bienvenue sur votre espace de gestion d&apos;activité. Sélectionnez
-                une option pour commencer.
-              </p>
-              <p className="mt-3 text-xs text-primary-foreground/70">
-                {typeDetail} · {branchName}
-              </p>
-            </div>
-            <div className="absolute top-5 right-5 rounded-full bg-background/95 px-3.5 py-1.5 text-xs font-semibold text-primary shadow-sm sm:top-6 sm:right-6">
-              Droit : {roleLabel(user?.role)}
+          <section className="mb-8 overflow-hidden rounded-2xl bg-primary px-6 py-7 shadow-sm shadow-primary/20 sm:px-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
+                <h2 className="text-2xl font-bold text-primary-foreground sm:text-3xl">
+                  Bonjour, {userName}
+                </h2>
+                <p className="mt-2 max-w-2xl text-sm text-primary-foreground/85 sm:text-base">
+                  Bienvenue sur votre espace de gestion d&apos;activité.
+                  Sélectionnez une option pour commencer.
+                </p>
+                <p className="mt-3 text-xs text-primary-foreground/70">
+                  {typeDetail} · {branchName}
+                </p>
+              </div>
+              <div className="shrink-0 self-start rounded-full bg-background/95 px-3.5 py-1.5 text-xs font-semibold text-primary shadow-sm">
+                Droit : {roleLabel(user?.role)}
+              </div>
             </div>
           </section>
         </div>

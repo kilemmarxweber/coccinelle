@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import { GitBranch } from "lucide-react";
+import { GitBranch, LayoutGrid } from "lucide-react";
 import { DashboardNavbar } from "@/components/layout/dashboard-navbar";
 import { BranchNotificationsBell } from "@/components/layout/branch-notifications-bell";
 import { Button } from "@/components/ui/button";
@@ -38,14 +38,25 @@ export default async function BranchWorkspaceLayout({
   );
   if (!branch || branch.organizationId !== organizationId) notFound();
 
+  const hubHref = branchDashboardPath(organizationId, branchId);
+
   return (
     <div className="min-h-svh bg-background">
       <DashboardNavbar
         title={branch.name}
         subtitle={`${branch.organizationName} · ${branchTypeDetailLabel(branch)} · ${branch.code}`}
-        titleHref={branchDashboardPath(organizationId, branchId)}
+        titleHref={hubHref}
         actions={
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="md:hidden"
+              render={<Link href={hubHref} />}
+            >
+              <LayoutGrid data-icon="inline-start" aria-hidden />
+              Hub
+            </Button>
             {isHospitality(branch.type) ? (
               <BranchNotificationsBell
                 organizationId={organizationId}

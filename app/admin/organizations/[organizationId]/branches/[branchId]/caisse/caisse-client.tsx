@@ -14,13 +14,15 @@ import {
   RefreshCw,
   ShoppingBag,
   Truck,
-  Wallet,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { ModulePageChrome } from "@/components/layout/module-page-chrome";
+import { EmptyState } from "@/components/ui/empty-state";
+import { StatusBadge } from "@/components/ui/status-badge";
 import {
   Dialog,
   DialogContent,
@@ -698,55 +700,47 @@ export function CaisseClient(props: Props) {
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-5 px-3 py-5 sm:px-5 lg:px-6">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex items-start gap-3">
-          <span className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-            <Wallet className="size-6" />
-          </span>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Caisse & Ventes</h1>
-            <p className="text-sm text-muted-foreground">{props.branchName}</p>
-            {props.rate && moneyRate ? (
-              <p className="mt-1 text-xs text-muted-foreground">
-                Taux : {formatConfiguredRateLabel(moneyRate)}
-                {isCdfPrimary(moneyRate)
+      <ModulePageChrome
+        organizationId={props.organizationId}
+        branchId={props.branchId}
+        title="Caisse & Ventes"
+        subtitle={
+          props.rate && moneyRate
+            ? `${props.branchName} · Taux : ${formatConfiguredRateLabel(moneyRate)}${
+                isCdfPrimary(moneyRate)
                   ? ` · (1 USD = ${props.rate.rate.toLocaleString("fr-FR", { maximumFractionDigits: 2 })} CDF)`
-                  : ` · (1 CDF ≈ ${(1 / props.rate.rate).toLocaleString("fr-FR", { maximumFractionDigits: 6 })} USD)`}
-              </p>
+                  : ` · (1 CDF ≈ ${(1 / props.rate.rate).toLocaleString("fr-FR", { maximumFractionDigits: 6 })} USD)`
+              }`
+            : `${props.branchName} · Aucun taux — configurez Taux de Change.`
+        }
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            {props.cashSession ? (
+              <>
+                <StatusBadge tone="success" className="gap-1.5 px-2.5 py-1">
+                  Session ouverte · fond {props.cashSession.openingFloat}
+                </StatusBadge>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  disabled={pending}
+                  onClick={closeSession}
+                >
+                  Clôturer
+                </Button>
+              </>
             ) : (
-              <p className="mt-1 text-xs text-amber-600">
-                Aucun taux — configurez Taux de Change.
-              </p>
-            )}
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {props.cashSession ? (
-            <>
-              <Badge variant="default" className="gap-1.5 px-2.5 py-1">
-                Session ouverte · fond {props.cashSession.openingFloat}
-              </Badge>
               <Button
-                variant="destructive"
                 size="sm"
                 disabled={pending}
-                onClick={closeSession}
+                onClick={() => setSessionDialogOpen(true)}
               >
-                Clôturer
+                Ouvrir la session
               </Button>
-            </>
-          ) : (
-            <Button
-              size="sm"
-              className="gap-1.5"
-              onClick={() => setSessionDialogOpen(true)}
-            >
-              <Banknote className="size-4" />
-              Ouvrir la session
-            </Button>
-          )}
-        </div>
-      </header>
+            )}
+          </div>
+        }
+      />
 
       <Dialog
         open={sessionDialogOpen && !props.cashSession}
@@ -899,13 +893,12 @@ export function CaisseClient(props: Props) {
           </div>
 
           {readySorted.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 px-6 py-14 text-center">
-              <CircleDollarSign className="mb-3 size-10 text-muted-foreground/50" />
-              <p className="font-medium">Aucune commande en file F&B</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Vente rapide et tickets cuisine prêts apparaîtront ici.
-              </p>
-            </div>
+            <EmptyState
+              icon={CircleDollarSign}
+              title="Aucune commande en file F&B"
+              description="Vente rapide et tickets cuisine prêts apparaîtront ici."
+              className="rounded-2xl border border-border bg-card/50"
+            />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {readySorted.map((order) => {
@@ -968,31 +961,27 @@ export function CaisseClient(props: Props) {
                             {order.stay ? ` · ${order.stay.guestName} · séjour` : ""}
                           </p>
                           {order.stay ? (
-                            <span className="mt-1 inline-flex rounded-full bg-sky-500/15 px-2 py-0.5 text-[11px] font-semibold text-sky-800 dark:text-sky-200">
+                            <StatusBadge tone="info" className="mt-1 text-[11px]">
                               Client en chambre
-                            </span>
+                            </StatusBadge>
                           ) : null}
                         </div>
                         <div className="flex flex-col items-end gap-1.5">
-                          <Badge
-                            className={cn(
-                              isPaid && "bg-primary text-primary-foreground",
-                              alreadyServed &&
-                                "bg-amber-600 text-white hover:bg-amber-600",
-                              isEnCours &&
-                                !alreadyServed &&
-                                "bg-sky-600 text-white hover:bg-sky-600",
-                              inKitchen &&
-                                "bg-orange-600 text-white hover:bg-orange-600",
-                              !isPaid &&
-                                !alreadyServed &&
-                                !isEnCours &&
-                                !inKitchen &&
-                                "bg-emerald-600 text-white hover:bg-emerald-600",
-                            )}
+                          <StatusBadge
+                            tone={
+                              isPaid
+                                ? "success"
+                                : alreadyServed
+                                  ? "pending"
+                                  : inKitchen
+                                    ? "muted"
+                                    : isEnCours
+                                      ? "info"
+                                      : "success"
+                            }
                           >
                             {statusLabel}
-                          </Badge>
+                          </StatusBadge>
                           <span className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground tabular-nums">
                             <Clock3 className="size-3.5" />
                             {elapsedLabel(waited, now)}

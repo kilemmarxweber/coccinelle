@@ -68,9 +68,7 @@ function MobileNavMoreMenu() {
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
-  const moreActive =
-    pathname.startsWith("/admin/account") ||
-    pathname.startsWith("/admin/settings");
+  const moreActive = pathname.startsWith("/admin/account");
 
   const initials = getUserInitials(user?.name, user?.email);
 
@@ -125,11 +123,11 @@ function MobileNavMoreMenu() {
           Compte
         </DropdownMenuItem>
         <DropdownMenuItem
-          className="min-h-10 cursor-pointer"
-          onClick={() => router.push("/admin/settings")}
+          disabled
+          className="min-h-10 opacity-60"
         >
           <Settings className="size-4" />
-          Paramètres
+          Paramètres (bientôt)
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

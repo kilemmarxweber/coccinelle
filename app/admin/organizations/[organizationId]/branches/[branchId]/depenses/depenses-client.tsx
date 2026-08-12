@@ -3,12 +3,14 @@
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Plus, Printer } from "lucide-react";
+import { Plus, Printer, Receipt } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
+import { ModulePageChrome } from "@/components/layout/module-page-chrome";
+import { EmptyState } from "@/components/ui/empty-state";
+import { StatusBadge } from "@/components/ui/status-badge";
 import {
   Dialog,
   DialogContent,
@@ -24,7 +26,7 @@ import {
   primaryPriceInputStep,
   type NormalizedUsdCdfRate,
 } from "@/lib/cash/exchange";
-import { branchCaissePath, branchDashboardPath } from "@/lib/branch/paths";
+import { branchCaissePath } from "@/lib/branch/paths";
 import { createExpenseAction } from "@/lib/purchases/actions";
 import { PosPayMethodPicker } from "@/components/pos/pos-terminal";
 import {
@@ -290,41 +292,34 @@ export function DepensesClient(props: {
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <Link
-            href={branchDashboardPath(props.organizationId, props.branchId)}
-            className="mb-2 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="size-3.5" /> Dashboard
-          </Link>
-          <h1 className="text-xl font-semibold tracking-tight">Dépenses</h1>
-          <p className="text-sm text-muted-foreground">
-            {props.branchName} · sorties, dépôt banque, remise ou prêt
-            propriétaire (alimente la caisse) · document à signer
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {!hasOpenCashSession ? (
-            <Button
-              variant="outline"
-              render={
-                <Link
-                  href={branchCaissePath(
-                    props.organizationId,
-                    props.branchId,
-                  )}
-                />
-              }
-            >
-              Ouvrir la caisse
+      <ModulePageChrome
+        organizationId={props.organizationId}
+        branchId={props.branchId}
+        title="Dépenses"
+        subtitle={`${props.branchName} · sorties, dépôt banque, remise ou prêt propriétaire (alimente la caisse) · document à signer`}
+        actions={
+          <>
+            {!hasOpenCashSession ? (
+              <Button
+                variant="outline"
+                render={
+                  <Link
+                    href={branchCaissePath(
+                      props.organizationId,
+                      props.branchId,
+                    )}
+                  />
+                }
+              >
+                Ouvrir la caisse
+              </Button>
+            ) : null}
+            <Button onClick={() => setOpen(true)}>
+              <Plus className="mr-1.5 size-4" /> Nouvelle opération
             </Button>
-          ) : null}
-          <Button onClick={() => setOpen(true)}>
-            <Plus className="mr-1.5 size-4" /> Nouvelle opération
-          </Button>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {props.cashDrawer ? (
         <div className="grid gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/5 px-4 py-3 sm:grid-cols-3">
@@ -379,7 +374,7 @@ export function DepensesClient(props: {
           Caisse vide ou quasi vide — le propriétaire peut enregistrer un{" "}
           <button
             type="button"
-            className="font-semibold text-sky-800 underline underline-offset-2 dark:text-sky-200"
+            className="font-semibold text-primary underline underline-offset-2"
             onClick={() => {
               onKindChange("PRET_PROPRIETAIRE");
               setOpen(true);
@@ -406,10 +401,19 @@ export function DepensesClient(props: {
         </div>
       </div>
 
-      <ul className="space-y-2">
+      <ul className="flex flex-col gap-2">
         {props.expenses.length === 0 ? (
-          <li className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-            Aucune opération enregistrée.
+          <li>
+            <EmptyState
+              icon={Receipt}
+              title="Aucune opération enregistrée"
+              description="Enregistrez une sortie de caisse, un dépôt ou un prêt propriétaire."
+              action={
+                <Button onClick={() => setOpen(true)}>
+                  <Plus className="mr-1.5 size-4" /> Nouvelle opération
+                </Button>
+              }
+            />
           </li>
         ) : (
           props.expenses.map((e) => {
@@ -423,9 +427,12 @@ export function DepensesClient(props: {
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="font-medium">{e.label}</p>
-                    <Badge variant="secondary" className="text-[10px]">
+                    <StatusBadge
+                      tone={advance ? "success" : "muted"}
+                      className="text-[10px]"
+                    >
                       {expenseKindLabel(k)}
-                    </Badge>
+                    </StatusBadge>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     {e.number}

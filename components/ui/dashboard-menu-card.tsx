@@ -66,9 +66,9 @@ export type DashboardSectionProps = {
 
 export function DashboardSection({
   title,
-  titleColor = "text-emerald-400",
+  titleColor = "text-foreground",
   icon: Icon,
-  iconColor = "text-emerald-400",
+  iconColor = "text-primary",
   children,
 }: DashboardSectionProps) {
   return (

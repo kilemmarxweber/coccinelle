@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { ModulePageChrome } from "@/components/layout/module-page-chrome";
+import { EmptyState } from "@/components/ui/empty-state";
+import { StatusBadge } from "@/components/ui/status-badge";
 import {
   Dialog,
   DialogContent,
@@ -808,20 +811,16 @@ export function SejoursClient(props: {
 
   return (
     <div className="mx-auto flex max-w-[100vw] flex-col gap-4 px-4 py-6 lg:max-w-7xl">
-      <div>
-        <h1 className="text-2xl font-bold">Séjours</h1>
-        <p className="text-sm text-muted-foreground">
-          Planning · check-in · actifs · check-outs
-          {props.rate ? (
-            <>
-              {" · "}
-              <span className="font-medium">
-                {formatConfiguredRateLabel(props.rate)}
-              </span>
-            </>
-          ) : null}
-        </p>
-      </div>
+      <ModulePageChrome
+        organizationId={props.organizationId}
+        branchId={props.branchId}
+        title="Séjours"
+        subtitle={
+          props.rate
+            ? `Planning · check-in · actifs · check-outs · ${formatConfiguredRateLabel(props.rate)}`
+            : "Planning · check-in · actifs · check-outs"
+        }
+      />
 
       <Tabs
         value={mainTab}
@@ -847,71 +846,81 @@ export function SejoursClient(props: {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="calendrier" className="space-y-4 outline-none">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-xs text-muted-foreground">
+        <TabsContent value="calendrier" className="flex flex-col gap-4 outline-none">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <p className="text-xs leading-relaxed text-muted-foreground">
               <span className="font-semibold text-orange-500">check-in</span>
               {" · "}
-              <span className="font-semibold text-sky-600">occupé</span>
+              <span className="font-semibold text-sky-600 dark:text-sky-400">
+                occupé
+              </span>
               {" · "}
-              <span className="font-semibold text-slate-600 dark:text-slate-300">
+              <span className="font-semibold text-muted-foreground">
                 historique
               </span>
               {" · "}
-              <span className="font-semibold text-emerald-600">libre</span>
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                libre
+              </span>
               {" · "}
               <span className="text-muted-foreground">passé vide</span>
               {" · clic = formulaire · libération "}
               <span className="font-semibold">{HOTEL_CHECKOUT_HOUR}h</span>
             </p>
-            <div className="flex flex-wrap items-center gap-2">
-              <Button
-                size="sm"
-                variant={view === "month" ? "default" : "outline"}
-                onClick={() => setView("month")}
-              >
-                Mois
-              </Button>
-              <Button
-                size="sm"
-                variant={view === "year" ? "default" : "outline"}
-                onClick={() => setView("year")}
-              >
-                Année
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => navigate(year - 1, month)}
-              >
-                ← An
-              </Button>
-              <select
-                className="h-8 rounded-md border border-border bg-background px-2 text-sm"
-                value={month}
-                onChange={(e) => navigate(year, Number(e.target.value))}
-              >
-                {MONTHS.map((m, i) => (
-                  <option key={m} value={i + 1}>
-                    {m}
-                  </option>
-                ))}
-              </select>
-              <Input
-                type="number"
-                className="h-8 w-24"
-                value={year}
-                onChange={(e) =>
-                  navigate(Number(e.target.value) || year, month)
-                }
-              />
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => navigate(year + 1, month)}
-              >
-                An →
-              </Button>
+            <div className="flex min-w-0 w-full flex-col gap-2 sm:w-auto lg:items-end">
+              <div className="flex flex-nowrap items-center gap-2">
+                <Button
+                  size="sm"
+                  variant={view === "month" ? "default" : "outline"}
+                  onClick={() => setView("month")}
+                >
+                  Mois
+                </Button>
+                <Button
+                  size="sm"
+                  variant={view === "year" ? "default" : "outline"}
+                  onClick={() => setView("year")}
+                >
+                  Année
+                </Button>
+              </div>
+              <div className="flex max-w-full flex-nowrap items-center gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="flex shrink-0 flex-nowrap items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => navigate(year - 1, month)}
+                  >
+                    ← An
+                  </Button>
+                  <select
+                    className="h-8 rounded-md border border-border bg-background px-2 text-sm"
+                    value={month}
+                    onChange={(e) => navigate(year, Number(e.target.value))}
+                  >
+                    {MONTHS.map((m, i) => (
+                      <option key={m} value={i + 1}>
+                        {m}
+                      </option>
+                    ))}
+                  </select>
+                  <Input
+                    type="number"
+                    className="h-8 w-24"
+                    value={year}
+                    onChange={(e) =>
+                      navigate(Number(e.target.value) || year, month)
+                    }
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => navigate(year + 1, month)}
+                  >
+                    An →
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1214,11 +1223,20 @@ export function SejoursClient(props: {
           </div>
 
           {filteredListStays.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              {listFilter === "actifs"
-                ? "Aucun séjour en cours."
-                : "Aucun check-out pour cette date."}
-            </p>
+            <EmptyState
+              icon={ClipboardList}
+              title={
+                listFilter === "actifs"
+                  ? "Aucun séjour en cours"
+                  : "Aucun check-out pour cette date"
+              }
+              description={
+                listFilter === "actifs"
+                  ? "Les séjours actifs apparaîtront ici après un check-in."
+                  : "Changez la date ou le filtre pour voir d’autres check-outs."
+              }
+              className="py-8"
+            />
           ) : (
             <ul className="space-y-3">
               {filteredListStays.map((s) => {
@@ -1290,13 +1308,17 @@ export function SejoursClient(props: {
                             : `ch. ${s.room.number}`}
                         </p>
                         <div className="flex flex-wrap gap-1.5">
-                          <Badge
-                            variant={
-                              s.status === "CHECKED_IN" ? "default" : "secondary"
+                          <StatusBadge
+                            tone={
+                              s.status === "CHECKED_IN"
+                                ? "success"
+                                : s.status === "CHECKED_OUT"
+                                  ? "muted"
+                                  : "info"
                             }
                           >
                             {STATUS_LABEL[s.status] ?? s.status}
-                          </Badge>
+                          </StatusBadge>
                           {m.isFlat ? (
                             <Badge variant="outline">
                               {m.plannedHours > 0
@@ -1318,30 +1340,30 @@ export function SejoursClient(props: {
                             </>
                           )}
                           {!m.isFlat && m.lateAfter10 ? (
-                            <Badge variant="destructive">
+                            <StatusBadge tone="danger">
                               Après {HOTEL_CHECKOUT_HOUR}h · nuitée due
-                            </Badge>
+                            </StatusBadge>
                           ) : !m.isFlat && m.isCheckoutDay ? (
-                            <Badge variant="destructive">
+                            <StatusBadge tone="danger">
                               Départ aujourd’hui · avant {HOTEL_CHECKOUT_HOUR}h
-                            </Badge>
+                            </StatusBadge>
                           ) : null}
                           {flatCd?.overdue ? (
-                            <Badge variant="destructive">Temps dépassé</Badge>
+                            <StatusBadge tone="danger">Temps dépassé</StatusBadge>
                           ) : flatCd?.tone === "critical" ? (
-                            <Badge variant="destructive">Fin imminente</Badge>
+                            <StatusBadge tone="danger">Fin imminente</StatusBadge>
                           ) : flatCd?.tone === "warn" ? (
-                            <Badge variant="secondary">Bientôt la fin</Badge>
+                            <StatusBadge tone="pending">Bientôt la fin</StatusBadge>
                           ) : null}
                           {s.billingMode === "FLAT" ? (
-                            <Badge variant="secondary">Passage</Badge>
+                            <StatusBadge tone="muted">Passage</StatusBadge>
                           ) : s.unitPriceApplied != null &&
                             Math.abs(
                               (s.unitPriceApplied ?? 0) -
                                 (s.catalogUnitPrice ??
                                   s.room.roomType.priceNight),
                             ) >= 0.01 ? (
-                            <Badge variant="secondary">Tarif négocié</Badge>
+                            <StatusBadge tone="info">Tarif négocié</StatusBadge>
                           ) : null}
                           {s.folio &&
                           s.room.roomType.kind === "MEETING" &&
@@ -1361,12 +1383,11 @@ export function SejoursClient(props: {
                                   ),
                                 });
                                 return (
-                                  <Badge
-                                    variant="secondary"
-                                    className={
+                                  <StatusBadge
+                                    tone={
                                       dep.collectOverrun > 0.01
-                                        ? "bg-rose-500/15 text-rose-800"
-                                        : "bg-violet-500/15 text-violet-900"
+                                        ? "danger"
+                                        : "info"
                                     }
                                   >
                                     Caution {fmt(dep.cautionAmount)}
@@ -1377,7 +1398,7 @@ export function SejoursClient(props: {
                                       : dep.collectOverrun > 0.01
                                         ? ` · +${fmt(dep.collectOverrun)}`
                                         : ""}
-                                  </Badge>
+                                  </StatusBadge>
                                 );
                               })()
                             : null}
@@ -1454,7 +1475,7 @@ export function SejoursClient(props: {
                               </div>
                             </div>
                           ) : (
-                            <p className="mt-1 text-xs text-amber-800 dark:text-amber-200">
+                            <p className="mt-1 text-xs text-warning-foreground">
                               Décompte après check-in (heure de début
                               manquante).
                             </p>
