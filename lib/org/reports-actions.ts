@@ -15,6 +15,8 @@ import {
   previousRange,
   startOfLocalDay,
 } from "@/lib/hotel/reports/period";
+import { flatStayCountdown } from "@/lib/hotel/stay-flat-countdown";
+import { nightsBetween } from "@/lib/hotel/stay-nights";
 
 function rangeBounds(from: string, to: string) {
   return { gte: startOfLocalDay(from), lte: endOfLocalDay(to) };
@@ -58,6 +60,7 @@ export type OrgBranchOption = {
   name: string;
   code: string;
   type: string;
+  hasStays: boolean;
 };
 
 export async function listOrgReportBranchesAction(organizationId: string) {
@@ -65,7 +68,7 @@ export async function listOrgReportBranchesAction(organizationId: string) {
   const branches = await prisma.branch.findMany({
     where: { organizationId, status: "ACTIVE" },
     orderBy: [{ type: "asc" }, { name: "asc" }],
-    select: { id: true, name: true, code: true, type: true },
+    select: { id: true, name: true, code: true, type: true, hasStays: true },
   });
 
   const accessible: OrgBranchOption[] = [];
@@ -88,7 +91,13 @@ async function resolveAccessibleBranches(
 
   const branches = await prisma.branch.findMany({
     where: { organizationId, id: { in: ids } },
-    select: { id: true, name: true, code: true, type: true },
+    select: {
+      id: true,
+      name: true,
+      code: true,
+      type: true,
+      hasStays: true,
+    },
   });
   if (branches.length !== ids.length) {
     throw new Error("Branche invalide pour cette organisation.");
@@ -1241,5 +1250,644 @@ export async function getOrgAggregatedFinanceReportAction(input: {
     linesTotal: lines.reduce((s, l) => s + l.usd, 0),
     groupsByBranchType,
     rate: toReportExchangeRate(rate),
+  };
+}
+
+function stayStatusLabel(status: string) {
+  switch (status) {
+    case "RESERVED":
+      return "Réservé";
+    case "CHECKED_IN":
+      return "Occupé";
+    case "CHECKED_OUT":
+      return "Check-out";
+    case "CANCELLED":
+      return "Annulé";
+    case "NO_SHOW":
+      return "No-show";
+    default:
+      return status;
+  }
+}
+
+function spaceKindLabel(kind: string) {
+  return kind === "MEETING" ? "Salle" : "Chambre";
+}
+
+/** USD signé (encaissement > 0, remboursement < 0). */
+function paymentUsdSigned(
+  p: { amountCdf: number; amountForeign?: number | null },
+  usdToCdfRate: number | null,
+) {
+  if (p.amountForeign != null && p.amountForeign !== 0) return p.amountForeign;
+  if (usdToCdfRate && usdToCdfRate > 0) return p.amountCdf / usdToCdfRate;
+  return p.amountCdf;
+}
+
+function stayDurationFields(s: {
+  billingMode: string;
+  plannedHours: number | null;
+  status: string;
+  checkInDate: Date;
+  checkOutDate: Date;
+  checkedInAt: Date | null;
+}) {
+  const isFlat = s.billingMode === "FLAT";
+  if (isFlat) {
+    const hours = s.plannedHours ?? 0;
+    const durationLabel = hours > 0 ? `${hours} h` : "Passage";
+    let remainingLabel: string | null = null;
+    let remainingTone: "normal" | "warn" | "critical" | null = null;
+    if (s.status === "CHECKED_IN" && s.checkedInAt && hours > 0) {
+      const cd = flatStayCountdown({
+        plannedHours: hours,
+        checkedInAt: s.checkedInAt,
+      });
+      if (cd) {
+        remainingLabel = cd.overdue
+          ? `Dépassé ${cd.remainingLabel}`
+          : `${cd.remainingLabel} rest.`;
+        remainingTone = cd.tone;
+      }
+    } else if (s.status === "RESERVED" && hours > 0) {
+      remainingLabel = `${hours} h prévues`;
+    }
+    return {
+      durationDays: null as number | null,
+      durationHours: hours > 0 ? hours : null,
+      durationLabel,
+      remainingLabel,
+      remainingTone,
+    };
+  }
+
+  const days = nightsBetween(s.checkInDate, s.checkOutDate);
+  const durationLabel = `${days} jour${days > 1 ? "s" : ""}`;
+  let remainingLabel: string | null = null;
+  let remainingTone: "normal" | "warn" | "critical" | null = null;
+  if (s.status === "RESERVED" || s.status === "CHECKED_IN") {
+    const today = new Date();
+    const todayUtc = new Date(
+      Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()),
+    );
+    const out = new Date(
+      Date.UTC(
+        s.checkOutDate.getUTCFullYear(),
+        s.checkOutDate.getUTCMonth(),
+        s.checkOutDate.getUTCDate(),
+      ),
+    );
+    const remaining = Math.max(
+      0,
+      Math.ceil((out.getTime() - todayUtc.getTime()) / 86_400_000),
+    );
+    if (s.status === "RESERVED") {
+      remainingLabel = `${days} jour${days > 1 ? "s" : ""} réservés`;
+    } else if (remaining === 0) {
+      remainingLabel = "Départ aujourd’hui";
+      remainingTone = "critical";
+    } else {
+      remainingLabel = `${remaining} j restant${remaining > 1 ? "s" : ""}`;
+      remainingTone = remaining <= 1 ? "warn" : "normal";
+    }
+  }
+  return {
+    durationDays: days,
+    durationHours: null as number | null,
+    durationLabel,
+    remainingLabel,
+    remainingTone,
+  };
+}
+
+function nightsOverlap(
+  stayIn: Date,
+  stayOut: Date,
+  rangeFrom: Date,
+  rangeToExclusive: Date,
+) {
+  const start = stayIn > rangeFrom ? stayIn : rangeFrom;
+  const end = stayOut < rangeToExclusive ? stayOut : rangeToExclusive;
+  const ms = end.getTime() - start.getTime();
+  if (ms <= 0) return 0;
+  return Math.max(0, Math.round(ms / 86_400_000));
+}
+
+export async function getOrgAggregatedOccupancyReportAction(input: {
+  organizationId: string;
+  branchIds: string[];
+  from: string;
+  to: string;
+}) {
+  const { branches, nameById } = await resolveAccessibleBranches(
+    input.organizationId,
+    input.branchIds,
+  );
+  const staysBranches = branches.filter(
+    (b) =>
+      b.hasStays && (b.type === "HOTEL" || b.type === "RESTAURANT"),
+  );
+  const staysIds = staysBranches.map((b) => b.id);
+  const days = eachDayIso(input.from, input.to);
+  const fromDay = startOfLocalDay(input.from);
+  const toDay = startOfLocalDay(input.to);
+  const bounds = rangeBounds(input.from, input.to);
+  const prev = previousRange(input.from, input.to);
+  const prevBounds = rangeBounds(prev.from, prev.to);
+
+  type OccupancyLine = {
+    id: string;
+    day: string;
+    branchId: string;
+    branchName: string;
+    branchType: string;
+    guestName: string;
+    roomNumber: string;
+    roomTypeName: string;
+    spaceKind: "ROOM" | "MEETING";
+    spaceKindLabel: string;
+    status: string;
+    statusLabel: string;
+    checkInDate: string;
+    checkOutDate: string;
+    checkedInAt: string | null;
+    checkedOutAt: string | null;
+    billingMode: string;
+    durationDays: number | null;
+    durationHours: number | null;
+    durationLabel: string;
+    remainingLabel: string | null;
+    remainingTone: "normal" | "warn" | "critical" | null;
+    event: "reservation" | "check_in" | "check_out" | "stay";
+    eventLabel: string;
+  };
+
+  type OccupancyFinanceBranch = {
+    branchId: string;
+    branchName: string;
+    branchType: string;
+    branchTypeLabel: string;
+    collected: number;
+    expected: number;
+    refunded: number;
+    refundDue: number;
+    /** Encaissé − remboursé (net réel période). */
+    netCash: number;
+  };
+
+  type OccupancyFinanceDetail = {
+    id: string;
+    folioId: string;
+    branchId: string;
+    branchName: string;
+    branchType: string;
+    branchTypeLabel: string;
+    guestName: string;
+    roomNumber: string;
+    roomTypeName: string;
+    spaceKindLabel: string;
+    status: string;
+    statusLabel: string;
+    checkInDate: string;
+    checkOutDate: string;
+    billingMode: string;
+    charges: number;
+    paid: number;
+    collected: number;
+    expected: number;
+    refunded: number;
+    refundDue: number;
+    balance: number;
+    /** Encaissé − remboursé sur la période. */
+    netCash: number;
+    paymentsLabel: string;
+  };
+
+  const emptyFinance = {
+    collected: 0,
+    expected: 0,
+    refunded: 0,
+    refundDue: 0,
+    netCash: 0,
+    byBranch: [] as OccupancyFinanceBranch[],
+    details: [] as OccupancyFinanceDetail[],
+  };
+
+  const emptyResult = {
+    period: { from: input.from, to: input.to },
+    staysBranchCount: 0,
+    kpis: {
+      reservations: 0,
+      checkIns: 0,
+      checkOuts: 0,
+      occupied: 0,
+      rooms: 0,
+      meetings: 0,
+      occupancyPct: 0,
+      checkInsDelta: 0,
+      checkOutsDelta: 0,
+    },
+    eventsByDay: days.map((day) => ({
+      day,
+      checkIns: 0,
+      checkOuts: 0,
+      reservations: 0,
+    })),
+    bySpaceKind: [] as { name: string; value: number }[],
+    byBranch: [] as { name: string; value: number }[],
+    byStatus: [] as { name: string; value: number }[],
+    lines: [] as OccupancyLine[],
+    groupsByBranchType: [] as Array<{
+      type: string;
+      typeLabel: string;
+      lines: OccupancyLine[];
+      totals: {
+        stays: number;
+        checkIns: number;
+        checkOuts: number;
+        reserved: number;
+      };
+    }>,
+    finance: emptyFinance,
+  };
+
+  if (staysIds.length === 0) return emptyResult;
+
+  const typeByBranch = new Map(staysBranches.map((b) => [b.id, b.type]));
+
+  const [stays, prevCheckIns, prevCheckOuts, rooms, rate] = await Promise.all([
+    prisma.hotelStay.findMany({
+      where: {
+        branchId: { in: staysIds },
+        status: { notIn: ["CANCELLED", "NO_SHOW"] },
+        checkInDate: { lte: endOfLocalDay(input.to) },
+        checkOutDate: { gte: startOfLocalDay(input.from) },
+      },
+      select: {
+        id: true,
+        branchId: true,
+        guestName: true,
+        status: true,
+        billingMode: true,
+        plannedHours: true,
+        checkInDate: true,
+        checkOutDate: true,
+        checkedInAt: true,
+        checkedOutAt: true,
+        room: {
+          select: {
+            number: true,
+            roomType: { select: { name: true, kind: true } },
+          },
+        },
+      },
+      orderBy: [{ checkInDate: "asc" }, { guestName: "asc" }],
+    }),
+    prisma.hotelStay.count({
+      where: {
+        branchId: { in: staysIds },
+        checkedInAt: prevBounds,
+      },
+    }),
+    prisma.hotelStay.count({
+      where: {
+        branchId: { in: staysIds },
+        checkedOutAt: prevBounds,
+      },
+    }),
+    prisma.hotelRoom.findMany({
+      where: { roomType: { branchId: { in: staysIds } } },
+      select: {
+        id: true,
+        roomType: { select: { branchId: true, kind: true } },
+      },
+    }),
+    getActiveExchangeRate(staysIds[0]!),
+  ]);
+
+  const usdRate = rate?.rate ?? null;
+  const stayIds = stays.map((s) => s.id);
+  const folios =
+    stayIds.length === 0
+      ? []
+      : await prisma.folio.findMany({
+          where: {
+            branchId: { in: staysIds },
+            stayId: { in: stayIds },
+          },
+          select: {
+            id: true,
+            branchId: true,
+            stayId: true,
+            lines: { select: { amount: true } },
+            payments: {
+              select: {
+                amountCdf: true,
+                amountForeign: true,
+                paidAt: true,
+                receiptNumber: true,
+                method: true,
+              },
+            },
+          },
+        });
+
+  const roomCount = rooms.filter((r) => r.roomType.kind === "ROOM").length;
+  const meetingCount = rooms.filter((r) => r.roomType.kind === "MEETING").length;
+
+  function isCheckInInPeriod(s: (typeof stays)[number]) {
+    if (s.checkedInAt) {
+      return s.checkedInAt >= bounds.gte && s.checkedInAt <= bounds.lte;
+    }
+    const d = dayKey(s.checkInDate);
+    return (
+      d >= input.from &&
+      d <= input.to &&
+      (s.status === "CHECKED_IN" || s.status === "CHECKED_OUT")
+    );
+  }
+
+  function isCheckOutInPeriod(s: (typeof stays)[number]) {
+    if (s.checkedOutAt) {
+      return s.checkedOutAt >= bounds.gte && s.checkedOutAt <= bounds.lte;
+    }
+    const d = dayKey(s.checkOutDate);
+    return d >= input.from && d <= input.to && s.status === "CHECKED_OUT";
+  }
+
+  const checkIns = stays.filter(isCheckInInPeriod);
+  const checkOuts = stays.filter(isCheckOutInPeriod);
+  const reservations = stays.filter((s) => s.status === "RESERVED");
+  const occupied = stays.filter((s) => s.status === "CHECKED_IN");
+
+  let occupiedRoomNights = 0;
+  const rangeEndExclusive = new Date(toDay);
+  rangeEndExclusive.setDate(rangeEndExclusive.getDate() + 1);
+  for (const s of stays) {
+    if (s.room.roomType.kind !== "ROOM") continue;
+    if (s.status === "RESERVED") continue;
+    occupiedRoomNights += nightsOverlap(
+      startOfLocalDay(dayKey(s.checkInDate)),
+      startOfLocalDay(dayKey(s.checkOutDate)),
+      fromDay,
+      rangeEndExclusive,
+    );
+  }
+  const availableRoomNights = roomCount * days.length;
+  const occupancyPct =
+    availableRoomNights > 0
+      ? Math.round((occupiedRoomNights / availableRoomNights) * 1000) / 10
+      : 0;
+
+  const checkInsByDay = new Map(days.map((d) => [d, 0]));
+  const checkOutsByDay = new Map(days.map((d) => [d, 0]));
+  const reservationsByDay = new Map(days.map((d) => [d, 0]));
+  for (const s of checkIns) {
+    const d = s.checkedInAt ? dayKey(s.checkedInAt) : dayKey(s.checkInDate);
+    if (checkInsByDay.has(d)) {
+      checkInsByDay.set(d, (checkInsByDay.get(d) ?? 0) + 1);
+    }
+  }
+  for (const s of checkOuts) {
+    const d = s.checkedOutAt ? dayKey(s.checkedOutAt) : dayKey(s.checkOutDate);
+    if (checkOutsByDay.has(d)) {
+      checkOutsByDay.set(d, (checkOutsByDay.get(d) ?? 0) + 1);
+    }
+  }
+  for (const s of reservations) {
+    const d = dayKey(s.checkInDate);
+    if (reservationsByDay.has(d)) {
+      reservationsByDay.set(d, (reservationsByDay.get(d) ?? 0) + 1);
+    }
+  }
+
+  const bySpaceKindMap = new Map<string, number>();
+  const byBranchMap = new Map<string, number>();
+  const byStatusMap = new Map<string, number>();
+  for (const s of stays) {
+    const kind = spaceKindLabel(s.room.roomType.kind);
+    bySpaceKindMap.set(kind, (bySpaceKindMap.get(kind) ?? 0) + 1);
+    const bName = nameById.get(s.branchId) ?? s.branchId;
+    byBranchMap.set(bName, (byBranchMap.get(bName) ?? 0) + 1);
+    const st = stayStatusLabel(s.status);
+    byStatusMap.set(st, (byStatusMap.get(st) ?? 0) + 1);
+  }
+
+  const lines: OccupancyLine[] = stays.map((s) => {
+    const checkIn = isCheckInInPeriod(s);
+    const checkOut = isCheckOutInPeriod(s);
+    let event: OccupancyLine["event"] = "stay";
+    let eventLabel = "Séjour";
+    if (s.status === "RESERVED") {
+      event = "reservation";
+      eventLabel = "Réservation";
+    } else if (checkIn && !checkOut) {
+      event = "check_in";
+      eventLabel = "Check-in";
+    } else if (checkOut && !checkIn) {
+      event = "check_out";
+      eventLabel = "Check-out";
+    } else if (checkIn && checkOut) {
+      event = "check_in";
+      eventLabel = "Check-in + out";
+    }
+    const spaceKind =
+      s.room.roomType.kind === "MEETING"
+        ? ("MEETING" as const)
+        : ("ROOM" as const);
+    const duration = stayDurationFields(s);
+    return {
+      id: s.id,
+      day: dayKey(s.checkInDate),
+      branchId: s.branchId,
+      branchName: nameById.get(s.branchId) ?? s.branchId,
+      branchType: typeByBranch.get(s.branchId) ?? "HOTEL",
+      guestName: s.guestName,
+      roomNumber: s.room.number,
+      roomTypeName: s.room.roomType.name,
+      spaceKind,
+      spaceKindLabel: spaceKindLabel(spaceKind),
+      status: s.status,
+      statusLabel: stayStatusLabel(s.status),
+      checkInDate: dayKey(s.checkInDate),
+      checkOutDate: dayKey(s.checkOutDate),
+      checkedInAt: s.checkedInAt ? s.checkedInAt.toISOString() : null,
+      checkedOutAt: s.checkedOutAt ? s.checkedOutAt.toISOString() : null,
+      billingMode: s.billingMode === "FLAT" ? "Passage" : "Nuitée",
+      durationDays: duration.durationDays,
+      durationHours: duration.durationHours,
+      durationLabel: duration.durationLabel,
+      remainingLabel: duration.remainingLabel,
+      remainingTone: duration.remainingTone,
+      event,
+      eventLabel,
+    };
+  });
+
+  const groupsByBranchType = groupLinesByBranchType(lines, (groupLines) => ({
+    stays: groupLines.length,
+    checkIns: groupLines.filter(
+      (l) =>
+        l.event === "check_in" ||
+        l.status === "CHECKED_IN" ||
+        l.status === "CHECKED_OUT",
+    ).length,
+    checkOuts: groupLines.filter(
+      (l) => l.event === "check_out" || l.status === "CHECKED_OUT",
+    ).length,
+    reserved: groupLines.filter((l) => l.status === "RESERVED").length,
+  }));
+
+  const financeByBranch = new Map<
+    string,
+    OccupancyFinanceBranch
+  >();
+  for (const b of staysBranches) {
+    financeByBranch.set(b.id, {
+      branchId: b.id,
+      branchName: b.name,
+      branchType: b.type,
+      branchTypeLabel: branchTypeLabel(b.type),
+      collected: 0,
+      expected: 0,
+      refunded: 0,
+      refundDue: 0,
+      netCash: 0,
+    });
+  }
+
+  const stayById = new Map(stays.map((s) => [s.id, s]));
+  const financeDetails: OccupancyFinanceDetail[] = [];
+
+  for (const folio of folios) {
+    const row = financeByBranch.get(folio.branchId);
+    if (!row) continue;
+    const stay = folio.stayId ? stayById.get(folio.stayId) : null;
+    if (!stay) continue;
+
+    const charges = folio.lines.reduce((s, l) => s + l.amount, 0);
+    let paidAll = 0;
+    let collected = 0;
+    let refunded = 0;
+    const periodPaymentParts: string[] = [];
+    for (const p of folio.payments) {
+      const usd = paymentUsdSigned(p, usdRate);
+      paidAll += usd;
+      if (p.paidAt >= bounds.gte && p.paidAt <= bounds.lte) {
+        if (usd > 0.01) {
+          collected += usd;
+          row.collected += usd;
+        } else if (usd < -0.01) {
+          const abs = Math.abs(usd);
+          refunded += abs;
+          row.refunded += abs;
+        }
+        const method = paymentMethodLabel(p.method);
+        periodPaymentParts.push(
+          `#${p.receiptNumber} ${method} ${usd < 0 ? "−" : ""}${Math.abs(usd).toFixed(2)}`,
+        );
+      }
+    }
+    const balance = charges - paidAll;
+    let expected = 0;
+    let refundDue = 0;
+    if (balance > 0.01) {
+      expected = balance;
+      row.expected += balance;
+    } else if (balance < -0.01) {
+      refundDue = Math.abs(balance);
+      row.refundDue += Math.abs(balance);
+    }
+
+    const spaceKind =
+      stay.room.roomType.kind === "MEETING" ? "MEETING" : "ROOM";
+    financeDetails.push({
+      id: stay.id,
+      folioId: folio.id,
+      branchId: folio.branchId,
+      branchName: nameById.get(folio.branchId) ?? folio.branchId,
+      branchType: typeByBranch.get(folio.branchId) ?? "HOTEL",
+      branchTypeLabel: branchTypeLabel(
+        typeByBranch.get(folio.branchId) ?? "HOTEL",
+      ),
+      guestName: stay.guestName,
+      roomNumber: stay.room.number,
+      roomTypeName: stay.room.roomType.name,
+      spaceKindLabel: spaceKindLabel(spaceKind),
+      status: stay.status,
+      statusLabel: stayStatusLabel(stay.status),
+      checkInDate: dayKey(stay.checkInDate),
+      checkOutDate: dayKey(stay.checkOutDate),
+      billingMode: stay.billingMode === "FLAT" ? "Passage" : "Nuitée",
+      charges,
+      paid: paidAll,
+      collected,
+      expected,
+      refunded,
+      refundDue,
+      balance,
+      netCash: collected - refunded,
+      paymentsLabel:
+        periodPaymentParts.length > 0 ? periodPaymentParts.join(" · ") : "—",
+    });
+  }
+
+  for (const row of financeByBranch.values()) {
+    row.netCash = row.collected - row.refunded;
+  }
+
+  financeDetails.sort((a, b) => {
+    const byBranch = a.branchName.localeCompare(b.branchName, "fr");
+    if (byBranch !== 0) return byBranch;
+    return a.checkInDate.localeCompare(b.checkInDate);
+  });
+
+  const financeByBranchList = [...financeByBranch.values()].sort((a, b) =>
+    a.branchName.localeCompare(b.branchName, "fr"),
+  );
+  const collected = financeByBranchList.reduce((s, r) => s + r.collected, 0);
+  const refunded = financeByBranchList.reduce((s, r) => s + r.refunded, 0);
+  const finance = {
+    collected,
+    expected: financeByBranchList.reduce((s, r) => s + r.expected, 0),
+    refunded,
+    refundDue: financeByBranchList.reduce((s, r) => s + r.refundDue, 0),
+    netCash: collected - refunded,
+    byBranch: financeByBranchList,
+    details: financeDetails,
+  };
+
+  return {
+    period: { from: input.from, to: input.to },
+    staysBranchCount: staysIds.length,
+    kpis: {
+      reservations: reservations.length,
+      checkIns: checkIns.length,
+      checkOuts: checkOuts.length,
+      occupied: occupied.length,
+      rooms: roomCount,
+      meetings: meetingCount,
+      occupancyPct,
+      checkInsDelta: pctDelta(checkIns.length, prevCheckIns),
+      checkOutsDelta: pctDelta(checkOuts.length, prevCheckOuts),
+    },
+    eventsByDay: days.map((day) => ({
+      day,
+      checkIns: checkInsByDay.get(day) ?? 0,
+      checkOuts: checkOutsByDay.get(day) ?? 0,
+      reservations: reservationsByDay.get(day) ?? 0,
+    })),
+    bySpaceKind: [...bySpaceKindMap.entries()]
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value),
+    byBranch: [...byBranchMap.entries()]
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value),
+    byStatus: [...byStatusMap.entries()]
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value),
+    lines,
+    groupsByBranchType,
+    finance,
   };
 }

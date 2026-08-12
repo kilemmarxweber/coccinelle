@@ -55,6 +55,8 @@ export function TrendAreaChart(props: {
 
 export function DualBarChart(props: {
   data: { day: string; entrees: number; sorties: number }[];
+  entreesLabel?: string;
+  sortiesLabel?: string;
 }) {
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -69,8 +71,18 @@ export function DualBarChart(props: {
         <YAxis tick={{ fontSize: 11 }} width={40} />
         <Tooltip labelFormatter={(l) => shortDay(String(l))} />
         <Legend />
-        <Bar dataKey="entrees" name="Entrées" fill="#10b981" radius={4} />
-        <Bar dataKey="sorties" name="Sorties" fill="#f43f5e" radius={4} />
+        <Bar
+          dataKey="entrees"
+          name={props.entreesLabel ?? "Entrées"}
+          fill="#10b981"
+          radius={4}
+        />
+        <Bar
+          dataKey="sorties"
+          name={props.sortiesLabel ?? "Sorties"}
+          fill="#f43f5e"
+          radius={4}
+        />
       </BarChart>
     </ResponsiveContainer>
   );

@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { ArrowLeft, FileDown, FileSpreadsheet, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,6 +38,7 @@ import {
 import {
   getOrgAggregatedArticlesReportAction,
   getOrgAggregatedFinanceReportAction,
+  getOrgAggregatedOccupancyReportAction,
   getOrgAggregatedPurchasesReportAction,
   getOrgAggregatedSalesReportAction,
   getOrgAggregatedStockReportAction,
@@ -44,7 +46,13 @@ import {
 } from "@/lib/org/reports-actions";
 import { cn } from "@/lib/utils";
 
-type TabId = "ventes" | "achats" | "stock" | "articles" | "financier";
+type TabId =
+  | "ventes"
+  | "achats"
+  | "stock"
+  | "articles"
+  | "financier"
+  | "occupation";
 
 type SalesData = Awaited<ReturnType<typeof getOrgAggregatedSalesReportAction>>;
 type PurchasesData = Awaited<
@@ -56,6 +64,9 @@ type ArticlesData = Awaited<
 >;
 type FinanceData = Awaited<
   ReturnType<typeof getOrgAggregatedFinanceReportAction>
+>;
+type OccupancyData = Awaited<
+  ReturnType<typeof getOrgAggregatedOccupancyReportAction>
 >;
 
 type Props = {
@@ -70,6 +81,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "stock", label: "Stock" },
   { id: "articles", label: "Articles" },
   { id: "financier", label: "Financier" },
+  { id: "occupation", label: "Occupation" },
 ];
 
 export function OrgRapportsClient(props: Props) {
@@ -86,6 +98,7 @@ export function OrgRapportsClient(props: Props) {
   const [stock, setStock] = useState<StockData | null>(null);
   const [articles, setArticles] = useState<ArticlesData | null>(null);
   const [finance, setFinance] = useState<FinanceData | null>(null);
+  const [occupancy, setOccupancy] = useState<OccupancyData | null>(null);
 
   const allSelected =
     props.branches.length > 0 && selected.length === props.branches.length;
@@ -106,6 +119,7 @@ export function OrgRapportsClient(props: Props) {
     if (nextTab === "stock") setStock(null);
     if (nextTab === "articles") setArticles(null);
     if (nextTab === "financier") setFinance(null);
+    if (nextTab === "occupation") setOccupancy(null);
   }
 
   function load(
@@ -120,6 +134,7 @@ export function OrgRapportsClient(props: Props) {
       setStock(null);
       setArticles(null);
       setFinance(null);
+      setOccupancy(null);
       toast.error("Sélectionnez au moins une branche.");
       return;
     }
@@ -140,6 +155,8 @@ export function OrgRapportsClient(props: Props) {
           setStock(await getOrgAggregatedStockReportAction(base));
         } else if (nextTab === "articles") {
           setArticles(await getOrgAggregatedArticlesReportAction(base));
+        } else if (nextTab === "occupation") {
+          setOccupancy(await getOrgAggregatedOccupancyReportAction(base));
         } else {
           setFinance(await getOrgAggregatedFinanceReportAction(base));
         }
@@ -174,7 +191,9 @@ export function OrgRapportsClient(props: Props) {
           ? stock?.rate
           : tab === "articles"
             ? articles?.rate
-            : finance?.rate;
+            : tab === "financier"
+              ? finance?.rate
+              : null;
   const rates = formatBothRateLabels(activeRate)?.both ?? null;
   const money = (n: number) => formatMoney(n, activeRate ?? null);
 
@@ -194,7 +213,8 @@ export function OrgRapportsClient(props: Props) {
     (tab === "achats" && purchases) ||
     (tab === "stock" && stock) ||
     (tab === "articles" && articles) ||
-    (tab === "financier" && finance);
+    (tab === "financier" && finance) ||
+    (tab === "occupation" && occupancy);
 
   const branchNames = useMemo(() => {
     const set = new Set(selected);
@@ -523,6 +543,217 @@ export function OrgRapportsClient(props: Props) {
       };
     }
 
+    if (tab === "occupation" && occupancy) {
+      const rows: (string | number)[][] = [];
+      for (const g of occupancy.groupsByBranchType) {
+        rows.push([
+          `— ${g.typeLabel.toUpperCase()} —`,
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+        ]);
+        for (const l of g.lines) {
+          rows.push([
+            l.checkInDate,
+            l.branchName,
+            l.guestName,
+            `${l.spaceKindLabel} ${l.roomNumber}`,
+            l.roomTypeName,
+            l.statusLabel,
+            l.durationLabel,
+            l.remainingLabel ?? "",
+            l.eventLabel,
+            l.checkOutDate,
+            l.billingMode,
+          ]);
+        }
+        rows.push([
+          `Total ${g.typeLabel}`,
+          "",
+          `${g.totals.stays} séjour(s)`,
+          "",
+          "",
+          `${g.totals.reserved} rés.`,
+          "",
+          "",
+          `${g.totals.checkIns} in`,
+          `${g.totals.checkOuts} out`,
+          "",
+        ]);
+      }
+      rows.push([
+        "TOTAL GÉNÉRAL",
+        "",
+        `${occupancy.lines.length} séjour(s)`,
+        "",
+        "",
+        `${occupancy.kpis.reservations} rés.`,
+        "",
+        "",
+        `${occupancy.kpis.checkIns} in`,
+        `${occupancy.kpis.checkOuts} out`,
+        "",
+      ]);
+      rows.push(["", "", "", "", "", "", "", "", "", "", ""]);
+      rows.push([
+        "— FINANCIER SÉJOURS —",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+      ]);
+      rows.push([
+        "Branche",
+        "Encaissé",
+        "Remboursé",
+        "Net caisse",
+        "À encaisser",
+        "À rembourser",
+        "",
+        "",
+        "",
+        "",
+        "",
+      ]);
+      for (const f of occupancy.finance.byBranch) {
+        rows.push([
+          f.branchName,
+          money(f.collected),
+          money(f.refunded),
+          money(f.netCash),
+          money(f.expected),
+          money(f.refundDue),
+          "",
+          "",
+          "",
+          "",
+          "",
+        ]);
+      }
+      rows.push([
+        "TOTAL",
+        money(occupancy.finance.collected),
+        money(occupancy.finance.refunded),
+        money(occupancy.finance.netCash),
+        money(occupancy.finance.expected),
+        money(occupancy.finance.refundDue),
+        "",
+        "",
+        "",
+        "",
+        "",
+      ]);
+      rows.push(["", "", "", "", "", "", "", "", "", "", ""]);
+      rows.push([
+        "— FINANCIER SÉJOURS DÉTAIL —",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+      ]);
+      rows.push([
+        "Arrivée",
+        "Branche",
+        "Client",
+        "Espace",
+        "Statut",
+        "Charges",
+        "Encaissé",
+        "Remboursé",
+        "Net caisse",
+        "À encaisser",
+        "À rembourser",
+      ]);
+      for (const d of occupancy.finance.details) {
+        rows.push([
+          d.checkInDate,
+          d.branchName,
+          d.guestName,
+          `${d.spaceKindLabel} ${d.roomNumber}`,
+          d.statusLabel,
+          money(d.charges),
+          money(d.collected),
+          money(d.refunded),
+          money(d.netCash),
+          money(d.expected),
+          money(d.refundDue),
+        ]);
+      }
+      rows.push([
+        "TOTAL DÉTAIL",
+        "",
+        `${occupancy.finance.details.length} note(s)`,
+        "",
+        "",
+        money(
+          occupancy.finance.details.reduce((s, d) => s + d.charges, 0),
+        ),
+        money(occupancy.finance.collected),
+        money(occupancy.finance.refunded),
+        money(occupancy.finance.netCash),
+        money(occupancy.finance.expected),
+        money(occupancy.finance.refundDue),
+      ]);
+      return {
+        meta: {
+          ...baseMeta,
+          kpis: [
+            {
+              label: "Check-ins",
+              value: formatQty(occupancy.kpis.checkIns),
+            },
+            {
+              label: "Encaissé",
+              value: money(occupancy.finance.collected),
+            },
+            {
+              label: "Remboursé",
+              value: money(occupancy.finance.refunded),
+            },
+            {
+              label: "Net caisse",
+              value: money(occupancy.finance.netCash),
+            },
+          ],
+        },
+        table: {
+          headers: [
+            "Arrivée",
+            "Branche",
+            "Client",
+            "Espace",
+            "Type",
+            "Statut",
+            "Durée",
+            "Restant",
+            "Événement",
+            "Départ",
+            "Facturation",
+          ],
+          rows,
+        },
+      };
+    }
+
     return null;
   }
 
@@ -771,6 +1002,9 @@ export function OrgRapportsClient(props: Props) {
       ) : null}
       {tab === "financier" && finance ? (
         <FinancePanel data={finance} money={money} pending={pending} />
+      ) : null}
+      {tab === "occupation" && occupancy ? (
+        <OccupancyPanel data={occupancy} pending={pending} money={money} />
       ) : null}
     </div>
   );
@@ -1730,6 +1964,506 @@ function FinancePanel(props: {
           </table>
         </div>
       </section>
+    </div>
+  );
+}
+
+function occupancyStatusBadgeVariant(
+  status: string,
+): "default" | "secondary" | "outline" | "destructive" {
+  if (status === "CHECKED_IN") return "default";
+  if (status === "RESERVED") return "secondary";
+  if (status === "CHECKED_OUT") return "outline";
+  return "outline";
+}
+
+function occupancyRemainingBadgeVariant(
+  tone: "normal" | "warn" | "critical" | null,
+): "outline" | "secondary" | "destructive" {
+  if (tone === "critical") return "destructive";
+  if (tone === "warn") return "secondary";
+  return "outline";
+}
+
+function OccupancyPanel(props: {
+  data: OccupancyData;
+  pending: boolean;
+  money: (n: number) => string;
+}) {
+  const { data, money } = props;
+  const colSpan = 9;
+  return (
+    <div className={cn("space-y-5", props.pending && "opacity-60")}>
+      {data.staysBranchCount === 0 ? (
+        <p className="rounded-2xl border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
+          Aucune branche hôtel/séjours dans la sélection. Cochez une branche avec
+          le module séjours pour voir réservations, check-ins et check-outs.
+        </p>
+      ) : null}
+
+      <KpiGrid
+        items={[
+          {
+            label: "Check-ins",
+            value: formatQty(data.kpis.checkIns),
+            delta: data.kpis.checkInsDelta,
+          },
+          {
+            label: "Check-outs",
+            value: formatQty(data.kpis.checkOuts),
+            delta: data.kpis.checkOutsDelta,
+          },
+          {
+            label: "Réservations",
+            value: formatQty(data.kpis.reservations),
+            hint: `${data.kpis.occupied} en cours · ${data.staysBranchCount} branche(s)`,
+          },
+          {
+            label: "Occupation chambres",
+            value: `${data.kpis.occupancyPct} %`,
+            hint: `${data.kpis.rooms} ch. · ${data.kpis.meetings} salle(s)`,
+          },
+        ]}
+      />
+
+      <div className="grid gap-4 lg:grid-cols-5">
+        <ChartCard
+          title="Mouvements par jour"
+          description={`${data.period.from} → ${data.period.to}`}
+          className="lg:col-span-3"
+        >
+          <DualBarChart
+            data={data.eventsByDay.map((d) => ({
+              day: d.day,
+              entrees: d.checkIns,
+              sorties: d.checkOuts,
+            }))}
+            entreesLabel="Check-ins"
+            sortiesLabel="Check-outs"
+          />
+        </ChartCard>
+        <ChartCard
+          title="Statuts"
+          description="Séjours sur la période"
+          className="lg:col-span-2"
+        >
+          <DonutChart
+            key={data.byStatus.map((d) => `${d.name}:${d.value}`).join("|")}
+            data={data.byStatus}
+          />
+        </ChartCard>
+        <ChartCard title="Par branche" className="lg:col-span-3">
+          <SimpleBarChart data={data.byBranch} />
+        </ChartCard>
+        <ChartCard
+          title="Chambres / salles"
+          description="Répartition des séjours"
+          className="lg:col-span-2"
+        >
+          <DonutChart
+            key={data.bySpaceKind.map((d) => `${d.name}:${d.value}`).join("|")}
+            data={data.bySpaceKind}
+          />
+        </ChartCard>
+      </div>
+
+      <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="border-b border-border px-4 py-3">
+          <h2 className="text-sm font-semibold">
+            Réservations & occupation
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Chambres et salles · statut, durée (jours / heures) sur la période
+          </p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1100px] text-left text-sm">
+            <thead className="bg-muted/40 text-xs text-muted-foreground">
+              <tr>
+                <th className="px-3 py-2 font-medium">Arrivée</th>
+                <th className="px-3 py-2 font-medium">Branche</th>
+                <th className="px-3 py-2 font-medium">Client</th>
+                <th className="px-3 py-2 font-medium">Espace</th>
+                <th className="px-3 py-2 font-medium">Statut</th>
+                <th className="px-3 py-2 font-medium">Événement</th>
+                <th className="px-3 py-2 font-medium">Départ</th>
+                <th className="px-3 py-2 font-medium">Facturation</th>
+                <th className="px-3 py-2 font-medium">Durée</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.groupsByBranchType.map((g) => (
+                <Fragment key={g.type}>
+                  <tr className="bg-muted/25">
+                    <td
+                      colSpan={colSpan}
+                      className="px-3 py-2 text-xs font-bold tracking-wide uppercase"
+                    >
+                      {g.typeLabel}
+                      <span className="ml-2 font-normal normal-case text-muted-foreground">
+                        · {g.totals.stays} séjour(s) · {g.totals.reserved} rés. ·{" "}
+                        {g.totals.checkIns} in · {g.totals.checkOuts} out
+                      </span>
+                    </td>
+                  </tr>
+                  {g.lines.map((l) => (
+                    <tr key={l.id} className="border-t border-border">
+                      <td className="px-3 py-2 tabular-nums text-muted-foreground">
+                        {l.checkInDate}
+                      </td>
+                      <td className="px-3 py-2 font-medium">{l.branchName}</td>
+                      <td className="px-3 py-2">{l.guestName}</td>
+                      <td className="px-3 py-2">
+                        <span className="font-medium">
+                          {l.spaceKindLabel} {l.roomNumber}
+                        </span>
+                        <span className="text-muted-foreground">
+                          {" "}
+                          · {l.roomTypeName}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2">
+                        <div className="flex flex-wrap gap-1">
+                          <Badge
+                            variant={occupancyStatusBadgeVariant(l.status)}
+                          >
+                            {l.statusLabel}
+                          </Badge>
+                          {l.remainingLabel ? (
+                            <Badge
+                              variant={occupancyRemainingBadgeVariant(
+                                l.remainingTone,
+                              )}
+                            >
+                              {l.remainingLabel}
+                            </Badge>
+                          ) : null}
+                        </div>
+                      </td>
+                      <td className="px-3 py-2 text-muted-foreground">
+                        {l.eventLabel}
+                      </td>
+                      <td className="px-3 py-2 tabular-nums text-muted-foreground">
+                        {l.checkOutDate}
+                      </td>
+                      <td className="px-3 py-2">{l.billingMode}</td>
+                      <td className="px-3 py-2">
+                        <Badge variant="outline">{l.durationLabel}</Badge>
+                      </td>
+                    </tr>
+                  ))}
+                  <tr className="border-t border-border bg-muted/30">
+                    <td
+                      colSpan={5}
+                      className="px-3 py-2.5 text-sm font-semibold"
+                    >
+                      Total {g.typeLabel}
+                    </td>
+                    <td
+                      colSpan={4}
+                      className="px-3 py-2.5 text-right text-sm font-semibold tabular-nums"
+                    >
+                      {g.totals.stays} séjour(s)
+                    </td>
+                  </tr>
+                </Fragment>
+              ))}
+              {data.lines.length > 0 ? (
+                <tr className="border-t-2 border-border bg-muted/50">
+                  <td
+                    colSpan={5}
+                    className="px-3 py-3 text-sm font-bold uppercase tracking-wide"
+                  >
+                    Total général
+                  </td>
+                  <td
+                    colSpan={4}
+                    className="px-3 py-3 text-right text-sm font-bold tabular-nums"
+                  >
+                    {data.lines.length} séjour(s) · {data.kpis.checkIns} in ·{" "}
+                    {data.kpis.checkOuts} out
+                  </td>
+                </tr>
+              ) : data.staysBranchCount > 0 ? (
+                <tr>
+                  <td
+                    colSpan={colSpan}
+                    className="px-3 py-8 text-center text-muted-foreground"
+                  >
+                    Aucune réservation / occupation sur la période.
+                  </td>
+                </tr>
+              ) : null}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {data.staysBranchCount > 0 ? (
+        <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          <div className="border-b border-border px-4 py-3">
+            <h2 className="text-sm font-semibold">Financier séjours</h2>
+            <p className="text-xs text-muted-foreground">
+              Notes de chambre des séjours sur la période · {data.period.from} →{" "}
+              {data.period.to}
+            </p>
+          </div>
+          <div className="grid gap-3 border-b border-border p-4 sm:grid-cols-2 lg:grid-cols-5">
+            <div className="rounded-xl bg-muted/40 px-3 py-3">
+              <p className="text-xs text-muted-foreground">Encaissé</p>
+              <p className="mt-1 text-lg font-semibold tabular-nums">
+                {money(data.finance.collected)}
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Paiements reçus sur la période
+              </p>
+            </div>
+            <div className="rounded-xl bg-muted/40 px-3 py-3">
+              <p className="text-xs text-muted-foreground">Remboursé</p>
+              <p className="mt-1 text-lg font-semibold tabular-nums">
+                {money(data.finance.refunded)}
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Remboursements effectués
+              </p>
+            </div>
+            <div className="rounded-xl border border-border bg-primary/5 px-3 py-3">
+              <p className="text-xs text-muted-foreground">
+                Net réel en caisse
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular-nums">
+                {money(data.finance.netCash)}
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Encaissé − remboursé
+              </p>
+            </div>
+            <div className="rounded-xl bg-muted/40 px-3 py-3">
+              <p className="text-xs text-muted-foreground">À encaisser</p>
+              <p className="mt-1 text-lg font-semibold tabular-nums">
+                {money(data.finance.expected)}
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Soldes notes encore dus
+              </p>
+            </div>
+            <div className="rounded-xl bg-muted/40 px-3 py-3">
+              <p className="text-xs text-muted-foreground">À rembourser</p>
+              <p className="mt-1 text-lg font-semibold tabular-nums">
+                {money(data.finance.refundDue)}
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Trop-perçus / soldes négatifs
+              </p>
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[820px] text-left text-sm">
+              <thead className="bg-muted/40 text-xs text-muted-foreground">
+                <tr>
+                  <th className="px-3 py-2 font-medium">Branche</th>
+                  <th className="px-3 py-2 font-medium">Type</th>
+                  <th className="px-3 py-2 text-right font-medium">Encaissé</th>
+                  <th className="px-3 py-2 text-right font-medium">Remboursé</th>
+                  <th className="px-3 py-2 text-right font-medium">Net caisse</th>
+                  <th className="px-3 py-2 text-right font-medium">
+                    À encaisser
+                  </th>
+                  <th className="px-3 py-2 text-right font-medium">
+                    À rembourser
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.finance.byBranch.map((f) => (
+                  <tr key={f.branchId} className="border-t border-border">
+                    <td className="px-3 py-2 font-medium">{f.branchName}</td>
+                    <td className="px-3 py-2 text-muted-foreground">
+                      {f.branchTypeLabel}
+                    </td>
+                    <td className="px-3 py-2 text-right tabular-nums">
+                      {money(f.collected)}
+                    </td>
+                    <td className="px-3 py-2 text-right tabular-nums">
+                      {money(f.refunded)}
+                    </td>
+                    <td className="px-3 py-2 text-right tabular-nums font-semibold">
+                      {money(f.netCash)}
+                    </td>
+                    <td className="px-3 py-2 text-right tabular-nums">
+                      {money(f.expected)}
+                    </td>
+                    <td className="px-3 py-2 text-right tabular-nums">
+                      {money(f.refundDue)}
+                    </td>
+                  </tr>
+                ))}
+                <tr className="border-t-2 border-border bg-muted/50">
+                  <td
+                    colSpan={2}
+                    className="px-3 py-3 text-sm font-bold uppercase tracking-wide"
+                  >
+                    Total
+                  </td>
+                  <td className="px-3 py-3 text-right text-sm font-bold tabular-nums">
+                    {money(data.finance.collected)}
+                  </td>
+                  <td className="px-3 py-3 text-right text-sm font-bold tabular-nums">
+                    {money(data.finance.refunded)}
+                  </td>
+                  <td className="px-3 py-3 text-right text-sm font-bold tabular-nums">
+                    {money(data.finance.netCash)}
+                  </td>
+                  <td className="px-3 py-3 text-right text-sm font-bold tabular-nums">
+                    {money(data.finance.expected)}
+                  </td>
+                  <td className="px-3 py-3 text-right text-sm font-bold tabular-nums">
+                    {money(data.finance.refundDue)}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
+
+      {data.staysBranchCount > 0 ? (
+        <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          <div className="border-b border-border px-4 py-3">
+            <h2 className="text-sm font-semibold">
+              Financier séjours — détail
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              Note par séjour · charges, paiements période, solde ·{" "}
+              {data.period.from} → {data.period.to}
+            </p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[1180px] text-left text-sm">
+              <thead className="bg-muted/40 text-xs text-muted-foreground">
+                <tr>
+                  <th className="px-3 py-2 font-medium">Arrivée</th>
+                  <th className="px-3 py-2 font-medium">Branche</th>
+                  <th className="px-3 py-2 font-medium">Client</th>
+                  <th className="px-3 py-2 font-medium">Espace</th>
+                  <th className="px-3 py-2 font-medium">Statut</th>
+                  <th className="px-3 py-2 text-right font-medium">Charges</th>
+                  <th className="px-3 py-2 text-right font-medium">Payé</th>
+                  <th className="px-3 py-2 text-right font-medium">Encaissé</th>
+                  <th className="px-3 py-2 text-right font-medium">Remboursé</th>
+                  <th className="px-3 py-2 text-right font-medium">Net caisse</th>
+                  <th className="px-3 py-2 text-right font-medium">
+                    À encaisser
+                  </th>
+                  <th className="px-3 py-2 text-right font-medium">
+                    À rembourser
+                  </th>
+                  <th className="px-3 py-2 font-medium">Paiements période</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.finance.details.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={13}
+                      className="px-3 py-8 text-center text-muted-foreground"
+                    >
+                      Aucune note de chambre sur la période.
+                    </td>
+                  </tr>
+                ) : (
+                  data.finance.details.map((d) => (
+                    <tr key={d.folioId} className="border-t border-border">
+                      <td className="px-3 py-2 tabular-nums text-muted-foreground">
+                        {d.checkInDate}
+                      </td>
+                      <td className="px-3 py-2 font-medium">{d.branchName}</td>
+                      <td className="px-3 py-2">{d.guestName}</td>
+                      <td className="px-3 py-2">
+                        <span className="font-medium">
+                          {d.spaceKindLabel} {d.roomNumber}
+                        </span>
+                        <span className="text-muted-foreground">
+                          {" "}
+                          · {d.roomTypeName}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2">
+                        <Badge
+                          variant={occupancyStatusBadgeVariant(d.status)}
+                        >
+                          {d.statusLabel}
+                        </Badge>
+                      </td>
+                      <td className="px-3 py-2 text-right tabular-nums">
+                        {money(d.charges)}
+                      </td>
+                      <td className="px-3 py-2 text-right tabular-nums">
+                        {money(d.paid)}
+                      </td>
+                      <td className="px-3 py-2 text-right tabular-nums">
+                        {money(d.collected)}
+                      </td>
+                      <td className="px-3 py-2 text-right tabular-nums">
+                        {money(d.refunded)}
+                      </td>
+                      <td className="px-3 py-2 text-right tabular-nums font-semibold">
+                        {money(d.netCash)}
+                      </td>
+                      <td className="px-3 py-2 text-right tabular-nums">
+                        {money(d.expected)}
+                      </td>
+                      <td className="px-3 py-2 text-right tabular-nums">
+                        {money(d.refundDue)}
+                      </td>
+                      <td className="max-w-[220px] truncate px-3 py-2 text-xs text-muted-foreground">
+                        {d.paymentsLabel}
+                      </td>
+                    </tr>
+                  ))
+                )}
+                {data.finance.details.length > 0 ? (
+                  <tr className="border-t-2 border-border bg-muted/50">
+                    <td
+                      colSpan={5}
+                      className="px-3 py-3 text-sm font-bold uppercase tracking-wide"
+                    >
+                      Total ({data.finance.details.length} note
+                      {data.finance.details.length > 1 ? "s" : ""})
+                    </td>
+                    <td className="px-3 py-3 text-right text-sm font-bold tabular-nums">
+                      {money(
+                        data.finance.details.reduce((s, d) => s + d.charges, 0),
+                      )}
+                    </td>
+                    <td className="px-3 py-3 text-right text-sm font-bold tabular-nums">
+                      {money(
+                        data.finance.details.reduce((s, d) => s + d.paid, 0),
+                      )}
+                    </td>
+                    <td className="px-3 py-3 text-right text-sm font-bold tabular-nums">
+                      {money(data.finance.collected)}
+                    </td>
+                    <td className="px-3 py-3 text-right text-sm font-bold tabular-nums">
+                      {money(data.finance.refunded)}
+                    </td>
+                    <td className="px-3 py-3 text-right text-sm font-bold tabular-nums">
+                      {money(data.finance.netCash)}
+                    </td>
+                    <td className="px-3 py-3 text-right text-sm font-bold tabular-nums">
+                      {money(data.finance.expected)}
+                    </td>
+                    <td className="px-3 py-3 text-right text-sm font-bold tabular-nums">
+                      {money(data.finance.refundDue)}
+                    </td>
+                    <td />
+                  </tr>
+                ) : null}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }
