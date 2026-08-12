@@ -52,6 +52,10 @@ async function loadPayments(branchId: string, from: string, to: string) {
       paidAt: true,
       orderId: true,
       folioId: true,
+      shopSaleId: true,
+      purchaseOrderId: true,
+      expenseId: true,
+      note: true,
       cashierUserId: true,
     },
     orderBy: { paidAt: "asc" },
@@ -499,8 +503,59 @@ export async function getFinanceReportAction(input: PeriodInput) {
       getActiveExchangeRate(input.branchId),
     ]);
 
-  const revenue = pays.reduce((s, p) => s + p.usd, 0);
-  const revenuePrev = prevPays.reduce((s, p) => s + p.usd, 0);
+  const round2 = (n: number) => Math.round(n * 100) / 100;
+  const revenue = pays
+    .filter(
+      (p) =>
+        p.usd > 0 &&
+        !p.purchaseOrderId &&
+        !p.expenseId &&
+        !(p.note ?? "").startsWith("Remboursement achat"),
+    )
+    .reduce((s, p) => s + p.usd, 0);
+  const revenuePrev = prevPays
+    .filter(
+      (p) =>
+        p.usd > 0 &&
+        !p.purchaseOrderId &&
+        !p.expenseId &&
+        !(p.note ?? "").startsWith("Remboursement achat"),
+    )
+    .reduce((s, p) => s + p.usd, 0);
+  const expenses = pays
+    .filter(
+      (p) =>
+        p.expenseId ||
+        (p.note ?? "").startsWith("Dépense ·") ||
+        (p.note ?? "").startsWith("Dépôt à la banque ·") ||
+        (p.note ?? "").startsWith("Remise au propriétaire ·"),
+    )
+    .reduce((s, p) => s + Math.abs(p.usd), 0);
+  const expensesPrev = prevPays
+    .filter(
+      (p) =>
+        p.expenseId ||
+        (p.note ?? "").startsWith("Dépense ·") ||
+        (p.note ?? "").startsWith("Dépôt à la banque ·") ||
+        (p.note ?? "").startsWith("Remise au propriétaire ·"),
+    )
+    .reduce((s, p) => s + Math.abs(p.usd), 0);
+  const purchases = pays
+    .filter(
+      (p) =>
+        p.purchaseOrderId &&
+        (p.usd < 0 || (p.note ?? "").startsWith("Sortie achat")),
+    )
+    .reduce((s, p) => s + Math.abs(Math.min(p.usd, 0)), 0);
+  const purchaseRefunds = pays
+    .filter(
+      (p) =>
+        p.purchaseOrderId &&
+        (p.usd > 0 || (p.note ?? "").startsWith("Remboursement achat")),
+    )
+    .reduce((s, p) => s + Math.max(p.usd, 0), 0);
+  const netPurchases = Math.max(0, round2(purchases - purchaseRefunds));
+  const netCash = round2(revenue - expenses - netPurchases);
   const qtyIn = moves
     .filter((m) => m.kind === "ENTREE")
     .reduce((s, m) => s + m.quantity, 0);
@@ -543,6 +598,10 @@ export async function getFinanceReportAction(input: PeriodInput) {
     kpis: {
       revenue,
       revenueDelta: pctDelta(revenue, revenuePrev),
+      expenses,
+      expensesDelta: pctDelta(expenses, expensesPrev),
+      purchases: netPurchases,
+      netCash,
       qtyIn,
       qtyInDelta: pctDelta(qtyIn, qtyInPrev),
       qtyOut,

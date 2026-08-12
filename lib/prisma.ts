@@ -6,7 +6,7 @@ const adapter = new PrismaPg({
 });
 
 /** Incrémenter après tout changement de modèle Prisma pour invalider le singleton HMR. */
-const PRISMA_SCHEMA_REV = 21;
+const PRISMA_SCHEMA_REV = 23;
 
 const globalForPrisma = global as unknown as {
   prisma: PrismaClient | undefined;
@@ -110,7 +110,9 @@ function resolvePrisma(): PrismaClient {
       !enumHasValue(existing, "FolioLineKind", "STAY_OVERTIME") ||
       !enumHasValue(existing, "FolioLineKind", "DEPOSIT") ||
       !modelHasField(existing, "HotelStay", "depositAmountExpected") ||
-      !enumHasValue(existing, "ShopProductKind", "PLAT"));
+      !enumHasValue(existing, "ShopProductKind", "PLAT") ||
+      !modelHasField(existing, "BranchExpense", "kind") ||
+      !modelHasField(existing, "BranchExpense", "number"));
 
   if (existing && (staleRev || staleDelegate || staleFields)) {
     void existing.$disconnect().catch(() => undefined);

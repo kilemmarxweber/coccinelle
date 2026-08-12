@@ -88,7 +88,10 @@ export const ModelName = {
   HotelStockMovement: 'HotelStockMovement',
   HotelOrder: 'HotelOrder',
   HotelOrderItem: 'HotelOrderItem',
-  BranchNotification: 'BranchNotification'
+  BranchNotification: 'BranchNotification',
+  PurchaseOrder: 'PurchaseOrder',
+  PurchaseOrderItem: 'PurchaseOrderItem',
+  BranchExpense: 'BranchExpense'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -650,6 +653,8 @@ export const PaymentScalarFieldEnum = {
   folioId: 'folioId',
   orderId: 'orderId',
   shopSaleId: 'shopSaleId',
+  purchaseOrderId: 'purchaseOrderId',
+  expenseId: 'expenseId',
   receiptNumber: 'receiptNumber',
   method: 'method',
   amountCdf: 'amountCdf',
@@ -754,6 +759,62 @@ export const BranchNotificationScalarFieldEnum = {
 } as const
 
 export type BranchNotificationScalarFieldEnum = (typeof BranchNotificationScalarFieldEnum)[keyof typeof BranchNotificationScalarFieldEnum]
+
+
+export const PurchaseOrderScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  number: 'number',
+  status: 'status',
+  supplierName: 'supplierName',
+  note: 'note',
+  totalAmountUsd: 'totalAmountUsd',
+  fundsReleasedUsd: 'fundsReleasedUsd',
+  validatedAmountUsd: 'validatedAmountUsd',
+  createdByUserId: 'createdByUserId',
+  validatedByUserId: 'validatedByUserId',
+  validatedAt: 'validatedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PurchaseOrderScalarFieldEnum = (typeof PurchaseOrderScalarFieldEnum)[keyof typeof PurchaseOrderScalarFieldEnum]
+
+
+export const PurchaseOrderItemScalarFieldEnum = {
+  id: 'id',
+  purchaseOrderId: 'purchaseOrderId',
+  name: 'name',
+  category: 'category',
+  quantity: 'quantity',
+  receivedQty: 'receivedQty',
+  unitPriceUsd: 'unitPriceUsd',
+  lineTotalUsd: 'lineTotalUsd',
+  shopProductId: 'shopProductId',
+  menuItemId: 'menuItemId',
+  createProduct: 'createProduct',
+  createdAt: 'createdAt'
+} as const
+
+export type PurchaseOrderItemScalarFieldEnum = (typeof PurchaseOrderItemScalarFieldEnum)[keyof typeof PurchaseOrderItemScalarFieldEnum]
+
+
+export const BranchExpenseScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  number: 'number',
+  kind: 'kind',
+  label: 'label',
+  category: 'category',
+  beneficiary: 'beneficiary',
+  amountUsd: 'amountUsd',
+  note: 'note',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BranchExpenseScalarFieldEnum = (typeof BranchExpenseScalarFieldEnum)[keyof typeof BranchExpenseScalarFieldEnum]
 
 
 export const SortOrder = {

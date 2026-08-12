@@ -59,7 +59,8 @@ export function paymentAmountUsd(
   p: { amountCdf: number; amountForeign?: number | null },
   usdToCdfRate: number | null,
 ) {
-  if (p.amountForeign != null && p.amountForeign > 0) return p.amountForeign;
+  // Inclure montants négatifs (sorties / remboursements).
+  if (p.amountForeign != null && p.amountForeign !== 0) return p.amountForeign;
   if (usdToCdfRate && usdToCdfRate > 0) return p.amountCdf / usdToCdfRate;
   return p.amountCdf;
 }

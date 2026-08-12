@@ -35,6 +35,87 @@ function paymentMethodLabel(method: string | null | undefined) {
   }
 }
 
+function isExpensePayment(p: {
+  expenseId?: string | null;
+  note?: string | null;
+}) {
+  const note = p.note ?? "";
+  return Boolean(
+    p.expenseId ||
+      note.startsWith("Dépense ·") ||
+      note.startsWith("Dépôt à la banque ·") ||
+      note.startsWith("Remise au propriétaire ·"),
+  );
+}
+
+function isPurchaseOutflow(p: {
+  purchaseOrderId?: string | null;
+  usd: number;
+  note?: string | null;
+}) {
+  return Boolean(
+    p.purchaseOrderId &&
+      (p.usd < 0 || (p.note ?? "").startsWith("Sortie achat")),
+  );
+}
+
+function isPurchaseRefund(p: {
+  purchaseOrderId?: string | null;
+  usd: number;
+  note?: string | null;
+}) {
+  return Boolean(
+    p.purchaseOrderId &&
+      (p.usd > 0 || (p.note ?? "").startsWith("Remboursement achat")),
+  );
+}
+
+/** Encaissements métier (hors dépenses / bons de commande). */
+function isRevenuePayment(p: {
+  usd: number;
+  purchaseOrderId?: string | null;
+  expenseId?: string | null;
+  note?: string | null;
+}) {
+  return (
+    p.usd > 0 &&
+    !p.purchaseOrderId &&
+    !p.expenseId &&
+    !(p.note ?? "").startsWith("Remboursement achat") &&
+    !isExpensePayment(p)
+  );
+}
+
+function expenseKindReportLabel(kind: string) {
+  switch (kind) {
+    case "DEPOT_BANQUE":
+      return "Dépôt à la banque";
+    case "REMISE_PROPRIETAIRE":
+      return "Remise au propriétaire";
+    default:
+      return "Dépense";
+  }
+}
+
+function purchaseOrderStatusLabel(status: string) {
+  switch (status) {
+    case "EN_ATTENTE":
+      return "En attente";
+    case "FONDS_SORTIS":
+      return "Fonds sortis";
+    case "VALIDE":
+      return "Validé";
+    case "ANNULE":
+      return "Annulé";
+    default:
+      return status;
+  }
+}
+
+function round2(n: number) {
+  return Math.round(n * 100) / 100;
+}
+
 async function resolveStaffNameMap(userIds: string[]) {
   const ids = [...new Set(userIds.filter(Boolean))];
   const map = new Map<string, string>();
@@ -282,9 +363,12 @@ export async function getOrgAggregatedSalesReportAction(input: {
       method: true,
       receiptNumber: true,
       cashierUserId: true,
+      note: true,
       orderId: true,
       folioId: true,
       shopSaleId: true,
+      purchaseOrderId: true,
+      expenseId: true,
       order: {
         select: {
           tableLabel: true,
@@ -313,6 +397,9 @@ export async function getOrgAggregatedSalesReportAction(input: {
       amountCdf: true,
       amountForeign: true,
       branchId: true,
+      note: true,
+      purchaseOrderId: true,
+      expenseId: true,
     },
   });
 
@@ -338,19 +425,28 @@ export async function getOrgAggregatedSalesReportAction(input: {
     usd: paymentAmountUsd(p, usdRate),
     branchName: nameById.get(p.branchId) ?? "Branche",
   }));
-  const prevUsd = prevPayments.map((p) => paymentAmountUsd(p, usdRate));
+  const revenuePays = withUsd.filter((p) => isRevenuePayment(p));
+  const prevRevenuePays = prevPayments.filter((p) =>
+    isRevenuePayment({
+      ...p,
+      usd: paymentAmountUsd(p, usdRate),
+    }),
+  );
 
-  const ca = withUsd.reduce((s, p) => s + p.usd, 0);
-  const caPrev = prevUsd.reduce((s, n) => s + n, 0);
+  const ca = revenuePays.reduce((s, p) => s + p.usd, 0);
+  const caPrev = prevRevenuePays.reduce(
+    (s, p) => s + paymentAmountUsd(p, usdRate),
+    0,
+  );
 
   const ticketKeys = new Set<string>();
-  for (const p of withUsd) {
+  for (const p of revenuePays) {
     ticketKeys.add(p.orderId ?? p.shopSaleId ?? p.folioId ?? p.id);
   }
   const tickets = ticketKeys.size;
 
-  const prevTicketApprox = prevPayments.length; // approx si pas d’ids
-  const qtySold = withUsd.reduce((s, p) => {
+  const prevTicketApprox = prevRevenuePays.length;
+  const qtySold = revenuePays.reduce((s, p) => {
     const items = p.shopSale?.items ?? p.order?.items ?? [];
     return s + items.reduce((a, i) => a + i.quantity, 0);
   }, 0);
@@ -359,7 +455,7 @@ export async function getOrgAggregatedSalesReportAction(input: {
   const byMethodMap = new Map<string, number>();
   const byBranchMap = new Map<string, number>();
 
-  for (const p of withUsd) {
+  for (const p of revenuePays) {
     const k = dayKey(p.paidAt);
     byDayMap.set(k, (byDayMap.get(k) ?? 0) + p.usd);
     byMethodMap.set(
@@ -374,7 +470,7 @@ export async function getOrgAggregatedSalesReportAction(input: {
 
   const typeById = new Map(branches.map((b) => [b.id, b.type]));
 
-  const lines = withUsd.map((p) => {
+  const lines = revenuePays.map((p) => {
     const items = p.shopSale?.items ?? p.order?.items ?? [];
     const itemsLabel =
       items.length > 0
@@ -453,7 +549,7 @@ export async function getOrgAggregatedSalesReportAction(input: {
       tickets,
       ticketsDelta: pctDelta(tickets, prevTicketApprox),
       qtySold,
-      paymentsCount: withUsd.length,
+      paymentsCount: revenuePays.length,
       avgTicket: tickets ? ca / tickets : 0,
       branchCount: ids.length,
     },
@@ -1060,57 +1156,133 @@ export async function getOrgAggregatedFinanceReportAction(input: {
   const prev = previousRange(input.from, input.to);
   const days = eachDayIso(input.from, input.to);
 
-  const [pays, prevPays, moves, prevMoves, folioLines, rate] =
-    await Promise.all([
-      prisma.payment.findMany({
-        where: {
-          branchId: { in: ids },
-          paidAt: rangeBounds(input.from, input.to),
-        },
-        select: {
-          id: true,
-          branchId: true,
-          amountCdf: true,
-          amountForeign: true,
-          method: true,
-          paidAt: true,
-          receiptNumber: true,
-          orderId: true,
-          folioId: true,
-          shopSaleId: true,
-          order: {
-            select: {
-              tableLabel: true,
-              items: { select: { name: true, quantity: true } },
-            },
+  const [
+    pays,
+    prevPays,
+    moves,
+    prevMoves,
+    folioLines,
+    expensesRows,
+    purchaseOrders,
+    rate,
+  ] = await Promise.all([
+    prisma.payment.findMany({
+      where: {
+        branchId: { in: ids },
+        paidAt: rangeBounds(input.from, input.to),
+      },
+      select: {
+        id: true,
+        branchId: true,
+        amountCdf: true,
+        amountForeign: true,
+        method: true,
+        paidAt: true,
+        receiptNumber: true,
+        note: true,
+        orderId: true,
+        folioId: true,
+        shopSaleId: true,
+        purchaseOrderId: true,
+        expenseId: true,
+        order: {
+          select: {
+            tableLabel: true,
+            items: { select: { name: true, quantity: true } },
           },
-          shopSale: {
-            select: {
-              ticketNumber: true,
-              items: { select: { name: true, quantity: true } },
-            },
+        },
+        shopSale: {
+          select: {
+            ticketNumber: true,
+            items: { select: { name: true, quantity: true } },
           },
         },
-        orderBy: { paidAt: "asc" },
-      }),
-      prisma.payment.findMany({
-        where: {
-          branchId: { in: ids },
-          paidAt: rangeBounds(prev.from, prev.to),
+        purchaseOrder: {
+          select: { number: true, supplierName: true },
         },
-        select: { amountCdf: true, amountForeign: true },
-      }),
-      loadOrgStockMoves(ids, input.from, input.to),
-      loadOrgStockMoves(ids, prev.from, prev.to),
-      prisma.folioLine.findMany({
-        where: {
-          folio: { branchId: { in: ids } },
-          createdAt: rangeBounds(input.from, input.to),
+        expense: {
+          select: {
+            number: true,
+            kind: true,
+            label: true,
+            category: true,
+            beneficiary: true,
+          },
         },
-        select: { kind: true, amount: true },
-      }),
-      getActiveExchangeRate(ids[0]!),
-    ]);
+      },
+      orderBy: { paidAt: "asc" },
+    }),
+    prisma.payment.findMany({
+      where: {
+        branchId: { in: ids },
+        paidAt: rangeBounds(prev.from, prev.to),
+      },
+      select: {
+        amountCdf: true,
+        amountForeign: true,
+        note: true,
+        purchaseOrderId: true,
+        expenseId: true,
+      },
+    }),
+    loadOrgStockMoves(ids, input.from, input.to),
+    loadOrgStockMoves(ids, prev.from, prev.to),
+    prisma.folioLine.findMany({
+      where: {
+        folio: { branchId: { in: ids } },
+        createdAt: rangeBounds(input.from, input.to),
+      },
+      select: { kind: true, amount: true },
+    }),
+    prisma.branchExpense.findMany({
+      where: {
+        branchId: { in: ids },
+        createdAt: rangeBounds(input.from, input.to),
+      },
+      select: {
+        id: true,
+        branchId: true,
+        number: true,
+        kind: true,
+        label: true,
+        category: true,
+        beneficiary: true,
+        amountUsd: true,
+        note: true,
+        createdAt: true,
+        createdByUserId: true,
+      },
+      orderBy: { createdAt: "asc" },
+    }),
+    prisma.purchaseOrder.findMany({
+      where: {
+        branchId: { in: ids },
+        OR: [
+          { createdAt: rangeBounds(input.from, input.to) },
+          { validatedAt: rangeBounds(input.from, input.to) },
+        ],
+      },
+      select: {
+        id: true,
+        branchId: true,
+        number: true,
+        status: true,
+        supplierName: true,
+        note: true,
+        totalAmountUsd: true,
+        fundsReleasedUsd: true,
+        validatedAmountUsd: true,
+        createdAt: true,
+        validatedAt: true,
+        createdByUserId: true,
+        items: {
+          select: { name: true, quantity: true, receivedQty: true },
+        },
+      },
+      orderBy: { createdAt: "asc" },
+    }),
+    getActiveExchangeRate(ids[0]!),
+  ]);
 
   const usdRate = rate?.rate ?? null;
   const paysUsd = pays.map((p) => ({
@@ -1118,11 +1290,33 @@ export async function getOrgAggregatedFinanceReportAction(input: {
     usd: paymentAmountUsd(p, usdRate),
     branchName: nameById.get(p.branchId) ?? "Branche",
   }));
-  const revenue = paysUsd.reduce((s, p) => s + p.usd, 0);
-  const revenuePrev = prevPays.reduce(
-    (s, p) => s + paymentAmountUsd(p, usdRate),
-    0,
-  );
+  const prevPaysUsd = prevPays.map((p) => ({
+    ...p,
+    usd: paymentAmountUsd(p, usdRate),
+  }));
+
+  const revenue = paysUsd
+    .filter((p) => isRevenuePayment(p))
+    .reduce((s, p) => s + p.usd, 0);
+  const revenuePrev = prevPaysUsd
+    .filter((p) => isRevenuePayment(p))
+    .reduce((s, p) => s + p.usd, 0);
+
+  const expenses = paysUsd
+    .filter((p) => isExpensePayment(p))
+    .reduce((s, p) => s + Math.abs(p.usd), 0);
+  const expensesPrev = prevPaysUsd
+    .filter((p) => isExpensePayment(p))
+    .reduce((s, p) => s + Math.abs(p.usd), 0);
+
+  const purchasesGross = paysUsd
+    .filter((p) => isPurchaseOutflow(p))
+    .reduce((s, p) => s + Math.abs(Math.min(p.usd, 0)), 0);
+  const purchaseRefunds = paysUsd
+    .filter((p) => isPurchaseRefund(p))
+    .reduce((s, p) => s + Math.max(p.usd, 0), 0);
+  const netPurchases = Math.max(0, round2(purchasesGross - purchaseRefunds));
+  const netCash = round2(revenue - expenses - netPurchases);
 
   const qtyIn = moves
     .filter((m) => m.kind === "ENTREE")
@@ -1138,14 +1332,22 @@ export async function getOrgAggregatedFinanceReportAction(input: {
     .reduce((s, m) => s + m.quantity, 0);
 
   const revByDay = new Map<string, number>();
+  const expByDay = new Map<string, number>();
+  const poByDay = new Map<string, number>();
   const byBranchMap = new Map<string, number>();
   for (const p of paysUsd) {
     const k = dayKey(p.paidAt);
-    revByDay.set(k, (revByDay.get(k) ?? 0) + p.usd);
-    byBranchMap.set(
-      p.branchName,
-      (byBranchMap.get(p.branchName) ?? 0) + p.usd,
-    );
+    if (isRevenuePayment(p)) {
+      revByDay.set(k, (revByDay.get(k) ?? 0) + p.usd);
+      byBranchMap.set(
+        p.branchName,
+        (byBranchMap.get(p.branchName) ?? 0) + p.usd,
+      );
+    } else if (isExpensePayment(p)) {
+      expByDay.set(k, (expByDay.get(k) ?? 0) + Math.abs(p.usd));
+    } else if (isPurchaseOutflow(p)) {
+      poByDay.set(k, (poByDay.get(k) ?? 0) + Math.abs(Math.min(p.usd, 0)));
+    }
   }
   const inByDay = new Map<string, number>();
   const outByDay = new Map<string, number>();
@@ -1159,15 +1361,14 @@ export async function getOrgAggregatedFinanceReportAction(input: {
   for (const l of folioLines) {
     byKind.set(l.kind, (byKind.get(l.kind) ?? 0) + l.amount);
   }
-  const byMethod = new Map<string, number>();
-  for (const p of paysUsd) {
-    const method = paymentMethodLabel(p.method);
-    byMethod.set(method, (byMethod.get(method) ?? 0) + p.usd);
-  }
 
   const typeById = new Map(branches.map((b) => [b.id, b.type]));
+  const staffNames = await resolveStaffNameMap([
+    ...expensesRows.map((e) => e.createdByUserId),
+    ...purchaseOrders.map((po) => po.createdByUserId),
+  ]);
 
-  const lines = paysUsd.map((p) => {
+  const revenueLines = paysUsd.filter((p) => isRevenuePayment(p)).map((p) => {
     const items = p.shopSale?.items ?? p.order?.items ?? [];
     const itemsLabel =
       items.length > 0
@@ -1192,27 +1393,117 @@ export async function getOrgAggregatedFinanceReportAction(input: {
     };
   });
 
-  // Toujours dériver aussi depuis les lignes (même source que le tableau).
   const methodFromLines = new Map<string, number>();
-  for (const l of lines) {
+  for (const l of revenueLines) {
     if (!(l.usd > 0)) continue;
     methodFromLines.set(l.method, (methodFromLines.get(l.method) ?? 0) + l.usd);
   }
-  const revenueByMethod =
-    methodFromLines.size > 0
-      ? [...methodFromLines.entries()].map(([name, value]) => ({
-          name,
-          value: Number(value) || 0,
-        }))
-      : [...byMethod.entries()].map(([name, value]) => ({
-          name,
-          value: Number(value) || 0,
-        }));
+  const revenueByMethod = [...methodFromLines.entries()].map(
+    ([name, value]) => ({
+      name,
+      value: Number(value) || 0,
+    }),
+  );
 
-  const groupsByBranchType = groupLinesByBranchType(lines, (groupLines) => ({
-    amount: groupLines.reduce((s, l) => s + l.usd, 0),
-    count: groupLines.length,
-  }));
+  const groupsByBranchType = groupLinesByBranchType(
+    revenueLines,
+    (groupLines) => ({
+      amount: groupLines.reduce((s, l) => s + l.usd, 0),
+      count: groupLines.length,
+    }),
+  );
+
+  const expenseLines = expensesRows.map((e) => {
+    const branchType = typeById.get(e.branchId) ?? "AUTRE";
+    return {
+      id: e.id,
+      day: dayKey(e.createdAt),
+      branchId: e.branchId,
+      branchName: nameById.get(e.branchId) ?? "Branche",
+      branchType,
+      branchTypeLabel: branchTypeLabel(branchType),
+      number: e.number,
+      kind: e.kind,
+      kindLabel: expenseKindReportLabel(e.kind),
+      label: e.label,
+      category: e.category,
+      beneficiary: e.beneficiary ?? "—",
+      note: e.note ?? "—",
+      amountUsd: e.amountUsd,
+      userName: staffNames.get(e.createdByUserId) ?? "—",
+    };
+  });
+
+  const expensesByKindMap = new Map<string, number>();
+  for (const e of expenseLines) {
+    expensesByKindMap.set(
+      e.kindLabel,
+      (expensesByKindMap.get(e.kindLabel) ?? 0) + e.amountUsd,
+    );
+  }
+
+  const expenseGroupsByBranchType = groupLinesByBranchType(
+    expenseLines,
+    (groupLines) => ({
+      amount: groupLines.reduce((s, l) => s + l.amountUsd, 0),
+      count: groupLines.length,
+    }),
+  );
+
+  const purchaseOrderLines = purchaseOrders.map((po) => {
+    const branchType = typeById.get(po.branchId) ?? "AUTRE";
+    const itemsLabel =
+      po.items.length > 0
+        ? po.items
+            .map((i) => {
+              const qty =
+                i.receivedQty != null ? `${i.receivedQty}/${i.quantity}` : `${i.quantity}`;
+              return `${i.name} ×${qty}`;
+            })
+            .join(", ")
+        : "—";
+    return {
+      id: po.id,
+      day: dayKey(po.validatedAt ?? po.createdAt),
+      createdDay: dayKey(po.createdAt),
+      validatedDay: po.validatedAt ? dayKey(po.validatedAt) : null,
+      branchId: po.branchId,
+      branchName: nameById.get(po.branchId) ?? "Branche",
+      branchType,
+      branchTypeLabel: branchTypeLabel(branchType),
+      number: po.number,
+      status: po.status,
+      statusLabel: purchaseOrderStatusLabel(po.status),
+      supplierName: po.supplierName?.trim() || "—",
+      note: po.note ?? "—",
+      itemsLabel,
+      totalAmountUsd: po.totalAmountUsd,
+      fundsReleasedUsd: po.fundsReleasedUsd,
+      validatedAmountUsd: po.validatedAmountUsd,
+      userName: staffNames.get(po.createdByUserId) ?? "—",
+    };
+  });
+
+  const purchaseGroupsByBranchType = groupLinesByBranchType(
+    purchaseOrderLines,
+    (groupLines) => ({
+      count: groupLines.length,
+      total: groupLines.reduce((s, l) => s + l.totalAmountUsd, 0),
+      funds: groupLines.reduce((s, l) => s + l.fundsReleasedUsd, 0),
+      validated: groupLines.reduce(
+        (s, l) => s + (l.validatedAmountUsd ?? 0),
+        0,
+      ),
+    }),
+  );
+
+  const purchasesByStatusMap = new Map<string, number>();
+  for (const po of purchaseOrderLines) {
+    purchasesByStatusMap.set(
+      po.statusLabel,
+      (purchasesByStatusMap.get(po.statusLabel) ?? 0) + 1,
+    );
+  }
 
   return {
     period: { from: input.from, to: input.to },
@@ -1220,6 +1511,12 @@ export async function getOrgAggregatedFinanceReportAction(input: {
     kpis: {
       revenue,
       revenueDelta: pctDelta(revenue, revenuePrev),
+      expenses,
+      expensesDelta: pctDelta(expenses, expensesPrev),
+      purchases: netPurchases,
+      purchasesCount: purchaseOrderLines.length,
+      expensesCount: expenseLines.length,
+      netCash,
       qtyIn,
       qtyInDelta: pctDelta(qtyIn, qtyInPrev),
       qtyOut,
@@ -1231,6 +1528,11 @@ export async function getOrgAggregatedFinanceReportAction(input: {
     revenueByDay: days.map((day) => ({
       day,
       value: revByDay.get(day) ?? 0,
+    })),
+    cashOutByDay: days.map((day) => ({
+      day,
+      depenses: expByDay.get(day) ?? 0,
+      bons: poByDay.get(day) ?? 0,
     })),
     flowByDay: days.map((day) => ({
       day,
@@ -1246,9 +1548,26 @@ export async function getOrgAggregatedFinanceReportAction(input: {
       name,
       value: Number(value) || 0,
     })),
-    lines,
-    linesTotal: lines.reduce((s, l) => s + l.usd, 0),
+    expensesByKind: [...expensesByKindMap.entries()]
+      .map(([name, value]) => ({ name, value: Number(value) || 0 }))
+      .sort((a, b) => b.value - a.value),
+    purchasesByStatus: [...purchasesByStatusMap.entries()]
+      .map(([name, value]) => ({ name, value: Number(value) || 0 }))
+      .sort((a, b) => b.value - a.value),
+    lines: revenueLines,
+    linesTotal: revenueLines.reduce((s, l) => s + l.usd, 0),
     groupsByBranchType,
+    expenses: {
+      lines: expenseLines,
+      linesTotal: expenseLines.reduce((s, l) => s + l.amountUsd, 0),
+      groupsByBranchType: expenseGroupsByBranchType,
+    },
+    purchaseOrders: {
+      lines: purchaseOrderLines,
+      linesTotal: purchaseOrderLines.reduce((s, l) => s + l.totalAmountUsd, 0),
+      fundsTotal: purchaseOrderLines.reduce((s, l) => s + l.fundsReleasedUsd, 0),
+      groupsByBranchType: purchaseGroupsByBranchType,
+    },
     rate: toReportExchangeRate(rate),
   };
 }

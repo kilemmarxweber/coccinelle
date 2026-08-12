@@ -17,8 +17,8 @@ function looksLikeBarcode(raw: string) {
   return /^[A-Za-z0-9\-_.]+$/.test(v) && /\d/.test(v);
 }
 
-/** 2 lignes × 3 colonnes (grille sm+). */
-const CATALOG_PAGE_SIZE = 6;
+/** Catalogue resto / vente rapide : 10 produits par page. */
+const CATALOG_PAGE_SIZE = 10;
 /** Lignes panier visibles avant pagination. */
 const CART_PAGE_SIZE = 3;
 

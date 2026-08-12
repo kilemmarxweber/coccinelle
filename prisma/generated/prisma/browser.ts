@@ -207,3 +207,18 @@ export type HotelOrderItem = Prisma.HotelOrderItemModel
  * 
  */
 export type BranchNotification = Prisma.BranchNotificationModel
+/**
+ * Model PurchaseOrder
+ * * Bon de commande fournisseur — lignes + sortie caisse à la validation.
+ */
+export type PurchaseOrder = Prisma.PurchaseOrderModel
+/**
+ * Model PurchaseOrderItem
+ * 
+ */
+export type PurchaseOrderItem = Prisma.PurchaseOrderItemModel
+/**
+ * Model BranchExpense
+ * * Sortie de caisse (dépense, dépôt banque, remise propriétaire).
+ */
+export type BranchExpense = Prisma.BranchExpenseModel

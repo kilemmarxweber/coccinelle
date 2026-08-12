@@ -187,6 +187,13 @@ enum HotelOrderStatus {
   ANNULEE
 }
 
+enum PurchaseOrderStatus {
+  EN_ATTENTE
+  FONDS_SORTIS
+  VALIDE
+  ANNULE
+}
+
 
 model User {
   id            String       @id
@@ -578,6 +585,8 @@ model Branch {
   notifications  BranchNotification[]
   menuItems      HotelMenuItem[]
   stockMovements HotelStockMovement[]
+  purchaseOrders PurchaseOrder[]
+  expenses       BranchExpense[]
 
   @@unique([organizationId, code])
   @@index([organizationId, type])
@@ -864,6 +873,8 @@ model Payment {
   folioId          String?
   orderId          String?
   shopSaleId       String?
+  purchaseOrderId  String?
+  expenseId        String?       @unique
   receiptNumber    String
   method           PaymentMethod @default(CASH)
   amountCdf        Float
@@ -879,12 +890,15 @@ model Payment {
   folio            Folio?        @relation(fields: [folioId], references: [id], onDelete: SetNull)
   order            HotelOrder?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
   shopSale         ShopSale?     @relation(fields: [shopSaleId], references: [id], onDelete: SetNull)
+  purchaseOrder    PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id], onDelete: SetNull)
+  expense          BranchExpense? @relation(fields: [expenseId], references: [id], onDelete: SetNull)
 
   @@unique([branchId, receiptNumber])
   @@index([branchId, paidAt])
   @@index([folioId])
   @@index([orderId])
   @@index([shopSaleId])
+  @@index([purchaseOrderId])
 }
 
 /** Catalogue F&B / vente rapide / consommables hôtel. */
@@ -1007,5 +1021,83 @@ model BranchNotification {
   branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
   @@index([branchId, createdAt])
+}
+
+/** Bon de commande fournisseur — lignes + sortie caisse à la validation. */
+model PurchaseOrder {
+  id                String              @id @default(uuid())
+  branchId          String
+  number            String
+  status            PurchaseOrderStatus @default(EN_ATTENTE)
+  supplierName      String?
+  note              String?
+  /// Total demandé (USD) au moment de la création / dernière édition.
+  totalAmountUsd    Float               @default(0)
+  /// Fonds sortis de caisse (USD) avant / pendant validation.
+  fundsReleasedUsd  Float               @default(0)
+  /// Total validé reçu (USD).
+  validatedAmountUsd Float?
+  createdByUserId   String
+  validatedByUserId String?
+  validatedAt       DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  branch            Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  items             PurchaseOrderItem[]
+  payments          Payment[]
+
+  @@unique([branchId, number])
+  @@index([branchId, status])
+  @@index([branchId, createdAt])
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(uuid())
+  purchaseOrderId String
+  /// Nom saisi (peut créer le produit à la validation).
+  name            String
+  /// Catégorie catalogue (hôtel string / boutique nom de catégorie).
+  category        String        @default("Divers")
+  quantity        Int           @default(1)
+  /// Quantité réellement reçue (null = pas encore validé).
+  receivedQty     Int?
+  unitPriceUsd    Float
+  lineTotalUsd    Float
+  /// Lien catalogue boutique (optionnel).
+  shopProductId   String?
+  /// Lien catalogue hôtel (optionnel).
+  menuItemId      String?
+  /// Produit inexistant au moment de la saisie → à créer à la validation.
+  createProduct   Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+
+  @@index([purchaseOrderId])
+}
+
+/** Sortie de caisse (dépense, dépôt banque, remise propriétaire). */
+model BranchExpense {
+  id              String   @id @default(uuid())
+  branchId        String
+  /// Réf. document : DEP-00001 / DBQ-00001 / RPR-00001
+  number          String
+  /// DEPENSE | DEPOT_BANQUE | REMISE_PROPRIETAIRE
+  kind            String   @default("DEPENSE")
+  label           String
+  category        String   @default("Divers")
+  /// Banque, propriétaire, ou tiers (pour le document de signature).
+  beneficiary     String?
+  /// Montant en USD (cohérent avec le reste des montants métier).
+  amountUsd       Float
+  note            String?
+  createdByUserId String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  branch          Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  payment         Payment?
+
+  @@unique([branchId, number])
+  @@index([branchId, createdAt])
+  @@index([branchId, kind])
 }
 

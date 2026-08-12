@@ -6,7 +6,7 @@ import { auth } from "@/lib/auth";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { branchBasePath } from "@/lib/branch/paths";
 import prisma from "@/lib/prisma";
-import { normalizeUsdCdfRate } from "@/lib/cash/exchange";
+import { integerUsdCdfRate, normalizeUsdCdfRate } from "@/lib/cash/exchange";
 import {
   folioBalanceWithDeposit,
   MEETING_PAYMENT_NOTES,
@@ -66,7 +66,6 @@ export async function setExchangeRateAction(input: {
   rate: number;
 }) {
   await ctx(input.organizationId, input.branchId);
-  if (!(input.rate > 0)) throw new Error("Taux invalide.");
   const from = input.fromCurrency.trim().toUpperCase() || "USD";
   const to = input.toCurrency.trim().toUpperCase() || "CDF";
   const pairOk =
@@ -74,12 +73,14 @@ export async function setExchangeRateAction(input: {
   if (!pairOk) {
     throw new Error("Choisissez USD → CDF ou CDF → USD.");
   }
+  // Toujours un entier : N FC = 1 $ (ex. 2250). Jamais de fraction.
+  const rate = integerUsdCdfRate(input.rate);
   const row = await prisma.exchangeRate.create({
     data: {
       branchId: input.branchId,
       fromCurrency: from,
       toCurrency: to,
-      rate: input.rate,
+      rate,
       validFrom: new Date(),
     },
   });
@@ -92,6 +93,45 @@ export async function getOpenCashSession(branchId: string) {
     where: { branchId, status: "OPEN" },
     orderBy: { openedAt: "desc" },
   });
+}
+
+/** Situation caisse ouverte : fond + mouvements → solde théorique. */
+export async function getOpenCashDrawerSummary(branchId: string) {
+  const session = await getOpenCashSession(branchId);
+  if (!session) return null;
+
+  const [rateRow, payments] = await Promise.all([
+    getActiveExchangeRate(branchId),
+    prisma.payment.findMany({
+      where: { cashSessionId: session.id },
+      select: { amountCdf: true, amountForeign: true },
+    }),
+  ]);
+
+  const usdRate = rateRow?.rate && rateRow.rate > 0 ? rateRow.rate : null;
+  let movementsUsd = 0;
+  for (const p of payments) {
+    if (p.amountForeign != null && p.amountForeign !== 0) {
+      movementsUsd += p.amountForeign;
+    } else if (usdRate) {
+      movementsUsd += p.amountCdf / usdRate;
+    } else {
+      movementsUsd += p.amountCdf;
+    }
+  }
+  movementsUsd = Math.round(movementsUsd * 100) / 100;
+  const openingFloatUsd = Math.round(session.openingFloat * 100) / 100;
+  const balanceUsd =
+    Math.round((openingFloatUsd + movementsUsd) * 100) / 100;
+
+  return {
+    sessionId: session.id,
+    openedAt: session.openedAt,
+    openingFloatUsd,
+    movementsUsd,
+    balanceUsd,
+    movementsCount: payments.length,
+  };
 }
 
 export async function openCashSessionAction(input: {

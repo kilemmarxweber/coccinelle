@@ -563,7 +563,7 @@ export function FinanceReportClient(props: {
           `<h1>Rapport Financier — ${props.branchName}</h1>
           <p>${props.from} → ${props.to}</p>
           ${rates ? `<p>${rates}</p>` : ""}
-          <p>Revenus : ${money(kpis.revenue)} · Entrées : ${kpis.qtyIn} · Sorties : ${kpis.qtyOut}</p>`,
+          <p>Revenus : ${money(kpis.revenue)} · Dépenses : ${money(kpis.expenses)} · Achats : ${money(kpis.purchases)} · Solde net : ${money(kpis.netCash)}</p>`,
         )
       }
     >
@@ -578,6 +578,20 @@ export function FinanceReportClient(props: {
             label: "Revenus",
             value: money(kpis.revenue),
             delta: kpis.revenueDelta,
+          },
+          {
+            label: "Dépenses",
+            value: money(kpis.expenses),
+            delta: kpis.expensesDelta,
+          },
+          {
+            label: "Achats (BC)",
+            value: money(kpis.purchases),
+          },
+          {
+            label: "Solde net",
+            value: money(kpis.netCash),
+            hint: "Revenus − dépenses − achats",
           },
           {
             label: "Entrées stock",

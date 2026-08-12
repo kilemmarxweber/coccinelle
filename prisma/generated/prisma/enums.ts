@@ -262,3 +262,13 @@ export const HotelOrderStatus = {
 } as const
 
 export type HotelOrderStatus = (typeof HotelOrderStatus)[keyof typeof HotelOrderStatus]
+
+
+export const PurchaseOrderStatus = {
+  EN_ATTENTE: 'EN_ATTENTE',
+  FONDS_SORTIS: 'FONDS_SORTIS',
+  VALIDE: 'VALIDE',
+  ANNULE: 'ANNULE'
+} as const
+
+export type PurchaseOrderStatus = (typeof PurchaseOrderStatus)[keyof typeof PurchaseOrderStatus]

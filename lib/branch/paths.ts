@@ -57,6 +57,10 @@ export function branchCaissePath(
 export const sharedBranchRoutes = {
   tauxChange: (orgId: string, branchId: string) =>
     `${branchBasePath(orgId, branchId)}/taux-change`,
+  bonsCommande: (orgId: string, branchId: string) =>
+    `${branchBasePath(orgId, branchId)}/bons-commande`,
+  depenses: (orgId: string, branchId: string) =>
+    `${branchBasePath(orgId, branchId)}/depenses`,
   rapports: (orgId: string, branchId: string) =>
     `${branchBasePath(orgId, branchId)}/rapports`,
   tableauBord: (orgId: string, branchId: string) =>

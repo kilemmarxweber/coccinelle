@@ -486,6 +486,7 @@ export function OrgRapportsClient(props: Props) {
 
     if (tab === "financier" && finance) {
       const rows: (string | number)[][] = [];
+      rows.push(["— ENCAISSEMENTS —", "", "", "", "", "", ""]);
       for (const g of finance.groupsByBranchType) {
         rows.push([`— ${g.typeLabel.toUpperCase()} —`, "", "", "", "", "", ""]);
         for (const l of g.lines) {
@@ -510,7 +511,7 @@ export function OrgRapportsClient(props: Props) {
         ]);
       }
       rows.push([
-        "TOTAL GÉNÉRAL",
+        "TOTAL ENCAISSEMENTS",
         "",
         "",
         "",
@@ -518,14 +519,119 @@ export function OrgRapportsClient(props: Props) {
         `${finance.lines.length} ligne(s)`,
         money(finance.linesTotal),
       ]);
+
+      rows.push(["", "", "", "", "", "", ""]);
+      rows.push([
+        "— GESTION DES DÉPENSES —",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+      ]);
+      rows.push([
+        "Jour",
+        "Branche",
+        "N°",
+        "Nature",
+        "Libellé",
+        "Bénéficiaire",
+        "Montant",
+      ]);
+      for (const g of finance.expenses.groupsByBranchType) {
+        rows.push([`— ${g.typeLabel.toUpperCase()} —`, "", "", "", "", "", ""]);
+        for (const l of g.lines) {
+          rows.push([
+            l.day,
+            l.branchName,
+            l.number,
+            l.kindLabel,
+            `${l.label} · ${l.category}`,
+            l.beneficiary,
+            money(l.amountUsd),
+          ]);
+        }
+        rows.push([
+          `Total ${g.typeLabel}`,
+          "",
+          "",
+          "",
+          "",
+          `${g.totals.count} ligne(s)`,
+          money(g.totals.amount),
+        ]);
+      }
+      rows.push([
+        "TOTAL DÉPENSES",
+        "",
+        "",
+        "",
+        "",
+        `${finance.expenses.lines.length} ligne(s)`,
+        money(finance.expenses.linesTotal),
+      ]);
+
+      rows.push(["", "", "", "", "", "", ""]);
+      rows.push([
+        "— GESTION DES BONS DE COMMANDE —",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+      ]);
+      rows.push([
+        "Jour",
+        "Branche",
+        "N° bon",
+        "Statut",
+        "Fournisseur",
+        "Articles",
+        "Montant",
+      ]);
+      for (const g of finance.purchaseOrders.groupsByBranchType) {
+        rows.push([`— ${g.typeLabel.toUpperCase()} —`, "", "", "", "", "", ""]);
+        for (const l of g.lines) {
+          rows.push([
+            l.day,
+            l.branchName,
+            l.number,
+            l.statusLabel,
+            l.supplierName,
+            l.itemsLabel,
+            money(l.totalAmountUsd),
+          ]);
+        }
+        rows.push([
+          `Total ${g.typeLabel}`,
+          "",
+          "",
+          "",
+          `${g.totals.count} bon(s)`,
+          `Fonds ${money(g.totals.funds)}`,
+          money(g.totals.total),
+        ]);
+      }
+      rows.push([
+        "TOTAL BONS",
+        "",
+        "",
+        "",
+        `${finance.purchaseOrders.lines.length} bon(s)`,
+        `Fonds ${money(finance.purchaseOrders.fundsTotal)}`,
+        money(finance.purchaseOrders.linesTotal),
+      ]);
+
       return {
         meta: {
           ...baseMeta,
           kpis: [
             { label: "Revenus", value: money(finance.kpis.revenue) },
-            { label: "Entrées stock", value: formatQty(finance.kpis.qtyIn) },
-            { label: "Sorties stock", value: formatQty(finance.kpis.qtyOut) },
-            { label: "Rev. / sortie", value: money(finance.kpis.coverage) },
+            { label: "Dépenses", value: money(finance.kpis.expenses) },
+            { label: "Achats (BC)", value: money(finance.kpis.purchases) },
+            { label: "Solde net", value: money(finance.kpis.netCash) },
           ],
         },
         table: {
@@ -533,9 +639,9 @@ export function OrgRapportsClient(props: Props) {
             "Jour",
             "Branche",
             "Réf.",
-            "Reçu",
-            "Articles",
-            "Mode",
+            "Détail",
+            "Complément",
+            "Mode / statut",
             "Montant",
           ],
           rows,

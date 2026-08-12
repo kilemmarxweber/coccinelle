@@ -18,6 +18,7 @@ import {
   Package,
   Plane,
   Presentation,
+  Receipt,
   ShoppingCart,
   Truck,
   Users,
@@ -84,6 +85,34 @@ function tauxChangeCard(
     icon: ArrowLeftRight,
     iconBg: "bg-primary/15",
     iconColor: "text-primary",
+  };
+}
+
+function bonsCommandeCard(
+  organizationId: string,
+  branchId: string,
+): BranchMenuItem {
+  return {
+    title: "Bons de commande",
+    description: "Achats fournisseur, impression et validation caisse.",
+    href: sharedBranchRoutes.bonsCommande(organizationId, branchId),
+    icon: ClipboardList,
+    iconBg: "bg-teal-500/15",
+    iconColor: "text-teal-400",
+  };
+}
+
+function depensesCard(
+  organizationId: string,
+  branchId: string,
+): BranchMenuItem {
+  return {
+    title: "Dépenses",
+    description: "Sorties de caisse et suivi du solde net.",
+    href: sharedBranchRoutes.depenses(organizationId, branchId),
+    icon: Receipt,
+    iconBg: "bg-rose-500/15",
+    iconColor: "text-rose-400",
   };
 }
 
@@ -199,6 +228,8 @@ export function menuSectionsForBranch(
       );
     }
     dailyItems.push(tauxChangeCard(organizationId, branchId));
+    dailyItems.push(bonsCommandeCard(organizationId, branchId));
+    dailyItems.push(depensesCard(organizationId, branchId));
 
     const stockItems: BranchMenuItem[] = [];
     if (hasStays) {
@@ -277,6 +308,8 @@ export function menuSectionsForBranch(
             primary: true,
           },
           tauxChangeCard(organizationId, branchId),
+          bonsCommandeCard(organizationId, branchId),
+          depensesCard(organizationId, branchId),
           {
             title: "Produits",
             description: "Articles, plats, prix et promotions.",
@@ -337,6 +370,8 @@ export function menuSectionsForBranch(
           iconColor: "text-violet-400",
         },
         tauxChangeCard(organizationId, branchId),
+        bonsCommandeCard(organizationId, branchId),
+        depensesCard(organizationId, branchId),
       ],
     },
     {
