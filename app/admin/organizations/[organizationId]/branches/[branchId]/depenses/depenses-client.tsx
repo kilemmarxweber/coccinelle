@@ -296,7 +296,7 @@ export function DepensesClient(props: {
         organizationId={props.organizationId}
         branchId={props.branchId}
         title="Dépenses"
-        subtitle={`${props.branchName} · sorties, dépôt banque, remise ou prêt propriétaire (alimente la caisse) · document à signer`}
+        subtitle={`${props.branchName} · sorties d’argent, dépôts et prêts · un document à signer`}
         actions={
           <>
             {!hasOpenCashSession ? (

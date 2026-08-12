@@ -289,7 +289,7 @@ export function BoutiquePosClient(props: Props) {
             }
           >
             <ArrowLeft className="size-4" />
-            Hub
+            Retour
           </Button>
           <div>
             <h1 className="text-lg font-bold tracking-tight sm:text-xl">

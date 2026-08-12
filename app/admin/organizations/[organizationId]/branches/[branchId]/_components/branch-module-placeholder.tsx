@@ -35,7 +35,7 @@ export function BranchModulePlaceholder({
           <Link href={branchDashboardPath(organizationId, branchId)} />
         }
       >
-        Retour au dashboard
+        Retour
       </Button>
     </div>
   );

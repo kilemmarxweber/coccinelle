@@ -515,7 +515,7 @@ export function CaisseClient(props: Props) {
           toast.success("Imputée à la note de chambre");
           setTab("folios");
         } else {
-          toast.success("Ajoutée à la file F&B");
+          toast.success("Ajoutée à la file restauration");
           setTab("fnb");
         }
         router.refresh();
@@ -537,7 +537,7 @@ export function CaisseClient(props: Props) {
             {row.original.inCheckoutQueue ? (
               <Badge variant="secondary" className="gap-1">
                 <Clock3 className="size-3" />
-                Check-out
+                Départ
               </Badge>
             ) : null}
           </div>
@@ -675,7 +675,7 @@ export function CaisseClient(props: Props) {
       tone: "text-foreground",
     },
     {
-      label: "F&B prêts",
+      label: "Commandes prêtes",
       value: String(props.readyOrders.length),
       sub: null,
       tone: "text-foreground",
@@ -822,7 +822,7 @@ export function CaisseClient(props: Props) {
           {(
             [
               hasRestaurant
-                ? (["fnb", `F&B (${props.readyOrders.length})`, CircleDollarSign] as const)
+                ? (["fnb", `Restauration (${props.readyOrders.length})`, CircleDollarSign] as const)
                 : null,
               hasRestaurant
                 ? (["vente", "Vente rapide", ShoppingBag] as const)
@@ -879,7 +879,7 @@ export function CaisseClient(props: Props) {
         <section className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className="font-semibold">File F&B — caisse</h2>
+              <h2 className="font-semibold">File restauration — caisse</h2>
               <p className="text-sm text-muted-foreground">
                 Encaisser (vert) après Livrer (jaune) — la livraison doit être
                 faite avant l’encaissement.
@@ -895,7 +895,7 @@ export function CaisseClient(props: Props) {
           {readySorted.length === 0 ? (
             <EmptyState
               icon={CircleDollarSign}
-              title="Aucune commande en file F&B"
+              title="Aucune commande en file restauration"
               description="Vente rapide et tickets cuisine prêts apparaîtront ici."
               className="rounded-2xl border border-border bg-card/50"
             />
@@ -1093,7 +1093,7 @@ export function CaisseClient(props: Props) {
                             : ""}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          Paiement comptant (file F&B) — la note de chambre se
+                          Paiement comptant (file restauration) — la note de chambre se
                           règle dans l’onglet Notes.
                         </p>
                       </div>
@@ -1208,8 +1208,8 @@ export function CaisseClient(props: Props) {
                 <h2 className="font-semibold">Vente rapide — tous les produits</h2>
                 <p className="text-xs text-muted-foreground">
                   {hasStays
-                    ? "Comptant → file F&B · Sur note → imputée à la note de chambre"
-                    : "Statut « en cours » — Livrer puis Encaisser dans la file F&B."}
+                    ? "Comptant → file restauration · Sur note → imputée à la note de chambre"
+                    : "Statut « en cours » — Livrer puis Encaisser dans la file restauration."}
                 </p>
               </div>
             </div>
@@ -1262,7 +1262,7 @@ export function CaisseClient(props: Props) {
                 {quickRoomMatched && !quickStayId ? (
                   <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-3 text-sm">
                     <p className="font-semibold text-amber-900 dark:text-amber-100">
-                      Séjour check-in · ch. {quickRoomMatched.room.number}
+                      Séjour en cours · ch. {quickRoomMatched.room.number}
                     </p>
                     <p className="mt-0.5 text-xs text-amber-800/90 dark:text-amber-200/90">
                       {quickRoomMatched.guestName} — mode de règlement
@@ -1295,11 +1295,11 @@ export function CaisseClient(props: Props) {
                 {quickRoomLookup.status === "no_guest" && !quickStayId ? (
                   <div className="rounded-xl border border-rose-500/35 bg-rose-500/10 px-3 py-3 text-sm">
                     <p className="font-semibold text-rose-800 dark:text-rose-200">
-                      Aucun client check-in · ch. {quickRoomLookup.roomNumber}
+                      Aucun client présent · ch. {quickRoomLookup.roomNumber}
                     </p>
                     <p className="mt-0.5 text-xs text-rose-700/90 dark:text-rose-300/90">
                       Impossible de lier une note — chambre libre ou pas encore
-                      check-in.
+                      d’arrivée.
                     </p>
                   </div>
                 ) : null}
@@ -1308,7 +1308,7 @@ export function CaisseClient(props: Props) {
                   <div className="rounded-xl border border-muted-foreground/25 bg-muted/40 px-3 py-3 text-sm">
                     <p className="font-semibold">Aucun client en séjour</p>
                     <p className="mt-0.5 text-xs text-muted-foreground">
-                      Pas de chambre check-in — vente comptoir / comptant
+                      Pas de chambre occupée — vente comptoir / comptant
                       uniquement.
                     </p>
                   </div>
@@ -1359,13 +1359,13 @@ export function CaisseClient(props: Props) {
                     </div>
                     <p className="text-[11px] text-muted-foreground">
                       {quickSettlementMode === "NOTE_CHAMBRE"
-                        ? "Ajoutée directement à la note · solde au check-out"
-                        : "File F&B — livrer puis encaisser"}
+                        ? "Ajoutée directement à la note · solde au départ"
+                        : "File restauration — livrer puis encaisser"}
                     </p>
                   </div>
                 ) : hasStays && activeStays.length > 0 ? (
                   <div className="grid gap-1.5">
-                    <Label htmlFor="quick-stay">Ou choisir un séjour check-in</Label>
+                    <Label htmlFor="quick-stay">Ou choisir un séjour en cours</Label>
                     <SearchCombobox
                       id="quick-stay"
                       items={activeStays.map((s) => ({
@@ -1388,7 +1388,7 @@ export function CaisseClient(props: Props) {
                   </div>
                 ) : hasStays ? (
                   <p className="rounded-lg border border-dashed border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
-                    Aucun client check-in — impossible de lier une note de
+                    Aucun client présent — impossible de lier une note de
                     chambre pour l’instant.
                   </p>
                 ) : null}
@@ -1400,7 +1400,7 @@ export function CaisseClient(props: Props) {
                   label={
                     quickSettlementMode === "NOTE_CHAMBRE"
                       ? "Imputer à la note de chambre"
-                      : "Envoyer · Comptant (file F&B)"
+                      : "Envoyer · Comptant (file restauration)"
                   }
                   pending={pending}
                   disabled={cart.length === 0}
@@ -1408,7 +1408,7 @@ export function CaisseClient(props: Props) {
                 />
               ) : (
                 <PosChargeButton
-                  label="Envoyer à la file F&B"
+                  label="Envoyer à la file restauration"
                   pending={pending}
                   disabled={cart.length === 0}
                   onClick={() => quickSale("COMPTANT")}
@@ -1425,7 +1425,7 @@ export function CaisseClient(props: Props) {
             <div>
               <h2 className="font-semibold">Notes de chambre</h2>
               <p className="text-xs text-muted-foreground">
-                File d’attente check-out en tête · acompte ou solde total
+                File d’attente départ en tête · acompte ou solde total
               </p>
             </div>
             <PosPayMethodPicker
@@ -1440,7 +1440,7 @@ export function CaisseClient(props: Props) {
               <div className="flex items-center gap-2">
                 <Clock3 className="size-4 text-amber-700" />
                 <h3 className="text-sm font-semibold">
-                  File d’attente check-out ({checkoutQueue.length})
+                  File d’attente départ ({checkoutQueue.length})
                 </h3>
               </div>
               <ResponsiveDataTable

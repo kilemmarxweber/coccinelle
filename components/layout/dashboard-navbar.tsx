@@ -88,7 +88,7 @@ export function DashboardNavbar({
             <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <UserCircle className="size-5" />
             </div>
-            <span className="truncate text-sm font-medium text-foreground">
+            <span className="hidden truncate text-sm font-medium text-foreground sm:inline">
               {isPending ? "…" : userName}
             </span>
           </div>
@@ -100,9 +100,12 @@ export function DashboardNavbar({
             disabled={signingOut}
             onClick={handleSignOut}
             className="gap-1.5"
+            aria-label={signingOut ? "Déconnexion…" : "Déconnexion"}
           >
             <LogOut className="size-3.5" />
-            <span>{signingOut ? "…" : "Déconnexion"}</span>
+            <span className="hidden sm:inline">
+              {signingOut ? "…" : "Déconnexion"}
+            </span>
           </Button>
         </div>
       </div>

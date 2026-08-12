@@ -70,7 +70,7 @@ function SheetContent({
             }
           >
             <XIcon aria-hidden="true" />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">Fermer</span>
           </SheetPrimitive.Close>
         )}
         {children}

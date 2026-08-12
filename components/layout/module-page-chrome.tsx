@@ -28,7 +28,7 @@ export function ModulePageChrome({
   title,
   subtitle,
   backHref,
-  backLabel = "Dashboard",
+  backLabel = "Retour",
   actions,
   className,
   children,

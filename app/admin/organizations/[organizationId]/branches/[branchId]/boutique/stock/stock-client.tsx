@@ -102,7 +102,7 @@ export function BoutiqueStockClient(props: Props) {
             }
           >
             <ArrowLeft className="size-4" />
-            Dashboard
+            Retour
           </Button>
           <h1 className="text-2xl font-bold tracking-tight">Stock</h1>
           <p className="text-sm text-muted-foreground">{props.branchName}</p>

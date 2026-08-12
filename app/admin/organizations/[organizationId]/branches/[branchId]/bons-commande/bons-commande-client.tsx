@@ -466,7 +466,7 @@ export function BonsCommandeClient(props: {
         organizationId={props.organizationId}
         branchId={props.branchId}
         title="Bons de commande"
-        subtitle={`${props.branchName} · catalogue de cette branche uniquement · à la validation : crée ou met à jour le stock des produits ici`}
+        subtitle={`${props.branchName} · commandes fournisseurs de cet établissement · stock mis à jour à la validation`}
         actions={
           <>
             <Button variant="outline" render={<Link href={productsHref} />}>

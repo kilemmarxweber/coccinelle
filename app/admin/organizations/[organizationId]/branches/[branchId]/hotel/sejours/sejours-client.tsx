@@ -137,7 +137,7 @@ const STATUS_LABEL: Record<string, string> = {
   CHECKED_IN: "Occupé",
   CHECKED_OUT: "Terminé",
   CANCELLED: "Annulé",
-  NO_SHOW: "No-show",
+  NO_SHOW: "Non-présentation",
 };
 
 function toDateKey(d: Date) {
@@ -594,8 +594,8 @@ export function SejoursClient(props: {
             ? "Salle réservée · encaissement enregistré"
             : formImmediateCheckIn
               ? form.billingMode === "FLAT"
-                ? "Passage démarré · check-in effectué"
-                : "Check-in effectué"
+                ? "Passage démarré · arrivée enregistrée"
+                : "Arrivée enregistrée"
               : "Séjour réservé",
         );
         setForm((f) => ({
@@ -629,7 +629,7 @@ export function SejoursClient(props: {
           branchId: props.branchId,
           stayId,
         });
-        toast.success("Check-in effectué");
+        toast.success("Arrivée enregistrée");
         router.refresh();
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Erreur");
@@ -692,7 +692,7 @@ export function SejoursClient(props: {
           );
           return;
         }
-        toast.success("Check-out effectué — imprimez la facture pour signature");
+        toast.success("Départ enregistré — imprimez la facture pour signature");
         setCheckoutStayId(null);
         setCheckoutStatement(null);
         window.open(
@@ -817,8 +817,8 @@ export function SejoursClient(props: {
         title="Séjours"
         subtitle={
           props.rate
-            ? `Planning · check-in · actifs · check-outs · ${formatConfiguredRateLabel(props.rate)}`
-            : "Planning · check-in · actifs · check-outs"
+            ? `Calendrier des chambres · arrivées et départs · ${formatConfiguredRateLabel(props.rate)}`
+            : "Calendrier des chambres · arrivées et départs"
         }
       />
 
@@ -837,7 +837,7 @@ export function SejoursClient(props: {
           <TabsTrigger value="sejours" className="gap-1.5 px-3 py-2">
             <ClipboardList className="size-4" />
             <span className="hidden sm:inline">
-              Actifs / check-outs
+              Actifs / départs
               {filteredListStays.length > 0
                 ? ` (${filteredListStays.length})`
                 : ""}
@@ -849,7 +849,7 @@ export function SejoursClient(props: {
         <TabsContent value="calendrier" className="flex flex-col gap-4 outline-none">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <p className="text-xs leading-relaxed text-muted-foreground">
-              <span className="font-semibold text-orange-500">check-in</span>
+              <span className="font-semibold text-orange-500">arrivée</span>
               {" · "}
               <span className="font-semibold text-sky-600 dark:text-sky-400">
                 occupé
@@ -1156,7 +1156,7 @@ export function SejoursClient(props: {
                 <h2 className="font-semibold">
                   {listFilter === "actifs"
                     ? "Séjours actifs"
-                    : "Check-outs du jour"}
+                    : "Départs du jour"}
                 </h2>
               <p className="text-xs text-muted-foreground">
                 {listFilter === "actifs"
@@ -1191,7 +1191,7 @@ export function SejoursClient(props: {
                     : "text-muted-foreground hover:bg-muted",
                 )}
               >
-                Check-outs
+                Départs
               </button>
             </div>
             {listFilter === "checkouts" ? (
@@ -1228,12 +1228,12 @@ export function SejoursClient(props: {
               title={
                 listFilter === "actifs"
                   ? "Aucun séjour en cours"
-                  : "Aucun check-out pour cette date"
+                  : "Aucun départ pour cette date"
               }
               description={
                 listFilter === "actifs"
-                  ? "Les séjours actifs apparaîtront ici après un check-in."
-                  : "Changez la date ou le filtre pour voir d’autres check-outs."
+                  ? "Les séjours actifs apparaîtront ici après une arrivée."
+                  : "Changez la date ou le filtre pour voir d’autres départs."
               }
               className="py-8"
             />
@@ -1476,7 +1476,7 @@ export function SejoursClient(props: {
                             </div>
                           ) : (
                             <p className="mt-1 text-xs text-warning-foreground">
-                              Décompte après check-in (heure de début
+                              Décompte après arrivée (heure de début
                               manquante).
                             </p>
                           )
@@ -1518,7 +1518,7 @@ export function SejoursClient(props: {
                                 disabled={pending}
                                 onClick={() => checkIn(s.id)}
                               >
-                                Check-in
+                                Arrivée
                               </Button>
                             ) : (
                               <Button
@@ -1527,7 +1527,7 @@ export function SejoursClient(props: {
                                 disabled={pending}
                                 onClick={() => checkOut(s.id)}
                               >
-                                Check-out
+                                Départ
                               </Button>
                             )}
                             <Button
@@ -1612,9 +1612,9 @@ export function SejoursClient(props: {
               {formImmediateCheckIn
                 ? form.billingMode === "FLAT"
                   ? selectedIsMeeting
-                    ? "Réservation salle · check-in"
-                    : "Nouveau passage · check-in"
-                  : "Arrivée aujourd’hui · check-in"
+                    ? "Réservation salle · arrivée"
+                    : "Nouveau passage · arrivée"
+                  : "Arrivée aujourd’hui"
                 : "Nouvelle réservation"}
             </DialogTitle>
             <DialogDescription>
@@ -2077,9 +2077,9 @@ export function SejoursClient(props: {
                 {formImmediateCheckIn
                   ? form.billingMode === "FLAT"
                     ? selectedIsMeeting
-                      ? "Réserver · check-in salle"
-                      : "Check-in passage"
-                    : "Check-in"
+                      ? "Réserver · arrivée salle"
+                      : "Arrivée passage"
+                    : "Arrivée"
                   : "Réserver"}
               </Button>
             </div>
@@ -2248,7 +2248,7 @@ export function SejoursClient(props: {
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              Check-out
+              Départ
               {checkoutStatement
                 ? ` — ${checkoutStatement.guestName}`
                 : " — facture séjour"}
@@ -2290,7 +2290,7 @@ export function SejoursClient(props: {
               </Button>
             ) : (
               <Button disabled={pending} onClick={confirmCheckOut}>
-                Check-out + imprimer facture
+                Départ + imprimer facture
               </Button>
             )}
           </DialogFooter>

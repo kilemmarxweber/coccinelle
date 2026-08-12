@@ -51,11 +51,10 @@ export default async function BranchWorkspaceLayout({
             <Button
               variant="outline"
               size="sm"
-              className="md:hidden"
               render={<Link href={hubHref} />}
             >
               <LayoutGrid data-icon="inline-start" aria-hidden />
-              Hub
+              Accueil
             </Button>
             {isHospitality(branch.type) ? (
               <BranchNotificationsBell
@@ -73,7 +72,7 @@ export default async function BranchWorkspaceLayout({
               }
             >
               <GitBranch className="size-3.5" />
-              Branches
+              Établissements
             </Button>
           </div>
         }

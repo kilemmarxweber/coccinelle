@@ -80,7 +80,7 @@ function tauxChangeCard(
 ): BranchMenuItem {
   return {
     title: "Taux de Change",
-    description: "Mise à jour des devises.",
+    description: "Mettre à jour le taux dollar / franc.",
     href: sharedBranchRoutes.tauxChange(organizationId, branchId),
     icon: ArrowLeftRight,
     iconBg: "bg-primary/15",
@@ -94,7 +94,7 @@ function bonsCommandeCard(
 ): BranchMenuItem {
   return {
     title: "Bons de commande",
-    description: "Achats fournisseur, impression et validation caisse.",
+    description: "Commander chez un fournisseur puis valider à la caisse.",
     href: sharedBranchRoutes.bonsCommande(organizationId, branchId),
     icon: ClipboardList,
     iconBg: "bg-primary/15",
@@ -108,7 +108,7 @@ function depensesCard(
 ): BranchMenuItem {
   return {
     title: "Dépenses",
-    description: "Sorties de caisse et suivi du solde net.",
+    description: "Noter une sortie d’argent ou un prêt propriétaire.",
     href: sharedBranchRoutes.depenses(organizationId, branchId),
     icon: Receipt,
     iconBg: "bg-muted",
@@ -130,7 +130,7 @@ function rapportsSections(
       items: [
         {
           title: "Tableau de Bord",
-          description: "Statistiques et indicateurs clés.",
+          description: "Voir l’activité et les indicateurs du jour.",
           href: sharedBranchRoutes.tableauBord(organizationId, branchId),
           icon: LayoutDashboard,
           iconBg: "bg-muted",
@@ -138,7 +138,7 @@ function rapportsSections(
         },
         {
           title: "Rapport Ventes",
-          description: "CA, tickets, méthodes — graphs & comparaison.",
+          description: "Comparer le chiffre d’affaires et les moyens de paiement.",
           href: sharedBranchRoutes.ventes(organizationId, branchId),
           icon: FileBarChart,
           iconBg: "bg-muted",
@@ -146,7 +146,7 @@ function rapportsSections(
         },
         {
           title: "Rapport Achats",
-          description: "Entrées vs sorties stock — période & deltas.",
+          description: "Suivre les entrées et sorties de stock sur une période.",
           href: sharedBranchRoutes.achats(organizationId, branchId),
           icon: Package,
           iconBg: "bg-primary/15",
@@ -154,7 +154,7 @@ function rapportsSections(
         },
         {
           title: "Rapport Financier",
-          description: "Revenus croisés aux flux d’appro / décompte.",
+          description: "Croiser les recettes avec les approvisionnements.",
           href: sharedBranchRoutes.financier(organizationId, branchId),
           icon: FileText,
           iconBg: "bg-muted",
@@ -162,7 +162,7 @@ function rapportsSections(
         },
         {
           title: "Rapport Article",
-          description: "Top ventes, catégories et sorties liées.",
+          description: "Voir les articles les plus vendus et leurs catégories.",
           href: sharedBranchRoutes.articles(organizationId, branchId),
           icon: FileBarChart,
           iconBg: "bg-primary/15",
@@ -191,7 +191,7 @@ export function menuSectionsForBranch(
         organizationId,
         branchId,
         hasStays && hasRestaurant
-          ? "Ouvrir la caisse et encaisser séjours / F&B."
+          ? "Ouvrir la caisse et encaisser séjours ou restauration."
           : hasStays
             ? "Ouvrir la caisse et encaisser les séjours."
             : "Ouvrir la caisse et encaisser la restauration.",
@@ -200,7 +200,7 @@ export function menuSectionsForBranch(
     if (hasStays) {
       dailyItems.push({
         title: "Séjours",
-        description: "Réservations, check-in / check-out.",
+        description: "Réserver une chambre, enregistrer une arrivée ou un départ.",
         href: hotelRoutes.sejours(organizationId, branchId),
         icon: ClipboardList,
         iconBg: "bg-primary/15",
@@ -211,7 +211,7 @@ export function menuSectionsForBranch(
       dailyItems.push(
         {
           title: "Restauration",
-          description: "Commandes F&B et additions.",
+          description: "Prendre une commande et suivre l’addition.",
           href: hotelRoutes.restauration(organizationId, branchId),
           icon: UtensilsCrossed,
           iconBg: "bg-muted",
@@ -219,7 +219,7 @@ export function menuSectionsForBranch(
         },
         {
           title: "Cuisine",
-          description: "File de préparation — marquer prêt.",
+          description: "Voir les plats à préparer et les marquer prêts.",
           href: hotelRoutes.cuisine(organizationId, branchId),
           icon: ChefHat,
           iconBg: "bg-primary/15",
@@ -236,7 +236,7 @@ export function menuSectionsForBranch(
       stockItems.push(
         {
           title: "Chambres",
-          description: "Types, inventaire et statuts.",
+          description: "Gérer les types de chambres et leur disponibilité.",
           href: hotelRoutes.chambres(organizationId, branchId),
           icon: BedDouble,
           iconBg: "bg-muted",
@@ -244,7 +244,7 @@ export function menuSectionsForBranch(
         },
         {
           title: "Salles de réunion",
-          description: "Salles, capacité et réservations.",
+          description: "Réserver une salle et suivre sa capacité.",
           href: hotelRoutes.sallesReunion(organizationId, branchId),
           icon: Presentation,
           iconBg: "bg-muted",
@@ -256,7 +256,7 @@ export function menuSectionsForBranch(
       stockItems.push(
         {
           title: "Produits",
-          description: "Carte F&B, photos, stock et cuisine.",
+          description: "Gérer la carte, les prix et le stock cuisine.",
           href: hotelRoutes.produits(organizationId, branchId),
           icon: Package,
           iconBg: "bg-muted",
@@ -264,7 +264,7 @@ export function menuSectionsForBranch(
         },
         {
           title: "Service stock",
-          description: "Float vendeur — ouverture, réassort, clôture signée.",
+          description: "Ouvrir / clôturer le stock du vendeur.",
           href: hotelRoutes.serviceStock(organizationId, branchId),
           icon: ClipboardList,
           iconBg: "bg-primary/15",
@@ -274,7 +274,7 @@ export function menuSectionsForBranch(
     }
     stockItems.push({
       title: "Livraison",
-      description: "Consommables — entrées et décompte stock.",
+      description: "Enregistrer les livraisons et compter le stock.",
       href: hotelRoutes.livraison(organizationId, branchId),
       icon: Truck,
       iconBg: "bg-muted",
@@ -310,7 +310,7 @@ export function menuSectionsForBranch(
         items: [
           {
             title: "Point de vente",
-            description: "Panier rapide, tickets en attente et encaissement.",
+            description: "Encaisser une vente et reprendre un ticket en attente.",
             href: boutiqueRoutes.pos(organizationId, branchId),
             icon: ShoppingCart,
             iconBg: "bg-primary/15",
@@ -322,7 +322,7 @@ export function menuSectionsForBranch(
           depensesCard(organizationId, branchId),
           {
             title: "Produits",
-            description: "Articles, plats, prix et promotions.",
+            description: "Gérer les articles, les prix et les promotions.",
             href: boutiqueRoutes.produits(organizationId, branchId),
             icon: Box,
             iconBg: "bg-muted",
@@ -330,7 +330,7 @@ export function menuSectionsForBranch(
           },
           {
             title: "Stock",
-            description: "Niveaux et mouvements.",
+            description: "Voir les niveaux et enregistrer un mouvement.",
             href: boutiqueRoutes.stock(organizationId, branchId),
             icon: Package,
             iconBg: "bg-muted",
@@ -365,7 +365,7 @@ export function menuSectionsForBranch(
         },
         {
           title: "Réservations",
-          description: "Liste et suivi des dossiers.",
+          description: "Consulter et suivre les dossiers clients.",
           href: agenceRoutes.reservations(organizationId, branchId),
           icon: ClipboardList,
           iconBg: "bg-muted",
@@ -373,7 +373,7 @@ export function menuSectionsForBranch(
         },
         {
           title: "Clients",
-          description: "Portefeuille voyageurs.",
+          description: "Retrouver un voyageur et son historique.",
           href: agenceRoutes.clients(organizationId, branchId),
           icon: Users,
           iconBg: "bg-muted",
@@ -392,7 +392,7 @@ export function menuSectionsForBranch(
       items: [
         {
           title: "Trajets",
-          description: "Lignes et tarifs de la branche.",
+          description: "Configurer les lignes et leurs tarifs.",
           href: agenceRoutes.trajets(organizationId, branchId),
           icon: Plane,
           iconBg: "bg-muted",
@@ -400,7 +400,7 @@ export function menuSectionsForBranch(
         },
         {
           title: "Colis",
-          description: "Expéditions et livraisons.",
+          description: "Enregistrer une expédition ou une livraison.",
           href: agenceRoutes.colis(organizationId, branchId),
           icon: Package,
           iconBg: "bg-primary/15",
@@ -408,7 +408,7 @@ export function menuSectionsForBranch(
         },
         {
           title: "Embarquement",
-          description: "Scan QR et passages.",
+          description: "Scanner un billet et valider le passage.",
           href: agenceRoutes.passages(organizationId, branchId),
           icon: Users,
           iconBg: "bg-muted",
@@ -435,13 +435,13 @@ export function ventePathForBranchType(
       return {
         href: hotelRoutes.sejours(organizationId, branchId),
         label: "Encaisser un séjour",
-        description: "Ouvrir les séjours pour check-in et encaissement.",
+        description: "Ouvrir les séjours pour une arrivée et un encaissement.",
       };
     }
     if (hasRestaurant) {
       return {
         href: hotelRoutes.restauration(organizationId, branchId),
-        label: "Nouvelle commande F&B",
+        label: "Nouvelle commande restauration",
         description: "Ouvrir la restauration pour prendre une commande.",
       };
     }
@@ -454,7 +454,7 @@ export function ventePathForBranchType(
   if (type === "BOUTIQUE") {
     return {
       href: boutiqueRoutes.pos(organizationId, branchId),
-      label: "Nouvelle vente POS",
+      label: "Nouvelle vente",
       description: "Ouvrir le point de vente pour encaisser un ticket.",
     };
   }

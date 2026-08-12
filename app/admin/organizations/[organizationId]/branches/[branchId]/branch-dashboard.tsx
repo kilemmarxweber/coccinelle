@@ -97,8 +97,7 @@ export function BranchDashboard({
                   Bonjour, {userName}
                 </h2>
                 <p className="mt-2 max-w-2xl text-sm text-primary-foreground/85 sm:text-base">
-                  Bienvenue sur votre espace de gestion d&apos;activité.
-                  Sélectionnez une option pour commencer.
+                  Choisissez une action pour commencer.
                 </p>
                 <p className="mt-3 text-xs text-primary-foreground/70">
                   {typeDetail} · {branchName}

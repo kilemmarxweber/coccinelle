@@ -56,4 +56,4 @@ skills-lock.json
 /.cursor/
 /.agents/
 
-/tmp/
+/.tmp/

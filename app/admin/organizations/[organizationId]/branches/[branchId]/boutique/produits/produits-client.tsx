@@ -277,7 +277,7 @@ export function BoutiqueProduitsClient(props: Props) {
             }
           >
             <ArrowLeft className="size-4" />
-            Dashboard
+            Retour
           </Button>
           <h1 className="text-2xl font-bold tracking-tight">Produits</h1>
           <p className="text-sm text-muted-foreground">{props.branchName}</p>

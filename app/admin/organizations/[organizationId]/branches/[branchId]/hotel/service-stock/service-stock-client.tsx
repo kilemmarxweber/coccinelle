@@ -344,7 +344,7 @@ export function ServiceStockClient(props: {
             href={branchDashboardPath(props.organizationId, props.branchId)}
             className="mb-2 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
           >
-            <ArrowLeft className="size-3.5" /> Dashboard
+            <ArrowLeft className="size-3.5" /> Retour
           </Link>
           <h1 className="text-xl font-semibold tracking-tight">
             Service stock

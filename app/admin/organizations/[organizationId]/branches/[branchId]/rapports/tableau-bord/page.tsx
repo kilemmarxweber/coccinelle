@@ -192,7 +192,7 @@ export default async function TableauBordPage({ params }: PageProps) {
             <Link href={branchDashboardPath(organizationId, branchId)} />
           }
         >
-          Dashboard
+          Retour
         </Button>
       </div>
     </div>

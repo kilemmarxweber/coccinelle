@@ -56,8 +56,8 @@ export function AdminTopBar() {
           variant="ghost"
           size="icon"
           className="size-10"
-          aria-label="Notifications"
-          title="Notifications (bientôt)"
+          aria-label="Alertes"
+          title="Alertes (bientôt)"
         >
           <Bell className="size-5" />
         </Button>

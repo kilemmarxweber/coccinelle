@@ -111,7 +111,7 @@ export function BranchNotificationsBell(props: {
             variant="outline"
             size="icon-sm"
             className="relative"
-            aria-label="Notifications"
+            aria-label="Alertes"
           />
         }
       >
@@ -128,9 +128,9 @@ export function BranchNotificationsBell(props: {
         <PopoverHeader className="border-b border-border px-4 py-3">
           <div className="flex items-center justify-between gap-2">
             <div>
-              <PopoverTitle>Notifications</PopoverTitle>
+              <PopoverTitle>Alertes</PopoverTitle>
               <PopoverDescription>
-                Commandes, check-in / check-out
+                Commandes, arrivées et départs
               </PopoverDescription>
             </div>
             {pending ? (
@@ -161,7 +161,7 @@ export function BranchNotificationsBell(props: {
             >
               <CircleDollarSign className="size-4 text-emerald-500" />
               <span className="min-w-0">
-                <span className="block text-xs text-muted-foreground">F&B</span>
+                <span className="block text-xs text-muted-foreground">Restauration</span>
                 <span className="font-semibold tabular-nums">
                   {ops.readyOrders}
                 </span>
