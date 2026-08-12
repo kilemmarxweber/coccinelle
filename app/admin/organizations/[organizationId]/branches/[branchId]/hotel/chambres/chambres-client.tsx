@@ -23,6 +23,10 @@ import {
 } from "@/lib/hotel/actions";
 import {
   formatPrimaryAmount,
+  formatUsdPrimaryInputValue,
+  primaryAmountToUsd,
+  primaryCurrencyLabel,
+  primaryPriceInputStep,
   type NormalizedUsdCdfRate,
 } from "@/lib/cash/exchange";
 import { cn } from "@/lib/utils";
@@ -172,6 +176,18 @@ export function ChambresClient(props: {
     return formatPrimaryAmount(amountUsd, props.rate);
   }
 
+  const priceCurrency = primaryCurrencyLabel(props.rate);
+  const priceStep = primaryPriceInputStep(props.rate);
+  const priceFieldLabel = `${copy.priceLabel} (${priceCurrency})`;
+
+  function parseTypePriceUsd(raw: string): number | null {
+    const primary = Number(raw);
+    if (!Number.isFinite(primary) || primary < 0) return null;
+    const usd = primaryAmountToUsd(primary, props.rate);
+    if (!Number.isFinite(usd) || usd < 0) return null;
+    return usd;
+  }
+
   const categories = useMemo(() => {
     const names = new Set<string>();
     for (const t of props.roomTypes) names.add(t.name);
@@ -218,7 +234,10 @@ export function ChambresClient(props: {
       newTypeCapacity: "2",
       newTypeSeatsStandard: "0",
       newTypeSeatsVip: "0",
-      newTypePrice: "",
+      newTypePrice: formatUsdPrimaryInputValue(
+        room.roomType.priceNight,
+        props.rate,
+      ),
       status:
         (STATUSES.find((s) => s.value === room.status)?.value as
           | FormState["status"]
@@ -261,6 +280,11 @@ export function ChambresClient(props: {
             toast.error("Type requis.");
             return;
           }
+          const typePriceNight = parseTypePriceUsd(form.newTypePrice);
+          if (typePriceNight == null) {
+            toast.error("Tarif invalide.");
+            return;
+          }
           await updateHotelRoomAction({
             organizationId: props.organizationId,
             branchId: props.branchId,
@@ -270,12 +294,13 @@ export function ChambresClient(props: {
             roomTypeId: form.roomTypeId,
             spaceKind,
             status: form.status,
+            typePriceNight,
           });
           toast.success(
             spaceKind === "MEETING" ? "Salle mise à jour" : "Chambre mise à jour",
           );
         } else if (form.typeMode === "new") {
-          const priceNight = Number(form.newTypePrice);
+          const priceNight = parseTypePriceUsd(form.newTypePrice);
           const seatsStandard =
             spaceKind === "MEETING"
               ? Math.max(0, Math.round(Number(form.newTypeSeatsStandard || 0)))
@@ -293,7 +318,7 @@ export function ChambresClient(props: {
             toast.error("Nom du type requis.");
             return;
           }
-          if (!Number.isFinite(priceNight) || priceNight < 0) {
+          if (priceNight == null) {
             toast.error("Tarif invalide.");
             return;
           }
@@ -591,27 +616,63 @@ export function ChambresClient(props: {
             ) : null}
 
             {editing || form.typeMode === "existing" ? (
-              <div className="grid gap-1.5">
-                <Label htmlFor="room-type">{copy.typeLabel}</Label>
-                <Select
-                  id="room-type"
-                  value={form.roomTypeId}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, roomTypeId: e.target.value }))
-                  }
-                >
-                  <option value="">Choisir…</option>
-                  {props.roomTypes.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.name} · {fmt(t.priceNight)}
-                      {copy.priceHint} ·{" "}
-                      {spaceKind === "MEETING" &&
-                      (t.seatsStandard != null || t.seatsVip != null)
-                        ? `${t.seatsStandard ?? 0} simple / ${t.seatsVip ?? 0} VIP`
-                        : `${t.capacity} pers.`}
-                    </option>
-                  ))}
-                </Select>
+              <div className="grid gap-3">
+                <div className="grid gap-1.5">
+                  <Label htmlFor="room-type">{copy.typeLabel}</Label>
+                  <Select
+                    id="room-type"
+                    value={form.roomTypeId}
+                    onChange={(e) => {
+                      const nextId = e.target.value;
+                      const t = props.roomTypes.find((x) => x.id === nextId);
+                      setForm((f) => ({
+                        ...f,
+                        roomTypeId: nextId,
+                        newTypePrice: t
+                          ? formatUsdPrimaryInputValue(t.priceNight, props.rate)
+                          : f.newTypePrice,
+                      }));
+                    }}
+                  >
+                    <option value="">Choisir…</option>
+                    {props.roomTypes.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name} · {fmt(t.priceNight)}
+                        {copy.priceHint} ·{" "}
+                        {spaceKind === "MEETING" &&
+                        (t.seatsStandard != null || t.seatsVip != null)
+                          ? `${t.seatsStandard ?? 0} simple / ${t.seatsVip ?? 0} VIP`
+                          : `${t.capacity} pers.`}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+                {editing ? (
+                  <div className="grid gap-1.5">
+                    <Label htmlFor="edit-type-price">{priceFieldLabel}</Label>
+                    <Input
+                      id="edit-type-price"
+                      type="number"
+                      min={0}
+                      step={priceStep}
+                      value={form.newTypePrice}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          newTypePrice: e.target.value,
+                        }))
+                      }
+                      placeholder="0"
+                    />
+                    <p className="text-[11px] text-muted-foreground">
+                      Tarif catalogue du type (devise du taux fixé
+                      {props.rate
+                        ? ` · 1 USD = ${props.rate.rate.toLocaleString("fr-FR")} CDF`
+                        : ""}
+                      ).
+                    </p>
+                  </div>
+                ) : null}
               </div>
             ) : (
               <div className="grid gap-3 rounded-xl border border-border bg-muted/20 p-3">
@@ -680,12 +741,12 @@ export function ChambresClient(props: {
                   </div>
                 )}
                 <div className="grid gap-1.5">
-                  <Label htmlFor="new-type-price">{copy.priceLabel}</Label>
+                  <Label htmlFor="new-type-price">{priceFieldLabel}</Label>
                   <Input
                     id="new-type-price"
                     type="number"
                     min={0}
-                    step="0.01"
+                    step={priceStep}
                     value={form.newTypePrice}
                     onChange={(e) =>
                       setForm((f) => ({
@@ -693,8 +754,12 @@ export function ChambresClient(props: {
                         newTypePrice: e.target.value,
                       }))
                     }
-                    placeholder="0.00"
+                    placeholder="0"
                   />
+                  <p className="text-[11px] text-muted-foreground">
+                    Saisie en {priceCurrency}
+                    {copy.priceHint ? ` ${copy.priceHint}` : ""}.
+                  </p>
                 </div>
                 {spaceKind === "MEETING" ? (
                   <p className="text-[11px] text-muted-foreground">

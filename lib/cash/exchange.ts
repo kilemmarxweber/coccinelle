@@ -160,3 +160,55 @@ export function toReportExchangeRate(
     configuredRate: rate.configuredRate,
   };
 }
+
+/** Devise de saisie UI selon le sens du taux fixé (CDF ou $). */
+export function primaryCurrencyLabel(
+  rate?: Pick<NormalizedUsdCdfRate, "configuredFrom"> | null,
+): "CDF" | "$" {
+  return isCdfPrimary(rate) ? "CDF" : "$";
+}
+
+/** USD catalogue → montant saisi dans la devise principale. */
+export function usdToPrimaryNumber(
+  amountUsd: number,
+  rate?: Pick<NormalizedUsdCdfRate, "rate" | "configuredFrom"> | null,
+): number {
+  if (!Number.isFinite(amountUsd)) return NaN;
+  if (isCdfPrimary(rate) && rate && rate.rate > 0) {
+    return amountUsd * rate.rate;
+  }
+  return amountUsd;
+}
+
+/** Montant saisi (devise principale) → USD stocké. */
+export function primaryAmountToUsd(
+  primary: number,
+  rate?: Pick<NormalizedUsdCdfRate, "rate" | "configuredFrom"> | null,
+): number {
+  if (!Number.isFinite(primary)) return NaN;
+  if (isCdfPrimary(rate) && rate && rate.rate > 0) {
+    return primary / rate.rate;
+  }
+  return primary;
+}
+
+/** Valeur d’input préremplie depuis un montant USD. */
+export function formatUsdPrimaryInputValue(
+  amountUsd: number,
+  rate?: Pick<NormalizedUsdCdfRate, "rate" | "configuredFrom"> | null,
+): string {
+  if (!Number.isFinite(amountUsd)) return "";
+  const n = usdToPrimaryNumber(amountUsd, rate);
+  if (!Number.isFinite(n)) return "";
+  if (isCdfPrimary(rate)) {
+    return String(Math.round(n));
+  }
+  const rounded = Math.round(n * 100) / 100;
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2);
+}
+
+export function primaryPriceInputStep(
+  rate?: Pick<NormalizedUsdCdfRate, "configuredFrom"> | null,
+): string {
+  return isCdfPrimary(rate) ? "1" : "0.01";
+}

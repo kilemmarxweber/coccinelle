@@ -36,6 +36,10 @@ import {
   formatBothAmounts,
   formatConfiguredRateLabel,
   formatPrimaryAmount,
+  formatUsdPrimaryInputValue,
+  primaryAmountToUsd,
+  primaryCurrencyLabel,
+  primaryPriceInputStep,
   type NormalizedUsdCdfRate,
 } from "@/lib/cash/exchange";
 import {
@@ -434,11 +438,15 @@ export function SejoursClient(props: {
   );
   const selectedIsMeeting = selectedRoom?.roomType.kind === "MEETING";
   const catalogPrice = selectedRoom?.roomType.priceNight ?? 0;
+  const priceCurrency = primaryCurrencyLabel(props.rate);
+  const priceStep = primaryPriceInputStep(props.rate);
   const appliedNightPrice = useMemo(() => {
     if (form.unitPriceApplied.trim() === "") return catalogPrice;
-    const n = Number(form.unitPriceApplied);
-    return Number.isFinite(n) ? n : catalogPrice;
-  }, [form.unitPriceApplied, catalogPrice]);
+    const primary = Number(form.unitPriceApplied);
+    if (!Number.isFinite(primary)) return catalogPrice;
+    const usd = primaryAmountToUsd(primary, props.rate);
+    return Number.isFinite(usd) ? usd : catalogPrice;
+  }, [form.unitPriceApplied, catalogPrice, props.rate]);
   const formNights = useMemo(() => {
     if (!form.checkInDate || !form.checkOutDate) return 0;
     const a = asUtcDay(form.checkInDate);
@@ -513,10 +521,12 @@ export function SejoursClient(props: {
           billingMode: form.billingMode,
           unitPriceApplied:
             form.billingMode === "NIGHTLY" && form.unitPriceApplied.trim() !== ""
-              ? Number(form.unitPriceApplied)
+              ? primaryAmountToUsd(Number(form.unitPriceApplied), props.rate)
               : null,
           flatAmount:
-            form.billingMode === "FLAT" ? Number(form.flatAmount) : null,
+            form.billingMode === "FLAT"
+              ? primaryAmountToUsd(Number(form.flatAmount), props.rate)
+              : null,
           plannedHours:
             form.billingMode === "FLAT" && form.plannedHours.trim() !== ""
               ? Number(form.plannedHours)
@@ -1635,13 +1645,19 @@ export function SejoursClient(props: {
             {form.billingMode === "NIGHTLY" ? (
               <div className="grid gap-2">
                 <div className="grid gap-1.5">
-                  <Label htmlFor="unit-price">Tarif / nuit appliqué</Label>
+                  <Label htmlFor="unit-price">
+                    Tarif / nuit appliqué ({priceCurrency})
+                  </Label>
                   <Input
                     id="unit-price"
                     type="number"
                     min={0}
-                    step="0.01"
-                    placeholder={catalogPrice ? String(catalogPrice) : "0"}
+                    step={priceStep}
+                    placeholder={
+                      catalogPrice
+                        ? formatUsdPrimaryInputValue(catalogPrice, props.rate)
+                        : "0"
+                    }
                     value={form.unitPriceApplied}
                     onChange={(e) =>
                       setForm((f) => ({
@@ -1666,12 +1682,14 @@ export function SejoursClient(props: {
             ) : (
               <div className="grid gap-2">
                 <div className="grid gap-1.5">
-                  <Label htmlFor="flat-amount">Montant passage</Label>
+                  <Label htmlFor="flat-amount">
+                    Montant passage ({priceCurrency})
+                  </Label>
                   <Input
                     id="flat-amount"
                     type="number"
                     min={0}
-                    step="0.01"
+                    step={priceStep}
                     value={form.flatAmount}
                     onChange={(e) =>
                       setForm((f) => ({ ...f, flatAmount: e.target.value }))

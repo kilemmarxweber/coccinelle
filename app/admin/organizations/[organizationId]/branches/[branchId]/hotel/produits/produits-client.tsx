@@ -40,6 +40,14 @@ import {
   isConsumableCategory,
   type HotelMenuCategory,
 } from "@/lib/hotel/menu-categories";
+import {
+  formatPrimaryAmount,
+  formatUsdPrimaryInputValue,
+  primaryAmountToUsd,
+  primaryCurrencyLabel,
+  primaryPriceInputStep,
+  type NormalizedUsdCdfRate,
+} from "@/lib/cash/exchange";
 import { cn } from "@/lib/utils";
 
 type MenuItem = {
@@ -111,6 +119,7 @@ export function ProduitsClient(props: {
   organizationId: string;
   branchId: string;
   items: MenuItem[];
+  rate?: NormalizedUsdCdfRate | null;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -121,6 +130,12 @@ export function ProduitsClient(props: {
   const [editing, setEditing] = useState<MenuItem | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const consumable = isConsumableCategory(form.category);
+  const priceCurrency = primaryCurrencyLabel(props.rate);
+  const priceStep = primaryPriceInputStep(props.rate);
+
+  function fmt(amountUsd: number) {
+    return formatPrimaryAmount(amountUsd, props.rate);
+  }
 
   const categories = useMemo(() => {
     const set = new Set<string>(HOTEL_MENU_CATEGORIES);
@@ -166,7 +181,10 @@ export function ProduitsClient(props: {
     setForm({
       name: item.name,
       category,
-      price: item.price ? String(item.price) : "",
+      price:
+        item.price > 0
+          ? formatUsdPrimaryInputValue(item.price, props.rate)
+          : "",
       stockQty: String(item.stockQty),
       barcode: item.barcode ?? "",
       needsKitchen: item.needsKitchen,
@@ -217,7 +235,11 @@ export function ProduitsClient(props: {
     const name = form.name.trim();
     const isCons = isConsumableCategory(form.category);
     const priceRaw = form.price.trim();
-    const price = priceRaw === "" ? 0 : Number(priceRaw);
+    const pricePrimary = priceRaw === "" ? 0 : Number(priceRaw);
+    const price =
+      priceRaw === ""
+        ? 0
+        : primaryAmountToUsd(pricePrimary, props.rate);
     const stockQty = Math.round(Number(form.stockQty));
     if (!name) {
       toast.error("Nom du produit requis.");
@@ -427,7 +449,7 @@ export function ProduitsClient(props: {
                       </p>
                     ) : (
                       <p className="mt-0.5 text-sm font-medium tabular-nums text-primary">
-                        {item.price.toFixed(2)} $
+                        {fmt(item.price)}
                       </p>
                     )}
                     {item.barcode ? (
@@ -578,18 +600,18 @@ export function ProduitsClient(props: {
               </div>
               <div className="grid gap-1.5">
                 <Label htmlFor="product-price">
-                  Prix ($){consumable ? " · optionnel" : ""}
+                  Prix ({priceCurrency}){consumable ? " · optionnel" : ""}
                 </Label>
                 <Input
                   id="product-price"
                   type="number"
                   min={0}
-                  step="0.01"
+                  step={priceStep}
                   value={form.price}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, price: e.target.value }))
                   }
-                  placeholder={consumable ? "Optionnel" : "0.00"}
+                  placeholder={consumable ? "Optionnel" : "0"}
                 />
               </div>
             </div>

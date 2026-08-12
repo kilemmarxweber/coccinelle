@@ -452,6 +452,8 @@ export async function updateHotelRoomAction(input: {
   roomTypeId: string;
   spaceKind?: "ROOM" | "MEETING";
   status?: "AVAILABLE" | "OCCUPIED" | "CLEANING" | "OUT_OF_ORDER";
+  /** Met à jour le tarif catalogue USD du type sélectionné. */
+  typePriceNight?: number | null;
 }) {
   await ctx(input.organizationId, input.branchId, "stays");
   const spaceKind = input.spaceKind === "MEETING" ? "MEETING" : "ROOM";
@@ -500,15 +502,64 @@ export async function updateHotelRoomAction(input: {
     );
   }
 
-  const updated = await prisma.hotelRoom.update({
-    where: { id: room.id },
-    data: {
-      number,
-      floor: input.floor?.trim() || null,
-      roomTypeId: type.id,
-      ...(input.status ? { status: input.status } : {}),
+  if (
+    input.typePriceNight != null &&
+    (!Number.isFinite(input.typePriceNight) || input.typePriceNight < 0)
+  ) {
+    throw new Error("Tarif invalide.");
+  }
+
+  const updated = await prisma.$transaction(async (tx) => {
+    if (input.typePriceNight != null) {
+      await tx.hotelRoomType.update({
+        where: { id: type.id },
+        data: { priceNight: input.typePriceNight },
+      });
+    }
+    return tx.hotelRoom.update({
+      where: { id: room.id },
+      data: {
+        number,
+        floor: input.floor?.trim() || null,
+        roomTypeId: type.id,
+        ...(input.status ? { status: input.status } : {}),
+      },
+      include: { roomType: true },
+    });
+  });
+  revalidateHotel(input.organizationId, input.branchId);
+  return updated;
+}
+
+export async function updateHotelRoomTypePriceAction(input: {
+  organizationId: string;
+  branchId: string;
+  roomTypeId: string;
+  spaceKind?: "ROOM" | "MEETING";
+  priceNight: number;
+}) {
+  await ctx(input.organizationId, input.branchId, "stays");
+  const spaceKind = input.spaceKind === "MEETING" ? "MEETING" : "ROOM";
+  if (!Number.isFinite(input.priceNight) || input.priceNight < 0) {
+    throw new Error("Tarif invalide.");
+  }
+  const type = await prisma.hotelRoomType.findFirst({
+    where: {
+      id: input.roomTypeId,
+      branchId: input.branchId,
+      kind: spaceKind,
     },
-    include: { roomType: true },
+  });
+  if (!type) {
+    throw new Error(
+      spaceKind === "MEETING"
+        ? "Type de salle introuvable."
+        : "Type de chambre introuvable.",
+    );
+  }
+  const updated = await prisma.hotelRoomType.update({
+    where: { id: type.id },
+    data: { priceNight: input.priceNight },
   });
   revalidateHotel(input.organizationId, input.branchId);
   return updated;

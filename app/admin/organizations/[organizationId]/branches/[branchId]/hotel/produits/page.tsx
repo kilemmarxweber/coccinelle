@@ -1,4 +1,5 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
   ensureHotelMenuSeedAction,
   listAllMenuItemsAction,
@@ -18,12 +19,16 @@ export default async function HotelProduitsPage({ params }: PageProps) {
     requireHospitality: "restaurant",
   });
   await ensureHotelMenuSeedAction(organizationId, branchId);
-  const items = await listAllMenuItemsAction(organizationId, branchId);
+  const [items, rate] = await Promise.all([
+    listAllMenuItemsAction(organizationId, branchId),
+    getActiveExchangeRate(branchId),
+  ]);
   return (
     <ProduitsClient
       organizationId={organizationId}
       branchId={branchId}
       items={items}
+      rate={rate}
     />
   );
 }
