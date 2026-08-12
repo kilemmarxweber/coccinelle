@@ -165,6 +165,33 @@ export const HotelRoomStatus = {
 export type HotelRoomStatus = (typeof HotelRoomStatus)[keyof typeof HotelRoomStatus]
 
 
+export const ShopProductKind = {
+  ARTICLE: 'ARTICLE',
+  PLAT: 'PLAT'
+} as const
+
+export type ShopProductKind = (typeof ShopProductKind)[keyof typeof ShopProductKind]
+
+
+export const ShopSaleStatus = {
+  BROUILLON: 'BROUILLON',
+  EN_ATTENTE: 'EN_ATTENTE',
+  ENCAISSEE: 'ENCAISSEE',
+  ANNULEE: 'ANNULEE'
+} as const
+
+export type ShopSaleStatus = (typeof ShopSaleStatus)[keyof typeof ShopSaleStatus]
+
+
+export const ShopStockMovementKind = {
+  ENTREE: 'ENTREE',
+  SORTIE: 'SORTIE',
+  AJUSTEMENT: 'AJUSTEMENT'
+} as const
+
+export type ShopStockMovementKind = (typeof ShopStockMovementKind)[keyof typeof ShopStockMovementKind]
+
+
 export const CashSessionStatus = {
   OPEN: 'OPEN',
   CLOSED: 'CLOSED'

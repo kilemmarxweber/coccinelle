@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
-import { Barcode, Minus, Plus, Trash2, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { Barcode, ChevronLeft, ChevronRight, Minus, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,84 @@ function looksLikeBarcode(raw: string) {
   if (v.length < 6) return false;
   if (/\s/.test(v)) return false;
   return /^[A-Za-z0-9\-_.]+$/.test(v) && /\d/.test(v);
+}
+
+/** 2 lignes × 3 colonnes (grille sm+). */
+const CATALOG_PAGE_SIZE = 6;
+/** Lignes panier visibles avant pagination. */
+const CART_PAGE_SIZE = 3;
+
+function PosPager(props: {
+  page: number;
+  pageCount: number;
+  total: number;
+  pageSize: number;
+  onPage: (page: number) => void;
+  className?: string;
+}) {
+  const { page, pageCount, total, pageSize, onPage } = props;
+  if (total === 0 || pageCount <= 1) return null;
+  const from = (page - 1) * pageSize + 1;
+  const to = Math.min(page * pageSize, total);
+  return (
+    <div
+      className={cn(
+        "flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-card/70 px-2.5 py-2",
+        props.className,
+      )}
+    >
+      <p className="text-[11px] text-muted-foreground tabular-nums">
+        {from}–{to} sur {total}
+      </p>
+      <div className="flex items-center gap-0.5">
+        <Button
+          type="button"
+          variant="outline"
+          size="icon-sm"
+          aria-label="Page précédente"
+          onClick={() => onPage(Math.max(1, page - 1))}
+          className={cn(
+            "rounded-full",
+            page <= 1 && "pointer-events-none opacity-40",
+          )}
+        >
+          <ChevronLeft className="size-4" />
+        </Button>
+        <div className="flex items-center gap-0.5 px-0.5">
+          {Array.from({ length: pageCount }, (_, i) => i + 1).map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => onPage(n)}
+              aria-label={`Page ${n}`}
+              aria-current={n === page ? "page" : undefined}
+              className={cn(
+                "flex size-7 items-center justify-center rounded-full text-[11px] font-semibold transition",
+                n === page
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              )}
+            >
+              {n}
+            </button>
+          ))}
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon-sm"
+          aria-label="Page suivante"
+          onClick={() => onPage(Math.min(pageCount, page + 1))}
+          className={cn(
+            "rounded-full",
+            page >= pageCount && "pointer-events-none opacity-40",
+          )}
+        >
+          <ChevronRight className="size-4" />
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 export type PosMenuItem = {
@@ -65,6 +143,10 @@ type Props = {
   formatPrice?: (amount: number) => string;
   /** Active le champ scan code-barres (défaut true). */
   barcodeScanEnabled?: boolean;
+  /** Active la pagination catalogue (2 lignes). Défaut true. */
+  paginateCatalog?: boolean;
+  /** Active la pagination panier si > 3 lignes. Défaut true. */
+  paginateCart?: boolean;
 };
 
 export function PosTerminal({
@@ -80,6 +162,8 @@ export function PosTerminal({
   className,
   formatPrice = (amount: number) => `${amount.toFixed(2)} $`,
   barcodeScanEnabled = true,
+  paginateCatalog = true,
+  paginateCart = true,
 }: Props) {
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -89,6 +173,9 @@ export function PosTerminal({
 
   const [category, setCategory] = useState("Tous");
   const [scanFlash, setScanFlash] = useState<"ok" | "err" | null>(null);
+  const [catalogPage, setCatalogPage] = useState(1);
+  const [cartPage, setCartPage] = useState(1);
+  const prevCartLen = useRef(0);
 
   const itemByBarcode = useMemo(() => {
     const map = new Map<string, PosMenuItem>();
@@ -117,6 +204,50 @@ export function PosTerminal({
       );
     });
   }, [items, category, scan.value]);
+
+  const catalogPageCount = paginateCatalog
+    ? Math.max(1, Math.ceil(filtered.length / CATALOG_PAGE_SIZE))
+    : 1;
+  const safeCatalogPage = Math.min(catalogPage, catalogPageCount);
+  const pagedCatalog = useMemo(() => {
+    if (!paginateCatalog) return filtered;
+    const start = (safeCatalogPage - 1) * CATALOG_PAGE_SIZE;
+    return filtered.slice(start, start + CATALOG_PAGE_SIZE);
+  }, [filtered, paginateCatalog, safeCatalogPage]);
+
+  const cartPageCount =
+    paginateCart && cart.length > CART_PAGE_SIZE
+      ? Math.max(1, Math.ceil(cart.length / CART_PAGE_SIZE))
+      : 1;
+  const safeCartPage = Math.min(cartPage, cartPageCount);
+  const pagedCart = useMemo(() => {
+    if (!paginateCart || cart.length <= CART_PAGE_SIZE) return cart;
+    const start = (safeCartPage - 1) * CART_PAGE_SIZE;
+    return cart.slice(start, start + CART_PAGE_SIZE);
+  }, [cart, paginateCart, safeCartPage]);
+
+  useEffect(() => {
+    setCatalogPage(1);
+  }, [category, scan.value]);
+
+  useEffect(() => {
+    if (catalogPage > catalogPageCount) setCatalogPage(catalogPageCount);
+  }, [catalogPage, catalogPageCount]);
+
+  useEffect(() => {
+    if (!paginateCart || cart.length <= CART_PAGE_SIZE) {
+      setCartPage(1);
+      prevCartLen.current = cart.length;
+      return;
+    }
+    const maxPage = Math.ceil(cart.length / CART_PAGE_SIZE);
+    if (cart.length > prevCartLen.current) {
+      setCartPage(maxPage);
+    } else {
+      setCartPage((p) => Math.min(p, maxPage));
+    }
+    prevCartLen.current = cart.length;
+  }, [cart.length, paginateCart]);
 
   const total = cart.reduce((s, l) => s + l.price * l.quantity, 0);
   const linesCount = cart.reduce((s, l) => s + l.quantity, 0);
@@ -270,88 +401,101 @@ export function PosTerminal({
           </div>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-auto bg-muted/30 p-3 sm:p-4">
-          {filtered.length === 0 ? (
-            <p className="py-16 text-center text-sm text-muted-foreground">
-              Aucun article dans cette catégorie.
-            </p>
-          ) : (
-            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-              {filtered.map((item) => {
-                const rem = liveStock(item);
-                const soldOut = rem === 0;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => tryAdd(item)}
-                    disabled={soldOut}
-                    aria-disabled={soldOut}
-                    className={cn(
-                      "group relative aspect-[4/5] overflow-hidden rounded-xl text-left shadow-sm transition",
-                      "ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                      "bg-gradient-to-br",
-                      toneFor(item.id + item.category),
-                      soldOut
-                        ? "cursor-not-allowed grayscale opacity-45"
-                        : "hover:scale-[1.02] hover:shadow-md active:scale-[0.98]",
-                    )}
-                  >
-                    {item.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={item.imageUrl}
-                        alt=""
-                        className={cn(
-                          "absolute inset-0 size-full object-cover",
-                          soldOut && "grayscale",
-                        )}
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.22),transparent_55%)]" />
-                    )}
-                    <div
+        <div className="flex min-h-0 flex-1 flex-col bg-muted/30">
+          <div className="min-h-0 flex-1 overflow-auto p-3 sm:p-4">
+            {filtered.length === 0 ? (
+              <p className="py-16 text-center text-sm text-muted-foreground">
+                Aucun article dans cette catégorie.
+              </p>
+            ) : (
+              <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                {pagedCatalog.map((item) => {
+                  const rem = liveStock(item);
+                  const soldOut = rem === 0;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => tryAdd(item)}
+                      disabled={soldOut}
+                      aria-disabled={soldOut}
                       className={cn(
-                        "absolute inset-0",
-                        item.imageUrl ? "bg-black/25" : null,
-                        soldOut && "bg-black/40",
+                        "group relative aspect-[4/5] overflow-hidden rounded-xl text-left shadow-sm transition",
+                        "ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                        "bg-gradient-to-br",
+                        toneFor(item.id + item.category),
+                        soldOut
+                          ? "cursor-not-allowed grayscale opacity-45"
+                          : "hover:scale-[1.02] hover:shadow-md active:scale-[0.98]",
                       )}
-                    />
-                    <div className="absolute top-2 right-2 rounded-md bg-black/35 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-white uppercase backdrop-blur-sm">
-                      {formatPrice(item.price)}
-                    </div>
-                    {rem !== null ? (
+                    >
+                      {item.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={item.imageUrl}
+                          alt=""
+                          className={cn(
+                            "absolute inset-0 size-full object-cover",
+                            soldOut && "grayscale",
+                          )}
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.22),transparent_55%)]" />
+                      )}
                       <div
                         className={cn(
-                          "absolute top-2 left-2 rounded-md px-1.5 py-0.5 text-[10px] font-semibold text-white backdrop-blur-sm",
-                          rem <= 0
-                            ? "bg-rose-600/90"
-                            : rem <= 5
-                              ? "bg-amber-600/85"
-                              : "bg-emerald-700/80",
+                          "absolute inset-0",
+                          item.imageUrl ? "bg-black/25" : null,
+                          soldOut && "bg-black/40",
                         )}
-                      >
-                        {rem <= 0 ? "Rupture" : `Stock ${rem}`}
+                      />
+                      <div className="absolute top-2 right-2 rounded-md bg-black/35 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-white uppercase backdrop-blur-sm">
+                        {formatPrice(item.price)}
                       </div>
-                    ) : null}
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/45 to-transparent px-2.5 pt-8 pb-2.5">
-                      <p className="line-clamp-2 text-sm font-semibold text-white drop-shadow">
-                        {item.name}
-                      </p>
-                      <p className="mt-0.5 text-[11px] text-white/75">
-                        {soldOut
-                          ? "Indisponible"
-                          : item.needsKitchen
-                            ? "Cuisine"
-                            : item.category}
-                        {!soldOut && rem !== null ? ` · ${rem} dispo` : ""}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
+                      {rem !== null ? (
+                        <div
+                          className={cn(
+                            "absolute top-2 left-2 rounded-md px-1.5 py-0.5 text-[10px] font-semibold text-white backdrop-blur-sm",
+                            rem <= 0
+                              ? "bg-rose-600/90"
+                              : rem <= 5
+                                ? "bg-amber-600/85"
+                                : "bg-emerald-700/80",
+                          )}
+                        >
+                          {rem <= 0 ? "Rupture" : `Stock ${rem}`}
+                        </div>
+                      ) : null}
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/45 to-transparent px-2.5 pt-8 pb-2.5">
+                        <p className="line-clamp-2 text-sm font-semibold text-white drop-shadow">
+                          {item.name}
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-white/75">
+                          {soldOut
+                            ? "Indisponible"
+                            : item.needsKitchen
+                              ? "Cuisine"
+                              : item.category}
+                          {!soldOut && rem !== null ? ` · ${rem} dispo` : ""}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          {paginateCatalog && filtered.length > CATALOG_PAGE_SIZE ? (
+            <div className="border-t border-border px-3 py-2">
+              <PosPager
+                page={safeCatalogPage}
+                pageCount={catalogPageCount}
+                total={filtered.length}
+                pageSize={CATALOG_PAGE_SIZE}
+                onPage={setCatalogPage}
+              />
             </div>
-          )}
+          ) : null}
         </div>
 
         <nav className="flex gap-1 overflow-x-auto border-t border-border bg-card px-2 py-2">
@@ -400,78 +544,91 @@ export function PosTerminal({
           <div className="border-b border-border px-4 py-3">{ticketMeta}</div>
         ) : null}
 
-        <div className="min-h-0 flex-1 overflow-auto px-3 py-3">
-          {cart.length === 0 ? (
-            <p className="py-10 text-center text-sm text-muted-foreground">
-              {emptyHint}
-            </p>
-          ) : (
-            <ul className="space-y-2">
-              {cart.map((line) => (
-                <li
-                  key={line.menuItemId}
-                  className="rounded-xl border border-border/80 bg-muted/20 px-3 py-2.5"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">
-                        {line.name}{" "}
-                        <span className="text-muted-foreground">
-                          × {line.quantity}
-                        </span>
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatPrice(line.price)} / u.
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="min-h-0 flex-1 overflow-auto px-3 py-3">
+            {cart.length === 0 ? (
+              <p className="py-10 text-center text-sm text-muted-foreground">
+                {emptyHint}
+              </p>
+            ) : (
+              <ul className="space-y-2">
+                {pagedCart.map((line) => (
+                  <li
+                    key={line.menuItemId}
+                    className="rounded-xl border border-border/80 bg-muted/20 px-3 py-2.5"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium">
+                          {line.name}{" "}
+                          <span className="text-muted-foreground">
+                            × {line.quantity}
+                          </span>
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatPrice(line.price)} / u.
+                        </p>
+                      </div>
+                      <p className="shrink-0 text-sm font-semibold tabular-nums">
+                        {formatPrice(line.price * line.quantity)}
                       </p>
                     </div>
-                    <p className="shrink-0 text-sm font-semibold tabular-nums">
-                      {formatPrice(line.price * line.quantity)}
-                    </p>
-                  </div>
-                  <div className="mt-2 flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      className="flex size-7 items-center justify-center rounded-md border border-border bg-card hover:bg-muted"
-                      onClick={() =>
-                        trySetQty(line.menuItemId, line.quantity - 1)
-                      }
-                      aria-label="Diminuer"
-                    >
-                      <Minus className="size-3.5" />
-                    </button>
-                    <span className="min-w-6 text-center text-sm font-medium tabular-nums">
-                      {line.quantity}
-                    </span>
-                    <button
-                      type="button"
-                      className="flex size-7 items-center justify-center rounded-md border border-border bg-card hover:bg-muted disabled:opacity-40"
-                      disabled={(() => {
-                        const item = itemById.get(line.menuItemId);
-                        if (!item || typeof item.stockQty !== "number") {
-                          return false;
+                    <div className="mt-2 flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        className="flex size-7 items-center justify-center rounded-md border border-border bg-card hover:bg-muted"
+                        onClick={() =>
+                          trySetQty(line.menuItemId, line.quantity - 1)
                         }
-                        return line.quantity >= item.stockQty;
-                      })()}
-                      onClick={() =>
-                        trySetQty(line.menuItemId, line.quantity + 1)
-                      }
-                      aria-label="Augmenter"
-                    >
-                      <Plus className="size-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      className="ml-auto flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                      onClick={() => trySetQty(line.menuItemId, 0)}
-                      aria-label="Retirer"
-                    >
-                      <X className="size-3.5" />
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+                        aria-label="Diminuer"
+                      >
+                        <Minus className="size-3.5" />
+                      </button>
+                      <span className="min-w-6 text-center text-sm font-medium tabular-nums">
+                        {line.quantity}
+                      </span>
+                      <button
+                        type="button"
+                        className="flex size-7 items-center justify-center rounded-md border border-border bg-card hover:bg-muted disabled:opacity-40"
+                        disabled={(() => {
+                          const item = itemById.get(line.menuItemId);
+                          if (!item || typeof item.stockQty !== "number") {
+                            return false;
+                          }
+                          return line.quantity >= item.stockQty;
+                        })()}
+                        onClick={() =>
+                          trySetQty(line.menuItemId, line.quantity + 1)
+                        }
+                        aria-label="Augmenter"
+                      >
+                        <Plus className="size-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        className="ml-auto flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                        onClick={() => trySetQty(line.menuItemId, 0)}
+                        aria-label="Retirer"
+                      >
+                        <X className="size-3.5" />
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          {paginateCart && cart.length > CART_PAGE_SIZE ? (
+            <div className="border-t border-border px-3 py-2">
+              <PosPager
+                page={safeCartPage}
+                pageCount={cartPageCount}
+                total={cart.length}
+                pageSize={CART_PAGE_SIZE}
+                onPage={setCartPage}
+              />
+            </div>
+          ) : null}
         </div>
 
         <div className="mt-auto space-y-3 border-t border-border bg-muted/20 px-4 py-4">
@@ -579,12 +736,21 @@ export function PosChargeButton(props: {
   onClick: () => void;
   className?: string;
 }) {
+  const locked = Boolean(props.disabled || props.pending);
   return (
     <Button
       size="lg"
-      className={cn("h-12 w-full text-base font-semibold", props.className)}
-      disabled={props.disabled || props.pending}
-      onClick={props.onClick}
+      className={cn(
+        "h-12 w-full text-base font-semibold",
+        locked && "pointer-events-none opacity-50",
+        props.className,
+      )}
+      aria-disabled={locked || undefined}
+      // Évite le mismatch SSR Base UI (`disabled={true}` vs `disabled={null}`).
+      onClick={() => {
+        if (locked) return;
+        props.onClick();
+      }}
     >
       {props.label}
     </Button>

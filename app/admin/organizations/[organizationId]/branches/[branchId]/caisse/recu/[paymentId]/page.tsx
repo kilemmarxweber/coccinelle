@@ -4,7 +4,10 @@ import { Button } from "@/components/ui/button";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { isHospitality } from "@/lib/branch/hospitality";
 import { getPaymentByIdAction } from "@/lib/cash/actions";
-import { branchCaissePath } from "@/lib/branch/paths";
+import {
+  branchCaissePath,
+  boutiqueRoutes,
+} from "@/lib/branch/paths";
 import { FOLIO_SECTION_LABEL } from "@/lib/hotel/folio-note";
 import { paymentAmountUsd } from "@/lib/hotel/money";
 import type { FolioLineKind } from "@/prisma/generated/prisma/client";
@@ -25,6 +28,7 @@ type ReceiptLine = {
   unitPrice: number;
   amount: number;
   kind?: FolioLineKind;
+  wasPromo?: boolean;
 };
 
 export default async function ReceiptPage({ params }: PageProps) {
@@ -37,24 +41,35 @@ export default async function ReceiptPage({ params }: PageProps) {
   );
   if (!payment) notFound();
 
-  const isFolioReceipt = Boolean(payment.folioId && !payment.orderId);
+  const isShopReceipt = Boolean(payment.shopSaleId && payment.shopSale);
+  const isFolioReceipt = Boolean(payment.folioId && !payment.orderId && !isShopReceipt);
+  const isPharmacy = branch.type === "BOUTIQUE" && branch.hasPharmacie;
 
-  const lines: ReceiptLine[] = payment.order?.items?.length
-    ? payment.order.items.map((item) => ({
+  const lines: ReceiptLine[] = payment.shopSale?.items?.length
+    ? payment.shopSale.items.map((item) => ({
         key: item.id,
         label: item.name,
         quantity: item.quantity,
         unitPrice: item.unitPrice,
-        amount: item.amount,
+        amount: item.unitPrice * item.quantity,
+        wasPromo: item.wasPromo,
       }))
-    : (payment.folio?.lines ?? []).map((line) => ({
-        key: line.id,
-        label: line.description,
-        quantity: line.quantity,
-        unitPrice: line.unitPrice,
-        amount: line.amount,
-        kind: line.kind,
-      }));
+    : payment.order?.items?.length
+      ? payment.order.items.map((item) => ({
+          key: item.id,
+          label: item.name,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          amount: item.amount,
+        }))
+      : (payment.folio?.lines ?? []).map((line) => ({
+          key: line.id,
+          label: line.description,
+          quantity: line.quantity,
+          unitPrice: line.unitPrice,
+          amount: line.amount,
+          kind: line.kind,
+        }));
 
   const kindOrder: FolioLineKind[] = [
     "NIGHT",
@@ -81,25 +96,76 @@ export default async function ReceiptPage({ params }: PageProps) {
     : [];
 
   const linesTotal = lines.reduce((sum, line) => sum + line.amount, 0);
-  const guestLabel = payment.folio?.stay
-    ? `${payment.folio.stay.guestName} · ch. ${payment.folio.stay.room.number}`
-    : payment.folio?.label ?? payment.order?.tableLabel ?? null;
+  const shopClient =
+    payment.shopSale == null
+      ? null
+      : payment.shopSale.isAnonymous
+        ? payment.shopSale.anonymousCode
+        : payment.shopSale.clientLabel ||
+          payment.shopSale.clientPhone ||
+          null;
+  const guestLabel = isShopReceipt
+    ? shopClient
+    : payment.folio?.stay
+      ? `${payment.folio.stay.guestName} · ch. ${payment.folio.stay.room.number}`
+      : payment.folio?.label ?? payment.order?.tableLabel ?? null;
   const isHospitalityBranch = isHospitality(branch.type);
+  const currencySuffix = isHospitalityBranch || isShopReceipt ? " $" : "";
   const paidUsd = paymentAmountUsd(payment);
   const paidCdf =
     isHospitalityBranch && payment.amountForeign != null && payment.amountForeign > 0
       ? payment.amountCdf
       : payment.amountCdf;
 
+  const backHref =
+    branch.type === "BOUTIQUE"
+      ? boutiqueRoutes.pos(organizationId, branchId)
+      : branchCaissePath(organizationId, branchId);
+
+  function LineRow(props: { line: ReceiptLine }) {
+    const { line } = props;
+    return (
+      <li className="grid grid-cols-[minmax(0,1fr)_2rem_3.25rem_3.75rem] items-start gap-1.5 text-sm">
+        <div className="min-w-0">
+          <p className="break-words font-medium leading-snug">{line.label}</p>
+          {line.wasPromo ? (
+            <p className="text-[10px] font-medium text-amber-700 dark:text-amber-300">
+              Promo
+            </p>
+          ) : null}
+        </div>
+        <p className="pt-0.5 text-center tabular-nums text-muted-foreground">
+          {line.quantity}
+        </p>
+        <p className="pt-0.5 text-right tabular-nums text-muted-foreground">
+          {line.unitPrice.toFixed(2)}
+          {currencySuffix}
+        </p>
+        <p className="pt-0.5 text-right font-semibold tabular-nums">
+          {line.amount.toFixed(2)}
+          {currencySuffix}
+        </p>
+      </li>
+    );
+  }
+
+  function LinesHeader() {
+    return (
+      <div className="mb-1.5 grid grid-cols-[minmax(0,1fr)_2rem_3.25rem_3.75rem] gap-1.5 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
+        <span>Article</span>
+        <span className="text-center">Qté</span>
+        <span className="text-right">Prix</span>
+        <span className="text-right">Total</span>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-md px-4 py-8">
       <div className="mb-4 flex gap-2 print:hidden">
         <PrintButton />
-        <Button
-          variant="outline"
-          render={<Link href={branchCaissePath(organizationId, branchId)} />}
-        >
-          Retour caisse
+        <Button variant="outline" render={<Link href={backHref} />}>
+          {branch.type === "BOUTIQUE" ? "Retour POS" : "Retour caisse"}
         </Button>
       </div>
 
@@ -110,7 +176,13 @@ export default async function ReceiptPage({ params }: PageProps) {
           </p>
           <h1 className="text-xl font-bold">{branch.name}</h1>
           <p className="text-sm text-muted-foreground">
-            {isFolioReceipt ? "Reçu — note de chambre" : "Reçu de paiement"}
+            {isFolioReceipt
+              ? "Reçu — note de chambre"
+              : isShopReceipt
+                ? payment.shopSale?.ticketNumber
+                  ? `Reçu vente · ${payment.shopSale.ticketNumber}`
+                  : "Reçu de vente"
+                : "Reçu de paiement"}
           </p>
         </header>
 
@@ -129,7 +201,9 @@ export default async function ReceiptPage({ params }: PageProps) {
           </div>
           {guestLabel ? (
             <div className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">Réf.</dt>
+              <dt className="text-muted-foreground">
+                {isShopReceipt ? "Client" : "Réf."}
+              </dt>
               <dd className="text-right">{guestLabel}</dd>
             </div>
           ) : null}
@@ -145,24 +219,13 @@ export default async function ReceiptPage({ params }: PageProps) {
                   </h2>
                   <span className="text-xs font-medium tabular-nums">
                     {section.total.toFixed(2)}
-                    {isHospitalityBranch ? " $" : ""}
+                    {currencySuffix}
                   </span>
                 </div>
-                <ul className="space-y-1.5 text-sm">
+                <LinesHeader />
+                <ul className="space-y-2">
                   {section.lines.map((line) => (
-                    <li
-                      key={line.key}
-                      className="grid grid-cols-[1fr_2.5rem_4.5rem] items-center gap-2"
-                    >
-                      <p className="min-w-0 truncate font-medium">{line.label}</p>
-                      <p className="text-center tabular-nums text-muted-foreground">
-                        {line.quantity}
-                      </p>
-                      <p className="text-right font-semibold tabular-nums">
-                        {line.amount.toFixed(2)}
-                        {isHospitalityBranch ? " $" : ""}
-                      </p>
-                    </li>
+                    <LineRow key={line.key} line={line} />
                   ))}
                 </ul>
               </section>
@@ -171,7 +234,7 @@ export default async function ReceiptPage({ params }: PageProps) {
               <span className="text-muted-foreground">Total note</span>
               <span className="font-medium tabular-nums">
                 {linesTotal.toFixed(2)}
-                {isHospitalityBranch ? " $" : ""}
+                {currencySuffix}
               </span>
             </div>
           </div>
@@ -180,51 +243,46 @@ export default async function ReceiptPage({ params }: PageProps) {
             <h2 className="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
               Articles
             </h2>
-            <div className="mb-1.5 grid grid-cols-[1fr_2.5rem_4.5rem] gap-2 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
-              <span>Article</span>
-              <span className="text-center">Qté</span>
-              <span className="text-right">Montant</span>
-            </div>
-            <ul className="space-y-1.5 text-sm">
+            <LinesHeader />
+            <ul className="space-y-2">
               {lines.map((line) => (
-                <li
-                  key={line.key}
-                  className="grid grid-cols-[1fr_2.5rem_4.5rem] items-center gap-2"
-                >
-                  <p className="min-w-0 truncate font-medium">{line.label}</p>
-                  <p className="text-center tabular-nums text-muted-foreground">
-                    {line.quantity}
-                  </p>
-                  <p className="text-right font-semibold tabular-nums">
-                    {line.amount.toFixed(2)}
-                    {isHospitalityBranch ? " $" : ""}
-                  </p>
-                </li>
+                <LineRow key={line.key} line={line} />
               ))}
             </ul>
             <div className="mt-3 flex justify-between gap-4 border-t border-dashed border-border pt-3 text-sm">
               <span className="text-muted-foreground">Sous-total articles</span>
               <span className="font-medium tabular-nums">
                 {linesTotal.toFixed(2)}
-                {isHospitalityBranch ? " $" : ""}
+                {currencySuffix}
               </span>
             </div>
           </section>
-        ) : null}
+        ) : (
+          <section className="mt-5 border-t border-border pt-4">
+            <p className="text-sm text-muted-foreground">
+              Aucune ligne article associée à ce paiement.
+            </p>
+          </section>
+        )}
 
         <dl className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
-          {isHospitalityBranch ? (
+          {isHospitalityBranch || isShopReceipt ? (
             <>
               <div className="flex justify-between gap-4 text-base">
                 <dt className="font-semibold">Montant payé</dt>
-                <dd className="font-bold tabular-nums">{paidUsd.toFixed(2)} $</dd>
+                <dd className="font-bold tabular-nums">
+                  {(isShopReceipt ? payment.amountCdf : paidUsd).toFixed(2)} $
+                </dd>
               </div>
               {payment.exchangeRateUsed != null ? (
                 <>
                   <div className="flex justify-between gap-4">
                     <dt className="text-muted-foreground">Équiv. CDF</dt>
                     <dd className="tabular-nums">
-                      {paidCdf.toLocaleString("fr-FR", {
+                      {(isShopReceipt
+                        ? payment.amountCdf * payment.exchangeRateUsed
+                        : paidCdf
+                      ).toLocaleString("fr-FR", {
                         maximumFractionDigits: 0,
                       })}{" "}
                       CDF
@@ -271,10 +329,17 @@ export default async function ReceiptPage({ params }: PageProps) {
               ) : null}
             </>
           )}
-          {payment.note ? (
+          {payment.note && !isShopReceipt ? (
             <div className="pt-2 text-muted-foreground">{payment.note}</div>
           ) : null}
         </dl>
+
+        {isPharmacy ? (
+          <p className="mt-5 rounded-lg border border-border bg-muted/40 px-3 py-2.5 text-center text-[11px] leading-relaxed text-muted-foreground print:border-muted-foreground/30">
+            Les produits vendus ne sont ni remboursables, ni échangeables après
+            avoir quitté le site.
+          </p>
+        ) : null}
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
           Merci · Conservez ce reçu

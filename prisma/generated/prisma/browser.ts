@@ -138,6 +138,21 @@ export type ShopCategory = Prisma.ShopCategoryModel
  */
 export type ShopProduct = Prisma.ShopProductModel
 /**
+ * Model ShopSale
+ * 
+ */
+export type ShopSale = Prisma.ShopSaleModel
+/**
+ * Model ShopSaleItem
+ * 
+ */
+export type ShopSaleItem = Prisma.ShopSaleItemModel
+/**
+ * Model ShopStockMovement
+ * 
+ */
+export type ShopStockMovement = Prisma.ShopStockMovementModel
+/**
  * Model ExchangeRate
  * * Taux de change par branche (ex. USD → CDF).
  */

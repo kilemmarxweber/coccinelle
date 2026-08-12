@@ -398,6 +398,11 @@ export async function getPaymentByIdAction(
           items: { orderBy: { name: "asc" } },
         },
       },
+      shopSale: {
+        include: {
+          items: { orderBy: { name: "asc" } },
+        },
+      },
     },
   });
 }

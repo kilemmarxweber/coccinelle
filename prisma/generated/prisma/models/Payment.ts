@@ -44,6 +44,7 @@ export type PaymentMinAggregateOutputType = {
   cashSessionId: string | null
   folioId: string | null
   orderId: string | null
+  shopSaleId: string | null
   receiptNumber: string | null
   method: $Enums.PaymentMethod | null
   amountCdf: number | null
@@ -62,6 +63,7 @@ export type PaymentMaxAggregateOutputType = {
   cashSessionId: string | null
   folioId: string | null
   orderId: string | null
+  shopSaleId: string | null
   receiptNumber: string | null
   method: $Enums.PaymentMethod | null
   amountCdf: number | null
@@ -80,6 +82,7 @@ export type PaymentCountAggregateOutputType = {
   cashSessionId: number
   folioId: number
   orderId: number
+  shopSaleId: number
   receiptNumber: number
   method: number
   amountCdf: number
@@ -112,6 +115,7 @@ export type PaymentMinAggregateInputType = {
   cashSessionId?: true
   folioId?: true
   orderId?: true
+  shopSaleId?: true
   receiptNumber?: true
   method?: true
   amountCdf?: true
@@ -130,6 +134,7 @@ export type PaymentMaxAggregateInputType = {
   cashSessionId?: true
   folioId?: true
   orderId?: true
+  shopSaleId?: true
   receiptNumber?: true
   method?: true
   amountCdf?: true
@@ -148,6 +153,7 @@ export type PaymentCountAggregateInputType = {
   cashSessionId?: true
   folioId?: true
   orderId?: true
+  shopSaleId?: true
   receiptNumber?: true
   method?: true
   amountCdf?: true
@@ -253,6 +259,7 @@ export type PaymentGroupByOutputType = {
   cashSessionId: string | null
   folioId: string | null
   orderId: string | null
+  shopSaleId: string | null
   receiptNumber: string
   method: $Enums.PaymentMethod
   amountCdf: number
@@ -294,6 +301,7 @@ export type PaymentWhereInput = {
   cashSessionId?: Prisma.StringNullableFilter<"Payment"> | string | null
   folioId?: Prisma.StringNullableFilter<"Payment"> | string | null
   orderId?: Prisma.StringNullableFilter<"Payment"> | string | null
+  shopSaleId?: Prisma.StringNullableFilter<"Payment"> | string | null
   receiptNumber?: Prisma.StringFilter<"Payment"> | string
   method?: Prisma.EnumPaymentMethodFilter<"Payment"> | $Enums.PaymentMethod
   amountCdf?: Prisma.FloatFilter<"Payment"> | number
@@ -308,6 +316,7 @@ export type PaymentWhereInput = {
   cashSession?: Prisma.XOR<Prisma.CashSessionNullableScalarRelationFilter, Prisma.CashSessionWhereInput> | null
   folio?: Prisma.XOR<Prisma.FolioNullableScalarRelationFilter, Prisma.FolioWhereInput> | null
   order?: Prisma.XOR<Prisma.HotelOrderNullableScalarRelationFilter, Prisma.HotelOrderWhereInput> | null
+  shopSale?: Prisma.XOR<Prisma.ShopSaleNullableScalarRelationFilter, Prisma.ShopSaleWhereInput> | null
 }
 
 export type PaymentOrderByWithRelationInput = {
@@ -316,6 +325,7 @@ export type PaymentOrderByWithRelationInput = {
   cashSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   folioId?: Prisma.SortOrderInput | Prisma.SortOrder
   orderId?: Prisma.SortOrderInput | Prisma.SortOrder
+  shopSaleId?: Prisma.SortOrderInput | Prisma.SortOrder
   receiptNumber?: Prisma.SortOrder
   method?: Prisma.SortOrder
   amountCdf?: Prisma.SortOrder
@@ -330,6 +340,7 @@ export type PaymentOrderByWithRelationInput = {
   cashSession?: Prisma.CashSessionOrderByWithRelationInput
   folio?: Prisma.FolioOrderByWithRelationInput
   order?: Prisma.HotelOrderOrderByWithRelationInput
+  shopSale?: Prisma.ShopSaleOrderByWithRelationInput
 }
 
 export type PaymentWhereUniqueInput = Prisma.AtLeast<{
@@ -342,6 +353,7 @@ export type PaymentWhereUniqueInput = Prisma.AtLeast<{
   cashSessionId?: Prisma.StringNullableFilter<"Payment"> | string | null
   folioId?: Prisma.StringNullableFilter<"Payment"> | string | null
   orderId?: Prisma.StringNullableFilter<"Payment"> | string | null
+  shopSaleId?: Prisma.StringNullableFilter<"Payment"> | string | null
   receiptNumber?: Prisma.StringFilter<"Payment"> | string
   method?: Prisma.EnumPaymentMethodFilter<"Payment"> | $Enums.PaymentMethod
   amountCdf?: Prisma.FloatFilter<"Payment"> | number
@@ -356,6 +368,7 @@ export type PaymentWhereUniqueInput = Prisma.AtLeast<{
   cashSession?: Prisma.XOR<Prisma.CashSessionNullableScalarRelationFilter, Prisma.CashSessionWhereInput> | null
   folio?: Prisma.XOR<Prisma.FolioNullableScalarRelationFilter, Prisma.FolioWhereInput> | null
   order?: Prisma.XOR<Prisma.HotelOrderNullableScalarRelationFilter, Prisma.HotelOrderWhereInput> | null
+  shopSale?: Prisma.XOR<Prisma.ShopSaleNullableScalarRelationFilter, Prisma.ShopSaleWhereInput> | null
 }, "id" | "branchId_receiptNumber">
 
 export type PaymentOrderByWithAggregationInput = {
@@ -364,6 +377,7 @@ export type PaymentOrderByWithAggregationInput = {
   cashSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   folioId?: Prisma.SortOrderInput | Prisma.SortOrder
   orderId?: Prisma.SortOrderInput | Prisma.SortOrder
+  shopSaleId?: Prisma.SortOrderInput | Prisma.SortOrder
   receiptNumber?: Prisma.SortOrder
   method?: Prisma.SortOrder
   amountCdf?: Prisma.SortOrder
@@ -390,6 +404,7 @@ export type PaymentScalarWhereWithAggregatesInput = {
   cashSessionId?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null
   folioId?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null
   orderId?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null
+  shopSaleId?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null
   receiptNumber?: Prisma.StringWithAggregatesFilter<"Payment"> | string
   method?: Prisma.EnumPaymentMethodWithAggregatesFilter<"Payment"> | $Enums.PaymentMethod
   amountCdf?: Prisma.FloatWithAggregatesFilter<"Payment"> | number
@@ -418,6 +433,7 @@ export type PaymentCreateInput = {
   cashSession?: Prisma.CashSessionCreateNestedOneWithoutPaymentsInput
   folio?: Prisma.FolioCreateNestedOneWithoutPaymentsInput
   order?: Prisma.HotelOrderCreateNestedOneWithoutPaymentsInput
+  shopSale?: Prisma.ShopSaleCreateNestedOneWithoutPaymentsInput
 }
 
 export type PaymentUncheckedCreateInput = {
@@ -426,6 +442,7 @@ export type PaymentUncheckedCreateInput = {
   cashSessionId?: string | null
   folioId?: string | null
   orderId?: string | null
+  shopSaleId?: string | null
   receiptNumber: string
   method?: $Enums.PaymentMethod
   amountCdf: number
@@ -454,6 +471,7 @@ export type PaymentUpdateInput = {
   cashSession?: Prisma.CashSessionUpdateOneWithoutPaymentsNestedInput
   folio?: Prisma.FolioUpdateOneWithoutPaymentsNestedInput
   order?: Prisma.HotelOrderUpdateOneWithoutPaymentsNestedInput
+  shopSale?: Prisma.ShopSaleUpdateOneWithoutPaymentsNestedInput
 }
 
 export type PaymentUncheckedUpdateInput = {
@@ -462,6 +480,7 @@ export type PaymentUncheckedUpdateInput = {
   cashSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptNumber?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   amountCdf?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -480,6 +499,7 @@ export type PaymentCreateManyInput = {
   cashSessionId?: string | null
   folioId?: string | null
   orderId?: string | null
+  shopSaleId?: string | null
   receiptNumber: string
   method?: $Enums.PaymentMethod
   amountCdf: number
@@ -512,6 +532,7 @@ export type PaymentUncheckedUpdateManyInput = {
   cashSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptNumber?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   amountCdf?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -545,6 +566,7 @@ export type PaymentCountOrderByAggregateInput = {
   cashSessionId?: Prisma.SortOrder
   folioId?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
+  shopSaleId?: Prisma.SortOrder
   receiptNumber?: Prisma.SortOrder
   method?: Prisma.SortOrder
   amountCdf?: Prisma.SortOrder
@@ -569,6 +591,7 @@ export type PaymentMaxOrderByAggregateInput = {
   cashSessionId?: Prisma.SortOrder
   folioId?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
+  shopSaleId?: Prisma.SortOrder
   receiptNumber?: Prisma.SortOrder
   method?: Prisma.SortOrder
   amountCdf?: Prisma.SortOrder
@@ -587,6 +610,7 @@ export type PaymentMinOrderByAggregateInput = {
   cashSessionId?: Prisma.SortOrder
   folioId?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
+  shopSaleId?: Prisma.SortOrder
   receiptNumber?: Prisma.SortOrder
   method?: Prisma.SortOrder
   amountCdf?: Prisma.SortOrder
@@ -644,6 +668,48 @@ export type PaymentUncheckedUpdateManyWithoutBranchNestedInput = {
   connect?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
   update?: Prisma.PaymentUpdateWithWhereUniqueWithoutBranchInput | Prisma.PaymentUpdateWithWhereUniqueWithoutBranchInput[]
   updateMany?: Prisma.PaymentUpdateManyWithWhereWithoutBranchInput | Prisma.PaymentUpdateManyWithWhereWithoutBranchInput[]
+  deleteMany?: Prisma.PaymentScalarWhereInput | Prisma.PaymentScalarWhereInput[]
+}
+
+export type PaymentCreateNestedManyWithoutShopSaleInput = {
+  create?: Prisma.XOR<Prisma.PaymentCreateWithoutShopSaleInput, Prisma.PaymentUncheckedCreateWithoutShopSaleInput> | Prisma.PaymentCreateWithoutShopSaleInput[] | Prisma.PaymentUncheckedCreateWithoutShopSaleInput[]
+  connectOrCreate?: Prisma.PaymentCreateOrConnectWithoutShopSaleInput | Prisma.PaymentCreateOrConnectWithoutShopSaleInput[]
+  createMany?: Prisma.PaymentCreateManyShopSaleInputEnvelope
+  connect?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+}
+
+export type PaymentUncheckedCreateNestedManyWithoutShopSaleInput = {
+  create?: Prisma.XOR<Prisma.PaymentCreateWithoutShopSaleInput, Prisma.PaymentUncheckedCreateWithoutShopSaleInput> | Prisma.PaymentCreateWithoutShopSaleInput[] | Prisma.PaymentUncheckedCreateWithoutShopSaleInput[]
+  connectOrCreate?: Prisma.PaymentCreateOrConnectWithoutShopSaleInput | Prisma.PaymentCreateOrConnectWithoutShopSaleInput[]
+  createMany?: Prisma.PaymentCreateManyShopSaleInputEnvelope
+  connect?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+}
+
+export type PaymentUpdateManyWithoutShopSaleNestedInput = {
+  create?: Prisma.XOR<Prisma.PaymentCreateWithoutShopSaleInput, Prisma.PaymentUncheckedCreateWithoutShopSaleInput> | Prisma.PaymentCreateWithoutShopSaleInput[] | Prisma.PaymentUncheckedCreateWithoutShopSaleInput[]
+  connectOrCreate?: Prisma.PaymentCreateOrConnectWithoutShopSaleInput | Prisma.PaymentCreateOrConnectWithoutShopSaleInput[]
+  upsert?: Prisma.PaymentUpsertWithWhereUniqueWithoutShopSaleInput | Prisma.PaymentUpsertWithWhereUniqueWithoutShopSaleInput[]
+  createMany?: Prisma.PaymentCreateManyShopSaleInputEnvelope
+  set?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+  disconnect?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+  delete?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+  connect?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+  update?: Prisma.PaymentUpdateWithWhereUniqueWithoutShopSaleInput | Prisma.PaymentUpdateWithWhereUniqueWithoutShopSaleInput[]
+  updateMany?: Prisma.PaymentUpdateManyWithWhereWithoutShopSaleInput | Prisma.PaymentUpdateManyWithWhereWithoutShopSaleInput[]
+  deleteMany?: Prisma.PaymentScalarWhereInput | Prisma.PaymentScalarWhereInput[]
+}
+
+export type PaymentUncheckedUpdateManyWithoutShopSaleNestedInput = {
+  create?: Prisma.XOR<Prisma.PaymentCreateWithoutShopSaleInput, Prisma.PaymentUncheckedCreateWithoutShopSaleInput> | Prisma.PaymentCreateWithoutShopSaleInput[] | Prisma.PaymentUncheckedCreateWithoutShopSaleInput[]
+  connectOrCreate?: Prisma.PaymentCreateOrConnectWithoutShopSaleInput | Prisma.PaymentCreateOrConnectWithoutShopSaleInput[]
+  upsert?: Prisma.PaymentUpsertWithWhereUniqueWithoutShopSaleInput | Prisma.PaymentUpsertWithWhereUniqueWithoutShopSaleInput[]
+  createMany?: Prisma.PaymentCreateManyShopSaleInputEnvelope
+  set?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+  disconnect?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+  delete?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+  connect?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+  update?: Prisma.PaymentUpdateWithWhereUniqueWithoutShopSaleInput | Prisma.PaymentUpdateWithWhereUniqueWithoutShopSaleInput[]
+  updateMany?: Prisma.PaymentUpdateManyWithWhereWithoutShopSaleInput | Prisma.PaymentUpdateManyWithWhereWithoutShopSaleInput[]
   deleteMany?: Prisma.PaymentScalarWhereInput | Prisma.PaymentScalarWhereInput[]
 }
 
@@ -792,6 +858,7 @@ export type PaymentCreateWithoutBranchInput = {
   cashSession?: Prisma.CashSessionCreateNestedOneWithoutPaymentsInput
   folio?: Prisma.FolioCreateNestedOneWithoutPaymentsInput
   order?: Prisma.HotelOrderCreateNestedOneWithoutPaymentsInput
+  shopSale?: Prisma.ShopSaleCreateNestedOneWithoutPaymentsInput
 }
 
 export type PaymentUncheckedCreateWithoutBranchInput = {
@@ -799,6 +866,7 @@ export type PaymentUncheckedCreateWithoutBranchInput = {
   cashSessionId?: string | null
   folioId?: string | null
   orderId?: string | null
+  shopSaleId?: string | null
   receiptNumber: string
   method?: $Enums.PaymentMethod
   amountCdf: number
@@ -846,6 +914,7 @@ export type PaymentScalarWhereInput = {
   cashSessionId?: Prisma.StringNullableFilter<"Payment"> | string | null
   folioId?: Prisma.StringNullableFilter<"Payment"> | string | null
   orderId?: Prisma.StringNullableFilter<"Payment"> | string | null
+  shopSaleId?: Prisma.StringNullableFilter<"Payment"> | string | null
   receiptNumber?: Prisma.StringFilter<"Payment"> | string
   method?: Prisma.EnumPaymentMethodFilter<"Payment"> | $Enums.PaymentMethod
   amountCdf?: Prisma.FloatFilter<"Payment"> | number
@@ -856,6 +925,68 @@ export type PaymentScalarWhereInput = {
   cashierUserId?: Prisma.StringFilter<"Payment"> | string
   note?: Prisma.StringNullableFilter<"Payment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
+}
+
+export type PaymentCreateWithoutShopSaleInput = {
+  id?: string
+  receiptNumber: string
+  method?: $Enums.PaymentMethod
+  amountCdf: number
+  amountForeign?: number | null
+  foreignCurrency?: string | null
+  exchangeRateUsed?: number | null
+  paidAt?: Date | string
+  cashierUserId: string
+  note?: string | null
+  createdAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutPaymentsInput
+  cashSession?: Prisma.CashSessionCreateNestedOneWithoutPaymentsInput
+  folio?: Prisma.FolioCreateNestedOneWithoutPaymentsInput
+  order?: Prisma.HotelOrderCreateNestedOneWithoutPaymentsInput
+}
+
+export type PaymentUncheckedCreateWithoutShopSaleInput = {
+  id?: string
+  branchId: string
+  cashSessionId?: string | null
+  folioId?: string | null
+  orderId?: string | null
+  receiptNumber: string
+  method?: $Enums.PaymentMethod
+  amountCdf: number
+  amountForeign?: number | null
+  foreignCurrency?: string | null
+  exchangeRateUsed?: number | null
+  paidAt?: Date | string
+  cashierUserId: string
+  note?: string | null
+  createdAt?: Date | string
+}
+
+export type PaymentCreateOrConnectWithoutShopSaleInput = {
+  where: Prisma.PaymentWhereUniqueInput
+  create: Prisma.XOR<Prisma.PaymentCreateWithoutShopSaleInput, Prisma.PaymentUncheckedCreateWithoutShopSaleInput>
+}
+
+export type PaymentCreateManyShopSaleInputEnvelope = {
+  data: Prisma.PaymentCreateManyShopSaleInput | Prisma.PaymentCreateManyShopSaleInput[]
+  skipDuplicates?: boolean
+}
+
+export type PaymentUpsertWithWhereUniqueWithoutShopSaleInput = {
+  where: Prisma.PaymentWhereUniqueInput
+  update: Prisma.XOR<Prisma.PaymentUpdateWithoutShopSaleInput, Prisma.PaymentUncheckedUpdateWithoutShopSaleInput>
+  create: Prisma.XOR<Prisma.PaymentCreateWithoutShopSaleInput, Prisma.PaymentUncheckedCreateWithoutShopSaleInput>
+}
+
+export type PaymentUpdateWithWhereUniqueWithoutShopSaleInput = {
+  where: Prisma.PaymentWhereUniqueInput
+  data: Prisma.XOR<Prisma.PaymentUpdateWithoutShopSaleInput, Prisma.PaymentUncheckedUpdateWithoutShopSaleInput>
+}
+
+export type PaymentUpdateManyWithWhereWithoutShopSaleInput = {
+  where: Prisma.PaymentScalarWhereInput
+  data: Prisma.XOR<Prisma.PaymentUpdateManyMutationInput, Prisma.PaymentUncheckedUpdateManyWithoutShopSaleInput>
 }
 
 export type PaymentCreateWithoutCashSessionInput = {
@@ -873,6 +1004,7 @@ export type PaymentCreateWithoutCashSessionInput = {
   branch: Prisma.BranchCreateNestedOneWithoutPaymentsInput
   folio?: Prisma.FolioCreateNestedOneWithoutPaymentsInput
   order?: Prisma.HotelOrderCreateNestedOneWithoutPaymentsInput
+  shopSale?: Prisma.ShopSaleCreateNestedOneWithoutPaymentsInput
 }
 
 export type PaymentUncheckedCreateWithoutCashSessionInput = {
@@ -880,6 +1012,7 @@ export type PaymentUncheckedCreateWithoutCashSessionInput = {
   branchId: string
   folioId?: string | null
   orderId?: string | null
+  shopSaleId?: string | null
   receiptNumber: string
   method?: $Enums.PaymentMethod
   amountCdf: number
@@ -933,6 +1066,7 @@ export type PaymentCreateWithoutFolioInput = {
   branch: Prisma.BranchCreateNestedOneWithoutPaymentsInput
   cashSession?: Prisma.CashSessionCreateNestedOneWithoutPaymentsInput
   order?: Prisma.HotelOrderCreateNestedOneWithoutPaymentsInput
+  shopSale?: Prisma.ShopSaleCreateNestedOneWithoutPaymentsInput
 }
 
 export type PaymentUncheckedCreateWithoutFolioInput = {
@@ -940,6 +1074,7 @@ export type PaymentUncheckedCreateWithoutFolioInput = {
   branchId: string
   cashSessionId?: string | null
   orderId?: string | null
+  shopSaleId?: string | null
   receiptNumber: string
   method?: $Enums.PaymentMethod
   amountCdf: number
@@ -993,6 +1128,7 @@ export type PaymentCreateWithoutOrderInput = {
   branch: Prisma.BranchCreateNestedOneWithoutPaymentsInput
   cashSession?: Prisma.CashSessionCreateNestedOneWithoutPaymentsInput
   folio?: Prisma.FolioCreateNestedOneWithoutPaymentsInput
+  shopSale?: Prisma.ShopSaleCreateNestedOneWithoutPaymentsInput
 }
 
 export type PaymentUncheckedCreateWithoutOrderInput = {
@@ -1000,6 +1136,7 @@ export type PaymentUncheckedCreateWithoutOrderInput = {
   branchId: string
   cashSessionId?: string | null
   folioId?: string | null
+  shopSaleId?: string | null
   receiptNumber: string
   method?: $Enums.PaymentMethod
   amountCdf: number
@@ -1043,6 +1180,7 @@ export type PaymentCreateManyBranchInput = {
   cashSessionId?: string | null
   folioId?: string | null
   orderId?: string | null
+  shopSaleId?: string | null
   receiptNumber: string
   method?: $Enums.PaymentMethod
   amountCdf: number
@@ -1070,10 +1208,84 @@ export type PaymentUpdateWithoutBranchInput = {
   cashSession?: Prisma.CashSessionUpdateOneWithoutPaymentsNestedInput
   folio?: Prisma.FolioUpdateOneWithoutPaymentsNestedInput
   order?: Prisma.HotelOrderUpdateOneWithoutPaymentsNestedInput
+  shopSale?: Prisma.ShopSaleUpdateOneWithoutPaymentsNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutBranchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  cashSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  amountCdf?: Prisma.FloatFieldUpdateOperationsInput | number
+  amountForeign?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  foreignCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  exchangeRateUsed?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cashierUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PaymentUncheckedUpdateManyWithoutBranchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  cashSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  amountCdf?: Prisma.FloatFieldUpdateOperationsInput | number
+  amountForeign?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  foreignCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  exchangeRateUsed?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cashierUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PaymentCreateManyShopSaleInput = {
+  id?: string
+  branchId: string
+  cashSessionId?: string | null
+  folioId?: string | null
+  orderId?: string | null
+  receiptNumber: string
+  method?: $Enums.PaymentMethod
+  amountCdf: number
+  amountForeign?: number | null
+  foreignCurrency?: string | null
+  exchangeRateUsed?: number | null
+  paidAt?: Date | string
+  cashierUserId: string
+  note?: string | null
+  createdAt?: Date | string
+}
+
+export type PaymentUpdateWithoutShopSaleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  receiptNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  amountCdf?: Prisma.FloatFieldUpdateOperationsInput | number
+  amountForeign?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  foreignCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  exchangeRateUsed?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cashierUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutPaymentsNestedInput
+  cashSession?: Prisma.CashSessionUpdateOneWithoutPaymentsNestedInput
+  folio?: Prisma.FolioUpdateOneWithoutPaymentsNestedInput
+  order?: Prisma.HotelOrderUpdateOneWithoutPaymentsNestedInput
+}
+
+export type PaymentUncheckedUpdateWithoutShopSaleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
   cashSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1089,8 +1301,9 @@ export type PaymentUncheckedUpdateWithoutBranchInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type PaymentUncheckedUpdateManyWithoutBranchInput = {
+export type PaymentUncheckedUpdateManyWithoutShopSaleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
   cashSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1111,6 +1324,7 @@ export type PaymentCreateManyCashSessionInput = {
   branchId: string
   folioId?: string | null
   orderId?: string | null
+  shopSaleId?: string | null
   receiptNumber: string
   method?: $Enums.PaymentMethod
   amountCdf: number
@@ -1138,6 +1352,7 @@ export type PaymentUpdateWithoutCashSessionInput = {
   branch?: Prisma.BranchUpdateOneRequiredWithoutPaymentsNestedInput
   folio?: Prisma.FolioUpdateOneWithoutPaymentsNestedInput
   order?: Prisma.HotelOrderUpdateOneWithoutPaymentsNestedInput
+  shopSale?: Prisma.ShopSaleUpdateOneWithoutPaymentsNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutCashSessionInput = {
@@ -1145,6 +1360,7 @@ export type PaymentUncheckedUpdateWithoutCashSessionInput = {
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptNumber?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   amountCdf?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1162,6 +1378,7 @@ export type PaymentUncheckedUpdateManyWithoutCashSessionInput = {
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptNumber?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   amountCdf?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1179,6 +1396,7 @@ export type PaymentCreateManyFolioInput = {
   branchId: string
   cashSessionId?: string | null
   orderId?: string | null
+  shopSaleId?: string | null
   receiptNumber: string
   method?: $Enums.PaymentMethod
   amountCdf: number
@@ -1206,6 +1424,7 @@ export type PaymentUpdateWithoutFolioInput = {
   branch?: Prisma.BranchUpdateOneRequiredWithoutPaymentsNestedInput
   cashSession?: Prisma.CashSessionUpdateOneWithoutPaymentsNestedInput
   order?: Prisma.HotelOrderUpdateOneWithoutPaymentsNestedInput
+  shopSale?: Prisma.ShopSaleUpdateOneWithoutPaymentsNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutFolioInput = {
@@ -1213,6 +1432,7 @@ export type PaymentUncheckedUpdateWithoutFolioInput = {
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   cashSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptNumber?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   amountCdf?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1230,6 +1450,7 @@ export type PaymentUncheckedUpdateManyWithoutFolioInput = {
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   cashSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptNumber?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   amountCdf?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1247,6 +1468,7 @@ export type PaymentCreateManyOrderInput = {
   branchId: string
   cashSessionId?: string | null
   folioId?: string | null
+  shopSaleId?: string | null
   receiptNumber: string
   method?: $Enums.PaymentMethod
   amountCdf: number
@@ -1274,6 +1496,7 @@ export type PaymentUpdateWithoutOrderInput = {
   branch?: Prisma.BranchUpdateOneRequiredWithoutPaymentsNestedInput
   cashSession?: Prisma.CashSessionUpdateOneWithoutPaymentsNestedInput
   folio?: Prisma.FolioUpdateOneWithoutPaymentsNestedInput
+  shopSale?: Prisma.ShopSaleUpdateOneWithoutPaymentsNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutOrderInput = {
@@ -1281,6 +1504,7 @@ export type PaymentUncheckedUpdateWithoutOrderInput = {
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   cashSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptNumber?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   amountCdf?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1298,6 +1522,7 @@ export type PaymentUncheckedUpdateManyWithoutOrderInput = {
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   cashSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   folioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptNumber?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   amountCdf?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1318,6 +1543,7 @@ export type PaymentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   cashSessionId?: boolean
   folioId?: boolean
   orderId?: boolean
+  shopSaleId?: boolean
   receiptNumber?: boolean
   method?: boolean
   amountCdf?: boolean
@@ -1332,6 +1558,7 @@ export type PaymentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   cashSession?: boolean | Prisma.Payment$cashSessionArgs<ExtArgs>
   folio?: boolean | Prisma.Payment$folioArgs<ExtArgs>
   order?: boolean | Prisma.Payment$orderArgs<ExtArgs>
+  shopSale?: boolean | Prisma.Payment$shopSaleArgs<ExtArgs>
 }, ExtArgs["result"]["payment"]>
 
 export type PaymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1340,6 +1567,7 @@ export type PaymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   cashSessionId?: boolean
   folioId?: boolean
   orderId?: boolean
+  shopSaleId?: boolean
   receiptNumber?: boolean
   method?: boolean
   amountCdf?: boolean
@@ -1354,6 +1582,7 @@ export type PaymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   cashSession?: boolean | Prisma.Payment$cashSessionArgs<ExtArgs>
   folio?: boolean | Prisma.Payment$folioArgs<ExtArgs>
   order?: boolean | Prisma.Payment$orderArgs<ExtArgs>
+  shopSale?: boolean | Prisma.Payment$shopSaleArgs<ExtArgs>
 }, ExtArgs["result"]["payment"]>
 
 export type PaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1362,6 +1591,7 @@ export type PaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   cashSessionId?: boolean
   folioId?: boolean
   orderId?: boolean
+  shopSaleId?: boolean
   receiptNumber?: boolean
   method?: boolean
   amountCdf?: boolean
@@ -1376,6 +1606,7 @@ export type PaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   cashSession?: boolean | Prisma.Payment$cashSessionArgs<ExtArgs>
   folio?: boolean | Prisma.Payment$folioArgs<ExtArgs>
   order?: boolean | Prisma.Payment$orderArgs<ExtArgs>
+  shopSale?: boolean | Prisma.Payment$shopSaleArgs<ExtArgs>
 }, ExtArgs["result"]["payment"]>
 
 export type PaymentSelectScalar = {
@@ -1384,6 +1615,7 @@ export type PaymentSelectScalar = {
   cashSessionId?: boolean
   folioId?: boolean
   orderId?: boolean
+  shopSaleId?: boolean
   receiptNumber?: boolean
   method?: boolean
   amountCdf?: boolean
@@ -1396,24 +1628,27 @@ export type PaymentSelectScalar = {
   createdAt?: boolean
 }
 
-export type PaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "cashSessionId" | "folioId" | "orderId" | "receiptNumber" | "method" | "amountCdf" | "amountForeign" | "foreignCurrency" | "exchangeRateUsed" | "paidAt" | "cashierUserId" | "note" | "createdAt", ExtArgs["result"]["payment"]>
+export type PaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "cashSessionId" | "folioId" | "orderId" | "shopSaleId" | "receiptNumber" | "method" | "amountCdf" | "amountForeign" | "foreignCurrency" | "exchangeRateUsed" | "paidAt" | "cashierUserId" | "note" | "createdAt", ExtArgs["result"]["payment"]>
 export type PaymentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   cashSession?: boolean | Prisma.Payment$cashSessionArgs<ExtArgs>
   folio?: boolean | Prisma.Payment$folioArgs<ExtArgs>
   order?: boolean | Prisma.Payment$orderArgs<ExtArgs>
+  shopSale?: boolean | Prisma.Payment$shopSaleArgs<ExtArgs>
 }
 export type PaymentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   cashSession?: boolean | Prisma.Payment$cashSessionArgs<ExtArgs>
   folio?: boolean | Prisma.Payment$folioArgs<ExtArgs>
   order?: boolean | Prisma.Payment$orderArgs<ExtArgs>
+  shopSale?: boolean | Prisma.Payment$shopSaleArgs<ExtArgs>
 }
 export type PaymentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   cashSession?: boolean | Prisma.Payment$cashSessionArgs<ExtArgs>
   folio?: boolean | Prisma.Payment$folioArgs<ExtArgs>
   order?: boolean | Prisma.Payment$orderArgs<ExtArgs>
+  shopSale?: boolean | Prisma.Payment$shopSaleArgs<ExtArgs>
 }
 
 export type $PaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1423,6 +1658,7 @@ export type $PaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     cashSession: Prisma.$CashSessionPayload<ExtArgs> | null
     folio: Prisma.$FolioPayload<ExtArgs> | null
     order: Prisma.$HotelOrderPayload<ExtArgs> | null
+    shopSale: Prisma.$ShopSalePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1430,6 +1666,7 @@ export type $PaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     cashSessionId: string | null
     folioId: string | null
     orderId: string | null
+    shopSaleId: string | null
     receiptNumber: string
     method: $Enums.PaymentMethod
     amountCdf: number
@@ -1838,6 +2075,7 @@ export interface Prisma__PaymentClient<T, Null = never, ExtArgs extends runtime.
   cashSession<T extends Prisma.Payment$cashSessionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Payment$cashSessionArgs<ExtArgs>>): Prisma.Prisma__CashSessionClient<runtime.Types.Result.GetResult<Prisma.$CashSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   folio<T extends Prisma.Payment$folioArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Payment$folioArgs<ExtArgs>>): Prisma.Prisma__FolioClient<runtime.Types.Result.GetResult<Prisma.$FolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   order<T extends Prisma.Payment$orderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Payment$orderArgs<ExtArgs>>): Prisma.Prisma__HotelOrderClient<runtime.Types.Result.GetResult<Prisma.$HotelOrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  shopSale<T extends Prisma.Payment$shopSaleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Payment$shopSaleArgs<ExtArgs>>): Prisma.Prisma__ShopSaleClient<runtime.Types.Result.GetResult<Prisma.$ShopSalePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1872,6 +2110,7 @@ export interface PaymentFieldRefs {
   readonly cashSessionId: Prisma.FieldRef<"Payment", 'String'>
   readonly folioId: Prisma.FieldRef<"Payment", 'String'>
   readonly orderId: Prisma.FieldRef<"Payment", 'String'>
+  readonly shopSaleId: Prisma.FieldRef<"Payment", 'String'>
   readonly receiptNumber: Prisma.FieldRef<"Payment", 'String'>
   readonly method: Prisma.FieldRef<"Payment", 'PaymentMethod'>
   readonly amountCdf: Prisma.FieldRef<"Payment", 'Float'>
@@ -2337,6 +2576,25 @@ export type Payment$orderArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   include?: Prisma.HotelOrderInclude<ExtArgs> | null
   where?: Prisma.HotelOrderWhereInput
+}
+
+/**
+ * Payment.shopSale
+ */
+export type Payment$shopSaleArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ShopSale
+   */
+  select?: Prisma.ShopSaleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ShopSale
+   */
+  omit?: Prisma.ShopSaleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ShopSaleInclude<ExtArgs> | null
+  where?: Prisma.ShopSaleWhereInput
 }
 
 /**

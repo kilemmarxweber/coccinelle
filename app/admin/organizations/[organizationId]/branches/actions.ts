@@ -266,6 +266,10 @@ export async function listBranchesAction(organizationId: string) {
       code: true,
       status: true,
       city: true,
+      address: true,
+      phone: true,
+      email: true,
+      imageUrl: true,
       hasStays: true,
       hasRestaurant: true,
       hasAvion: true,
@@ -288,4 +292,296 @@ export async function listBranchesAction(organizationId: string) {
   });
 
   return { ok: true as const, data: branches };
+}
+
+async function assertCanManageBranch(
+  organizationId: string,
+): Promise<
+  | { ok: true; userId: string }
+  | { ok: false; message: string }
+> {
+  const h = await headers();
+  const session = await auth.api.getSession({ headers: h });
+  if (!session?.user) {
+    return { ok: false, message: "Non authentifié." };
+  }
+
+  const isAdmin = isAppAdminRole(session.user.role);
+  if (isAdmin) return { ok: true, userId: session.user.id };
+
+  const membership = await prisma.member.findFirst({
+    where: { organizationId, userId: session.user.id },
+    select: { role: true },
+  });
+  if (!membership) {
+    return { ok: false, message: "Vous n’appartenez pas à cette organisation." };
+  }
+  const roles = membership.role.split(",").map((r) => r.trim());
+  if (!roles.some((r) => r === "owner" || r === "gestionnaire")) {
+    return { ok: false, message: "Permission insuffisante pour gérer les branches." };
+  }
+  return { ok: true, userId: session.user.id };
+}
+
+const updateBranchSchema = z
+  .object({
+    organizationId: z.string().min(1),
+    branchId: z.string().min(1),
+    name: z.string().trim().min(2).max(120),
+    code: z
+      .string()
+      .trim()
+      .min(2)
+      .max(32)
+      .regex(
+        /^[A-Z0-9]+(?:-[A-Z0-9]+)*$/,
+        "Code en MAJUSCULES / chiffres / tirets.",
+      ),
+    status: z.enum(["ACTIVE", "SUSPENDED", "CLOSED"]),
+    city: z.string().trim().max(80).optional(),
+    address: z.string().trim().max(200).optional(),
+    phone: z.string().trim().max(40).optional(),
+    email: z
+      .string()
+      .trim()
+      .max(120)
+      .optional()
+      .refine(
+        (v) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+        "Email invalide.",
+      ),
+    imageUrl: z.string().max(700_000).optional().nullable(),
+    hasStays: z.boolean().optional(),
+    hasRestaurant: z.boolean().optional(),
+    hasAvion: z.boolean().optional(),
+    hasBus: z.boolean().optional(),
+    hasBateau: z.boolean().optional(),
+    hasPharmacie: z.boolean().optional(),
+    hasShop: z.boolean().optional(),
+    hasAlimentation: z.boolean().optional(),
+  });
+
+export type UpdateBranchInput = z.infer<typeof updateBranchSchema>;
+
+export async function getBranchAction(organizationId: string, branchId: string) {
+  const gate = await assertCanManageBranch(organizationId);
+  if (!gate.ok) return gate;
+
+  const branch = await prisma.branch.findFirst({
+    where: { id: branchId, organizationId },
+    select: {
+      id: true,
+      type: true,
+      name: true,
+      code: true,
+      status: true,
+      city: true,
+      address: true,
+      phone: true,
+      email: true,
+      imageUrl: true,
+      hasStays: true,
+      hasRestaurant: true,
+      hasAvion: true,
+      hasBus: true,
+      hasBateau: true,
+      hasPharmacie: true,
+      hasShop: true,
+      hasAlimentation: true,
+    },
+  });
+  if (!branch) {
+    return { ok: false as const, message: "Branche introuvable." };
+  }
+  return { ok: true as const, data: branch };
+}
+
+export async function updateBranchAction(raw: UpdateBranchInput) {
+  const parsed = updateBranchSchema.safeParse(raw);
+  if (!parsed.success) {
+    return {
+      ok: false as const,
+      message: parsed.error.issues[0]?.message ?? "Données invalides.",
+    };
+  }
+  const input = parsed.data;
+  const gate = await assertCanManageBranch(input.organizationId);
+  if (!gate.ok) return gate;
+
+  const existing = await prisma.branch.findFirst({
+    where: { id: input.branchId, organizationId: input.organizationId },
+  });
+  if (!existing) {
+    return { ok: false as const, message: "Branche introuvable." };
+  }
+
+  const code = input.code.toUpperCase();
+  if (code !== existing.code) {
+    const clash = await prisma.branch.findUnique({
+      where: {
+        organizationId_code: {
+          organizationId: input.organizationId,
+          code,
+        },
+      },
+      select: { id: true },
+    });
+    if (clash && clash.id !== existing.id) {
+      return { ok: false as const, message: "Ce code de branche existe déjà." };
+    }
+  }
+
+  let type = existing.type;
+  let hasStays = existing.hasStays;
+  let hasRestaurant = existing.hasRestaurant;
+  let hasAvion = existing.hasAvion;
+  let hasBus = existing.hasBus;
+  let hasBateau = existing.hasBateau;
+  let hasPharmacie = existing.hasPharmacie;
+  let hasShop = existing.hasShop;
+  let hasAlimentation = existing.hasAlimentation;
+
+  try {
+    if (existing.type === "HOTEL" || existing.type === "RESTAURANT") {
+      const stays = input.hasStays === true;
+      const resto = input.hasRestaurant === true;
+      if (!stays && !resto) {
+        return {
+          ok: false as const,
+          message: "Choisissez au moins Séjours ou Restaurant.",
+        };
+      }
+      const derived = deriveHospitalityBranch(stays, resto);
+      type = derived.type;
+      hasStays = derived.hasStays;
+      hasRestaurant = derived.hasRestaurant;
+    } else if (existing.type === "AGENCE") {
+      const derived = deriveAgencyFlags({
+        hasAvion: input.hasAvion === true,
+        hasBus: input.hasBus === true,
+        hasBateau: input.hasBateau === true,
+      });
+      if (!derived.hasAvion && !derived.hasBus && !derived.hasBateau) {
+        return {
+          ok: false as const,
+          message: "Choisissez au moins Avion, Bus ou Bateau.",
+        };
+      }
+      hasAvion = derived.hasAvion;
+      hasBus = derived.hasBus;
+      hasBateau = derived.hasBateau;
+    } else if (existing.type === "BOUTIQUE") {
+      const derived = deriveShopFlags({
+        hasPharmacie: input.hasPharmacie === true,
+        hasShop: input.hasShop === true,
+        hasAlimentation: input.hasAlimentation === true,
+      });
+      if (!derived.hasPharmacie && !derived.hasShop && !derived.hasAlimentation) {
+        return {
+          ok: false as const,
+          message: "Choisissez au moins Pharmacie, Boutique ou Alimentation.",
+        };
+      }
+      hasPharmacie = derived.hasPharmacie;
+      hasShop = derived.hasShop;
+      hasAlimentation = derived.hasAlimentation;
+    }
+
+    await prisma.branch.update({
+      where: { id: existing.id },
+      data: {
+        type,
+        name: input.name,
+        code,
+        status: input.status,
+        hasStays,
+        hasRestaurant,
+        hasAvion,
+        hasBus,
+        hasBateau,
+        hasPharmacie,
+        hasShop,
+        hasAlimentation,
+        city: input.city?.trim() || null,
+        address: input.address?.trim() || null,
+        phone: input.phone?.trim() || null,
+        email: input.email?.trim() || null,
+        imageUrl:
+          input.imageUrl === undefined
+            ? undefined
+            : input.imageUrl?.trim() || null,
+      },
+    });
+
+    revalidatePath(`/admin/organizations/${input.organizationId}`);
+    revalidatePath(`/admin/organizations/${input.organizationId}/branches`);
+    revalidatePath(
+      `/admin/organizations/${input.organizationId}/branches/${input.branchId}`,
+    );
+    revalidatePath(
+      `/admin/organizations/${input.organizationId}/branches/edit/${input.branchId}`,
+    );
+
+    return { ok: true as const };
+  } catch (e) {
+    const message =
+      e instanceof Error ? e.message : "Mise à jour de la branche impossible.";
+    return { ok: false as const, message };
+  }
+}
+
+const deleteBranchSchema = z.object({
+  organizationId: z.string().min(1),
+  branchId: z.string().min(1),
+});
+
+export async function deleteBranchAction(raw: z.infer<typeof deleteBranchSchema>) {
+  const parsed = deleteBranchSchema.safeParse(raw);
+  if (!parsed.success) {
+    return {
+      ok: false as const,
+      message: parsed.error.issues[0]?.message ?? "Données invalides.",
+    };
+  }
+  const { organizationId, branchId } = parsed.data;
+  const gate = await assertCanManageBranch(organizationId);
+  if (!gate.ok) return gate;
+
+  const existing = await prisma.branch.findFirst({
+    where: { id: branchId, organizationId },
+    select: { id: true, name: true },
+  });
+  if (!existing) {
+    return { ok: false as const, message: "Branche introuvable." };
+  }
+
+  try {
+    await prisma.branch.delete({ where: { id: branchId } });
+    revalidatePath(`/admin/organizations/${organizationId}`);
+    revalidatePath(`/admin/organizations/${organizationId}/branches`);
+    return { ok: true as const };
+  } catch (e) {
+    const code =
+      typeof e === "object" && e && "code" in e
+        ? String((e as { code: unknown }).code)
+        : "";
+    const message = e instanceof Error ? e.message : "";
+    if (
+      code === "P2003" ||
+      code === "P2014" ||
+      message.includes("Foreign key") ||
+      message.includes("Restrict") ||
+      message.includes("constraint")
+    ) {
+      return {
+        ok: false as const,
+        message:
+          "Impossible de supprimer : des données métier (séjours, ventes…) bloquent encore cette branche. Archivez-la (statut Fermée) ou libérez ces données d’abord.",
+      };
+    }
+    return {
+      ok: false as const,
+      message: message || "Suppression de la branche impossible.",
+    };
+  }
 }

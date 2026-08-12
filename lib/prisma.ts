@@ -6,7 +6,7 @@ const adapter = new PrismaPg({
 });
 
 /** Incrémenter après tout changement de modèle Prisma pour invalider le singleton HMR. */
-const PRISMA_SCHEMA_REV = 19;
+const PRISMA_SCHEMA_REV = 20;
 
 const globalForPrisma = global as unknown as {
   prisma: PrismaClient | undefined;
@@ -79,8 +79,11 @@ function resolvePrisma(): PrismaClient {
   const staleRev = globalForPrisma.prismaSchemaRev !== PRISMA_SCHEMA_REV;
   const staleDelegate =
     existing &&
-    typeof (existing as { hotelMenuItem?: unknown }).hotelMenuItem ===
-      "undefined";
+    (typeof (existing as { hotelMenuItem?: unknown }).hotelMenuItem ===
+      "undefined" ||
+      typeof (existing as { shopSale?: unknown }).shopSale === "undefined" ||
+      typeof (existing as { shopProduct?: unknown }).shopProduct ===
+        "undefined");
 
   const staleFields =
     existing &&
@@ -100,7 +103,12 @@ function resolvePrisma(): PrismaClient {
       !modelHasField(existing, "HotelRoomType", "kind") ||
       !modelHasField(existing, "HotelRoomType", "seatsVip") ||
       !modelHasField(existing, "HotelRoomType", "seatsStandard") ||
-      !enumHasValue(existing, "FolioLineKind", "STAY_OVERTIME"));
+      !modelHasField(existing, "ShopProduct", "kind") ||
+      !modelHasField(existing, "ShopProduct", "promoActive") ||
+      !modelHasField(existing, "ShopProduct", "branchId") ||
+      !modelHasField(existing, "Payment", "shopSaleId") ||
+      !enumHasValue(existing, "FolioLineKind", "STAY_OVERTIME") ||
+      !enumHasValue(existing, "ShopProductKind", "PLAT"));
 
   if (existing && (staleRev || staleDelegate || staleFields)) {
     void existing.$disconnect().catch(() => undefined);

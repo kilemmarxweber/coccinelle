@@ -262,36 +262,24 @@ export function menuSectionsForBranch(
   if (type === "BOUTIQUE") {
     return [
       {
-        title: "OPÉRATIONS AU QUOTIDIEN",
+        title: "OPÉRATIONS, CATALOGUE & STOCK",
         titleColor: "text-emerald-400",
-        icon: Wallet,
+        icon: ShoppingCart,
         iconColor: "text-emerald-400",
         items: [
-          caisseVentesCard(
-            organizationId,
-            branchId,
-            "Ouvrir la caisse et encaisser au point de vente.",
-          ),
           {
             title: "Point de vente",
-            description: "Panier, ticket et remises.",
+            description: "Panier rapide, tickets en attente et encaissement.",
             href: boutiqueRoutes.pos(organizationId, branchId),
             icon: ShoppingCart,
             iconBg: "bg-emerald-500/15",
             iconColor: "text-emerald-400",
+            primary: true,
           },
           tauxChangeCard(organizationId, branchId),
-        ],
-      },
-      {
-        title: "CATALOGUE & STOCK",
-        titleColor: "text-sky-400",
-        icon: Box,
-        iconColor: "text-sky-400",
-        items: [
           {
             title: "Produits",
-            description: "Catalogue et prix.",
+            description: "Articles, plats, prix et promotions.",
             href: boutiqueRoutes.produits(organizationId, branchId),
             icon: Box,
             iconBg: "bg-violet-500/15",

@@ -6,10 +6,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
   Legend,
-  Pie,
-  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -107,30 +104,75 @@ export function SimpleBarChart(props: {
 }
 
 export function DonutChart(props: { data: { name: string; value: number }[] }) {
-  const data = props.data.filter((d) => d.value > 0);
+  const data = props.data
+    .map((d) => ({
+      name: String(d.name ?? "").trim() || "Autre",
+      value: Number(d.value),
+    }))
+    .filter((d) => Number.isFinite(d.value) && d.value > 0);
+
+  // Fusionne les libellés identiques (évite slices dupliquées).
+  const merged = new Map<string, number>();
+  for (const d of data) {
+    merged.set(d.name, (merged.get(d.name) ?? 0) + d.value);
+  }
+  const slices = [...merged.entries()].map(([name, value]) => ({ name, value }));
+  const total = slices.reduce((s, d) => s + d.value, 0);
+
+  if (slices.length === 0 || !(total > 0)) {
+    return (
+      <p className="flex h-full min-h-[240px] items-center justify-center text-sm text-muted-foreground">
+        Aucune donnée sur la période.
+      </p>
+    );
+  }
+
+  // conic-gradient : fiable (pas de ResponsiveContainer / Recharts Pie).
+  let acc = 0;
+  const gradient = slices
+    .map((d, i) => {
+      const start = (acc / total) * 360;
+      acc += d.value;
+      const end = (acc / total) * 360;
+      return `${COLORS[i % COLORS.length]} ${start}deg ${end}deg`;
+    })
+    .join(", ");
+
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <PieChart>
-        <Pie
-          data={data}
-          dataKey="value"
-          nameKey="name"
-          innerRadius={55}
-          outerRadius={85}
-          paddingAngle={2}
-        >
-          {data.map((_, i) => (
-            <Cell key={i} fill={COLORS[i % COLORS.length]} />
-          ))}
-        </Pie>
-        <Tooltip
-          formatter={(v) =>
-            typeof v === "number" ? v.toLocaleString("fr-FR") : String(v ?? "")
-          }
-        />
-        <Legend />
-      </PieChart>
-    </ResponsiveContainer>
+    <div className="flex h-full min-h-[240px] w-full flex-col items-center justify-center gap-4 px-2">
+      <div
+        className="size-36 shrink-0 rounded-full sm:size-40"
+        style={{
+          background: `conic-gradient(${gradient})`,
+          WebkitMask:
+            "radial-gradient(circle at center, transparent 48%, #000 49%)",
+          mask: "radial-gradient(circle at center, transparent 48%, #000 49%)",
+        }}
+        aria-hidden
+      />
+      <ul className="flex w-full max-w-xs flex-col gap-1.5 text-xs">
+        {slices.map((d, i) => {
+          const pct = Math.round((d.value / total) * 1000) / 10;
+          return (
+            <li
+              key={`${d.name}-${i}`}
+              className="flex items-center justify-between gap-2"
+            >
+              <span className="flex min-w-0 items-center gap-2">
+                <span
+                  className="size-2.5 shrink-0 rounded-full"
+                  style={{ background: COLORS[i % COLORS.length] }}
+                />
+                <span className="truncate font-medium">{d.name}</span>
+              </span>
+              <span className="shrink-0 tabular-nums text-muted-foreground">
+                {pct}% · {d.value.toLocaleString("fr-FR", { maximumFractionDigits: 2 })}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 

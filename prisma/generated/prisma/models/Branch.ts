@@ -335,6 +335,9 @@ export type BranchWhereInput = {
   trajets?: Prisma.TrajetListRelationFilter
   hotelRoomTypes?: Prisma.HotelRoomTypeListRelationFilter
   shopCategories?: Prisma.ShopCategoryListRelationFilter
+  shopProducts?: Prisma.ShopProductListRelationFilter
+  shopSales?: Prisma.ShopSaleListRelationFilter
+  shopStockMovements?: Prisma.ShopStockMovementListRelationFilter
   cashSessions?: Prisma.CashSessionListRelationFilter
   exchangeRates?: Prisma.ExchangeRateListRelationFilter
   hotelStays?: Prisma.HotelStayListRelationFilter
@@ -376,6 +379,9 @@ export type BranchOrderByWithRelationInput = {
   trajets?: Prisma.TrajetOrderByRelationAggregateInput
   hotelRoomTypes?: Prisma.HotelRoomTypeOrderByRelationAggregateInput
   shopCategories?: Prisma.ShopCategoryOrderByRelationAggregateInput
+  shopProducts?: Prisma.ShopProductOrderByRelationAggregateInput
+  shopSales?: Prisma.ShopSaleOrderByRelationAggregateInput
+  shopStockMovements?: Prisma.ShopStockMovementOrderByRelationAggregateInput
   cashSessions?: Prisma.CashSessionOrderByRelationAggregateInput
   exchangeRates?: Prisma.ExchangeRateOrderByRelationAggregateInput
   hotelStays?: Prisma.HotelStayOrderByRelationAggregateInput
@@ -421,6 +427,9 @@ export type BranchWhereUniqueInput = Prisma.AtLeast<{
   trajets?: Prisma.TrajetListRelationFilter
   hotelRoomTypes?: Prisma.HotelRoomTypeListRelationFilter
   shopCategories?: Prisma.ShopCategoryListRelationFilter
+  shopProducts?: Prisma.ShopProductListRelationFilter
+  shopSales?: Prisma.ShopSaleListRelationFilter
+  shopStockMovements?: Prisma.ShopStockMovementListRelationFilter
   cashSessions?: Prisma.CashSessionListRelationFilter
   exchangeRates?: Prisma.ExchangeRateListRelationFilter
   hotelStays?: Prisma.HotelStayListRelationFilter
@@ -521,6 +530,9 @@ export type BranchCreateInput = {
   trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
@@ -561,6 +573,9 @@ export type BranchUncheckedCreateInput = {
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
@@ -601,6 +616,9 @@ export type BranchUpdateInput = {
   trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
@@ -641,6 +659,9 @@ export type BranchUncheckedUpdateInput = {
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
@@ -944,6 +965,48 @@ export type BranchUpdateOneRequiredWithoutShopCategoriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutShopCategoriesInput, Prisma.BranchUpdateWithoutShopCategoriesInput>, Prisma.BranchUncheckedUpdateWithoutShopCategoriesInput>
 }
 
+export type BranchCreateNestedOneWithoutShopProductsInput = {
+  create?: Prisma.XOR<Prisma.BranchCreateWithoutShopProductsInput, Prisma.BranchUncheckedCreateWithoutShopProductsInput>
+  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutShopProductsInput
+  connect?: Prisma.BranchWhereUniqueInput
+}
+
+export type BranchUpdateOneRequiredWithoutShopProductsNestedInput = {
+  create?: Prisma.XOR<Prisma.BranchCreateWithoutShopProductsInput, Prisma.BranchUncheckedCreateWithoutShopProductsInput>
+  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutShopProductsInput
+  upsert?: Prisma.BranchUpsertWithoutShopProductsInput
+  connect?: Prisma.BranchWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutShopProductsInput, Prisma.BranchUpdateWithoutShopProductsInput>, Prisma.BranchUncheckedUpdateWithoutShopProductsInput>
+}
+
+export type BranchCreateNestedOneWithoutShopSalesInput = {
+  create?: Prisma.XOR<Prisma.BranchCreateWithoutShopSalesInput, Prisma.BranchUncheckedCreateWithoutShopSalesInput>
+  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutShopSalesInput
+  connect?: Prisma.BranchWhereUniqueInput
+}
+
+export type BranchUpdateOneRequiredWithoutShopSalesNestedInput = {
+  create?: Prisma.XOR<Prisma.BranchCreateWithoutShopSalesInput, Prisma.BranchUncheckedCreateWithoutShopSalesInput>
+  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutShopSalesInput
+  upsert?: Prisma.BranchUpsertWithoutShopSalesInput
+  connect?: Prisma.BranchWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutShopSalesInput, Prisma.BranchUpdateWithoutShopSalesInput>, Prisma.BranchUncheckedUpdateWithoutShopSalesInput>
+}
+
+export type BranchCreateNestedOneWithoutShopStockMovementsInput = {
+  create?: Prisma.XOR<Prisma.BranchCreateWithoutShopStockMovementsInput, Prisma.BranchUncheckedCreateWithoutShopStockMovementsInput>
+  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutShopStockMovementsInput
+  connect?: Prisma.BranchWhereUniqueInput
+}
+
+export type BranchUpdateOneRequiredWithoutShopStockMovementsNestedInput = {
+  create?: Prisma.XOR<Prisma.BranchCreateWithoutShopStockMovementsInput, Prisma.BranchUncheckedCreateWithoutShopStockMovementsInput>
+  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutShopStockMovementsInput
+  upsert?: Prisma.BranchUpsertWithoutShopStockMovementsInput
+  connect?: Prisma.BranchWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutShopStockMovementsInput, Prisma.BranchUpdateWithoutShopStockMovementsInput>, Prisma.BranchUncheckedUpdateWithoutShopStockMovementsInput>
+}
+
 export type BranchCreateNestedOneWithoutExchangeRatesInput = {
   create?: Prisma.XOR<Prisma.BranchCreateWithoutExchangeRatesInput, Prisma.BranchUncheckedCreateWithoutExchangeRatesInput>
   connectOrCreate?: Prisma.BranchCreateOrConnectWithoutExchangeRatesInput
@@ -1098,6 +1161,9 @@ export type BranchCreateWithoutOrganizationInput = {
   trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
@@ -1137,6 +1203,9 @@ export type BranchUncheckedCreateWithoutOrganizationInput = {
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
@@ -1232,6 +1301,9 @@ export type BranchCreateWithoutTrajetsInput = {
   members?: Prisma.BranchMemberCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
@@ -1271,6 +1343,9 @@ export type BranchUncheckedCreateWithoutTrajetsInput = {
   members?: Prisma.BranchMemberUncheckedCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
@@ -1326,6 +1401,9 @@ export type BranchUpdateWithoutTrajetsInput = {
   members?: Prisma.BranchMemberUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
@@ -1365,6 +1443,9 @@ export type BranchUncheckedUpdateWithoutTrajetsInput = {
   members?: Prisma.BranchMemberUncheckedUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
@@ -1404,6 +1485,9 @@ export type BranchCreateWithoutMembersInput = {
   trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
@@ -1443,6 +1527,9 @@ export type BranchUncheckedCreateWithoutMembersInput = {
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
@@ -1498,6 +1585,9 @@ export type BranchUpdateWithoutMembersInput = {
   trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
@@ -1537,6 +1627,9 @@ export type BranchUncheckedUpdateWithoutMembersInput = {
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
@@ -1576,6 +1669,9 @@ export type BranchCreateWithoutHotelRoomTypesInput = {
   members?: Prisma.BranchMemberCreateNestedManyWithoutBranchInput
   trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
@@ -1615,6 +1711,9 @@ export type BranchUncheckedCreateWithoutHotelRoomTypesInput = {
   members?: Prisma.BranchMemberUncheckedCreateNestedManyWithoutBranchInput
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
@@ -1670,6 +1769,9 @@ export type BranchUpdateWithoutHotelRoomTypesInput = {
   members?: Prisma.BranchMemberUpdateManyWithoutBranchNestedInput
   trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
@@ -1709,6 +1811,9 @@ export type BranchUncheckedUpdateWithoutHotelRoomTypesInput = {
   members?: Prisma.BranchMemberUncheckedUpdateManyWithoutBranchNestedInput
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
@@ -1748,6 +1853,9 @@ export type BranchCreateWithoutShopCategoriesInput = {
   members?: Prisma.BranchMemberCreateNestedManyWithoutBranchInput
   trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
@@ -1787,6 +1895,9 @@ export type BranchUncheckedCreateWithoutShopCategoriesInput = {
   members?: Prisma.BranchMemberUncheckedCreateNestedManyWithoutBranchInput
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
@@ -1842,6 +1953,9 @@ export type BranchUpdateWithoutShopCategoriesInput = {
   members?: Prisma.BranchMemberUpdateManyWithoutBranchNestedInput
   trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
@@ -1881,6 +1995,561 @@ export type BranchUncheckedUpdateWithoutShopCategoriesInput = {
   members?: Prisma.BranchMemberUncheckedUpdateManyWithoutBranchNestedInput
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
+  exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
+  hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
+  folios?: Prisma.FolioUncheckedUpdateManyWithoutBranchNestedInput
+  hotelOrders?: Prisma.HotelOrderUncheckedUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
+  notifications?: Prisma.BranchNotificationUncheckedUpdateManyWithoutBranchNestedInput
+  menuItems?: Prisma.HotelMenuItemUncheckedUpdateManyWithoutBranchNestedInput
+  stockMovements?: Prisma.HotelStockMovementUncheckedUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchCreateWithoutShopProductsInput = {
+  id?: string
+  type: $Enums.BranchType
+  name: string
+  code: string
+  slug?: string | null
+  status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
+  imageUrl?: string | null
+  address?: string | null
+  city?: string | null
+  phone?: string | null
+  email?: string | null
+  timezone?: string
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutBranchesInput
+  members?: Prisma.BranchMemberCreateNestedManyWithoutBranchInput
+  trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
+  hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
+  shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
+  exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
+  hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
+  folios?: Prisma.FolioCreateNestedManyWithoutBranchInput
+  hotelOrders?: Prisma.HotelOrderCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
+  notifications?: Prisma.BranchNotificationCreateNestedManyWithoutBranchInput
+  menuItems?: Prisma.HotelMenuItemCreateNestedManyWithoutBranchInput
+  stockMovements?: Prisma.HotelStockMovementCreateNestedManyWithoutBranchInput
+}
+
+export type BranchUncheckedCreateWithoutShopProductsInput = {
+  id?: string
+  organizationId: string
+  type: $Enums.BranchType
+  name: string
+  code: string
+  slug?: string | null
+  status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
+  imageUrl?: string | null
+  address?: string | null
+  city?: string | null
+  phone?: string | null
+  email?: string | null
+  timezone?: string
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.BranchMemberUncheckedCreateNestedManyWithoutBranchInput
+  trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
+  hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
+  shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
+  exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
+  hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
+  folios?: Prisma.FolioUncheckedCreateNestedManyWithoutBranchInput
+  hotelOrders?: Prisma.HotelOrderUncheckedCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
+  notifications?: Prisma.BranchNotificationUncheckedCreateNestedManyWithoutBranchInput
+  menuItems?: Prisma.HotelMenuItemUncheckedCreateNestedManyWithoutBranchInput
+  stockMovements?: Prisma.HotelStockMovementUncheckedCreateNestedManyWithoutBranchInput
+}
+
+export type BranchCreateOrConnectWithoutShopProductsInput = {
+  where: Prisma.BranchWhereUniqueInput
+  create: Prisma.XOR<Prisma.BranchCreateWithoutShopProductsInput, Prisma.BranchUncheckedCreateWithoutShopProductsInput>
+}
+
+export type BranchUpsertWithoutShopProductsInput = {
+  update: Prisma.XOR<Prisma.BranchUpdateWithoutShopProductsInput, Prisma.BranchUncheckedUpdateWithoutShopProductsInput>
+  create: Prisma.XOR<Prisma.BranchCreateWithoutShopProductsInput, Prisma.BranchUncheckedCreateWithoutShopProductsInput>
+  where?: Prisma.BranchWhereInput
+}
+
+export type BranchUpdateToOneWithWhereWithoutShopProductsInput = {
+  where?: Prisma.BranchWhereInput
+  data: Prisma.XOR<Prisma.BranchUpdateWithoutShopProductsInput, Prisma.BranchUncheckedUpdateWithoutShopProductsInput>
+}
+
+export type BranchUpdateWithoutShopProductsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumBranchTypeFieldUpdateOperationsInput | $Enums.BranchType
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutBranchesNestedInput
+  members?: Prisma.BranchMemberUpdateManyWithoutBranchNestedInput
+  trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
+  hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
+  shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
+  exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
+  hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
+  folios?: Prisma.FolioUpdateManyWithoutBranchNestedInput
+  hotelOrders?: Prisma.HotelOrderUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
+  notifications?: Prisma.BranchNotificationUpdateManyWithoutBranchNestedInput
+  menuItems?: Prisma.HotelMenuItemUpdateManyWithoutBranchNestedInput
+  stockMovements?: Prisma.HotelStockMovementUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchUncheckedUpdateWithoutShopProductsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumBranchTypeFieldUpdateOperationsInput | $Enums.BranchType
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.BranchMemberUncheckedUpdateManyWithoutBranchNestedInput
+  trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
+  hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
+  shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
+  exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
+  hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
+  folios?: Prisma.FolioUncheckedUpdateManyWithoutBranchNestedInput
+  hotelOrders?: Prisma.HotelOrderUncheckedUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
+  notifications?: Prisma.BranchNotificationUncheckedUpdateManyWithoutBranchNestedInput
+  menuItems?: Prisma.HotelMenuItemUncheckedUpdateManyWithoutBranchNestedInput
+  stockMovements?: Prisma.HotelStockMovementUncheckedUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchCreateWithoutShopSalesInput = {
+  id?: string
+  type: $Enums.BranchType
+  name: string
+  code: string
+  slug?: string | null
+  status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
+  imageUrl?: string | null
+  address?: string | null
+  city?: string | null
+  phone?: string | null
+  email?: string | null
+  timezone?: string
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutBranchesInput
+  members?: Prisma.BranchMemberCreateNestedManyWithoutBranchInput
+  trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
+  hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
+  shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
+  exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
+  hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
+  folios?: Prisma.FolioCreateNestedManyWithoutBranchInput
+  hotelOrders?: Prisma.HotelOrderCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
+  notifications?: Prisma.BranchNotificationCreateNestedManyWithoutBranchInput
+  menuItems?: Prisma.HotelMenuItemCreateNestedManyWithoutBranchInput
+  stockMovements?: Prisma.HotelStockMovementCreateNestedManyWithoutBranchInput
+}
+
+export type BranchUncheckedCreateWithoutShopSalesInput = {
+  id?: string
+  organizationId: string
+  type: $Enums.BranchType
+  name: string
+  code: string
+  slug?: string | null
+  status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
+  imageUrl?: string | null
+  address?: string | null
+  city?: string | null
+  phone?: string | null
+  email?: string | null
+  timezone?: string
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.BranchMemberUncheckedCreateNestedManyWithoutBranchInput
+  trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
+  hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
+  shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
+  exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
+  hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
+  folios?: Prisma.FolioUncheckedCreateNestedManyWithoutBranchInput
+  hotelOrders?: Prisma.HotelOrderUncheckedCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
+  notifications?: Prisma.BranchNotificationUncheckedCreateNestedManyWithoutBranchInput
+  menuItems?: Prisma.HotelMenuItemUncheckedCreateNestedManyWithoutBranchInput
+  stockMovements?: Prisma.HotelStockMovementUncheckedCreateNestedManyWithoutBranchInput
+}
+
+export type BranchCreateOrConnectWithoutShopSalesInput = {
+  where: Prisma.BranchWhereUniqueInput
+  create: Prisma.XOR<Prisma.BranchCreateWithoutShopSalesInput, Prisma.BranchUncheckedCreateWithoutShopSalesInput>
+}
+
+export type BranchUpsertWithoutShopSalesInput = {
+  update: Prisma.XOR<Prisma.BranchUpdateWithoutShopSalesInput, Prisma.BranchUncheckedUpdateWithoutShopSalesInput>
+  create: Prisma.XOR<Prisma.BranchCreateWithoutShopSalesInput, Prisma.BranchUncheckedCreateWithoutShopSalesInput>
+  where?: Prisma.BranchWhereInput
+}
+
+export type BranchUpdateToOneWithWhereWithoutShopSalesInput = {
+  where?: Prisma.BranchWhereInput
+  data: Prisma.XOR<Prisma.BranchUpdateWithoutShopSalesInput, Prisma.BranchUncheckedUpdateWithoutShopSalesInput>
+}
+
+export type BranchUpdateWithoutShopSalesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumBranchTypeFieldUpdateOperationsInput | $Enums.BranchType
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutBranchesNestedInput
+  members?: Prisma.BranchMemberUpdateManyWithoutBranchNestedInput
+  trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
+  hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
+  shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
+  exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
+  hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
+  folios?: Prisma.FolioUpdateManyWithoutBranchNestedInput
+  hotelOrders?: Prisma.HotelOrderUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
+  notifications?: Prisma.BranchNotificationUpdateManyWithoutBranchNestedInput
+  menuItems?: Prisma.HotelMenuItemUpdateManyWithoutBranchNestedInput
+  stockMovements?: Prisma.HotelStockMovementUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchUncheckedUpdateWithoutShopSalesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumBranchTypeFieldUpdateOperationsInput | $Enums.BranchType
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.BranchMemberUncheckedUpdateManyWithoutBranchNestedInput
+  trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
+  hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
+  shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
+  exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
+  hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
+  folios?: Prisma.FolioUncheckedUpdateManyWithoutBranchNestedInput
+  hotelOrders?: Prisma.HotelOrderUncheckedUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
+  notifications?: Prisma.BranchNotificationUncheckedUpdateManyWithoutBranchNestedInput
+  menuItems?: Prisma.HotelMenuItemUncheckedUpdateManyWithoutBranchNestedInput
+  stockMovements?: Prisma.HotelStockMovementUncheckedUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchCreateWithoutShopStockMovementsInput = {
+  id?: string
+  type: $Enums.BranchType
+  name: string
+  code: string
+  slug?: string | null
+  status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
+  imageUrl?: string | null
+  address?: string | null
+  city?: string | null
+  phone?: string | null
+  email?: string | null
+  timezone?: string
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutBranchesInput
+  members?: Prisma.BranchMemberCreateNestedManyWithoutBranchInput
+  trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
+  hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
+  shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
+  exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
+  hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
+  folios?: Prisma.FolioCreateNestedManyWithoutBranchInput
+  hotelOrders?: Prisma.HotelOrderCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
+  notifications?: Prisma.BranchNotificationCreateNestedManyWithoutBranchInput
+  menuItems?: Prisma.HotelMenuItemCreateNestedManyWithoutBranchInput
+  stockMovements?: Prisma.HotelStockMovementCreateNestedManyWithoutBranchInput
+}
+
+export type BranchUncheckedCreateWithoutShopStockMovementsInput = {
+  id?: string
+  organizationId: string
+  type: $Enums.BranchType
+  name: string
+  code: string
+  slug?: string | null
+  status?: $Enums.BranchStatus
+  hasStays?: boolean
+  hasRestaurant?: boolean
+  hasAvion?: boolean
+  hasBus?: boolean
+  hasBateau?: boolean
+  hasPharmacie?: boolean
+  hasShop?: boolean
+  hasAlimentation?: boolean
+  imageUrl?: string | null
+  address?: string | null
+  city?: string | null
+  phone?: string | null
+  email?: string | null
+  timezone?: string
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.BranchMemberUncheckedCreateNestedManyWithoutBranchInput
+  trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
+  hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
+  shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
+  exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
+  hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
+  folios?: Prisma.FolioUncheckedCreateNestedManyWithoutBranchInput
+  hotelOrders?: Prisma.HotelOrderUncheckedCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
+  notifications?: Prisma.BranchNotificationUncheckedCreateNestedManyWithoutBranchInput
+  menuItems?: Prisma.HotelMenuItemUncheckedCreateNestedManyWithoutBranchInput
+  stockMovements?: Prisma.HotelStockMovementUncheckedCreateNestedManyWithoutBranchInput
+}
+
+export type BranchCreateOrConnectWithoutShopStockMovementsInput = {
+  where: Prisma.BranchWhereUniqueInput
+  create: Prisma.XOR<Prisma.BranchCreateWithoutShopStockMovementsInput, Prisma.BranchUncheckedCreateWithoutShopStockMovementsInput>
+}
+
+export type BranchUpsertWithoutShopStockMovementsInput = {
+  update: Prisma.XOR<Prisma.BranchUpdateWithoutShopStockMovementsInput, Prisma.BranchUncheckedUpdateWithoutShopStockMovementsInput>
+  create: Prisma.XOR<Prisma.BranchCreateWithoutShopStockMovementsInput, Prisma.BranchUncheckedCreateWithoutShopStockMovementsInput>
+  where?: Prisma.BranchWhereInput
+}
+
+export type BranchUpdateToOneWithWhereWithoutShopStockMovementsInput = {
+  where?: Prisma.BranchWhereInput
+  data: Prisma.XOR<Prisma.BranchUpdateWithoutShopStockMovementsInput, Prisma.BranchUncheckedUpdateWithoutShopStockMovementsInput>
+}
+
+export type BranchUpdateWithoutShopStockMovementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumBranchTypeFieldUpdateOperationsInput | $Enums.BranchType
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutBranchesNestedInput
+  members?: Prisma.BranchMemberUpdateManyWithoutBranchNestedInput
+  trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
+  hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
+  shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
+  exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
+  hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
+  folios?: Prisma.FolioUpdateManyWithoutBranchNestedInput
+  hotelOrders?: Prisma.HotelOrderUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
+  notifications?: Prisma.BranchNotificationUpdateManyWithoutBranchNestedInput
+  menuItems?: Prisma.HotelMenuItemUpdateManyWithoutBranchNestedInput
+  stockMovements?: Prisma.HotelStockMovementUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchUncheckedUpdateWithoutShopStockMovementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumBranchTypeFieldUpdateOperationsInput | $Enums.BranchType
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumBranchStatusFieldUpdateOperationsInput | $Enums.BranchStatus
+  hasStays?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasRestaurant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAvion?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasBateau?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasPharmacie?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasShop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasAlimentation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.BranchMemberUncheckedUpdateManyWithoutBranchNestedInput
+  trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
+  hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
+  shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
@@ -1921,6 +2590,9 @@ export type BranchCreateWithoutExchangeRatesInput = {
   trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
   folios?: Prisma.FolioCreateNestedManyWithoutBranchInput
@@ -1960,6 +2632,9 @@ export type BranchUncheckedCreateWithoutExchangeRatesInput = {
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
   folios?: Prisma.FolioUncheckedCreateNestedManyWithoutBranchInput
@@ -2015,6 +2690,9 @@ export type BranchUpdateWithoutExchangeRatesInput = {
   trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
   folios?: Prisma.FolioUpdateManyWithoutBranchNestedInput
@@ -2054,6 +2732,9 @@ export type BranchUncheckedUpdateWithoutExchangeRatesInput = {
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
   folios?: Prisma.FolioUncheckedUpdateManyWithoutBranchNestedInput
@@ -2093,6 +2774,9 @@ export type BranchCreateWithoutCashSessionsInput = {
   trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
   folios?: Prisma.FolioCreateNestedManyWithoutBranchInput
@@ -2132,6 +2816,9 @@ export type BranchUncheckedCreateWithoutCashSessionsInput = {
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
   folios?: Prisma.FolioUncheckedCreateNestedManyWithoutBranchInput
@@ -2187,6 +2874,9 @@ export type BranchUpdateWithoutCashSessionsInput = {
   trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
   folios?: Prisma.FolioUpdateManyWithoutBranchNestedInput
@@ -2226,6 +2916,9 @@ export type BranchUncheckedUpdateWithoutCashSessionsInput = {
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
   folios?: Prisma.FolioUncheckedUpdateManyWithoutBranchNestedInput
@@ -2265,6 +2958,9 @@ export type BranchCreateWithoutHotelStaysInput = {
   trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
   folios?: Prisma.FolioCreateNestedManyWithoutBranchInput
@@ -2304,6 +3000,9 @@ export type BranchUncheckedCreateWithoutHotelStaysInput = {
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
   folios?: Prisma.FolioUncheckedCreateNestedManyWithoutBranchInput
@@ -2359,6 +3058,9 @@ export type BranchUpdateWithoutHotelStaysInput = {
   trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
   folios?: Prisma.FolioUpdateManyWithoutBranchNestedInput
@@ -2398,6 +3100,9 @@ export type BranchUncheckedUpdateWithoutHotelStaysInput = {
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
   folios?: Prisma.FolioUncheckedUpdateManyWithoutBranchNestedInput
@@ -2437,6 +3142,9 @@ export type BranchCreateWithoutFoliosInput = {
   trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
@@ -2476,6 +3184,9 @@ export type BranchUncheckedCreateWithoutFoliosInput = {
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
@@ -2531,6 +3242,9 @@ export type BranchUpdateWithoutFoliosInput = {
   trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
@@ -2570,6 +3284,9 @@ export type BranchUncheckedUpdateWithoutFoliosInput = {
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
@@ -2609,6 +3326,9 @@ export type BranchCreateWithoutPaymentsInput = {
   trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
@@ -2648,6 +3368,9 @@ export type BranchUncheckedCreateWithoutPaymentsInput = {
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
@@ -2703,6 +3426,9 @@ export type BranchUpdateWithoutPaymentsInput = {
   trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
@@ -2742,6 +3468,9 @@ export type BranchUncheckedUpdateWithoutPaymentsInput = {
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
@@ -2781,6 +3510,9 @@ export type BranchCreateWithoutMenuItemsInput = {
   trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
@@ -2820,6 +3552,9 @@ export type BranchUncheckedCreateWithoutMenuItemsInput = {
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
@@ -2875,6 +3610,9 @@ export type BranchUpdateWithoutMenuItemsInput = {
   trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
@@ -2914,6 +3652,9 @@ export type BranchUncheckedUpdateWithoutMenuItemsInput = {
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
@@ -2953,6 +3694,9 @@ export type BranchCreateWithoutStockMovementsInput = {
   trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
@@ -2992,6 +3736,9 @@ export type BranchUncheckedCreateWithoutStockMovementsInput = {
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
@@ -3047,6 +3794,9 @@ export type BranchUpdateWithoutStockMovementsInput = {
   trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
@@ -3086,6 +3836,9 @@ export type BranchUncheckedUpdateWithoutStockMovementsInput = {
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
@@ -3125,6 +3878,9 @@ export type BranchCreateWithoutHotelOrdersInput = {
   trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
@@ -3164,6 +3920,9 @@ export type BranchUncheckedCreateWithoutHotelOrdersInput = {
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
@@ -3219,6 +3978,9 @@ export type BranchUpdateWithoutHotelOrdersInput = {
   trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
@@ -3258,6 +4020,9 @@ export type BranchUncheckedUpdateWithoutHotelOrdersInput = {
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
@@ -3297,6 +4062,9 @@ export type BranchCreateWithoutNotificationsInput = {
   trajets?: Prisma.TrajetCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayCreateNestedManyWithoutBranchInput
@@ -3336,6 +4104,9 @@ export type BranchUncheckedCreateWithoutNotificationsInput = {
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutBranchInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedCreateNestedManyWithoutBranchInput
   shopCategories?: Prisma.ShopCategoryUncheckedCreateNestedManyWithoutBranchInput
+  shopProducts?: Prisma.ShopProductUncheckedCreateNestedManyWithoutBranchInput
+  shopSales?: Prisma.ShopSaleUncheckedCreateNestedManyWithoutBranchInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutBranchInput
   cashSessions?: Prisma.CashSessionUncheckedCreateNestedManyWithoutBranchInput
   exchangeRates?: Prisma.ExchangeRateUncheckedCreateNestedManyWithoutBranchInput
   hotelStays?: Prisma.HotelStayUncheckedCreateNestedManyWithoutBranchInput
@@ -3391,6 +4162,9 @@ export type BranchUpdateWithoutNotificationsInput = {
   trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
@@ -3430,6 +4204,9 @@ export type BranchUncheckedUpdateWithoutNotificationsInput = {
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
@@ -3494,6 +4271,9 @@ export type BranchUpdateWithoutOrganizationInput = {
   trajets?: Prisma.TrajetUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUpdateManyWithoutBranchNestedInput
@@ -3533,6 +4313,9 @@ export type BranchUncheckedUpdateWithoutOrganizationInput = {
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutBranchNestedInput
   hotelRoomTypes?: Prisma.HotelRoomTypeUncheckedUpdateManyWithoutBranchNestedInput
   shopCategories?: Prisma.ShopCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  shopProducts?: Prisma.ShopProductUncheckedUpdateManyWithoutBranchNestedInput
+  shopSales?: Prisma.ShopSaleUncheckedUpdateManyWithoutBranchNestedInput
+  shopStockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutBranchNestedInput
   cashSessions?: Prisma.CashSessionUncheckedUpdateManyWithoutBranchNestedInput
   exchangeRates?: Prisma.ExchangeRateUncheckedUpdateManyWithoutBranchNestedInput
   hotelStays?: Prisma.HotelStayUncheckedUpdateManyWithoutBranchNestedInput
@@ -3580,6 +4363,9 @@ export type BranchCountOutputType = {
   trajets: number
   hotelRoomTypes: number
   shopCategories: number
+  shopProducts: number
+  shopSales: number
+  shopStockMovements: number
   cashSessions: number
   exchangeRates: number
   hotelStays: number
@@ -3596,6 +4382,9 @@ export type BranchCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions
   trajets?: boolean | BranchCountOutputTypeCountTrajetsArgs
   hotelRoomTypes?: boolean | BranchCountOutputTypeCountHotelRoomTypesArgs
   shopCategories?: boolean | BranchCountOutputTypeCountShopCategoriesArgs
+  shopProducts?: boolean | BranchCountOutputTypeCountShopProductsArgs
+  shopSales?: boolean | BranchCountOutputTypeCountShopSalesArgs
+  shopStockMovements?: boolean | BranchCountOutputTypeCountShopStockMovementsArgs
   cashSessions?: boolean | BranchCountOutputTypeCountCashSessionsArgs
   exchangeRates?: boolean | BranchCountOutputTypeCountExchangeRatesArgs
   hotelStays?: boolean | BranchCountOutputTypeCountHotelStaysArgs
@@ -3643,6 +4432,27 @@ export type BranchCountOutputTypeCountHotelRoomTypesArgs<ExtArgs extends runtime
  */
 export type BranchCountOutputTypeCountShopCategoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ShopCategoryWhereInput
+}
+
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountShopProductsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ShopProductWhereInput
+}
+
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountShopSalesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ShopSaleWhereInput
+}
+
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountShopStockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ShopStockMovementWhereInput
 }
 
 /**
@@ -3739,6 +4549,9 @@ export type BranchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   trajets?: boolean | Prisma.Branch$trajetsArgs<ExtArgs>
   hotelRoomTypes?: boolean | Prisma.Branch$hotelRoomTypesArgs<ExtArgs>
   shopCategories?: boolean | Prisma.Branch$shopCategoriesArgs<ExtArgs>
+  shopProducts?: boolean | Prisma.Branch$shopProductsArgs<ExtArgs>
+  shopSales?: boolean | Prisma.Branch$shopSalesArgs<ExtArgs>
+  shopStockMovements?: boolean | Prisma.Branch$shopStockMovementsArgs<ExtArgs>
   cashSessions?: boolean | Prisma.Branch$cashSessionsArgs<ExtArgs>
   exchangeRates?: boolean | Prisma.Branch$exchangeRatesArgs<ExtArgs>
   hotelStays?: boolean | Prisma.Branch$hotelStaysArgs<ExtArgs>
@@ -3841,6 +4654,9 @@ export type BranchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   trajets?: boolean | Prisma.Branch$trajetsArgs<ExtArgs>
   hotelRoomTypes?: boolean | Prisma.Branch$hotelRoomTypesArgs<ExtArgs>
   shopCategories?: boolean | Prisma.Branch$shopCategoriesArgs<ExtArgs>
+  shopProducts?: boolean | Prisma.Branch$shopProductsArgs<ExtArgs>
+  shopSales?: boolean | Prisma.Branch$shopSalesArgs<ExtArgs>
+  shopStockMovements?: boolean | Prisma.Branch$shopStockMovementsArgs<ExtArgs>
   cashSessions?: boolean | Prisma.Branch$cashSessionsArgs<ExtArgs>
   exchangeRates?: boolean | Prisma.Branch$exchangeRatesArgs<ExtArgs>
   hotelStays?: boolean | Prisma.Branch$hotelStaysArgs<ExtArgs>
@@ -3867,6 +4683,9 @@ export type $BranchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     trajets: Prisma.$TrajetPayload<ExtArgs>[]
     hotelRoomTypes: Prisma.$HotelRoomTypePayload<ExtArgs>[]
     shopCategories: Prisma.$ShopCategoryPayload<ExtArgs>[]
+    shopProducts: Prisma.$ShopProductPayload<ExtArgs>[]
+    shopSales: Prisma.$ShopSalePayload<ExtArgs>[]
+    shopStockMovements: Prisma.$ShopStockMovementPayload<ExtArgs>[]
     cashSessions: Prisma.$CashSessionPayload<ExtArgs>[]
     exchangeRates: Prisma.$ExchangeRatePayload<ExtArgs>[]
     hotelStays: Prisma.$HotelStayPayload<ExtArgs>[]
@@ -4319,6 +5138,9 @@ export interface Prisma__BranchClient<T, Null = never, ExtArgs extends runtime.T
   trajets<T extends Prisma.Branch$trajetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$trajetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrajetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   hotelRoomTypes<T extends Prisma.Branch$hotelRoomTypesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$hotelRoomTypesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HotelRoomTypePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   shopCategories<T extends Prisma.Branch$shopCategoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$shopCategoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ShopCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  shopProducts<T extends Prisma.Branch$shopProductsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$shopProductsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ShopProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  shopSales<T extends Prisma.Branch$shopSalesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$shopSalesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ShopSalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  shopStockMovements<T extends Prisma.Branch$shopStockMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$shopStockMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ShopStockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   cashSessions<T extends Prisma.Branch$cashSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$cashSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   exchangeRates<T extends Prisma.Branch$exchangeRatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$exchangeRatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   hotelStays<T extends Prisma.Branch$hotelStaysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$hotelStaysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HotelStayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4875,6 +5697,78 @@ export type Branch$shopCategoriesArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.ShopCategoryScalarFieldEnum | Prisma.ShopCategoryScalarFieldEnum[]
+}
+
+/**
+ * Branch.shopProducts
+ */
+export type Branch$shopProductsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ShopProduct
+   */
+  select?: Prisma.ShopProductSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ShopProduct
+   */
+  omit?: Prisma.ShopProductOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ShopProductInclude<ExtArgs> | null
+  where?: Prisma.ShopProductWhereInput
+  orderBy?: Prisma.ShopProductOrderByWithRelationInput | Prisma.ShopProductOrderByWithRelationInput[]
+  cursor?: Prisma.ShopProductWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ShopProductScalarFieldEnum | Prisma.ShopProductScalarFieldEnum[]
+}
+
+/**
+ * Branch.shopSales
+ */
+export type Branch$shopSalesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ShopSale
+   */
+  select?: Prisma.ShopSaleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ShopSale
+   */
+  omit?: Prisma.ShopSaleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ShopSaleInclude<ExtArgs> | null
+  where?: Prisma.ShopSaleWhereInput
+  orderBy?: Prisma.ShopSaleOrderByWithRelationInput | Prisma.ShopSaleOrderByWithRelationInput[]
+  cursor?: Prisma.ShopSaleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ShopSaleScalarFieldEnum | Prisma.ShopSaleScalarFieldEnum[]
+}
+
+/**
+ * Branch.shopStockMovements
+ */
+export type Branch$shopStockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ShopStockMovement
+   */
+  select?: Prisma.ShopStockMovementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ShopStockMovement
+   */
+  omit?: Prisma.ShopStockMovementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ShopStockMovementInclude<ExtArgs> | null
+  where?: Prisma.ShopStockMovementWhereInput
+  orderBy?: Prisma.ShopStockMovementOrderByWithRelationInput | Prisma.ShopStockMovementOrderByWithRelationInput[]
+  cursor?: Prisma.ShopStockMovementWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ShopStockMovementScalarFieldEnum | Prisma.ShopStockMovementScalarFieldEnum[]
 }
 
 /**

@@ -13,8 +13,13 @@ import {
   formatBothAmounts,
   formatBothRateLabels,
 } from "@/lib/cash/exchange";
+import { getBoutiqueDashboardKpisAction } from "@/lib/boutique/actions";
 import { getHotelDashboardKpisAction } from "@/lib/hotel/actions";
-import { branchDashboardPath, hotelRoutes } from "@/lib/branch/paths";
+import {
+  branchDashboardPath,
+  boutiqueRoutes,
+  hotelRoutes,
+} from "@/lib/branch/paths";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
@@ -24,17 +29,28 @@ export default async function TableauBordPage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
   const branch = await requireBranchContext({ organizationId, branchId });
   const hospitality = isHospitality(branch.type);
+  const isBoutique = branch.type === "BOUTIQUE";
   const showStays = canAccessStays(branch);
   const showRestaurant = canAccessRestaurant(branch);
 
-  const [kpis, rate] = hospitality
-    ? await Promise.all([
-        getHotelDashboardKpisAction(organizationId, branchId),
-        getActiveExchangeRate(branchId),
-      ])
-    : [null, null];
+  const [hotelKpis, boutiqueKpis, rate] = await Promise.all([
+    hospitality
+      ? getHotelDashboardKpisAction(organizationId, branchId)
+      : Promise.resolve(null),
+    isBoutique
+      ? getBoutiqueDashboardKpisAction(organizationId, branchId)
+      : Promise.resolve(null),
+    hospitality || isBoutique
+      ? getActiveExchangeRate(branchId)
+      : Promise.resolve(null),
+  ]);
 
-  const caBoth = kpis ? formatBothAmounts(kpis.caJour, rate) : null;
+  const kpis = hotelKpis;
+  const caBoth = kpis
+    ? formatBothAmounts(kpis.caJour, rate)
+    : boutiqueKpis
+      ? formatBothAmounts(boutiqueKpis.caJour, rate)
+      : null;
   const rateLabels = formatBothRateLabels(rate);
 
   const kpiCards = kpis
@@ -66,7 +82,30 @@ export default async function TableauBordPage({ params }: PageProps) {
             }
           : null,
       ].filter((x): x is NonNullable<typeof x> => x != null)
-    : [];
+    : boutiqueKpis
+      ? [
+          {
+            label: "CA boutique (jour)",
+            value: caBoth ?? `${boutiqueKpis.caJour.toFixed(2)} $`,
+            sub: rateLabels?.both ?? null,
+          },
+          {
+            label: "Tickets (jour)",
+            value: String(boutiqueKpis.ticketsJour),
+            sub: null as string | null,
+          },
+          {
+            label: "En attente",
+            value: String(boutiqueKpis.heldCount),
+            sub: null as string | null,
+          },
+          {
+            label: "Stock bas",
+            value: String(boutiqueKpis.lowStock),
+            sub: "≤ 5 unités",
+          },
+        ]
+      : [];
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 px-4 py-6">
@@ -112,7 +151,7 @@ export default async function TableauBordPage({ params }: PageProps) {
         </div>
       ) : (
         <p className="text-sm text-muted-foreground">
-          KPI hôtellerie-restaurant disponibles sur une branche Hôtel ou Restaurant.
+          KPI disponibles sur une branche Hôtel, Restaurant ou Commerce.
         </p>
       )}
 
@@ -135,6 +174,16 @@ export default async function TableauBordPage({ params }: PageProps) {
             }
           >
             Restauration
+          </Button>
+        ) : null}
+        {isBoutique ? (
+          <Button
+            variant="outline"
+            render={
+              <Link href={boutiqueRoutes.pos(organizationId, branchId)} />
+            }
+          >
+            Point de vente
           </Button>
         ) : null}
         <Button

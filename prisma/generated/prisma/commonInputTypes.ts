@@ -660,6 +660,57 @@ export type EnumHotelRoomStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumHotelRoomStatusFilter<$PrismaModel>
 }
 
+export type EnumShopProductKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShopProductKind | Prisma.EnumShopProductKindFieldRefInput<$PrismaModel>
+  in?: $Enums.ShopProductKind[] | Prisma.ListEnumShopProductKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ShopProductKind[] | Prisma.ListEnumShopProductKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumShopProductKindFilter<$PrismaModel> | $Enums.ShopProductKind
+}
+
+export type EnumShopProductKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShopProductKind | Prisma.EnumShopProductKindFieldRefInput<$PrismaModel>
+  in?: $Enums.ShopProductKind[] | Prisma.ListEnumShopProductKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ShopProductKind[] | Prisma.ListEnumShopProductKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumShopProductKindWithAggregatesFilter<$PrismaModel> | $Enums.ShopProductKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumShopProductKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumShopProductKindFilter<$PrismaModel>
+}
+
+export type EnumShopSaleStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShopSaleStatus | Prisma.EnumShopSaleStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ShopSaleStatus[] | Prisma.ListEnumShopSaleStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ShopSaleStatus[] | Prisma.ListEnumShopSaleStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumShopSaleStatusFilter<$PrismaModel> | $Enums.ShopSaleStatus
+}
+
+export type EnumShopSaleStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShopSaleStatus | Prisma.EnumShopSaleStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ShopSaleStatus[] | Prisma.ListEnumShopSaleStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ShopSaleStatus[] | Prisma.ListEnumShopSaleStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumShopSaleStatusWithAggregatesFilter<$PrismaModel> | $Enums.ShopSaleStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumShopSaleStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumShopSaleStatusFilter<$PrismaModel>
+}
+
+export type EnumShopStockMovementKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShopStockMovementKind | Prisma.EnumShopStockMovementKindFieldRefInput<$PrismaModel>
+  in?: $Enums.ShopStockMovementKind[] | Prisma.ListEnumShopStockMovementKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ShopStockMovementKind[] | Prisma.ListEnumShopStockMovementKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumShopStockMovementKindFilter<$PrismaModel> | $Enums.ShopStockMovementKind
+}
+
+export type EnumShopStockMovementKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShopStockMovementKind | Prisma.EnumShopStockMovementKindFieldRefInput<$PrismaModel>
+  in?: $Enums.ShopStockMovementKind[] | Prisma.ListEnumShopStockMovementKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ShopStockMovementKind[] | Prisma.ListEnumShopStockMovementKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumShopStockMovementKindWithAggregatesFilter<$PrismaModel> | $Enums.ShopStockMovementKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumShopStockMovementKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumShopStockMovementKindFilter<$PrismaModel>
+}
+
 export type EnumCashSessionStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.CashSessionStatus | Prisma.EnumCashSessionStatusFieldRefInput<$PrismaModel>
   in?: $Enums.CashSessionStatus[] | Prisma.ListEnumCashSessionStatusFieldRefInput<$PrismaModel>
@@ -1343,6 +1394,57 @@ export type NestedEnumHotelRoomStatusWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumHotelRoomStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumHotelRoomStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumShopProductKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShopProductKind | Prisma.EnumShopProductKindFieldRefInput<$PrismaModel>
+  in?: $Enums.ShopProductKind[] | Prisma.ListEnumShopProductKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ShopProductKind[] | Prisma.ListEnumShopProductKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumShopProductKindFilter<$PrismaModel> | $Enums.ShopProductKind
+}
+
+export type NestedEnumShopProductKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShopProductKind | Prisma.EnumShopProductKindFieldRefInput<$PrismaModel>
+  in?: $Enums.ShopProductKind[] | Prisma.ListEnumShopProductKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ShopProductKind[] | Prisma.ListEnumShopProductKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumShopProductKindWithAggregatesFilter<$PrismaModel> | $Enums.ShopProductKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumShopProductKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumShopProductKindFilter<$PrismaModel>
+}
+
+export type NestedEnumShopSaleStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShopSaleStatus | Prisma.EnumShopSaleStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ShopSaleStatus[] | Prisma.ListEnumShopSaleStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ShopSaleStatus[] | Prisma.ListEnumShopSaleStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumShopSaleStatusFilter<$PrismaModel> | $Enums.ShopSaleStatus
+}
+
+export type NestedEnumShopSaleStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShopSaleStatus | Prisma.EnumShopSaleStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ShopSaleStatus[] | Prisma.ListEnumShopSaleStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ShopSaleStatus[] | Prisma.ListEnumShopSaleStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumShopSaleStatusWithAggregatesFilter<$PrismaModel> | $Enums.ShopSaleStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumShopSaleStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumShopSaleStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumShopStockMovementKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShopStockMovementKind | Prisma.EnumShopStockMovementKindFieldRefInput<$PrismaModel>
+  in?: $Enums.ShopStockMovementKind[] | Prisma.ListEnumShopStockMovementKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ShopStockMovementKind[] | Prisma.ListEnumShopStockMovementKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumShopStockMovementKindFilter<$PrismaModel> | $Enums.ShopStockMovementKind
+}
+
+export type NestedEnumShopStockMovementKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShopStockMovementKind | Prisma.EnumShopStockMovementKindFieldRefInput<$PrismaModel>
+  in?: $Enums.ShopStockMovementKind[] | Prisma.ListEnumShopStockMovementKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ShopStockMovementKind[] | Prisma.ListEnumShopStockMovementKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumShopStockMovementKindWithAggregatesFilter<$PrismaModel> | $Enums.ShopStockMovementKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumShopStockMovementKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumShopStockMovementKindFilter<$PrismaModel>
 }
 
 export type NestedEnumCashSessionStatusFilter<$PrismaModel = never> = {

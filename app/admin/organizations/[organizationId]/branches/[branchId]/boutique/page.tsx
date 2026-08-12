@@ -1,24 +1,18 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
-import { BranchModulePlaceholder } from "../_components/branch-module-placeholder";
+import { redirect } from "next/navigation";
+import { boutiqueRoutes } from "@/lib/branch/paths";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
 };
 
-export default async function BoutiqueHubPage({ params }: PageProps) {
+/** /boutique → Point de vente (cœur commerce). */
+export default async function BoutiqueRootPage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
-  const branch = await requireBranchContext({
+  await requireBranchContext({
     organizationId,
     branchId,
     requireModule: "boutique",
   });
-  return (
-    <BranchModulePlaceholder
-      organizationId={organizationId}
-      branchId={branchId}
-      branchName={branch.name}
-      title="Module Boutique"
-      description="POS, catalogue produits et stock."
-    />
-  );
+  redirect(boutiqueRoutes.pos(organizationId, branchId));
 }

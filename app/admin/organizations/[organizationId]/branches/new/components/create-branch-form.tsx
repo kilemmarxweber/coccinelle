@@ -1,8 +1,10 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
+  ArrowLeft,
   Building2,
   Bus,
   Hotel,
@@ -169,6 +171,19 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
   return (
     <form onSubmit={submit} className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6">
       <div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="-ml-2 mb-1 gap-1.5 text-muted-foreground hover:text-foreground"
+          disabled={pending}
+          render={
+            <Link href={`/admin/organizations/${organizationId}/branches`} />
+          }
+        >
+          <ArrowLeft className="size-4" />
+          Liste des branches
+        </Button>
         <h1 className="text-xl font-semibold">Nouvelle branche</h1>
         <p className="text-sm text-muted-foreground">
           Organisation « {organizationName} » — choisissez le type puis les
@@ -516,13 +531,27 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
         </CardContent>
       </Card>
 
-      <Button
-        type="submit"
-        className="h-11"
-        disabled={pending || !name.trim() || !code.trim() || !modulesOk}
-      >
-        {pending ? "Création…" : "Créer la branche"}
-      </Button>
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <Button
+          type="submit"
+          className="h-11"
+          disabled={pending || !name.trim() || !code.trim() || !modulesOk}
+        >
+          {pending ? "Création…" : "Créer la branche"}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          className="h-11 gap-1.5"
+          disabled={pending}
+          render={
+            <Link href={`/admin/organizations/${organizationId}/branches`} />
+          }
+        >
+          <ArrowLeft className="size-4" />
+          Retour à la liste
+        </Button>
+      </div>
     </form>
   );
 }

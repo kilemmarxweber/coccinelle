@@ -1,5 +1,9 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
-import { BranchModulePlaceholder } from "../../_components/branch-module-placeholder";
+import {
+  listShopCategoriesAction,
+  listShopProductsAction,
+} from "@/lib/boutique/actions";
+import { BoutiqueProduitsClient } from "./produits-client";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
@@ -12,13 +16,17 @@ export default async function BoutiqueProduitsPage({ params }: PageProps) {
     branchId,
     requireModule: "boutique",
   });
+  const [products, categories] = await Promise.all([
+    listShopProductsAction(organizationId, branchId),
+    listShopCategoriesAction(organizationId, branchId),
+  ]);
   return (
-    <BranchModulePlaceholder
+    <BoutiqueProduitsClient
       organizationId={organizationId}
       branchId={branchId}
       branchName={branch.name}
-      title="Produits"
-      description="Catalogue et prix (ShopCategory / ShopProduct)."
+      products={products}
+      categories={categories}
     />
   );
 }

@@ -3,14 +3,22 @@
 import { useCallback, useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { ALL_ORG_ROLE_SLUGS, ORG_ROLE } from "@/lib/permissions";
 import { orgRoleLabel } from "@/lib/org-role-labels";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { removeOrganizationMemberAction, updateOrganizationMemberAction } from "../../actions";
+import {
+  listOrganizationMemberBranchesAction,
+  removeOrganizationMemberAction,
+  resetOrganizationMemberPasswordAction,
+  updateOrganizationMemberAction,
+} from "../../actions";
+import { BranchPicker, type MemberBranchOption } from "../../branch-picker";
 
 type MemberRow = {
   id: string;
@@ -19,20 +27,30 @@ type MemberRow = {
   user: { id: string; email: string; name: string };
 };
 
-type Props = { organizationId: string; memberId: string };
+type Props = {
+  organizationId: string;
+  memberId: string;
+  branches: MemberBranchOption[];
+};
 
-export function EditMemberForm({ organizationId, memberId }: Props) {
+export function EditMemberForm({ organizationId, memberId, branches }: Props) {
   const router = useRouter();
   const [member, setMember] = useState<MemberRow | null | undefined>(undefined);
   const [role, setRole] = useState<string>(ORG_ROLE.PARENT);
+  const [branchIds, setBranchIds] = useState<string[]>([]);
+  const [branchError, setBranchError] = useState<string | undefined>();
   const [pending, startTransition] = useTransition();
   const [pendingRemove, startRemove] = useTransition();
+  const [pendingReset, startReset] = useTransition();
 
   const load = useCallback(async () => {
     try {
-      const res = await authClient.organization.listMembers({
-        query: { organizationId, limit: 200 },
-      });
+      const [res, branchesRes] = await Promise.all([
+        authClient.organization.listMembers({
+          query: { organizationId, limit: 200 },
+        }),
+        listOrganizationMemberBranchesAction(organizationId),
+      ]);
       if (res.error) {
         toast.error(res.error.message ?? "Impossible de charger le membre.");
         setMember(null);
@@ -47,6 +65,10 @@ export function EditMemberForm({ organizationId, memberId }: Props) {
         setRole(
           (ALL_ORG_ROLE_SLUGS as readonly string[]).includes(primary) ? primary : ORG_ROLE.PARENT,
         );
+        if (branchesRes.ok) {
+          const assigned = branchesRes.byMemberId[found.id] ?? [];
+          setBranchIds(assigned.map((b) => b.id));
+        }
       }
     } catch {
       toast.error("Erreur réseau.");
@@ -60,17 +82,23 @@ export function EditMemberForm({ organizationId, memberId }: Props) {
 
   function onSave(e: React.FormEvent) {
     e.preventDefault();
+    if (branchIds.length === 0) {
+      setBranchError("Sélectionnez au moins une branche.");
+      return;
+    }
+    setBranchError(undefined);
     startTransition(async () => {
       const res = await updateOrganizationMemberAction({
         organizationId,
         memberId,
         orgRole: role,
+        branchIds,
       });
       if (!res.ok) {
         toast.error(res.message);
         return;
       }
-      toast.success("Rôle mis à jour.");
+      toast.success("Membre mis à jour.");
       router.refresh();
       await load();
     });
@@ -94,6 +122,28 @@ export function EditMemberForm({ organizationId, memberId }: Props) {
     });
   }
 
+  function onResetPassword() {
+    if (!member) return;
+    if (
+      !window.confirm(
+        `Réinitialiser le mot de passe de ${member.user.name} ? Un mot de passe temporaire sera envoyé par email.`,
+      )
+    ) {
+      return;
+    }
+    startReset(async () => {
+      const res = await resetOrganizationMemberPasswordAction({
+        organizationId,
+        memberId,
+      });
+      if (!res.ok) {
+        toast.error(res.message);
+        return;
+      }
+      toast.success("Mot de passe réinitialisé. Email envoyé (ou journalisé en dev).");
+    });
+  }
+
   if (member === undefined) {
     return <p className="text-sm text-muted-foreground">Chargement…</p>;
   }
@@ -109,11 +159,16 @@ export function EditMemberForm({ organizationId, memberId }: Props) {
     );
   }
 
+  const busy = pending || pendingRemove || pendingReset;
+
   return (
-    <div className="flex flex-col gap-6">
-      <div className="space-y-1">
-        <p className="font-medium leading-snug break-words">{member.user.name}</p>
-        <p className="break-all text-sm text-muted-foreground">{member.user.email}</p>
+    <div className="flex max-w-2xl flex-col gap-6">
+      <div className="rounded-2xl border border-border bg-card/50 p-4 sm:p-5">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="font-medium leading-snug break-words">{member.user.name}</p>
+          <Badge variant="secondary">{orgRoleLabel(role)}</Badge>
+        </div>
+        <p className="mt-1 break-all text-sm text-muted-foreground">{member.user.email}</p>
       </div>
 
       <form className="flex flex-col gap-4" onSubmit={onSave}>
@@ -123,7 +178,7 @@ export function EditMemberForm({ organizationId, memberId }: Props) {
             id="edit-role"
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            disabled={pending || pendingRemove}
+            disabled={busy}
             className="h-12 min-h-[48px] text-base touch-manipulation sm:h-11 sm:min-h-0 sm:text-sm"
           >
             {[...ALL_ORG_ROLE_SLUGS].map((slug) => (
@@ -133,15 +188,37 @@ export function EditMemberForm({ organizationId, memberId }: Props) {
             ))}
           </Select>
         </div>
+
+        <div className="flex flex-col gap-2">
+          <Label>Branche(s)</Label>
+          <p className="text-xs text-muted-foreground">
+            Où ce membre est affecté. La première cochée devient la branche principale.
+          </p>
+          <BranchPicker
+            branches={branches}
+            value={branchIds}
+            onChange={(ids) => {
+              setBranchIds(ids);
+              if (ids.length > 0) setBranchError(undefined);
+            }}
+            disabled={busy}
+            error={branchError}
+          />
+        </div>
+
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-          <Button type="submit" disabled={pending || pendingRemove} className="h-12 min-h-[48px] touch-manipulation sm:h-11 sm:min-h-0">
+          <Button
+            type="submit"
+            disabled={busy || branches.length === 0}
+            className="h-12 min-h-[48px] touch-manipulation sm:h-11 sm:min-h-0"
+          >
             {pending ? "Enregistrement…" : "Enregistrer"}
           </Button>
           <Button
             type="button"
             variant="outline"
             className="h-12 min-h-[48px] touch-manipulation sm:h-11 sm:min-h-0"
-            disabled={pending || pendingRemove}
+            disabled={busy}
             render={<Link href={`/admin/organizations/${organizationId}/members`} />}
           >
             Annuler
@@ -149,12 +226,22 @@ export function EditMemberForm({ organizationId, memberId }: Props) {
         </div>
       </form>
 
-      <div className="border-t border-border pt-4">
+      <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:flex-wrap">
+        <Button
+          type="button"
+          variant="outline"
+          className="h-12 min-h-[48px] touch-manipulation sm:h-11 sm:min-h-0"
+          disabled={busy}
+          onClick={onResetPassword}
+        >
+          <KeyRound className="size-4" />
+          {pendingReset ? "Réinitialisation…" : "Réinitialiser le mot de passe"}
+        </Button>
         <Button
           type="button"
           variant="destructive"
           className="h-12 min-h-[48px] w-full touch-manipulation sm:h-11 sm:min-h-0 sm:w-auto"
-          disabled={pending || pendingRemove}
+          disabled={busy}
           onClick={onRemove}
         >
           {pendingRemove ? "…" : "Retirer de l’organisation"}

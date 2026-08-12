@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
-  CirclePile,
+  ArrowLeft,
+  BarChart3,
   GitBranch,
   LayoutGrid,
-  School,
   Shield,
   Users,
 } from "lucide-react";
@@ -38,10 +38,11 @@ export default function AdminOrganizationHomePage() {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <p className="text-muted-foreground">Organisation introuvable.</p>
         <Button
-          className="mt-4"
+          className="mt-4 gap-1.5"
           variant="outline"
           render={<Link href="/admin/organizations" />}
         >
+          <ArrowLeft className="size-4" />
           Retour à la liste
         </Button>
       </div>
@@ -54,23 +55,34 @@ export default function AdminOrganizationHomePage() {
         <p className="text-sm text-muted-foreground">Chargement…</p>
       ) : (
         <>
-          <section className="relative overflow-hidden rounded-2xl bg-primary px-6 py-7 shadow-sm shadow-primary/20 sm:px-8">
-            <div className="pr-16">
-              <h2 className="text-2xl font-bold text-primary-foreground sm:text-3xl">
-                Bonjour, {userName} 👋
-              </h2>
-              <p className="mt-2 max-w-2xl text-sm text-primary-foreground/85 sm:text-base">
-                Espace organisation « {org?.name} ». Choisissez une option pour
-                continuer.
-              </p>
-              <p className="mt-3 text-xs text-primary-foreground/70">
-                Slug · {org?.slug}
-              </p>
-            </div>
-            <div className="absolute top-5 right-5 rounded-full bg-background/95 px-3.5 py-1.5 text-xs font-semibold text-primary shadow-sm sm:top-6 sm:right-6">
-              Droit : {role}
-            </div>
-          </section>
+          <div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="-ml-2 mb-3 gap-1.5 text-muted-foreground hover:text-foreground"
+              render={<Link href="/admin/organizations" />}
+            >
+              <ArrowLeft className="size-4" />
+              Toutes les organisations
+            </Button>
+            <section className="relative overflow-hidden rounded-2xl bg-primary px-6 py-7 shadow-sm shadow-primary/20 sm:px-8">
+              <div className="pr-16">
+                <h2 className="text-2xl font-bold text-primary-foreground sm:text-3xl">
+                  Bonjour, {userName} 👋
+                </h2>
+                <p className="mt-2 max-w-2xl text-sm text-primary-foreground/85 sm:text-base">
+                  Espace organisation « {org?.name} ». Choisissez une option pour
+                  continuer.
+                </p>
+                <p className="mt-3 text-xs text-primary-foreground/70">
+                  Slug · {org?.slug}
+                </p>
+              </div>
+              <div className="absolute top-5 right-5 rounded-full bg-background/95 px-3.5 py-1.5 text-xs font-semibold text-primary shadow-sm sm:top-6 sm:right-6">
+                Droit : {role}
+              </div>
+            </section>
+          </div>
 
           <DashboardSection
             title="PILOTAGE"
@@ -89,12 +101,12 @@ export default function AdminOrganizationHomePage() {
                 primary
               />
               <DashboardMenuCard
-                href={`${base}/agences`}
-                title="Espace voyage"
-                description="Guichet, trajets et réservations (legacy AGENCE)."
-                icon={School}
-                iconBg="bg-sky-500/15"
-                iconColor="text-sky-400"
+                href={`${base}/rapports`}
+                title="ANALYSES & RAPPORTS"
+                description="Indicateurs, ventes et bilans par branche."
+                icon={BarChart3}
+                iconBg="bg-teal-500/15"
+                iconColor="text-teal-400"
               />
               <DashboardMenuCard
                 href={`${base}/members`}
@@ -112,24 +124,8 @@ export default function AdminOrganizationHomePage() {
                 iconBg="bg-rose-500/15"
                 iconColor="text-rose-400"
               />
-              <DashboardMenuCard
-                href={`${base}/Families`}
-                title="Partenaires"
-                description="Gérer les partenaires."
-                icon={CirclePile}
-                iconBg="bg-primary/15"
-                iconColor="text-primary"
-              />
             </div>
           </DashboardSection>
-
-          <Button
-            variant="ghost"
-            className="h-11 px-0 sm:w-fit"
-            render={<Link href="/admin/organizations" />}
-          >
-            ← Toutes les organisations
-          </Button>
         </>
       )}
     </div>

@@ -1,5 +1,9 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
-import { BranchModulePlaceholder } from "../../_components/branch-module-placeholder";
+import {
+  listShopProductsAction,
+  listShopStockMovementsAction,
+} from "@/lib/boutique/actions";
+import { BoutiqueStockClient } from "./stock-client";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
@@ -12,13 +16,17 @@ export default async function BoutiqueStockPage({ params }: PageProps) {
     branchId,
     requireModule: "boutique",
   });
+  const [products, movements] = await Promise.all([
+    listShopProductsAction(organizationId, branchId),
+    listShopStockMovementsAction(organizationId, branchId),
+  ]);
   return (
-    <BranchModulePlaceholder
+    <BoutiqueStockClient
       organizationId={organizationId}
       branchId={branchId}
       branchName={branch.name}
-      title="Stock"
-      description="Niveaux et mouvements de stock de la boutique."
+      products={products}
+      movements={movements}
     />
   );
 }

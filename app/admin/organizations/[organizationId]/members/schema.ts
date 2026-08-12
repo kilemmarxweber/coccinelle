@@ -13,12 +13,18 @@ export const createOrgMemberSchema = z.object({
     .min(2, "Le nom doit contenir au moins 2 caractères.")
     .max(120, "Le nom est trop long."),
   orgRole: z.string().refine(orgRoleRefine, "Rôle d’organisation invalide."),
+  branchIds: z
+    .array(z.string().min(1))
+    .min(1, "Sélectionnez au moins une branche."),
 });
 
 export const updateOrgMemberSchema = z.object({
   organizationId: z.string().min(1),
   memberId: z.string().min(1),
   orgRole: z.string().refine(orgRoleRefine, "Rôle d’organisation invalide."),
+  branchIds: z
+    .array(z.string().min(1))
+    .min(1, "Sélectionnez au moins une branche."),
 });
 
 export const removeOrgMemberSchema = z.object({
@@ -26,6 +32,12 @@ export const removeOrgMemberSchema = z.object({
   memberId: z.string().min(1),
 });
 
+export const resetOrgMemberPasswordSchema = z.object({
+  organizationId: z.string().min(1),
+  memberId: z.string().min(1),
+});
+
 export type CreateOrgMemberInput = z.infer<typeof createOrgMemberSchema>;
 export type UpdateOrgMemberInput = z.infer<typeof updateOrgMemberSchema>;
 export type RemoveOrgMemberInput = z.infer<typeof removeOrgMemberSchema>;
+export type ResetOrgMemberPasswordInput = z.infer<typeof resetOrgMemberPasswordSchema>;

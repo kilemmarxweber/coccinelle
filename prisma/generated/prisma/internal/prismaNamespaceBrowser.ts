@@ -75,6 +75,9 @@ export const ModelName = {
   HotelRoom: 'HotelRoom',
   ShopCategory: 'ShopCategory',
   ShopProduct: 'ShopProduct',
+  ShopSale: 'ShopSale',
+  ShopSaleItem: 'ShopSaleItem',
+  ShopStockMovement: 'ShopStockMovement',
   ExchangeRate: 'ExchangeRate',
   CashSession: 'CashSession',
   HotelStay: 'HotelStay',
@@ -475,17 +478,79 @@ export type ShopCategoryScalarFieldEnum = (typeof ShopCategoryScalarFieldEnum)[k
 
 export const ShopProductScalarFieldEnum = {
   id: 'id',
+  branchId: 'branchId',
   categoryId: 'categoryId',
   name: 'name',
   sku: 'sku',
+  kind: 'kind',
   price: 'price',
+  promoPrice: 'promoPrice',
+  promoActive: 'promoActive',
+  promoLabel: 'promoLabel',
+  promoStartsAt: 'promoStartsAt',
+  promoEndsAt: 'promoEndsAt',
   stockQty: 'stockQty',
+  barcode: 'barcode',
+  imageUrl: 'imageUrl',
   active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type ShopProductScalarFieldEnum = (typeof ShopProductScalarFieldEnum)[keyof typeof ShopProductScalarFieldEnum]
+
+
+export const ShopSaleScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  cashSessionId: 'cashSessionId',
+  status: 'status',
+  ticketNumber: 'ticketNumber',
+  holdLabel: 'holdLabel',
+  clientLabel: 'clientLabel',
+  clientPhone: 'clientPhone',
+  isAnonymous: 'isAnonymous',
+  anonymousCode: 'anonymousCode',
+  totalAmount: 'totalAmount',
+  cashierUserId: 'cashierUserId',
+  heldAt: 'heldAt',
+  paidAt: 'paidAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ShopSaleScalarFieldEnum = (typeof ShopSaleScalarFieldEnum)[keyof typeof ShopSaleScalarFieldEnum]
+
+
+export const ShopSaleItemScalarFieldEnum = {
+  id: 'id',
+  saleId: 'saleId',
+  productId: 'productId',
+  name: 'name',
+  kind: 'kind',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  catalogPrice: 'catalogPrice',
+  wasPromo: 'wasPromo',
+  createdAt: 'createdAt'
+} as const
+
+export type ShopSaleItemScalarFieldEnum = (typeof ShopSaleItemScalarFieldEnum)[keyof typeof ShopSaleItemScalarFieldEnum]
+
+
+export const ShopStockMovementScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  productId: 'productId',
+  saleId: 'saleId',
+  kind: 'kind',
+  quantity: 'quantity',
+  note: 'note',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt'
+} as const
+
+export type ShopStockMovementScalarFieldEnum = (typeof ShopStockMovementScalarFieldEnum)[keyof typeof ShopStockMovementScalarFieldEnum]
 
 
 export const ExchangeRateScalarFieldEnum = {
@@ -582,6 +647,7 @@ export const PaymentScalarFieldEnum = {
   cashSessionId: 'cashSessionId',
   folioId: 'folioId',
   orderId: 'orderId',
+  shopSaleId: 'shopSaleId',
   receiptNumber: 'receiptNumber',
   method: 'method',
   amountCdf: 'amountCdf',

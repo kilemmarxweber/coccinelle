@@ -116,6 +116,24 @@ enum HotelRoomStatus {
   OUT_OF_ORDER
 }
 
+enum ShopProductKind {
+  ARTICLE
+  PLAT
+}
+
+enum ShopSaleStatus {
+  BROUILLON
+  EN_ATTENTE
+  ENCAISSEE
+  ANNULEE
+}
+
+enum ShopStockMovementKind {
+  ENTREE
+  SORTIE
+  AJUSTEMENT
+}
+
 enum CashSessionStatus {
   OPEN
   CLOSED
@@ -546,6 +564,9 @@ model Branch {
   trajets        Trajet[]
   hotelRoomTypes HotelRoomType[]
   shopCategories ShopCategory[]
+  shopProducts   ShopProduct[]
+  shopSales      ShopSale[]
+  shopStockMovements ShopStockMovement[]
   cashSessions   CashSession[]
   exchangeRates  ExchangeRate[]
   hotelStays     HotelStay[]
@@ -629,19 +650,100 @@ model ShopCategory {
 }
 
 model ShopProduct {
-  id         String       @id @default(uuid())
-  categoryId String
-  name       String
-  sku        String
-  price      Float
-  stockQty   Int          @default(0)
-  active     Boolean      @default(true)
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  category   ShopCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  id           String          @id @default(uuid())
+  /// Dénormalisé depuis la catégorie.
+  branchId     String
+  categoryId   String
+  name         String
+  sku          String
+  kind         ShopProductKind @default(ARTICLE)
+  price        Float
+  /// Prix promo si `promoActive`.
+  promoPrice   Float?
+  promoActive  Boolean         @default(false)
+  promoLabel   String?
+  promoStartsAt DateTime?
+  promoEndsAt  DateTime?
+  stockQty     Int             @default(0)
+  barcode      String?
+  imageUrl     String?
+  active       Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  branch       Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  category     ShopCategory    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  saleItems    ShopSaleItem[]
+  stockMovements ShopStockMovement[]
 
   @@unique([categoryId, sku])
+  @@unique([branchId, barcode])
+  @@index([branchId, active])
+  @@index([branchId, kind])
   @@index([categoryId])
+}
+
+model ShopSale {
+  id             String         @id @default(uuid())
+  branchId       String
+  cashSessionId  String?
+  status         ShopSaleStatus @default(BROUILLON)
+  ticketNumber   String
+  holdLabel      String?
+  clientLabel    String?
+  clientPhone    String?
+  isAnonymous    Boolean        @default(true)
+  anonymousCode  String?
+  totalAmount    Float          @default(0)
+  cashierUserId  String?
+  heldAt         DateTime?
+  paidAt         DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  branch         Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  items          ShopSaleItem[]
+  payments       Payment[]
+  stockMovements ShopStockMovement[]
+
+  @@unique([branchId, ticketNumber])
+  @@index([branchId, status])
+  @@index([branchId, createdAt])
+}
+
+model ShopSaleItem {
+  id           String          @id @default(uuid())
+  saleId       String
+  productId    String?
+  name         String
+  kind         ShopProductKind @default(ARTICLE)
+  quantity     Int             @default(1)
+  unitPrice    Float
+  catalogPrice Float?
+  wasPromo     Boolean         @default(false)
+  createdAt    DateTime        @default(now())
+  sale         ShopSale        @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product      ShopProduct?    @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([saleId])
+  @@index([productId])
+}
+
+model ShopStockMovement {
+  id        String                 @id @default(uuid())
+  branchId  String
+  productId String
+  saleId    String?
+  kind      ShopStockMovementKind
+  quantity  Int
+  note      String?
+  createdByUserId String?
+  createdAt DateTime               @default(now())
+  branch    Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  product   ShopProduct            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sale      ShopSale?              @relation(fields: [saleId], references: [id], onDelete: SetNull)
+
+  @@index([branchId, createdAt])
+  @@index([productId])
+  @@index([saleId])
 }
 
 /** Taux de change par branche (ex. USD → CDF). */
@@ -756,6 +858,7 @@ model Payment {
   cashSessionId    String?
   folioId          String?
   orderId          String?
+  shopSaleId       String?
   receiptNumber    String
   method           PaymentMethod @default(CASH)
   amountCdf        Float
@@ -770,11 +873,13 @@ model Payment {
   cashSession      CashSession?  @relation(fields: [cashSessionId], references: [id], onDelete: SetNull)
   folio            Folio?        @relation(fields: [folioId], references: [id], onDelete: SetNull)
   order            HotelOrder?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  shopSale         ShopSale?     @relation(fields: [shopSaleId], references: [id], onDelete: SetNull)
 
   @@unique([branchId, receiptNumber])
   @@index([branchId, paidAt])
   @@index([folioId])
   @@index([orderId])
+  @@index([shopSaleId])
 }
 
 /** Catalogue F&B / vente rapide / consommables hôtel. */

@@ -1,6 +1,8 @@
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { isHospitality } from "@/lib/branch/hospitality";
+import { boutiqueRoutes } from "@/lib/branch/paths";
 import {
   getActiveExchangeRate,
   getOpenCashSession,
@@ -22,6 +24,11 @@ type PageProps = {
 export default async function BranchCaissePage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
   const branch = await requireBranchContext({ organizationId, branchId });
+
+  // Commerce : toute vente passe par le Point de vente.
+  if (branch.type === "BOUTIQUE") {
+    redirect(boutiqueRoutes.pos(organizationId, branchId));
+  }
 
   const hospitality = isHospitality(branch.type);
   const hasStays = hospitality && branch.hasStays;

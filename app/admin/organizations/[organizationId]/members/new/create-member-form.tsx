@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { ALL_ORG_ROLE_SLUGS, ORG_ROLE } from "@/lib/permissions";
 import { orgRoleLabel } from "@/lib/org-role-labels";
@@ -20,11 +21,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { createOrganizationMemberAction } from "../actions";
+import { BranchPicker, type MemberBranchOption } from "../branch-picker";
 import { createOrgMemberSchema, type CreateOrgMemberInput } from "../schema";
 
-type Props = { organizationId: string };
+type Props = {
+  organizationId: string;
+  branches: MemberBranchOption[];
+};
 
-export function CreateMemberForm({ organizationId }: Props) {
+export function CreateMemberForm({ organizationId, branches }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -34,7 +39,8 @@ export function CreateMemberForm({ organizationId }: Props) {
       organizationId,
       email: "",
       name: "",
-      orgRole: ORG_ROLE.PARENT,
+      orgRole: ORG_ROLE.GUICHETIER,
+      branchIds: branches.length === 1 ? [branches[0]!.id] : [],
     },
     mode: "onSubmit",
   });
@@ -57,7 +63,7 @@ export function CreateMemberForm({ organizationId }: Props) {
 
   return (
     <Form {...form}>
-      <form className="flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="flex max-w-2xl flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="name"
@@ -121,18 +127,46 @@ export function CreateMemberForm({ organizationId }: Props) {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="branchIds"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Branche(s)</FormLabel>
+              <p className="text-xs text-muted-foreground">
+                Indique où ce membre travaille dans l’organisation. La première cochée devient la
+                branche principale.
+              </p>
+              <FormControl>
+                <BranchPicker
+                  branches={branches}
+                  value={field.value}
+                  onChange={field.onChange}
+                  disabled={pending}
+                  error={form.formState.errors.branchIds?.message}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-          <Button type="submit" disabled={pending} className="h-12 min-h-[48px] touch-manipulation sm:h-11 sm:min-h-0">
+          <Button
+            type="submit"
+            disabled={pending || branches.length === 0}
+            className="h-12 min-h-[48px] touch-manipulation sm:h-11 sm:min-h-0"
+          >
             {pending ? "Création…" : "Créer le membre"}
           </Button>
           <Button
             type="button"
             variant="outline"
-            className="h-12 min-h-[48px] touch-manipulation sm:h-11 sm:min-h-0"
+            className="h-12 min-h-[48px] gap-1.5 touch-manipulation sm:h-11 sm:min-h-0"
             disabled={pending}
             render={<Link href={`/admin/organizations/${organizationId}/members`} />}
           >
-            Annuler
+            <ArrowLeft className="size-4" />
+            Retour
           </Button>
         </div>
       </form>

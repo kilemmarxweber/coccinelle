@@ -1,5 +1,10 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
-import { BranchModulePlaceholder } from "../../_components/branch-module-placeholder";
+import { getOpenCashSession } from "@/lib/cash/actions";
+import {
+  listHeldSalesAction,
+  listShopProductsAction,
+} from "@/lib/boutique/actions";
+import { BoutiquePosClient } from "./pos-client";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
@@ -12,13 +17,19 @@ export default async function BoutiquePosPage({ params }: PageProps) {
     branchId,
     requireModule: "boutique",
   });
+  const [products, heldSales, cashSession] = await Promise.all([
+    listShopProductsAction(organizationId, branchId, { activeOnly: true }),
+    listHeldSalesAction(organizationId, branchId),
+    getOpenCashSession(branchId),
+  ]);
   return (
-    <BranchModulePlaceholder
+    <BoutiquePosClient
       organizationId={organizationId}
       branchId={branchId}
       branchName={branch.name}
-      title="Point de vente"
-      description="Caisse POS — panier, ticket, remises."
+      products={products}
+      heldSales={heldSales}
+      cashSession={cashSession}
     />
   );
 }
