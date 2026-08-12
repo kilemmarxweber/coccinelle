@@ -253,14 +253,24 @@ export function menuSectionsForBranch(
       );
     }
     if (hasRestaurant) {
-      stockItems.push({
-        title: "Produits",
-        description: "Carte F&B, photos, stock et cuisine.",
-        href: hotelRoutes.produits(organizationId, branchId),
-        icon: Package,
-        iconBg: "bg-sky-500/15",
-        iconColor: "text-sky-400",
-      });
+      stockItems.push(
+        {
+          title: "Produits",
+          description: "Carte F&B, photos, stock et cuisine.",
+          href: hotelRoutes.produits(organizationId, branchId),
+          icon: Package,
+          iconBg: "bg-sky-500/15",
+          iconColor: "text-sky-400",
+        },
+        {
+          title: "Service stock",
+          description: "Float vendeur — ouverture, réassort, clôture signée.",
+          href: hotelRoutes.serviceStock(organizationId, branchId),
+          icon: ClipboardList,
+          iconBg: "bg-amber-500/15",
+          iconColor: "text-amber-500",
+        },
+      );
     }
     stockItems.push({
       title: "Livraison",

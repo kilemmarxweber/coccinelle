@@ -193,6 +193,21 @@ export type HotelMenuItem = Prisma.HotelMenuItemModel
  */
 export type HotelStockMovement = Prisma.HotelStockMovementModel
 /**
+ * Model ServiceStockSession
+ * * Session stock service (float vendeur) — ouverture / clôture signées.
+ */
+export type ServiceStockSession = Prisma.ServiceStockSessionModel
+/**
+ * Model ServiceStockLine
+ * 
+ */
+export type ServiceStockLine = Prisma.ServiceStockLineModel
+/**
+ * Model ServiceStockTopUp
+ * 
+ */
+export type ServiceStockTopUp = Prisma.ServiceStockTopUpModel
+/**
  * Model HotelOrder
  * 
  */
@@ -219,6 +234,6 @@ export type PurchaseOrder = Prisma.PurchaseOrderModel
 export type PurchaseOrderItem = Prisma.PurchaseOrderItemModel
 /**
  * Model BranchExpense
- * * Sortie de caisse (dépense, dépôt banque, remise propriétaire).
+ * * Sortie / entrée de caisse (dépense, banque, remise ou prêt propriétaire).
  */
 export type BranchExpense = Prisma.BranchExpenseModel

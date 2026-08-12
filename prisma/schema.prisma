@@ -587,6 +587,7 @@ model Branch {
   stockMovements HotelStockMovement[]
   purchaseOrders PurchaseOrder[]
   expenses       BranchExpense[]
+  serviceStockSessions ServiceStockSession[]
 
   @@unique([organizationId, code])
   @@index([organizationId, type])
@@ -911,7 +912,7 @@ model HotelMenuItem {
   price        Float    @default(0)
   /// Photo produit (URL ou data URL).
   imageUrl     String?
-  /// Quantité en stock (signalée et décrémentée à la vente / livraison).
+  /// Quantité en dépôt (magasin / congélateur) — pas le float vendeur.
   stockQty     Int      @default(50)
   /// Code-barres (EAN / Code128 / code interne). Unique par branche.
   barcode      String?
@@ -922,6 +923,8 @@ model HotelMenuItem {
   /// Fournisseur (consommables, optionnel).
   supplierName String?
   needsKitchen Boolean  @default(true)
+  /// Zone dépôt : MAGASIN | CONGELATEUR
+  storageZone  String   @default("MAGASIN")
   active       Boolean  @default(true)
   /// Utilisateur (membre branche) ayant créé le produit.
   createdByUserId String?
@@ -930,11 +933,14 @@ model HotelMenuItem {
   branch       Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
   orderItems   HotelOrderItem[]
   stockMovements HotelStockMovement[]
+  serviceStockLines ServiceStockLine[]
+  serviceStockTopUps ServiceStockTopUp[]
 
   @@unique([branchId, barcode])
   @@index([branchId, active])
   @@index([branchId, isConsumable])
   @@index([branchId, createdByUserId])
+  @@index([branchId, storageZone])
 }
 
 /// Entrées (livraison fournisseur) / sorties (consommation) de stock.
@@ -957,6 +963,73 @@ model HotelStockMovement {
 
   @@index([branchId, createdAt])
   @@index([menuItemId, createdAt])
+}
+
+/** Session stock service (float vendeur) — ouverture / clôture signées. */
+model ServiceStockSession {
+  id                       String   @id @default(uuid())
+  branchId                 String
+  number                   String
+  /// DRAFT | OPEN | CLOSING | CLOSED
+  status                   String   @default("DRAFT")
+  vendorUserId             String
+  vendorDisplayName        String
+  openedByUserId           String
+  closedByManagerUserId    String?
+  openedAt                 DateTime @default(now())
+  closedAt                 DateTime?
+  openingConfirmedAt       DateTime?
+  openingDocumentPrintedAt DateTime?
+  closingDocumentPrintedAt DateTime?
+  notes                    String?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+  branch                   Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  lines                    ServiceStockLine[]
+  topUps                   ServiceStockTopUp[]
+
+  @@unique([branchId, number])
+  @@index([branchId, status])
+  @@index([branchId, openedAt])
+}
+
+model ServiceStockLine {
+  id                 String              @id @default(uuid())
+  sessionId          String
+  menuItemId         String
+  qtyAttributed      Int                 @default(0)
+  qtyOpeningCounted  Int?
+  qtySold            Int                 @default(0)
+  qtyClosingCounted  Int?
+  qtyReturnedToDepot Int                 @default(0)
+  qtyLoss            Int                 @default(0)
+  unitPriceUsd       Float               @default(0)
+  /// MAGASIN | CONGELATEUR
+  sourceZone         String              @default("MAGASIN")
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  session            ServiceStockSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  menuItem           HotelMenuItem       @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+
+  @@unique([sessionId, menuItemId])
+  @@index([menuItemId])
+}
+
+model ServiceStockTopUp {
+  id              String              @id @default(uuid())
+  sessionId       String
+  menuItemId      String
+  quantity        Int
+  /// MAGASIN | CONGELATEUR
+  sourceZone      String              @default("MAGASIN")
+  note            String?
+  createdByUserId String
+  createdAt       DateTime            @default(now())
+  session         ServiceStockSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  menuItem        HotelMenuItem       @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+
+  @@index([sessionId, createdAt])
+  @@index([menuItemId])
 }
 
 model HotelOrder {

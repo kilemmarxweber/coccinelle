@@ -86,6 +86,9 @@ export const ModelName = {
   Payment: 'Payment',
   HotelMenuItem: 'HotelMenuItem',
   HotelStockMovement: 'HotelStockMovement',
+  ServiceStockSession: 'ServiceStockSession',
+  ServiceStockLine: 'ServiceStockLine',
+  ServiceStockTopUp: 'ServiceStockTopUp',
   HotelOrder: 'HotelOrder',
   HotelOrderItem: 'HotelOrderItem',
   BranchNotification: 'BranchNotification',
@@ -683,6 +686,7 @@ export const HotelMenuItemScalarFieldEnum = {
   provenance: 'provenance',
   supplierName: 'supplierName',
   needsKitchen: 'needsKitchen',
+  storageZone: 'storageZone',
   active: 'active',
   createdByUserId: 'createdByUserId',
   createdAt: 'createdAt',
@@ -706,6 +710,61 @@ export const HotelStockMovementScalarFieldEnum = {
 } as const
 
 export type HotelStockMovementScalarFieldEnum = (typeof HotelStockMovementScalarFieldEnum)[keyof typeof HotelStockMovementScalarFieldEnum]
+
+
+export const ServiceStockSessionScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  number: 'number',
+  status: 'status',
+  vendorUserId: 'vendorUserId',
+  vendorDisplayName: 'vendorDisplayName',
+  openedByUserId: 'openedByUserId',
+  closedByManagerUserId: 'closedByManagerUserId',
+  openedAt: 'openedAt',
+  closedAt: 'closedAt',
+  openingConfirmedAt: 'openingConfirmedAt',
+  openingDocumentPrintedAt: 'openingDocumentPrintedAt',
+  closingDocumentPrintedAt: 'closingDocumentPrintedAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceStockSessionScalarFieldEnum = (typeof ServiceStockSessionScalarFieldEnum)[keyof typeof ServiceStockSessionScalarFieldEnum]
+
+
+export const ServiceStockLineScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  menuItemId: 'menuItemId',
+  qtyAttributed: 'qtyAttributed',
+  qtyOpeningCounted: 'qtyOpeningCounted',
+  qtySold: 'qtySold',
+  qtyClosingCounted: 'qtyClosingCounted',
+  qtyReturnedToDepot: 'qtyReturnedToDepot',
+  qtyLoss: 'qtyLoss',
+  unitPriceUsd: 'unitPriceUsd',
+  sourceZone: 'sourceZone',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceStockLineScalarFieldEnum = (typeof ServiceStockLineScalarFieldEnum)[keyof typeof ServiceStockLineScalarFieldEnum]
+
+
+export const ServiceStockTopUpScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  menuItemId: 'menuItemId',
+  quantity: 'quantity',
+  sourceZone: 'sourceZone',
+  note: 'note',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt'
+} as const
+
+export type ServiceStockTopUpScalarFieldEnum = (typeof ServiceStockTopUpScalarFieldEnum)[keyof typeof ServiceStockTopUpScalarFieldEnum]
 
 
 export const HotelOrderScalarFieldEnum = {

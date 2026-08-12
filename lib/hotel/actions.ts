@@ -79,6 +79,7 @@ function revalidateHotel(organizationId: string, branchId: string) {
   revalidatePath(`${base}/hotel/salles-reunion`);
   revalidatePath(`${base}/hotel/produits`);
   revalidatePath(`${base}/hotel/livraison`);
+  revalidatePath(`${base}/hotel/service-stock`);
   revalidatePath(`${base}/hotel/restauration`);
   revalidatePath(`${base}/hotel/cuisine`);
   revalidatePath(`${base}/caisse`);
@@ -1841,7 +1842,12 @@ async function consumeMenuStock(
       active: true,
       isConsumable: false,
     },
-    select: { id: true, name: true, stockQty: true },
+    select: {
+      id: true,
+      name: true,
+      stockQty: true,
+      needsKitchen: true,
+    },
   });
   const byId = new Map(rows.map((r) => [r.id, r]));
   const needed = new Map<string, number>();
@@ -1854,18 +1860,37 @@ async function consumeMenuStock(
       (needed.get(line.menuItemId) ?? 0) + Math.max(1, line.quantity),
     );
   }
+
+  const kitchenLines: { menuItemId: string; quantity: number }[] = [];
+  const serviceLines: { menuItemId: string; quantity: number }[] = [];
   for (const [id, qty] of needed) {
     const row = byId.get(id)!;
-    if (row.stockQty < qty) {
+    if (row.needsKitchen) {
+      kitchenLines.push({ menuItemId: id, quantity: qty });
+    } else {
+      serviceLines.push({ menuItemId: id, quantity: qty });
+    }
+  }
+
+  if (serviceLines.length > 0) {
+    const { consumeServiceFloatInTx } = await import(
+      "@/lib/hotel/service-stock"
+    );
+    await consumeServiceFloatInTx(tx, branchId, serviceLines);
+  }
+
+  for (const line of kitchenLines) {
+    const row = byId.get(line.menuItemId)!;
+    if (row.stockQty < line.quantity) {
       throw new Error(
         `Stock insuffisant pour « ${row.name} » (dispo ${row.stockQty}).`,
       );
     }
   }
-  for (const [id, qty] of needed) {
+  for (const line of kitchenLines) {
     await tx.hotelMenuItem.update({
-      where: { id },
-      data: { stockQty: { decrement: qty } },
+      where: { id: line.menuItemId },
+      data: { stockQty: { decrement: line.quantity } },
     });
   }
 }

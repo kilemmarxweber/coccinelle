@@ -107,6 +107,8 @@ export const hotelRoutes = {
     `${branchModulePath(orgId, branchId, "hotel")}/produits`,
   livraison: (orgId: string, branchId: string) =>
     `${branchModulePath(orgId, branchId, "hotel")}/livraison`,
+  serviceStock: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "hotel")}/service-stock`,
   restauration: (orgId: string, branchId: string) =>
     `${branchModulePath(orgId, branchId, "hotel")}/restauration`,
   cuisine: (orgId: string, branchId: string) =>

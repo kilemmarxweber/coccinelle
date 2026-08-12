@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model BranchExpense
- * * Sortie de caisse (dépense, dépôt banque, remise propriétaire).
+ * * Sortie / entrée de caisse (dépense, banque, remise ou prêt propriétaire).
  */
 export type BranchExpenseModel = runtime.Types.Result.DefaultSelection<Prisma.$BranchExpensePayload>
 
@@ -891,7 +891,7 @@ export type $BranchExpensePayload<ExtArgs extends runtime.Types.Extensions.Inter
      */
     number: string
     /**
-     * DEPENSE | DEPOT_BANQUE | REMISE_PROPRIETAIRE
+     * DEPENSE | DEPOT_BANQUE | REMISE_PROPRIETAIRE | PRET_PROPRIETAIRE
      */
     kind: string
     label: string

@@ -419,6 +419,9 @@ export const ModelName = {
   Payment: 'Payment',
   HotelMenuItem: 'HotelMenuItem',
   HotelStockMovement: 'HotelStockMovement',
+  ServiceStockSession: 'ServiceStockSession',
+  ServiceStockLine: 'ServiceStockLine',
+  ServiceStockTopUp: 'ServiceStockTopUp',
   HotelOrder: 'HotelOrder',
   HotelOrderItem: 'HotelOrderItem',
   BranchNotification: 'BranchNotification',
@@ -440,7 +443,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationRole" | "member" | "invitation" | "client" | "trajet" | "trajetProgramme" | "trajetDepart" | "passager" | "reservation" | "colis" | "reservationDraft" | "paiement" | "penalite" | "branch" | "branchMember" | "hotelRoomType" | "hotelRoom" | "shopCategory" | "shopProduct" | "shopSale" | "shopSaleItem" | "shopStockMovement" | "exchangeRate" | "cashSession" | "hotelStay" | "folio" | "folioLine" | "payment" | "hotelMenuItem" | "hotelStockMovement" | "hotelOrder" | "hotelOrderItem" | "branchNotification" | "purchaseOrder" | "purchaseOrderItem" | "branchExpense"
+    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationRole" | "member" | "invitation" | "client" | "trajet" | "trajetProgramme" | "trajetDepart" | "passager" | "reservation" | "colis" | "reservationDraft" | "paiement" | "penalite" | "branch" | "branchMember" | "hotelRoomType" | "hotelRoom" | "shopCategory" | "shopProduct" | "shopSale" | "shopSaleItem" | "shopStockMovement" | "exchangeRate" | "cashSession" | "hotelStay" | "folio" | "folioLine" | "payment" | "hotelMenuItem" | "hotelStockMovement" | "serviceStockSession" | "serviceStockLine" | "serviceStockTopUp" | "hotelOrder" | "hotelOrderItem" | "branchNotification" | "purchaseOrder" | "purchaseOrderItem" | "branchExpense"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3034,6 +3037,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ServiceStockSession: {
+      payload: Prisma.$ServiceStockSessionPayload<ExtArgs>
+      fields: Prisma.ServiceStockSessionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ServiceStockSessionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockSessionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ServiceStockSessionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockSessionPayload>
+        }
+        findFirst: {
+          args: Prisma.ServiceStockSessionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockSessionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ServiceStockSessionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockSessionPayload>
+        }
+        findMany: {
+          args: Prisma.ServiceStockSessionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockSessionPayload>[]
+        }
+        create: {
+          args: Prisma.ServiceStockSessionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockSessionPayload>
+        }
+        createMany: {
+          args: Prisma.ServiceStockSessionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ServiceStockSessionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockSessionPayload>[]
+        }
+        delete: {
+          args: Prisma.ServiceStockSessionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockSessionPayload>
+        }
+        update: {
+          args: Prisma.ServiceStockSessionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockSessionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ServiceStockSessionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ServiceStockSessionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ServiceStockSessionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockSessionPayload>[]
+        }
+        upsert: {
+          args: Prisma.ServiceStockSessionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockSessionPayload>
+        }
+        aggregate: {
+          args: Prisma.ServiceStockSessionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateServiceStockSession>
+        }
+        groupBy: {
+          args: Prisma.ServiceStockSessionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceStockSessionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ServiceStockSessionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceStockSessionCountAggregateOutputType> | number
+        }
+      }
+    }
+    ServiceStockLine: {
+      payload: Prisma.$ServiceStockLinePayload<ExtArgs>
+      fields: Prisma.ServiceStockLineFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ServiceStockLineFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockLinePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ServiceStockLineFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockLinePayload>
+        }
+        findFirst: {
+          args: Prisma.ServiceStockLineFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockLinePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ServiceStockLineFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockLinePayload>
+        }
+        findMany: {
+          args: Prisma.ServiceStockLineFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockLinePayload>[]
+        }
+        create: {
+          args: Prisma.ServiceStockLineCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockLinePayload>
+        }
+        createMany: {
+          args: Prisma.ServiceStockLineCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ServiceStockLineCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockLinePayload>[]
+        }
+        delete: {
+          args: Prisma.ServiceStockLineDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockLinePayload>
+        }
+        update: {
+          args: Prisma.ServiceStockLineUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockLinePayload>
+        }
+        deleteMany: {
+          args: Prisma.ServiceStockLineDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ServiceStockLineUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ServiceStockLineUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockLinePayload>[]
+        }
+        upsert: {
+          args: Prisma.ServiceStockLineUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockLinePayload>
+        }
+        aggregate: {
+          args: Prisma.ServiceStockLineAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateServiceStockLine>
+        }
+        groupBy: {
+          args: Prisma.ServiceStockLineGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceStockLineGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ServiceStockLineCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceStockLineCountAggregateOutputType> | number
+        }
+      }
+    }
+    ServiceStockTopUp: {
+      payload: Prisma.$ServiceStockTopUpPayload<ExtArgs>
+      fields: Prisma.ServiceStockTopUpFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ServiceStockTopUpFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockTopUpPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ServiceStockTopUpFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockTopUpPayload>
+        }
+        findFirst: {
+          args: Prisma.ServiceStockTopUpFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockTopUpPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ServiceStockTopUpFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockTopUpPayload>
+        }
+        findMany: {
+          args: Prisma.ServiceStockTopUpFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockTopUpPayload>[]
+        }
+        create: {
+          args: Prisma.ServiceStockTopUpCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockTopUpPayload>
+        }
+        createMany: {
+          args: Prisma.ServiceStockTopUpCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ServiceStockTopUpCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockTopUpPayload>[]
+        }
+        delete: {
+          args: Prisma.ServiceStockTopUpDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockTopUpPayload>
+        }
+        update: {
+          args: Prisma.ServiceStockTopUpUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockTopUpPayload>
+        }
+        deleteMany: {
+          args: Prisma.ServiceStockTopUpDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ServiceStockTopUpUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ServiceStockTopUpUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockTopUpPayload>[]
+        }
+        upsert: {
+          args: Prisma.ServiceStockTopUpUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceStockTopUpPayload>
+        }
+        aggregate: {
+          args: Prisma.ServiceStockTopUpAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateServiceStockTopUp>
+        }
+        groupBy: {
+          args: Prisma.ServiceStockTopUpGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceStockTopUpGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ServiceStockTopUpCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceStockTopUpCountAggregateOutputType> | number
+        }
+      }
+    }
     HotelOrder: {
       payload: Prisma.$HotelOrderPayload<ExtArgs>
       fields: Prisma.HotelOrderFieldRefs
@@ -4090,6 +4315,7 @@ export const HotelMenuItemScalarFieldEnum = {
   provenance: 'provenance',
   supplierName: 'supplierName',
   needsKitchen: 'needsKitchen',
+  storageZone: 'storageZone',
   active: 'active',
   createdByUserId: 'createdByUserId',
   createdAt: 'createdAt',
@@ -4113,6 +4339,61 @@ export const HotelStockMovementScalarFieldEnum = {
 } as const
 
 export type HotelStockMovementScalarFieldEnum = (typeof HotelStockMovementScalarFieldEnum)[keyof typeof HotelStockMovementScalarFieldEnum]
+
+
+export const ServiceStockSessionScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  number: 'number',
+  status: 'status',
+  vendorUserId: 'vendorUserId',
+  vendorDisplayName: 'vendorDisplayName',
+  openedByUserId: 'openedByUserId',
+  closedByManagerUserId: 'closedByManagerUserId',
+  openedAt: 'openedAt',
+  closedAt: 'closedAt',
+  openingConfirmedAt: 'openingConfirmedAt',
+  openingDocumentPrintedAt: 'openingDocumentPrintedAt',
+  closingDocumentPrintedAt: 'closingDocumentPrintedAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceStockSessionScalarFieldEnum = (typeof ServiceStockSessionScalarFieldEnum)[keyof typeof ServiceStockSessionScalarFieldEnum]
+
+
+export const ServiceStockLineScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  menuItemId: 'menuItemId',
+  qtyAttributed: 'qtyAttributed',
+  qtyOpeningCounted: 'qtyOpeningCounted',
+  qtySold: 'qtySold',
+  qtyClosingCounted: 'qtyClosingCounted',
+  qtyReturnedToDepot: 'qtyReturnedToDepot',
+  qtyLoss: 'qtyLoss',
+  unitPriceUsd: 'unitPriceUsd',
+  sourceZone: 'sourceZone',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceStockLineScalarFieldEnum = (typeof ServiceStockLineScalarFieldEnum)[keyof typeof ServiceStockLineScalarFieldEnum]
+
+
+export const ServiceStockTopUpScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  menuItemId: 'menuItemId',
+  quantity: 'quantity',
+  sourceZone: 'sourceZone',
+  note: 'note',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt'
+} as const
+
+export type ServiceStockTopUpScalarFieldEnum = (typeof ServiceStockTopUpScalarFieldEnum)[keyof typeof ServiceStockTopUpScalarFieldEnum]
 
 
 export const HotelOrderScalarFieldEnum = {
@@ -4877,6 +5158,9 @@ export type GlobalOmitConfig = {
   payment?: Prisma.PaymentOmit
   hotelMenuItem?: Prisma.HotelMenuItemOmit
   hotelStockMovement?: Prisma.HotelStockMovementOmit
+  serviceStockSession?: Prisma.ServiceStockSessionOmit
+  serviceStockLine?: Prisma.ServiceStockLineOmit
+  serviceStockTopUp?: Prisma.ServiceStockTopUpOmit
   hotelOrder?: Prisma.HotelOrderOmit
   hotelOrderItem?: Prisma.HotelOrderItemOmit
   branchNotification?: Prisma.BranchNotificationOmit
