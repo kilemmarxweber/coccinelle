@@ -60,6 +60,8 @@ import {
   formatConfiguredRateLabel,
   formatPrimaryAmount,
   formatSecondaryAmount,
+  formatUsdLineTotal,
+  formatUsdLinesTotal,
   isCdfPrimary,
 } from "@/lib/cash/exchange";
 import { SearchCombobox } from "@/components/ui/search-combobox";
@@ -171,6 +173,10 @@ function folioLabel(f: FolioRow) {
 
 function orderTotal(order: OrderRow) {
   return order.items.reduce((s, i) => s + i.amount, 0);
+}
+
+function orderUnit(item: { unitPrice?: number; amount: number; quantity: number }) {
+  return item.unitPrice ?? item.amount / Math.max(1, item.quantity);
 }
 
 function elapsedLabel(from: string | Date | null | undefined, now: number | null) {
@@ -356,6 +362,27 @@ export function CaisseClient(props: Props) {
 
   function fmt(amountUsd: number) {
     return formatPrimaryAmount(amountUsd, moneyRate);
+  }
+
+  function fmtLine(quantity: number, unitUsd: number) {
+    return formatUsdLineTotal(quantity, unitUsd, moneyRate);
+  }
+
+  function fmtCart(lines: { quantity: number; price: number }[]) {
+    return formatUsdLinesTotal(
+      lines.map((l) => ({ quantity: l.quantity, unitPriceUsd: l.price })),
+      moneyRate,
+    );
+  }
+
+  function fmtOrder(order: OrderRow) {
+    return formatUsdLinesTotal(
+      order.items.map((i) => ({
+        quantity: i.quantity,
+        unitPriceUsd: orderUnit(i),
+      })),
+      moneyRate,
+    );
   }
 
   function fmtSub(amountUsd: number) {
@@ -722,9 +749,6 @@ export function CaisseClient(props: Props) {
             {props.rate && moneyRate ? (
               <p className="mt-1 text-xs text-muted-foreground">
                 Taux : {formatConfiguredRateLabel(moneyRate)}
-                {isCdfPrimary(moneyRate)
-                  ? ` · (1 USD = ${props.rate.rate.toLocaleString("fr-FR", { maximumFractionDigits: 2 })} CDF)`
-                  : ` · (1 CDF ≈ ${(1 / props.rate.rate).toLocaleString("fr-FR", { maximumFractionDigits: 6 })} USD)`}
               </p>
             ) : (
               <p className="mt-1 text-xs text-amber-600">
@@ -1032,7 +1056,7 @@ export function CaisseClient(props: Props) {
                               {item.name}
                             </span>
                             <span className="shrink-0 text-sm font-medium tabular-nums text-muted-foreground">
-                              {fmt(item.amount)}
+                              {fmtLine(item.quantity, orderUnit(item))}
                             </span>
                           </div>
                         ))}
@@ -1046,7 +1070,7 @@ export function CaisseClient(props: Props) {
                       <div className="flex items-center justify-between gap-2 border-t border-dashed border-border px-4 py-2.5">
                         <span className="text-sm text-muted-foreground">Total</span>
                         <span className="text-lg font-bold tabular-nums">
-                          {fmt(total)}
+                          {fmtOrder(order)}
                         </span>
                       </div>
                     </button>
@@ -1148,15 +1172,11 @@ export function CaisseClient(props: Props) {
                             <div className="min-w-0 flex-1">
                               <p className="font-semibold">{item.name}</p>
                               <p className="text-xs text-muted-foreground tabular-nums">
-                                {fmt(
-                                  item.unitPrice ??
-                                    item.amount / item.quantity,
-                                )}{" "}
-                                / u.
+                                {fmt(orderUnit(item))} / u.
                               </p>
                             </div>
                             <span className="font-semibold tabular-nums">
-                              {fmt(item.amount)}
+                              {fmtLine(item.quantity, orderUnit(item))}
                             </span>
                           </li>
                         ))}
@@ -1179,7 +1199,7 @@ export function CaisseClient(props: Props) {
                           : "Total à encaisser"}
                       </span>
                       <span className="text-xl font-bold tabular-nums">
-                        {fmt(orderTotal(selectedOrder))}
+                        {fmtOrder(selectedOrder)}
                       </span>
                     </div>
 
@@ -1256,6 +1276,8 @@ export function CaisseClient(props: Props) {
             ticketTitle="Ticket vente rapide"
             emptyHint="Touchez un produit pour l’ajouter au ticket"
             formatPrice={fmt}
+            formatLineTotal={fmtLine}
+            formatCartTotal={fmtCart}
             ticketMeta={
               <div className="grid gap-3">
                 <div className="grid gap-1.5">

@@ -10,6 +10,14 @@ import {
 } from "@/lib/branch/paths";
 import { FOLIO_SECTION_LABEL } from "@/lib/hotel/folio-note";
 import { paymentAmountUsd } from "@/lib/hotel/money";
+import {
+  formatConfiguredRateLabel,
+  formatUsdLineTotal,
+  formatUsdLinesTotal,
+  isCdfPrimary,
+  type NormalizedUsdCdfRate,
+} from "@/lib/cash/exchange";
+import { getActiveExchangeRate } from "@/lib/cash/actions";
 import type { FolioLineKind } from "@/prisma/generated/prisma/client";
 import { PrintButton } from "./print-button";
 
@@ -40,6 +48,18 @@ export default async function ReceiptPage({ params }: PageProps) {
     paymentId,
   );
   if (!payment) notFound();
+  const exchange = await getActiveExchangeRate(branchId);
+  const moneyRate: Pick<
+    NormalizedUsdCdfRate,
+    "rate" | "configuredFrom" | "configuredTo" | "configuredRate"
+  > | null = exchange
+    ? {
+        rate: exchange.rate,
+        configuredFrom: exchange.configuredFrom,
+        configuredTo: exchange.configuredTo,
+        configuredRate: exchange.configuredRate,
+      }
+    : null;
 
   const isShopReceipt = Boolean(payment.shopSaleId && payment.shopSale);
   const isFolioReceipt = Boolean(payment.folioId && !payment.orderId && !isShopReceipt);
@@ -95,7 +115,6 @@ export default async function ReceiptPage({ params }: PageProps) {
         .filter((s): s is NonNullable<typeof s> => s != null)
     : [];
 
-  const linesTotal = lines.reduce((sum, line) => sum + line.amount, 0);
   const shopClient =
     payment.shopSale == null
       ? null
@@ -111,7 +130,34 @@ export default async function ReceiptPage({ params }: PageProps) {
       : payment.folio?.label ?? payment.order?.tableLabel ?? null;
   const serverName = payment.order?.createdByName ?? null;
   const isHospitalityBranch = isHospitality(branch.type);
-  const currencySuffix = isHospitalityBranch || isShopReceipt ? " $" : "";
+  const cdfPrimary = isCdfPrimary(moneyRate);
+  const linesTotalUsd = lines.reduce((sum, line) => sum + line.amount, 0);
+  const linesTotalLabel =
+    isHospitalityBranch && !isShopReceipt
+      ? formatUsdLinesTotal(
+          lines.map((l) => ({
+            quantity: l.quantity,
+            unitPriceUsd: l.unitPrice,
+          })),
+          moneyRate,
+        )
+      : `${linesTotalUsd.toFixed(2)}${isHospitalityBranch || isShopReceipt ? " $" : ""}`;
+  const frozenRate =
+    payment.exchangeRateUsed != null && payment.exchangeRateUsed > 0
+      ? Math.round(payment.exchangeRateUsed)
+      : moneyRate?.rate
+        ? Math.round(moneyRate.rate)
+        : null;
+  const rateLabelForReceipt =
+    frozenRate != null
+      ? moneyRate
+        ? formatConfiguredRateLabel({
+            ...moneyRate,
+            rate: frozenRate,
+            configuredRate: frozenRate,
+          })
+        : `1 $ = ${frozenRate.toLocaleString("fr-FR")} CDF`
+      : null;
   const paidUsd = paymentAmountUsd(payment);
   const paidCdf =
     isHospitalityBranch && payment.amountForeign != null && payment.amountForeign > 0
@@ -122,6 +168,37 @@ export default async function ReceiptPage({ params }: PageProps) {
     branch.type === "BOUTIQUE"
       ? boutiqueRoutes.pos(organizationId, branchId)
       : branchCaissePath(organizationId, branchId);
+
+  function formatLineMoney(line: ReceiptLine) {
+    if (isHospitalityBranch && !isShopReceipt) {
+      return formatUsdLineTotal(line.quantity, line.unitPrice, moneyRate);
+    }
+    return `${line.amount.toFixed(2)}${isHospitalityBranch || isShopReceipt ? " $" : ""}`;
+  }
+
+  function formatUnitMoney(unit: number) {
+    if (isHospitalityBranch && !isShopReceipt && cdfPrimary && moneyRate) {
+      return `${Math.round(unit * Math.round(moneyRate.rate)).toLocaleString("fr-FR")} CDF`;
+    }
+    if (isHospitalityBranch || isShopReceipt) {
+      return `${unit.toFixed(2)} $`;
+    }
+    return unit.toFixed(2);
+  }
+
+  function formatSectionTotal(sectionLines: ReceiptLine[]) {
+    if (isHospitalityBranch && !isShopReceipt) {
+      return formatUsdLinesTotal(
+        sectionLines.map((l) => ({
+          quantity: l.quantity,
+          unitPriceUsd: l.unitPrice,
+        })),
+        moneyRate,
+      );
+    }
+    const t = sectionLines.reduce((s, l) => s + l.amount, 0);
+    return `${t.toFixed(2)}${isHospitalityBranch || isShopReceipt ? " $" : ""}`;
+  }
 
   function LineRow(props: { line: ReceiptLine }) {
     const { line } = props;
@@ -139,12 +216,10 @@ export default async function ReceiptPage({ params }: PageProps) {
           {line.quantity}
         </p>
         <p className="pt-0.5 text-right tabular-nums text-muted-foreground">
-          {line.unitPrice.toFixed(2)}
-          {currencySuffix}
+          {formatUnitMoney(line.unitPrice)}
         </p>
         <p className="pt-0.5 text-right font-semibold tabular-nums">
-          {line.amount.toFixed(2)}
-          {currencySuffix}
+          {formatLineMoney(line)}
         </p>
       </li>
     );
@@ -225,8 +300,7 @@ export default async function ReceiptPage({ params }: PageProps) {
                     {section.label}
                   </h2>
                   <span className="text-xs font-medium tabular-nums">
-                    {section.total.toFixed(2)}
-                    {currencySuffix}
+                    {formatSectionTotal(section.lines)}
                   </span>
                 </div>
                 <LinesHeader />
@@ -240,8 +314,7 @@ export default async function ReceiptPage({ params }: PageProps) {
             <div className="flex justify-between gap-4 border-t border-dashed border-border pt-3 text-sm">
               <span className="text-muted-foreground">Total note</span>
               <span className="font-medium tabular-nums">
-                {linesTotal.toFixed(2)}
-                {currencySuffix}
+                {linesTotalLabel}
               </span>
             </div>
           </div>
@@ -259,8 +332,7 @@ export default async function ReceiptPage({ params }: PageProps) {
             <div className="mt-3 flex justify-between gap-4 border-t border-dashed border-border pt-3 text-sm">
               <span className="text-muted-foreground">Sous-total articles</span>
               <span className="font-medium tabular-nums">
-                {linesTotal.toFixed(2)}
-                {currencySuffix}
+                {linesTotalLabel}
               </span>
             </div>
           </section>
@@ -298,8 +370,8 @@ export default async function ReceiptPage({ params }: PageProps) {
                   <div className="flex justify-between gap-4">
                     <dt className="text-muted-foreground">Taux figé</dt>
                     <dd>
-                      1 {payment.foreignCurrency ?? "USD"} ={" "}
-                      {payment.exchangeRateUsed} CDF
+                      {rateLabelForReceipt ??
+                        `1 $ = ${Math.round(payment.exchangeRateUsed!).toLocaleString("fr-FR")} CDF`}
                     </dd>
                   </div>
                 </>
@@ -318,8 +390,8 @@ export default async function ReceiptPage({ params }: PageProps) {
                   <div className="flex justify-between gap-4">
                     <dt className="text-muted-foreground">Taux figé</dt>
                     <dd>
-                      1 {payment.foreignCurrency ?? "USD"} ={" "}
-                      {payment.exchangeRateUsed} CDF
+                      {rateLabelForReceipt ??
+                        `1 $ = ${Math.round(payment.exchangeRateUsed!).toLocaleString("fr-FR")} CDF`}
                     </dd>
                   </div>
                   {payment.amountForeign != null ? (

@@ -4,13 +4,16 @@ import {
   ChartCard,
   KpiGrid,
   ReportShell,
-  formatMoney,
 } from "@/components/reports/report-shell";
 import {
   DualBarChart,
   SimpleBarChart,
   TrendAreaChart,
 } from "@/components/reports/report-charts";
+import {
+  formatAlreadyPrimaryAmount,
+  formatConfiguredRateLabel,
+} from "@/lib/cash/exchange";
 
 type MyOrdersData = Awaited<
   ReturnType<typeof import("@/lib/hotel/reports/actions").getMyOrdersReportAction>
@@ -29,7 +32,11 @@ export function MyOrdersReportClient(props: {
   data: MyOrdersData;
 }) {
   const base = `/admin/organizations/${props.organizationId}/branches/${props.branchId}/rapports/mes-commandes`;
-  const money = (n: number) => formatMoney(n, props.data.rate);
+  const money = (n: number) =>
+    formatAlreadyPrimaryAmount(n, props.data.rate);
+  const rates = props.data.rate
+    ? formatConfiguredRateLabel(props.data.rate)
+    : null;
 
   return (
     <ReportShell
@@ -40,6 +47,7 @@ export function MyOrdersReportClient(props: {
       from={props.from}
       to={props.to}
       basePath={base}
+      rateBanner={rates}
     >
       <KpiGrid
         items={[

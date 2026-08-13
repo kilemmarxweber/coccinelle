@@ -4,14 +4,18 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { getActiveExchangeRate } from "@/lib/cash/actions";
-import { toReportExchangeRate } from "@/lib/cash/exchange";
+import {
+  paymentPrimaryAmount,
+  toReportExchangeRate,
+  usdLinePrimaryNumber,
+  usdLinesPrimaryTotal,
+} from "@/lib/cash/exchange";
 import prisma from "@/lib/prisma";
 import {
   currentMonthRange,
   dayKey,
   eachDayIso,
   endOfLocalDay,
-  paymentAmountUsd,
   pctDelta,
   previousRange,
   startOfLocalDay,
@@ -62,10 +66,9 @@ async function loadPayments(branchId: string, from: string, to: string) {
     },
     orderBy: { paidAt: "asc" },
   });
-  const usdRate = rate?.rate ?? null;
   return rows.map((p) => ({
     ...p,
-    usd: paymentAmountUsd(p, usdRate),
+    usd: paymentPrimaryAmount(p, rate),
   }));
 }
 
@@ -86,7 +89,6 @@ async function resolveStaffNameMap(userIds: string[]) {
 /** Lignes de vente (paiements) avec jour, montant et participants. */
 async function loadSaleLines(branchId: string, from: string, to: string) {
   const rate = await getActiveExchangeRate(branchId);
-  const usdRate = rate?.rate ?? null;
 
   const payments = await prisma.payment.findMany({
     where: { branchId, paidAt: rangeBounds(from, to) },
@@ -124,7 +126,7 @@ async function loadSaleLines(branchId: string, from: string, to: string) {
   ]);
 
   return payments.map((p) => {
-    const usd = paymentAmountUsd(p, usdRate);
+    const usd = paymentPrimaryAmount(p, rate);
     const order = p.order;
     const itemsLabel = order?.items.length
       ? order.items
@@ -401,6 +403,8 @@ export async function getArticlesReportAction(input: PeriodInput) {
   const map = new Map<string, Agg>();
   const prevMap = new Map<string, number>();
 
+  const reportRate = toReportExchangeRate(exchange);
+
   for (const o of orders) {
     for (const i of o.items) {
       const key = i.menuItemId ?? i.name;
@@ -412,7 +416,7 @@ export async function getArticlesReportAction(input: PeriodInput) {
         stockOut: 0,
       };
       row.qty += i.quantity;
-      row.revenue += i.amount;
+      row.revenue += usdLinePrimaryNumber(i.quantity, i.unitPrice, reportRate);
       map.set(key, row);
     }
   }
@@ -653,7 +657,14 @@ export async function getMyOrdersReportAction(input: PeriodInput) {
       status: { not: "BROUILLON" },
     },
     include: {
-      items: { select: { name: true, quantity: true, amount: true } },
+      items: {
+        select: {
+          name: true,
+          quantity: true,
+          amount: true,
+          unitPrice: true,
+        },
+      },
     },
     orderBy: { createdAt: "asc" },
   });
@@ -673,38 +684,66 @@ export async function getMyOrdersReportAction(input: PeriodInput) {
         ...soldWhere,
         createdAt: rangeBounds(todayIso, todayIso),
       },
-      include: { items: { select: { amount: true } } },
+      include: {
+        items: { select: { quantity: true, unitPrice: true, amount: true } },
+      },
     }),
     prisma.hotelOrder.findMany({
       where: {
         ...soldWhere,
         createdAt: rangeBounds(month.from, month.to),
       },
-      include: { items: { select: { amount: true } } },
+      include: {
+        items: { select: { quantity: true, unitPrice: true, amount: true } },
+      },
     }),
   ]);
 
   const sold = orders.filter((o) => o.status !== "ANNULEE");
   const cancelled = orders.length - sold.length;
+  const reportRate = toReportExchangeRate(exchange);
   let ca = 0;
   const byDay = new Map<string, number>();
   const byStatus = new Map<string, number>();
-  const byProduct = new Map<string, number>();
+  const byProduct = new Map<string, { qty: number; unitPriceUsd: number; name: string }>();
 
   for (const o of orders) {
     byStatus.set(o.status, (byStatus.get(o.status) ?? 0) + 1);
     if (o.status === "ANNULEE") continue;
-    const total = o.items.reduce((s, i) => s + i.amount, 0);
+    const total = usdLinesPrimaryTotal(
+      o.items.map((i) => ({ quantity: i.quantity, unitPriceUsd: i.unitPrice })),
+      reportRate,
+    );
     ca += total;
     const day = dayKey(o.createdAt);
     byDay.set(day, (byDay.get(day) ?? 0) + total);
     for (const it of o.items) {
-      byProduct.set(it.name, (byProduct.get(it.name) ?? 0) + it.amount);
+      const cur = byProduct.get(it.name) ?? {
+        qty: 0,
+        unitPriceUsd: it.unitPrice,
+        name: it.name,
+      };
+      cur.qty += it.quantity;
+      cur.unitPriceUsd = it.unitPrice;
+      byProduct.set(it.name, cur);
     }
   }
 
-  const sumItems = (rows: { items: { amount: number }[] }[]) =>
-    rows.reduce((s, o) => s + o.items.reduce((a, i) => a + i.amount, 0), 0);
+  const sumItems = (
+    rows: { items: { quantity: number; unitPrice: number; amount: number }[] }[],
+  ) =>
+    rows.reduce(
+      (s, o) =>
+        s +
+        usdLinesPrimaryTotal(
+          o.items.map((i) => ({
+            quantity: i.quantity,
+            unitPriceUsd: i.unitPrice,
+          })),
+          reportRate,
+        ),
+      0,
+    );
 
   const caToday = sumItems(todayOrders);
   const caMonth = sumItems(monthOrders);
@@ -714,27 +753,26 @@ export async function getMyOrdersReportAction(input: PeriodInput) {
       orders: sold.length,
       cancelled,
       ordersDelta: pctDelta(sold.length, prevCount),
-      ca: Math.round(ca * 100) / 100,
-      ticketAvg:
-        sold.length > 0 ? Math.round((ca / sold.length) * 100) / 100 : 0,
-      caToday: Math.round(caToday * 100) / 100,
+      ca,
+      ticketAvg: sold.length > 0 ? ca / sold.length : 0,
+      caToday,
       ordersToday: todayOrders.length,
-      caMonth: Math.round(caMonth * 100) / 100,
+      caMonth,
       ordersMonth: monthOrders.length,
     },
     caByDay: days.map((day) => ({
       day,
-      value: Math.round((byDay.get(day) ?? 0) * 100) / 100,
+      value: byDay.get(day) ?? 0,
     })),
     byStatus: [...byStatus.entries()].map(([name, value]) => ({ name, value })),
-    topProducts: [...byProduct.entries()]
-      .map(([name, value]) => ({
-        name: name.length > 18 ? `${name.slice(0, 16)}...` : name,
-        value: Math.round(value * 100) / 100,
+    topProducts: [...byProduct.values()]
+      .map((p) => ({
+        name: p.name.length > 18 ? `${p.name.slice(0, 16)}...` : p.name,
+        value: usdLinePrimaryNumber(p.qty, p.unitPriceUsd, reportRate),
       }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 8),
-    rate: toReportExchangeRate(exchange),
+    rate: reportRate,
   };
 }
 

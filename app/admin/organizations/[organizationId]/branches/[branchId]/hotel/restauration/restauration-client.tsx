@@ -44,6 +44,8 @@ import {
 } from "@/lib/hotel/stay-room-match";
 import {
   formatPrimaryAmount,
+  formatUsdLineTotal,
+  formatUsdLinesTotal,
   type NormalizedUsdCdfRate,
 } from "@/lib/cash/exchange";
 import {
@@ -197,6 +199,15 @@ export function RestaurationClient(props: {
 
   function fmt(amountUsd: number) {
     return formatPrimaryAmount(amountUsd, props.rate);
+  }
+  function fmtLine(quantity: number, unitUsd: number) {
+    return formatUsdLineTotal(quantity, unitUsd, props.rate);
+  }
+  function fmtCart(lines: { quantity: number; price: number }[]) {
+    return formatUsdLinesTotal(
+      lines.map((l) => ({ quantity: l.quantity, unitPriceUsd: l.price })),
+      props.rate,
+    );
   }
   const toDeliverCount = props.orders.filter(
     (o) => canDeliver(o.status) && !o.deliveredAt,
@@ -509,6 +520,8 @@ export function RestaurationClient(props: {
           onSetQty={setQty}
           onClear={clear}
           formatPrice={fmt}
+          formatLineTotal={fmtLine}
+          formatCartTotal={fmtCart}
           ticketTitle={
             editingOrderId
               ? `Modifier #${editingOrderId.slice(0, 8)}`
@@ -897,7 +910,11 @@ export function RestaurationClient(props: {
                               {item.name}
                             </span>
                             <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
-                              {fmt(item.amount)}
+                              {fmtLine(
+                                item.quantity,
+                                item.unitPrice ??
+                                  item.amount / Math.max(1, item.quantity),
+                              )}
                             </span>
                           </div>
                         ))}
@@ -1063,7 +1080,11 @@ export function RestaurationClient(props: {
                           </p>
                         </div>
                         <span className="font-semibold tabular-nums">
-                          {fmt(item.amount)}
+                          {fmtLine(
+                            item.quantity,
+                            item.unitPrice ??
+                              item.amount / Math.max(1, item.quantity),
+                          )}
                         </span>
                       </li>
                     ))}

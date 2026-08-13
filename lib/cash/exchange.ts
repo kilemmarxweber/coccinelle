@@ -81,7 +81,47 @@ export function isCdfPrimary(
 }
 
 export function usdToCdfAmount(amountUsd: number, usdToCdfRate: number) {
-  return amountUsd * Math.round(usdToCdfRate);
+  return Number(amountUsd) * Math.round(usdToCdfRate);
+}
+
+/** CDF entier : round(USD × taux), sans arrondi cents intermédiaire. */
+export function usdToCdfInteger(amountUsd: number, usdToCdfRate: number) {
+  return Math.round(usdToCdfAmount(amountUsd, usdToCdfRate));
+}
+
+/** Une ligne : qté × round(P.U. × taux) — évite +3 / +8 FC. */
+export function usdLinePrimaryNumber(
+  quantity: number,
+  unitPriceUsd: number,
+  rate?: Pick<NormalizedUsdCdfRate, "rate" | "configuredFrom"> | null,
+): number {
+  const q = Math.round(Number(quantity) || 0);
+  if (isCdfPrimary(rate) && rate && rate.rate > 0) {
+    return q * Math.round(unitPriceUsd * Math.round(rate.rate));
+  }
+  return q * Number(unitPriceUsd || 0);
+}
+
+/** Somme de lignes en devise principale (CDF entier ou USD). */
+export function usdLinesPrimaryTotal(
+  lines: { quantity: number; unitPriceUsd: number }[],
+  rate?: Pick<NormalizedUsdCdfRate, "rate" | "configuredFrom"> | null,
+): number {
+  return lines.reduce(
+    (s, l) => s + usdLinePrimaryNumber(l.quantity, l.unitPriceUsd, rate),
+    0,
+  );
+}
+
+/** Encaissement : CDF stocké si devise principale, sinon USD. */
+export function paymentPrimaryAmount(
+  p: { amountCdf: number; amountForeign?: number | null },
+  rate?: Pick<NormalizedUsdCdfRate, "rate" | "configuredFrom"> | null,
+): number {
+  if (isCdfPrimary(rate)) return Math.round(Number(p.amountCdf) || 0);
+  if (p.amountForeign != null && p.amountForeign !== 0) return p.amountForeign;
+  if (rate && rate.rate > 0) return Number(p.amountCdf) / Math.round(rate.rate);
+  return Number(p.amountCdf) || 0;
 }
 
 /** Montant principal selon le sens de taux (prix produit / CA). */
@@ -90,12 +130,9 @@ export function formatPrimaryAmount(
   rate?: Pick<NormalizedUsdCdfRate, "rate" | "configuredFrom"> | null,
 ) {
   if (isCdfPrimary(rate) && rate && rate.rate > 0) {
-    return `${Math.round(usdToCdfAmount(amountUsd, rate.rate)).toLocaleString(
-      "fr-FR",
-      {
-        maximumFractionDigits: 0,
-      },
-    )} CDF`;
+    return `${usdToCdfInteger(amountUsd, rate.rate).toLocaleString("fr-FR", {
+      maximumFractionDigits: 0,
+    })} CDF`;
   }
   return `${amountUsd.toFixed(2)} $`;
 }
@@ -109,12 +146,9 @@ export function formatSecondaryAmount(
   if (isCdfPrimary(rate)) {
     return `${amountUsd.toFixed(2)} $`;
   }
-  return `${Math.round(usdToCdfAmount(amountUsd, rate.rate)).toLocaleString(
-    "fr-FR",
-    {
-      maximumFractionDigits: 0,
-    },
-  )} CDF`;
+  return `${usdToCdfInteger(amountUsd, rate.rate).toLocaleString("fr-FR", {
+    maximumFractionDigits: 0,
+  })} CDF`;
 }
 
 /** Toujours USD + CDF : principal selon sens configuré, secondaire entre parenthèses. */
@@ -130,12 +164,14 @@ export function formatBothAmounts(
 export function formatConfiguredRateLabel(
   rate: Pick<
     NormalizedUsdCdfRate,
-    "configuredFrom" | "configuredTo" | "configuredRate"
+    "configuredFrom" | "configuredTo" | "configuredRate" | "rate"
   >,
 ) {
-  const n = Math.round(rate.configuredRate);
-  // Toujours afficher les deux sens entiers, sans décimale.
-  return `1 USD = ${n.toLocaleString("fr-FR")} CDF · ${n.toLocaleString("fr-FR")} CDF = 1 USD`;
+  const n = Math.round(rate.configuredRate ?? rate.rate);
+  const nStr = n.toLocaleString("fr-FR");
+  // Sens configuré uniquement, entier, sans inverse décimal.
+  if (isCdfPrimary(rate)) return `${nStr} CDF = 1 $`;
+  return `1 $ = ${nStr} CDF`;
 }
 
 /** @deprecated Préférer formatConfiguredRateLabel (taux entier, pas d’inverse décimal). */
@@ -153,13 +189,15 @@ export function formatBothRateLabels(
 ) {
   if (!rate || !(rate.rate > 0)) return null;
   const n = Math.round(rate.rate);
-  const usdToCdf = `1 USD = ${n.toLocaleString("fr-FR")} CDF`;
-  const cdfToUsd = `${n.toLocaleString("fr-FR")} CDF = 1 USD`;
+  const nStr = n.toLocaleString("fr-FR");
+  const usdToCdf = `1 $ = ${nStr} CDF`;
+  const cdfToUsd = `${nStr} CDF = 1 $`;
+  const configured = formatConfiguredRateLabel(rate);
   return {
-    configured: formatConfiguredRateLabel(rate),
+    configured,
     usdToCdf,
     cdfToUsd,
-    both: `Saisie ${rate.configuredFrom} · ${usdToCdf} · ${cdfToUsd}`,
+    both: configured,
   };
 }
 
@@ -198,7 +236,7 @@ export function usdToPrimaryNumber(
 ): number {
   if (!Number.isFinite(amountUsd)) return NaN;
   if (isCdfPrimary(rate) && rate && rate.rate > 0) {
-    return amountUsd * Math.round(rate.rate);
+    return usdToCdfInteger(amountUsd, rate.rate);
   }
   return amountUsd;
 }
@@ -241,11 +279,33 @@ export function formatUsdLineTotal(
   rate?: Pick<NormalizedUsdCdfRate, "rate" | "configuredFrom"> | null,
 ): string {
   if (isCdfPrimary(rate) && rate && rate.rate > 0) {
-    const unitCdf = Math.round(unitPriceUsd * Math.round(rate.rate));
-    const totalCdf = Math.round(quantity) * unitCdf;
+    const totalCdf = usdLinePrimaryNumber(quantity, unitPriceUsd, rate);
     return `${totalCdf.toLocaleString("fr-FR")} CDF`;
   }
-  return formatPrimaryAmount(Math.round(quantity) * unitPriceUsd, rate);
+  return formatPrimaryAmount(usdLinePrimaryNumber(quantity, unitPriceUsd, rate), rate);
+}
+
+/** Somme de lignes : Σ (qté × round(P.U.×taux)) — évite +3 / +8 FC. */
+export function formatUsdLinesTotal(
+  lines: { quantity: number; unitPriceUsd: number }[],
+  rate?: Pick<NormalizedUsdCdfRate, "rate" | "configuredFrom"> | null,
+): string {
+  const total = usdLinesPrimaryTotal(lines, rate);
+  if (isCdfPrimary(rate) && rate && rate.rate > 0) {
+    return `${total.toLocaleString("fr-FR")} CDF`;
+  }
+  return formatPrimaryAmount(total, rate);
+}
+
+/** Affiche un total déjà en devise principale (CDF entier ou USD). */
+export function formatAlreadyPrimaryAmount(
+  amount: number,
+  rate?: Pick<NormalizedUsdCdfRate, "rate" | "configuredFrom"> | null,
+) {
+  if (isCdfPrimary(rate)) {
+    return `${Math.round(amount).toLocaleString("fr-FR")} CDF`;
+  }
+  return formatPrimaryAmount(amount, rate);
 }
 
 /** USD catalogue depuis un total ligne déjà en devise principale. */

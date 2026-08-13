@@ -5,7 +5,6 @@ import {
   KpiGrid,
   ReportShell,
   ReportsNav,
-  formatMoney,
   formatQty,
 } from "@/components/reports/report-shell";
 import {
@@ -16,7 +15,10 @@ import {
   TrendAreaChart,
 } from "@/components/reports/report-charts";
 import { openBlankPrintWindow } from "@/lib/hotel/stock-movements-print";
-import { formatBothRateLabels } from "@/lib/cash/exchange";
+import {
+  formatAlreadyPrimaryAmount,
+  formatConfiguredRateLabel,
+} from "@/lib/cash/exchange";
 
 function printSimpleReport(title: string, htmlBody: string) {
   const win = openBlankPrintWindow();
@@ -47,7 +49,7 @@ function rateBanner(
     | null
     | undefined,
 ) {
-  return formatBothRateLabels(rate)?.both ?? null;
+  return rate ? formatConfiguredRateLabel(rate) : null;
 }
 
 type SalesData = Awaited<
@@ -64,7 +66,7 @@ export function SalesReportClient(props: {
 }) {
   const base = `/admin/organizations/${props.organizationId}/branches/${props.branchId}/rapports/ventes`;
   const { kpis, caByDay, caByMethod, lines, linesTotal, rate } = props.data;
-  const money = (n: number) => formatMoney(n, rate);
+  const money = (n: number) => formatAlreadyPrimaryAmount(n, rate);
   const rates = rateBanner(rate);
 
   function formatDayFr(iso: string) {
@@ -406,7 +408,7 @@ export function ArticlesReportClient(props: {
 }) {
   const base = `/admin/organizations/${props.organizationId}/branches/${props.branchId}/rapports/articles`;
   const { kpis, topArticles, byCategory, soldByDay, rate } = props.data;
-  const money = (n: number) => formatMoney(n, rate);
+  const money = (n: number) => formatAlreadyPrimaryAmount(n, rate);
   const rates = rateBanner(rate);
 
   return (
@@ -544,7 +546,7 @@ export function FinanceReportClient(props: {
   const base = `/admin/organizations/${props.organizationId}/branches/${props.branchId}/rapports/financier`;
   const { kpis, flowByDay, revenueByMethod, folioByKind, revenueByDay, rate } =
     props.data;
-  const money = (n: number) => formatMoney(n, rate);
+  const money = (n: number) => formatAlreadyPrimaryAmount(n, rate);
   const rates = rateBanner(rate);
 
   return (

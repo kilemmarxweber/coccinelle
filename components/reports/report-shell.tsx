@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { formatBothAmounts } from "@/lib/cash/exchange";
+import { formatPrimaryAmount } from "@/lib/cash/exchange";
 import { defaultReportRange, currentMonthRange, toIsoDate } from "@/lib/hotel/reports/period";
 
 export function ReportShell(props: {
@@ -260,8 +260,8 @@ export function formatMoney(
   } | null,
 ) {
   if (rate && rate.rate > 0) {
-    return formatBothAmounts(amountUsd, {
-      rate: rate.rate,
+    return formatPrimaryAmount(amountUsd, {
+      rate: Math.round(rate.rate),
       configuredFrom: rate.configuredFrom ?? "USD",
     });
   }

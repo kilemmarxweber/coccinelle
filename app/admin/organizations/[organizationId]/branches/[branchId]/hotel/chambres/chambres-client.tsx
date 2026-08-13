@@ -23,6 +23,7 @@ import {
 } from "@/lib/hotel/actions";
 import {
   formatPrimaryAmount,
+  formatConfiguredRateLabel,
   formatUsdPrimaryInputValue,
   primaryAmountToUsd,
   primaryCurrencyLabel,
@@ -667,7 +668,7 @@ export function ChambresClient(props: {
                     <p className="text-[11px] text-muted-foreground">
                       Tarif catalogue du type (devise du taux fixé
                       {props.rate
-                        ? ` · 1 USD = ${props.rate.rate.toLocaleString("fr-FR")} CDF`
+                        ? ` · ${formatConfiguredRateLabel(props.rate)}`
                         : ""}
                       ).
                     </p>

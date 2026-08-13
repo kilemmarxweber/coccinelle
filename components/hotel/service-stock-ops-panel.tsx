@@ -20,7 +20,7 @@ import {
   SimpleBarChart,
   TrendAreaChart,
 } from "@/components/reports/report-charts";
-import { formatPrimaryAmount } from "@/lib/cash/exchange";
+import { formatPrimaryAmount, formatUsdLineTotal, formatUsdLinesTotal, usdLinePrimaryNumber, usdLinesPrimaryTotal } from "@/lib/cash/exchange";
 import { hotelRoutes } from "@/lib/branch/paths";
 import { closeServiceStockSessionAction } from "@/lib/hotel/service-stock";
 import {
@@ -135,6 +135,29 @@ export function ServiceStockOpsPanel(props: {
           }
         : null,
     );
+  const moneyLine = (qty: number, unitUsd: number) =>
+    formatUsdLineTotal(
+      qty,
+      unitUsd,
+      props.rate
+        ? {
+            rate: props.rate.rate,
+            configuredFrom: props.rate.configuredFrom ?? "USD",
+          }
+        : null,
+    );
+  const moneyLines = (
+    lines: { quantity: number; unitPriceUsd: number }[],
+  ) =>
+    formatUsdLinesTotal(
+      lines,
+      props.rate
+        ? {
+            rate: props.rate.rate,
+            configuredFrom: props.rate.configuredFrom ?? "USD",
+          }
+        : null,
+    );
   const session = props.session;
   const history = props.history ?? [];
   const stockHref = hotelRoutes.serviceStock(
@@ -157,6 +180,32 @@ export function ServiceStockOpsPanel(props: {
     );
   }, [session]);
 
+  const recoverLabel = session
+    ? moneyLines(
+        session.lines.map((l) => ({
+          quantity:
+            l.qtyOpeningCounted != null ? l.qtyOpeningCounted : l.qtyAttributed,
+          unitPriceUsd: l.unitPriceUsd,
+        })),
+      )
+    : money(0);
+  const soldLabel = session
+    ? moneyLines(
+        session.lines.map((l) => ({
+          quantity: l.qtySold,
+          unitPriceUsd: l.unitPriceUsd,
+        })),
+      )
+    : money(0);
+  const remainingLabel = session
+    ? moneyLines(
+        session.lines.map((l) => ({
+          quantity: remaining(l),
+          unitPriceUsd: l.unitPriceUsd,
+        })),
+      )
+    : money(0);
+
   const sessionQtyChart = useMemo(() => {
     if (!session) return [];
     return session.lines.map((l) => ({
@@ -175,11 +224,20 @@ export function ServiceStockOpsPanel(props: {
           l.menuItem.name.length > 14
             ? `${l.menuItem.name.slice(0, 12)}…`
             : l.menuItem.name,
-        value: Math.round(l.qtySold * l.unitPriceUsd * 100) / 100,
+        value: usdLinePrimaryNumber(
+          l.qtySold,
+          l.unitPriceUsd,
+          props.rate
+            ? {
+                rate: props.rate.rate,
+                configuredFrom: props.rate.configuredFrom ?? "USD",
+              }
+            : null,
+        ),
       }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 8);
-  }, [session]);
+  }, [session, props.rate]);
 
   const salesTrend = useMemo(() => {
     return [...history]
@@ -187,27 +245,28 @@ export function ServiceStockOpsPanel(props: {
       .reverse()
       .slice(-14)
       .map((h) => {
-        const ca = summarizeRecover(
+        const ca = usdLinesPrimaryTotal(
           h.lines.map((l) => ({
-            name: "",
-            sourceZone: "",
-            qtyAttributed: l.qtyAttributed,
-            qtyOpeningCounted: l.qtyOpeningCounted,
-            qtySold: l.qtySold,
-            qtyLoss: l.qtyLoss,
+            quantity: l.qtySold,
             unitPriceUsd: l.unitPriceUsd,
           })),
-        ).sold;
+          props.rate
+            ? {
+                rate: props.rate.rate,
+                configuredFrom: props.rate.configuredFrom ?? "USD",
+              }
+            : null,
+        );
         const d =
           h.closedAt instanceof Date
             ? h.closedAt
             : new Date(h.closedAt ?? h.openedAt);
         return {
           day: d.toISOString().slice(0, 10),
-          value: Math.round(ca * 100) / 100,
+          value: ca,
         };
       });
-  }, [history]);
+  }, [history, props.rate]);
 
   const vendorRateChart = useMemo(() => {
     const map = new Map<string, { toRecover: number; sold: number }>();
@@ -297,6 +356,7 @@ export function ServiceStockOpsPanel(props: {
             closedAt: new Date(),
             lines: linesForDoc,
             formatMoney: money,
+            formatLineTotal: moneyLine,
             disposition: closeDisposition,
           }),
         );
@@ -368,7 +428,7 @@ export function ServiceStockOpsPanel(props: {
             À recouvrir
           </p>
           <p className="mt-1 text-lg font-semibold tabular-nums">
-            {money(summary.toRecover)}
+            {recoverLabel}
           </p>
         </div>
         <div className="rounded-xl border border-border bg-card px-4 py-3">
@@ -376,7 +436,7 @@ export function ServiceStockOpsPanel(props: {
             Recouvré (vendu)
           </p>
           <p className="mt-1 text-lg font-semibold tabular-nums">
-            {money(summary.sold)}
+            {soldLabel}
           </p>
         </div>
         <div className="rounded-xl border border-border bg-card px-4 py-3">
@@ -384,7 +444,7 @@ export function ServiceStockOpsPanel(props: {
             Restant (valeur)
           </p>
           <p className="mt-1 text-lg font-semibold tabular-nums">
-            {money(summary.remainingValue)}
+            {remainingLabel}
           </p>
         </div>
         <div className="rounded-xl border border-border bg-card px-4 py-3">
@@ -418,11 +478,11 @@ export function ServiceStockOpsPanel(props: {
                 <tr key={l.id} className="border-t border-border/70">
                   <td className="px-3 py-2">{l.menuItem.name}</td>
                   <td className="px-3 py-2 text-right tabular-nums">
-                    {money(qty * l.unitPriceUsd)}
+                    {moneyLine(qty, l.unitPriceUsd)}
                   </td>
                   <td className="px-3 py-2 text-right">{l.qtySold}</td>
                   <td className="px-3 py-2 text-right tabular-nums">
-                    {money(l.qtySold * l.unitPriceUsd)}
+                    {moneyLine(l.qtySold, l.unitPriceUsd)}
                   </td>
                   <td className="px-3 py-2 text-right font-medium">
                     {remaining(l)}
@@ -531,13 +591,13 @@ export function ServiceStockOpsPanel(props: {
               <div>
                 <p className="text-[11px] text-muted-foreground">À recouvrir</p>
                 <p className="font-semibold tabular-nums">
-                  {money(summary.toRecover)}
+                  {recoverLabel}
                 </p>
               </div>
               <div>
                 <p className="text-[11px] text-muted-foreground">Recouvré</p>
                 <p className="font-semibold tabular-nums">
-                  {money(summary.sold)}
+                  {soldLabel}
                 </p>
               </div>
               <div>

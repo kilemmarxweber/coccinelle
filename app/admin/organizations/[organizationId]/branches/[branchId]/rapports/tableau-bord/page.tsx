@@ -11,7 +11,7 @@ import {
 import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
   formatBothAmounts,
-  formatBothRateLabels,
+  formatConfiguredRateLabel,
 } from "@/lib/cash/exchange";
 import { getBoutiqueDashboardKpisAction } from "@/lib/boutique/actions";
 import { getHotelDashboardKpisAction } from "@/lib/hotel/actions";
@@ -51,7 +51,7 @@ export default async function TableauBordPage({ params }: PageProps) {
     : boutiqueKpis
       ? formatBothAmounts(boutiqueKpis.caJour, rate)
       : null;
-  const rateLabels = formatBothRateLabels(rate);
+  const rateLabels = rate ? formatConfiguredRateLabel(rate) : null;
 
   const kpiCards = kpis
     ? [
@@ -72,7 +72,7 @@ export default async function TableauBordPage({ params }: PageProps) {
         {
           label: "CA caisse (jour)",
           value: caBoth ?? `${kpis.caJour.toFixed(2)} $`,
-          sub: rateLabels?.both ?? null,
+          sub: rateLabels,
         },
         showRestaurant
           ? {
@@ -87,7 +87,7 @@ export default async function TableauBordPage({ params }: PageProps) {
           {
             label: "CA boutique (jour)",
             value: caBoth ?? `${boutiqueKpis.caJour.toFixed(2)} $`,
-            sub: rateLabels?.both ?? null,
+            sub: rateLabels,
           },
           {
             label: "Tickets (jour)",
@@ -118,7 +118,7 @@ export default async function TableauBordPage({ params }: PageProps) {
           <p className="text-sm text-muted-foreground">{branch.name}</p>
           {rateLabels ? (
             <p className="mt-1 text-xs font-medium text-sky-700 dark:text-sky-300">
-              {rateLabels.both}
+              {rateLabels}
             </p>
           ) : null}
         </div>

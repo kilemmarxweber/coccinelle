@@ -139,8 +139,12 @@ type Props = {
   actions: ReactNode;
   emptyHint?: string;
   className?: string;
-  /** Format d’affichage des prix (défaut : 2 décimales + $). */
+  /** Format d’affichage des prix unitaires (défaut : 2 décimales + $). */
   formatPrice?: (amount: number) => string;
+  /** Total ligne qté × P.U. (évite l’écart CDF si on convertit le produit USD). */
+  formatLineTotal?: (quantity: number, unitPriceUsd: number) => string;
+  /** Total panier = somme des lignes arrondies. */
+  formatCartTotal?: (lines: PosCartLine[]) => string;
   /** Active le champ scan code-barres (défaut true). */
   barcodeScanEnabled?: boolean;
   /** Active la pagination catalogue (2 lignes). Défaut true. */
@@ -161,6 +165,8 @@ export function PosTerminal({
   emptyHint = "Touchez un article ou scannez un code-barres",
   className,
   formatPrice = (amount: number) => `${amount.toFixed(2)} $`,
+  formatLineTotal,
+  formatCartTotal,
   barcodeScanEnabled = true,
   paginateCatalog = true,
   paginateCart = true,
@@ -250,6 +256,13 @@ export function PosTerminal({
   }, [cart.length, paginateCart]);
 
   const total = cart.reduce((s, l) => s + l.price * l.quantity, 0);
+  const totalLabel = formatCartTotal
+    ? formatCartTotal(cart)
+    : formatPrice(total);
+  const lineLabel = (line: PosCartLine) =>
+    formatLineTotal
+      ? formatLineTotal(line.quantity, line.price)
+      : formatPrice(line.price * line.quantity);
   const linesCount = cart.reduce((s, l) => s + l.quantity, 0);
   const activeLabel = category === "Tous" ? "Catalogue" : category;
 
@@ -570,7 +583,7 @@ export function PosTerminal({
                         </p>
                       </div>
                       <p className="shrink-0 text-sm font-semibold tabular-nums">
-                        {formatPrice(line.price * line.quantity)}
+                        {lineLabel(line)}
                       </p>
                     </div>
                     <div className="mt-2 flex items-center gap-1.5">
@@ -635,7 +648,7 @@ export function PosTerminal({
           <div className="flex items-end justify-between gap-3">
             <span className="text-sm text-muted-foreground">Total</span>
             <span className="text-2xl font-bold tracking-tight tabular-nums">
-              {formatPrice(total)}
+              {totalLabel}
             </span>
           </div>
           {actions}

@@ -57,9 +57,10 @@ export function summarizeRecover(lines: ServiceStockDocLine[]) {
   }, 0);
   const rate = toRecover > 0.0001 ? (sold / toRecover) * 100 : 0;
   return {
-    toRecover: Math.round(toRecover * 100) / 100,
-    sold: Math.round(sold * 100) / 100,
-    remainingValue: Math.round(remainingQtyValue * 100) / 100,
+    // Pas d’arrondi cents USD ici : la conversion CDF se fait qté × P.U.
+    toRecover,
+    sold,
+    remainingValue: remainingQtyValue,
     recoverRate: Math.round(rate * 10) / 10,
   };
 }
@@ -72,20 +73,23 @@ export function buildServiceStockOpeningHtml(input: {
   openedAt: string | Date;
   lines: ServiceStockDocLine[];
   formatMoney: (n: number) => string;
+  formatLineTotal?: (quantity: number, unitPriceUsd: number) => string;
   updatedNote?: string | null;
 }) {
+  const lineTotal =
+    input.formatLineTotal ??
+    ((qty: number, unit: number) => input.formatMoney(qty * unit));
   const summary = summarizeRecover(input.lines);
   const rows = input.lines
     .map((l) => {
       const qty = qtyForRecover(l);
-      const val = qty * l.unitPriceUsd;
       return `<tr>
       <td style="padding:8px;border-bottom:1px solid #ddd">${escapeHtml(l.name)}</td>
       <td style="padding:8px;border-bottom:1px solid #ddd">${escapeHtml(l.sourceZone)}</td>
       <td style="padding:8px;border-bottom:1px solid #ddd;text-align:right">${l.qtyAttributed}</td>
       <td style="padding:8px;border-bottom:1px solid #ddd;text-align:right">${l.qtyOpeningCounted ?? "—"}</td>
       <td style="padding:8px;border-bottom:1px solid #ddd;text-align:right">${input.formatMoney(l.unitPriceUsd)}</td>
-      <td style="padding:8px;border-bottom:1px solid #ddd;text-align:right">${input.formatMoney(val)}</td>
+      <td style="padding:8px;border-bottom:1px solid #ddd;text-align:right">${lineTotal(qty, l.unitPriceUsd)}</td>
     </tr>`;
     })
     .join("");
@@ -139,8 +143,12 @@ export function buildServiceStockClosingHtml(input: {
   closedAt: string | Date;
   lines: ServiceStockDocLine[];
   formatMoney: (n: number) => string;
+  formatLineTotal?: (quantity: number, unitPriceUsd: number) => string;
   disposition?: "HANDOVER" | "RETURN_DEPOT" | null;
 }) {
+  const lineTotal =
+    input.formatLineTotal ??
+    ((qty: number, unit: number) => input.formatMoney(qty * unit));
   const summary = summarizeRecover(input.lines);
   const dispositionLabel =
     input.disposition === "RETURN_DEPOT"
@@ -152,12 +160,11 @@ export function buildServiceStockClosingHtml(input: {
     .filter((l) => (l.qtySold ?? 0) > 0)
     .map((l) => {
       const sold = l.qtySold ?? 0;
-      const total = sold * l.unitPriceUsd;
       return `<tr>
         <td style="padding:8px;border-bottom:1px solid #ddd">${escapeHtml(l.name)}</td>
         <td style="padding:8px;border-bottom:1px solid #ddd;text-align:right">${input.formatMoney(l.unitPriceUsd)}</td>
         <td style="padding:8px;border-bottom:1px solid #ddd;text-align:right">${sold}</td>
-        <td style="padding:8px;border-bottom:1px solid #ddd;text-align:right">${input.formatMoney(total)}</td>
+        <td style="padding:8px;border-bottom:1px solid #ddd;text-align:right">${lineTotal(sold, l.unitPriceUsd)}</td>
       </tr>`;
     })
     .join("");

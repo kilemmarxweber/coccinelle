@@ -17,7 +17,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  formatAlreadyPrimaryAmount,
+  formatConfiguredRateLabel,
   formatPrimaryAmount,
+  formatUsdLineTotal,
+  formatUsdLinesTotal,
+  usdLinePrimaryNumber,
+  usdLinesPrimaryTotal,
   type NormalizedUsdCdfRate,
 } from "@/lib/cash/exchange";
 import { branchDashboardPath, hotelRoutes } from "@/lib/branch/paths";
@@ -31,6 +37,7 @@ import {
 import {
   buildServiceStockClosingHtml,
   buildServiceStockOpeningHtml,
+  qtyForRecover,
   summarizeRecover,
 } from "@/lib/hotel/service-stock-print";
 import {
@@ -185,6 +192,11 @@ export function ServiceStockClient(props: {
 
   const session = props.session;
   const money = (n: number) => formatPrimaryAmount(n, props.rate);
+  const moneyLine = (qty: number, unitUsd: number) =>
+    formatUsdLineTotal(qty, unitUsd, props.rate);
+  const moneyLines = (
+    lines: { quantity: number; unitPriceUsd: number }[],
+  ) => formatUsdLinesTotal(lines, props.rate);
 
   const needsConfirm =
     session &&
@@ -228,6 +240,32 @@ export function ServiceStockClient(props: {
     return summarizeRecover(docLines);
   }, [session, needsConfirm, openingCounts, docLines]);
 
+  const recoverLabel = moneyLines(
+    (needsConfirm && session
+      ? session.lines.map((l) => ({
+          quantity: Math.round(
+            Number(openingCounts[l.id] ?? l.qtyAttributed) || 0,
+          ),
+          unitPriceUsd: l.unitPriceUsd,
+        }))
+      : docLines.map((l) => ({
+          quantity: qtyForRecover(l),
+          unitPriceUsd: l.unitPriceUsd,
+        }))),
+  );
+  const soldLabel = moneyLines(
+    docLines.map((l) => ({
+      quantity: l.qtySold ?? 0,
+      unitPriceUsd: l.unitPriceUsd,
+    })),
+  );
+  const remainingLabel = moneyLines(
+    (session?.lines ?? []).map((l) => ({
+      quantity: remaining(l),
+      unitPriceUsd: l.unitPriceUsd,
+    })),
+  );
+
   /** CA par session (historique) pour courbe. */
   const salesTrend = useMemo(() => {
     return [...props.history]
@@ -235,29 +273,27 @@ export function ServiceStockClient(props: {
       .reverse()
       .slice(-14)
       .map((h) => {
-        const ca = summarizeRecover(h.lines.map((l) => ({
-          name: "",
-          sourceZone: "",
-          qtyAttributed: l.qtyAttributed,
-          qtyOpeningCounted: l.qtyOpeningCounted,
-          qtySold: l.qtySold,
-          qtyLoss: l.qtyLoss,
-          unitPriceUsd: l.unitPriceUsd,
-        }))).sold;
+        const ca = usdLinesPrimaryTotal(
+          h.lines.map((l) => ({
+            quantity: l.qtySold,
+            unitPriceUsd: l.unitPriceUsd,
+          })),
+          props.rate,
+        );
         const d =
           h.closedAt instanceof Date
             ? h.closedAt
             : new Date(h.closedAt ?? h.openedAt);
         const day = d.toISOString().slice(0, 10);
-        return { day, value: Math.round(ca * 100) / 100 };
+        return { day, value: ca };
       });
-  }, [props.history]);
+  }, [props.history, props.rate]);
 
   /** Efficacité vendeur : CA + taux de recouvrement. */
   const vendorStats = useMemo(() => {
     const map = new Map<
       string,
-      { toRecover: number; sold: number; sessions: number }
+      { toRecover: number; sold: number; sessions: number; caPrimary: number }
     >();
     for (const h of props.history) {
       const key = h.vendorDisplayName || "Entrant";
@@ -265,6 +301,7 @@ export function ServiceStockClient(props: {
         toRecover: 0,
         sold: 0,
         sessions: 0,
+        caPrimary: 0,
       };
       cur.sessions += 1;
       const s = summarizeRecover(
@@ -280,13 +317,20 @@ export function ServiceStockClient(props: {
       );
       cur.toRecover += s.toRecover;
       cur.sold += s.sold;
+      cur.caPrimary += usdLinesPrimaryTotal(
+        h.lines.map((l) => ({
+          quantity: l.qtySold,
+          unitPriceUsd: l.unitPriceUsd,
+        })),
+        props.rate,
+      );
       map.set(key, cur);
     }
     return [...map.entries()]
       .map(([name, v]) => ({
         name: name.length > 14 ? `${name.slice(0, 12)}…` : name,
         fullName: name,
-        ca: Math.round(v.sold * 100) / 100,
+        ca: v.caPrimary,
         rate:
           v.toRecover > 0.0001
             ? Math.round((v.sold / v.toRecover) * 1000) / 10
@@ -294,7 +338,7 @@ export function ServiceStockClient(props: {
         sessions: v.sessions,
       }))
       .sort((a, b) => b.ca - a.ca);
-  }, [props.history]);
+  }, [props.history, props.rate]);
 
   const vendorRateChart = useMemo(
     () =>
@@ -323,11 +367,11 @@ export function ServiceStockClient(props: {
           l.menuItem.name.length > 14
             ? `${l.menuItem.name.slice(0, 12)}…`
             : l.menuItem.name,
-        value: Math.round(l.qtySold * l.unitPriceUsd * 100) / 100,
+        value: usdLinePrimaryNumber(l.qtySold, l.unitPriceUsd, props.rate),
       }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 8);
-  }, [session]);
+  }, [session, props.rate]);
 
   const sessionQtyChart = useMemo(() => {
     if (!session) return [] as { day: string; entrees: number; sorties: number }[];
@@ -349,6 +393,7 @@ export function ServiceStockClient(props: {
         openedAt: session.openedAt,
         lines: docLines,
         formatMoney: money,
+        formatLineTotal: moneyLine,
         updatedNote,
       }),
     );
@@ -424,6 +469,7 @@ export function ServiceStockClient(props: {
             managerName: props.currentUserName,
             openedAt: session.openedAt,
             formatMoney: money,
+            formatLineTotal: moneyLine,
             lines: session.lines.map((l) => ({
               name: l.menuItem.name,
               sourceZone: l.sourceZone,
@@ -467,10 +513,6 @@ export function ServiceStockClient(props: {
         setTopUpOpen(false);
         setTopUpQty("1");
         router.refresh();
-        window.setTimeout(
-          () => printOpening("État mis à jour (réassort)"),
-          400,
-        );
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Erreur");
       }
@@ -534,6 +576,7 @@ export function ServiceStockClient(props: {
             closedAt: new Date(),
             lines: linesForDoc,
             formatMoney: money,
+            formatLineTotal: moneyLine,
             disposition: closeDisposition,
           }),
         );
@@ -560,6 +603,14 @@ export function ServiceStockClient(props: {
           <p className="text-sm text-muted-foreground">
             {props.branchName} · float hors cuisine · ouverture / clôture
             signées
+            {props.rate ? (
+              <>
+                {" · "}
+                <span className="font-medium text-foreground">
+                  {formatConfiguredRateLabel(props.rate)}
+                </span>
+              </>
+            ) : null}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -622,7 +673,7 @@ export function ServiceStockClient(props: {
                 À recouvrir
               </p>
               <p className="mt-1 text-lg font-semibold tabular-nums">
-                {money(liveSummary.toRecover)}
+                {recoverLabel}
               </p>
             </div>
             <div className="rounded-xl border border-border bg-card px-4 py-3">
@@ -630,7 +681,7 @@ export function ServiceStockClient(props: {
                 Recouvré (vendu)
               </p>
               <p className="mt-1 text-lg font-semibold tabular-nums">
-                {money(liveSummary.sold)}
+                {soldLabel}
               </p>
             </div>
             <div className="rounded-xl border border-border bg-card px-4 py-3">
@@ -638,7 +689,7 @@ export function ServiceStockClient(props: {
                 Restant (valeur)
               </p>
               <p className="mt-1 text-lg font-semibold tabular-nums">
-                {money(liveSummary.remainingValue)}
+                {remainingLabel}
               </p>
             </div>
             <div className="rounded-xl border border-border bg-card px-4 py-3">
@@ -719,11 +770,11 @@ export function ServiceStockClient(props: {
                         </td>
                         <td className="px-3 py-2 text-right">{l.qtyAttributed}</td>
                         <td className="px-3 py-2 text-right tabular-nums">
-                          {money(qty * l.unitPriceUsd)}
+                          {moneyLine(qty, l.unitPriceUsd)}
                         </td>
                         <td className="px-3 py-2 text-right">{l.qtySold}</td>
                         <td className="px-3 py-2 text-right tabular-nums">
-                          {money(l.qtySold * l.unitPriceUsd)}
+                          {moneyLine(l.qtySold, l.unitPriceUsd)}
                         </td>
                         <td className="px-3 py-2 text-right font-medium">
                           {remaining(l)}
@@ -835,7 +886,8 @@ export function ServiceStockClient(props: {
                   >
                     <span className="font-medium">{v.fullName}</span>
                     <span className="text-muted-foreground tabular-nums">
-                      {money(v.ca)} · {v.rate.toLocaleString("fr-FR")} % ·{" "}
+                      {formatAlreadyPrimaryAmount(v.ca, props.rate)} ·{" "}
+                      {v.rate.toLocaleString("fr-FR")} % ·{" "}
                       {v.sessions} sess.
                     </span>
                   </li>
@@ -870,7 +922,18 @@ export function ServiceStockClient(props: {
                   {h.number} · {h.vendorDisplayName} · {h.status}
                 </span>
                 <span className="text-muted-foreground tabular-nums">
-                  À recouvrir {money(s.toRecover)} · Recouvré {money(s.sold)} ·{" "}
+                  À recouvrir {moneyLines(h.lines.map((l) => ({
+                    quantity:
+                      l.qtyOpeningCounted != null
+                        ? l.qtyOpeningCounted
+                        : l.qtyAttributed,
+                    unitPriceUsd: l.unitPriceUsd,
+                  })))}{" "}
+                  · Recouvré {moneyLines(h.lines.map((l) => ({
+                    quantity: l.qtySold,
+                    unitPriceUsd: l.unitPriceUsd,
+                  })))}{" "}
+                  ·{" "}
                   {s.recoverRate.toLocaleString("fr-FR")} %
                 </span>
               </li>
@@ -1032,7 +1095,7 @@ export function ServiceStockClient(props: {
               disabled={pending || !topUpItemId}
               onClick={doTopUp}
             >
-              Ajouter · réimprimer état
+              Ajouter
             </Button>
           </div>
         </DialogContent>

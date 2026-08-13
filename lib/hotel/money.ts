@@ -18,7 +18,10 @@ export function formatUsdWithCdf(
   opts?: { cdfDigits?: number },
 ) {
   if (rate && rate > 0) {
-    return `${formatUsd(amountUsd)} · ${formatCdf(amountUsd * rate, opts?.cdfDigits ?? 0)}`;
+    return `${formatUsd(amountUsd)} · ${formatCdf(
+      Math.round(amountUsd * Math.round(rate)),
+      opts?.cdfDigits ?? 0,
+    )}`;
   }
   return formatUsd(amountUsd);
 }
