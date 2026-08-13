@@ -372,7 +372,7 @@ export async function listReadyOrdersAction(
   branchId: string,
 ) {
   await ctx(organizationId, branchId);
-  return prisma.hotelOrder.findMany({
+  const orders = await prisma.hotelOrder.findMany({
     where: {
       branchId,
       status: {
@@ -387,6 +387,24 @@ export async function listReadyOrdersAction(
     },
     orderBy: [{ readyAt: "asc" }, { updatedAt: "asc" }],
   });
+  const ids = [...new Set(orders.map((o) => o.createdByUserId).filter(Boolean))];
+  const users =
+    ids.length === 0
+      ? []
+      : await prisma.user.findMany({
+          where: { id: { in: ids } },
+          select: { id: true, name: true, email: true },
+        });
+  const names = new Map(
+    users.map((u) => [
+      u.id,
+      (u.name?.trim() || u.email || "Serveur").trim(),
+    ]),
+  );
+  return orders.map((o) => ({
+    ...o,
+    createdByName: names.get(o.createdByUserId) ?? "Serveur",
+  }));
 }
 
 export async function getTodayPaymentsAction(
@@ -409,7 +427,7 @@ export async function getPaymentByIdAction(
   paymentId: string,
 ) {
   await ctx(organizationId, branchId);
-  return prisma.payment.findFirst({
+  const payment = await prisma.payment.findFirst({
     where: { id: paymentId, branchId },
     include: {
       folio: {
@@ -430,4 +448,25 @@ export async function getPaymentByIdAction(
       },
     },
   });
+  if (!payment) return payment;
+  if (!payment.order?.createdByUserId) {
+    return {
+      ...payment,
+      order: payment.order
+        ? { ...payment.order, createdByName: null as string | null }
+        : payment.order,
+    };
+  }
+  const server = await prisma.user.findUnique({
+    where: { id: payment.order.createdByUserId },
+    select: { name: true, email: true },
+  });
+  return {
+    ...payment,
+    order: {
+      ...payment.order,
+      createdByName:
+        server?.name?.trim() || server?.email?.trim() || "Serveur",
+    },
+  };
 }

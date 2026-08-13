@@ -82,14 +82,15 @@ export default async function RestaurationPage({
             </Link>
           </div>
         </div>
-      ) : (
-        <div className="mx-auto max-w-6xl px-4 pt-4">
-          <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/5 px-4 py-2 text-xs text-muted-foreground">
-            Float service {stockGate.session?.number} · entrant{" "}
-            {stockGate.session?.vendorDisplayName}
-          </div>
-        </div>
-      )}
+      )
+      // : (
+      //   <div className="mx-auto max-w-6xl px-4 pt-4">
+      //     <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/5 px-4 py-2 text-xs text-muted-foreground">
+      //       Float service {stockGate.session?.number} · entrant{" "}
+      //       {stockGate.session?.vendorDisplayName}
+      //     </div>
+      //   </div>)
+      : null}
       <RestaurationClient
         organizationId={organizationId}
         branchId={branchId}

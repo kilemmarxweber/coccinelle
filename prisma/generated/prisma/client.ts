@@ -143,7 +143,9 @@ export type Branch = Prisma.BranchModel
 export type BranchPartner = Prisma.BranchPartnerModel
 /**
  * Model PartnerBooking
- * * Dossier multi-espaces lié à un partenaire (hôtel).
+ * *
+ *  * Dossier multi-chambres : partenaire (PRT-) ou booker particulier (GRP-).
+ *  * 1 dossier → N HotelStay (1 chambre / folio chacun).
  */
 export type PartnerBooking = Prisma.PartnerBookingModel
 /**

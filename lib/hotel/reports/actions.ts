@@ -7,6 +7,7 @@ import { getActiveExchangeRate } from "@/lib/cash/actions";
 import { toReportExchangeRate } from "@/lib/cash/exchange";
 import prisma from "@/lib/prisma";
 import {
+  currentMonthRange,
   dayKey,
   eachDayIso,
   endOfLocalDay,
@@ -14,11 +15,12 @@ import {
   pctDelta,
   previousRange,
   startOfLocalDay,
+  toIsoDate,
 } from "@/lib/hotel/reports/period";
 
 async function ctx(organizationId: string, branchId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user) throw new Error("Non authentifié.");
+  if (!session?.user) throw new Error("Non authentifi?.");
   const branch = await canAccessBranch(
     session.user.id,
     session.user.role,
@@ -126,24 +128,24 @@ async function loadSaleLines(branchId: string, from: string, to: string) {
     const order = p.order;
     const itemsLabel = order?.items.length
       ? order.items
-          .map((i) => `${i.quantity}× ${i.name}`)
+          .map((i) => `${i.quantity}? ${i.name}`)
           .slice(0, 4)
-          .join(", ") + (order.items.length > 4 ? "…" : "")
+          .join(", ") + (order.items.length > 4 ? "?" : "")
       : null;
     const participants = [
       p.cashierUserId
-        ? { role: "Caissier" as const, name: nameById.get(p.cashierUserId) ?? "—" }
+        ? { role: "Caissier" as const, name: nameById.get(p.cashierUserId) ?? "?" }
         : null,
       order?.createdByUserId
         ? {
             role: "Serveur" as const,
-            name: nameById.get(order.createdByUserId) ?? "—",
+            name: nameById.get(order.createdByUserId) ?? "?",
           }
         : null,
       order?.preparedByUserId
         ? {
             role: "Cuisinier" as const,
-            name: nameById.get(order.preparedByUserId) ?? "—",
+            name: nameById.get(order.preparedByUserId) ?? "?",
           }
         : null,
     ].filter((x): x is { role: "Caissier" | "Serveur" | "Cuisinier"; name: string } =>
@@ -527,9 +529,9 @@ export async function getFinanceReportAction(input: PeriodInput) {
       (p) =>
         p.usd < 0 &&
         (p.expenseId ||
-          (p.note ?? "").startsWith("Dépense ·") ||
-          (p.note ?? "").startsWith("Dépôt à la banque ·") ||
-          (p.note ?? "").startsWith("Remise au propriétaire ·")),
+          (p.note ?? "").startsWith("D?pense ?") ||
+          (p.note ?? "").startsWith("D?p?t ? la banque ?") ||
+          (p.note ?? "").startsWith("Remise au propri?taire ?")),
     )
     .reduce((s, p) => s + Math.abs(p.usd), 0);
   const expensesPrev = prevPays
@@ -537,9 +539,9 @@ export async function getFinanceReportAction(input: PeriodInput) {
       (p) =>
         p.usd < 0 &&
         (p.expenseId ||
-          (p.note ?? "").startsWith("Dépense ·") ||
-          (p.note ?? "").startsWith("Dépôt à la banque ·") ||
-          (p.note ?? "").startsWith("Remise au propriétaire ·")),
+          (p.note ?? "").startsWith("D?pense ?") ||
+          (p.note ?? "").startsWith("D?p?t ? la banque ?") ||
+          (p.note ?? "").startsWith("Remise au propri?taire ?")),
     )
     .reduce((s, p) => s + Math.abs(p.usd), 0);
   const purchases = pays
@@ -638,6 +640,11 @@ export async function getMyOrdersReportAction(input: PeriodInput) {
   const { user } = await ctx(input.organizationId, input.branchId);
   const exchange = await getActiveExchangeRate(input.branchId);
   const days = eachDayIso(input.from, input.to);
+  const soldWhere = {
+    branchId: input.branchId,
+    createdByUserId: user.id,
+    status: { notIn: ["BROUILLON", "ANNULEE"] as Array<"BROUILLON" | "ANNULEE"> },
+  };
   const orders = await prisma.hotelOrder.findMany({
     where: {
       branchId: input.branchId,
@@ -652,38 +659,68 @@ export async function getMyOrdersReportAction(input: PeriodInput) {
   });
 
   const prev = previousRange(input.from, input.to);
-  const prevCount = await prisma.hotelOrder.count({
-    where: {
-      branchId: input.branchId,
-      createdByUserId: user.id,
-      createdAt: rangeBounds(prev.from, prev.to),
-      status: { not: "BROUILLON" },
-    },
-  });
+  const todayIso = toIsoDate(new Date());
+  const month = currentMonthRange();
+  const [prevCount, todayOrders, monthOrders] = await Promise.all([
+    prisma.hotelOrder.count({
+      where: {
+        ...soldWhere,
+        createdAt: rangeBounds(prev.from, prev.to),
+      },
+    }),
+    prisma.hotelOrder.findMany({
+      where: {
+        ...soldWhere,
+        createdAt: rangeBounds(todayIso, todayIso),
+      },
+      include: { items: { select: { amount: true } } },
+    }),
+    prisma.hotelOrder.findMany({
+      where: {
+        ...soldWhere,
+        createdAt: rangeBounds(month.from, month.to),
+      },
+      include: { items: { select: { amount: true } } },
+    }),
+  ]);
 
+  const sold = orders.filter((o) => o.status !== "ANNULEE");
+  const cancelled = orders.length - sold.length;
   let ca = 0;
   const byDay = new Map<string, number>();
   const byStatus = new Map<string, number>();
   const byProduct = new Map<string, number>();
 
   for (const o of orders) {
+    byStatus.set(o.status, (byStatus.get(o.status) ?? 0) + 1);
+    if (o.status === "ANNULEE") continue;
     const total = o.items.reduce((s, i) => s + i.amount, 0);
     ca += total;
     const day = dayKey(o.createdAt);
     byDay.set(day, (byDay.get(day) ?? 0) + total);
-    byStatus.set(o.status, (byStatus.get(o.status) ?? 0) + 1);
     for (const it of o.items) {
       byProduct.set(it.name, (byProduct.get(it.name) ?? 0) + it.amount);
     }
   }
 
+  const sumItems = (rows: { items: { amount: number }[] }[]) =>
+    rows.reduce((s, o) => s + o.items.reduce((a, i) => a + i.amount, 0), 0);
+
+  const caToday = sumItems(todayOrders);
+  const caMonth = sumItems(monthOrders);
+
   return {
     kpis: {
-      orders: orders.length,
-      ordersDelta: pctDelta(orders.length, prevCount),
+      orders: sold.length,
+      cancelled,
+      ordersDelta: pctDelta(sold.length, prevCount),
       ca: Math.round(ca * 100) / 100,
       ticketAvg:
-        orders.length > 0 ? Math.round((ca / orders.length) * 100) / 100 : 0,
+        sold.length > 0 ? Math.round((ca / sold.length) * 100) / 100 : 0,
+      caToday: Math.round(caToday * 100) / 100,
+      ordersToday: todayOrders.length,
+      caMonth: Math.round(caMonth * 100) / 100,
+      ordersMonth: monthOrders.length,
     },
     caByDay: days.map((day) => ({
       day,
@@ -692,7 +729,7 @@ export async function getMyOrdersReportAction(input: PeriodInput) {
     byStatus: [...byStatus.entries()].map(([name, value]) => ({ name, value })),
     topProducts: [...byProduct.entries()]
       .map(([name, value]) => ({
-        name: name.length > 18 ? `${name.slice(0, 16)}�` : name,
+        name: name.length > 18 ? `${name.slice(0, 16)}...` : name,
         value: Math.round(value * 100) / 100,
       }))
       .sort((a, b) => b.value - a.value)
@@ -798,7 +835,7 @@ export async function getStaysReportAction(input: PeriodInput) {
       id: s.id,
       guestName: s.guestName,
       status: s.status,
-      room: s.room?.number ?? "�",
+      room: s.room?.number ?? "?",
       checkInDate: s.checkInDate,
       checkOutDate: s.checkOutDate,
     })),
@@ -806,7 +843,7 @@ export async function getStaysReportAction(input: PeriodInput) {
       id: s.id,
       guestName: s.guestName,
       status: s.status,
-      room: s.room?.number ?? "�",
+      room: s.room?.number ?? "?",
       checkInDate: s.checkInDate,
       checkOutDate: s.checkOutDate,
     })),

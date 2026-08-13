@@ -650,23 +650,35 @@ model BranchPartner {
   @@index([branchId, name])
 }
 
-/** Dossier multi-espaces lié à un partenaire (hôtel). */
+/**
+ * Dossier multi-chambres : partenaire (PRT-) ou booker particulier (GRP-).
+ * 1 dossier → N HotelStay (1 chambre / folio chacun).
+ */
 model PartnerBooking {
-  id              String               @id @default(uuid())
-  branchId        String
-  partnerId       String
-  code            String
-  label           String?
-  payTiming       PartnerPayTiming     @default(AT_CHECKOUT)
-  status          PartnerBookingStatus @default(CONFIRMED)
-  notes           String?
-  createdByUserId String
-  createdAt       DateTime             @default(now())
-  updatedAt       DateTime             @updatedAt
-  branch          Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  partner         BranchPartner        @relation(fields: [partnerId], references: [id], onDelete: Cascade)
-  stays           HotelStay[]
-  payments        Payment[]
+  id                     String               @id @default(uuid())
+  branchId               String
+  /// Null = réservation groupée particulier (bookerName requis)
+  partnerId              String?
+  code                   String
+  label                  String?
+  payTiming              PartnerPayTiming     @default(AT_CHECKOUT)
+  status                 PartnerBookingStatus @default(CONFIRMED)
+  notes                  String?
+  /// Organisateur / booker (obligatoire si pas de partenaire)
+  bookerName             String?
+  bookerPhone            String?
+  bookerEmail            String?
+  invoiceNumber          String?
+  invoiceIssuedAt        DateTime?
+  invoiceIssuedByUserId  String?
+  invoiceHandedOverAt    DateTime?
+  createdByUserId        String
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  branch                 Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  partner                BranchPartner?       @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+  stays                  HotelStay[]
+  payments               Payment[]
 
   @@unique([branchId, code])
   @@index([branchId, status])
@@ -888,6 +900,8 @@ model HotelStay {
   idDocumentCapturedAt DateTime?
   partnerId          String?
   partnerBookingId   String?
+  /// Identité / adresse différées → à saisir au check-in de cette chambre
+  guestPending       Boolean         @default(false)
   checkInDate        DateTime        @db.Date
   checkOutDate       DateTime        @db.Date
   status             HotelStayStatus @default(RESERVED)

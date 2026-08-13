@@ -59,6 +59,7 @@ export type HotelStayMinAggregateOutputType = {
   idDocumentCapturedAt: Date | null
   partnerId: string | null
   partnerBookingId: string | null
+  guestPending: boolean | null
   checkInDate: Date | null
   checkOutDate: Date | null
   status: $Enums.HotelStayStatus | null
@@ -94,6 +95,7 @@ export type HotelStayMaxAggregateOutputType = {
   idDocumentCapturedAt: Date | null
   partnerId: string | null
   partnerBookingId: string | null
+  guestPending: boolean | null
   checkInDate: Date | null
   checkOutDate: Date | null
   status: $Enums.HotelStayStatus | null
@@ -129,6 +131,7 @@ export type HotelStayCountAggregateOutputType = {
   idDocumentCapturedAt: number
   partnerId: number
   partnerBookingId: number
+  guestPending: number
   checkInDate: number
   checkOutDate: number
   status: number
@@ -184,6 +187,7 @@ export type HotelStayMinAggregateInputType = {
   idDocumentCapturedAt?: true
   partnerId?: true
   partnerBookingId?: true
+  guestPending?: true
   checkInDate?: true
   checkOutDate?: true
   status?: true
@@ -219,6 +223,7 @@ export type HotelStayMaxAggregateInputType = {
   idDocumentCapturedAt?: true
   partnerId?: true
   partnerBookingId?: true
+  guestPending?: true
   checkInDate?: true
   checkOutDate?: true
   status?: true
@@ -254,6 +259,7 @@ export type HotelStayCountAggregateInputType = {
   idDocumentCapturedAt?: true
   partnerId?: true
   partnerBookingId?: true
+  guestPending?: true
   checkInDate?: true
   checkOutDate?: true
   status?: true
@@ -376,6 +382,7 @@ export type HotelStayGroupByOutputType = {
   idDocumentCapturedAt: Date | null
   partnerId: string | null
   partnerBookingId: string | null
+  guestPending: boolean
   checkInDate: Date
   checkOutDate: Date
   status: $Enums.HotelStayStatus
@@ -434,6 +441,7 @@ export type HotelStayWhereInput = {
   idDocumentCapturedAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   partnerId?: Prisma.StringNullableFilter<"HotelStay"> | string | null
   partnerBookingId?: Prisma.StringNullableFilter<"HotelStay"> | string | null
+  guestPending?: Prisma.BoolFilter<"HotelStay"> | boolean
   checkInDate?: Prisma.DateTimeFilter<"HotelStay"> | Date | string
   checkOutDate?: Prisma.DateTimeFilter<"HotelStay"> | Date | string
   status?: Prisma.EnumHotelStayStatusFilter<"HotelStay"> | $Enums.HotelStayStatus
@@ -475,6 +483,7 @@ export type HotelStayOrderByWithRelationInput = {
   idDocumentCapturedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   partnerId?: Prisma.SortOrderInput | Prisma.SortOrder
   partnerBookingId?: Prisma.SortOrderInput | Prisma.SortOrder
+  guestPending?: Prisma.SortOrder
   checkInDate?: Prisma.SortOrder
   checkOutDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -519,6 +528,7 @@ export type HotelStayWhereUniqueInput = Prisma.AtLeast<{
   idDocumentCapturedAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   partnerId?: Prisma.StringNullableFilter<"HotelStay"> | string | null
   partnerBookingId?: Prisma.StringNullableFilter<"HotelStay"> | string | null
+  guestPending?: Prisma.BoolFilter<"HotelStay"> | boolean
   checkInDate?: Prisma.DateTimeFilter<"HotelStay"> | Date | string
   checkOutDate?: Prisma.DateTimeFilter<"HotelStay"> | Date | string
   status?: Prisma.EnumHotelStayStatusFilter<"HotelStay"> | $Enums.HotelStayStatus
@@ -560,6 +570,7 @@ export type HotelStayOrderByWithAggregationInput = {
   idDocumentCapturedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   partnerId?: Prisma.SortOrderInput | Prisma.SortOrder
   partnerBookingId?: Prisma.SortOrderInput | Prisma.SortOrder
+  guestPending?: Prisma.SortOrder
   checkInDate?: Prisma.SortOrder
   checkOutDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -603,6 +614,7 @@ export type HotelStayScalarWhereWithAggregatesInput = {
   idDocumentCapturedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"HotelStay"> | Date | string | null
   partnerId?: Prisma.StringNullableWithAggregatesFilter<"HotelStay"> | string | null
   partnerBookingId?: Prisma.StringNullableWithAggregatesFilter<"HotelStay"> | string | null
+  guestPending?: Prisma.BoolWithAggregatesFilter<"HotelStay"> | boolean
   checkInDate?: Prisma.DateTimeWithAggregatesFilter<"HotelStay"> | Date | string
   checkOutDate?: Prisma.DateTimeWithAggregatesFilter<"HotelStay"> | Date | string
   status?: Prisma.EnumHotelStayStatusWithAggregatesFilter<"HotelStay"> | $Enums.HotelStayStatus
@@ -634,6 +646,7 @@ export type HotelStayCreateInput = {
   idDocumentNumber?: string | null
   idDocumentImageUrl?: string | null
   idDocumentCapturedAt?: Date | string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -675,6 +688,7 @@ export type HotelStayUncheckedCreateInput = {
   idDocumentCapturedAt?: Date | string | null
   partnerId?: string | null
   partnerBookingId?: string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -708,6 +722,7 @@ export type HotelStayUpdateInput = {
   idDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -749,6 +764,7 @@ export type HotelStayUncheckedUpdateInput = {
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   partnerBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -786,6 +802,7 @@ export type HotelStayCreateManyInput = {
   idDocumentCapturedAt?: Date | string | null
   partnerId?: string | null
   partnerBookingId?: string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -817,6 +834,7 @@ export type HotelStayUpdateManyMutationInput = {
   idDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -852,6 +870,7 @@ export type HotelStayUncheckedUpdateManyInput = {
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   partnerBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -897,6 +916,7 @@ export type HotelStayCountOrderByAggregateInput = {
   idDocumentCapturedAt?: Prisma.SortOrder
   partnerId?: Prisma.SortOrder
   partnerBookingId?: Prisma.SortOrder
+  guestPending?: Prisma.SortOrder
   checkInDate?: Prisma.SortOrder
   checkOutDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -941,6 +961,7 @@ export type HotelStayMaxOrderByAggregateInput = {
   idDocumentCapturedAt?: Prisma.SortOrder
   partnerId?: Prisma.SortOrder
   partnerBookingId?: Prisma.SortOrder
+  guestPending?: Prisma.SortOrder
   checkInDate?: Prisma.SortOrder
   checkOutDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -976,6 +997,7 @@ export type HotelStayMinOrderByAggregateInput = {
   idDocumentCapturedAt?: Prisma.SortOrder
   partnerId?: Prisma.SortOrder
   partnerBookingId?: Prisma.SortOrder
+  guestPending?: Prisma.SortOrder
   checkInDate?: Prisma.SortOrder
   checkOutDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -1233,6 +1255,7 @@ export type HotelStayCreateWithoutBranchInput = {
   idDocumentNumber?: string | null
   idDocumentImageUrl?: string | null
   idDocumentCapturedAt?: Date | string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -1272,6 +1295,7 @@ export type HotelStayUncheckedCreateWithoutBranchInput = {
   idDocumentCapturedAt?: Date | string | null
   partnerId?: string | null
   partnerBookingId?: string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -1338,6 +1362,7 @@ export type HotelStayScalarWhereInput = {
   idDocumentCapturedAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   partnerId?: Prisma.StringNullableFilter<"HotelStay"> | string | null
   partnerBookingId?: Prisma.StringNullableFilter<"HotelStay"> | string | null
+  guestPending?: Prisma.BoolFilter<"HotelStay"> | boolean
   checkInDate?: Prisma.DateTimeFilter<"HotelStay"> | Date | string
   checkOutDate?: Prisma.DateTimeFilter<"HotelStay"> | Date | string
   status?: Prisma.EnumHotelStayStatusFilter<"HotelStay"> | $Enums.HotelStayStatus
@@ -1369,6 +1394,7 @@ export type HotelStayCreateWithoutPartnerInput = {
   idDocumentNumber?: string | null
   idDocumentImageUrl?: string | null
   idDocumentCapturedAt?: Date | string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -1408,6 +1434,7 @@ export type HotelStayUncheckedCreateWithoutPartnerInput = {
   idDocumentImageUrl?: string | null
   idDocumentCapturedAt?: Date | string | null
   partnerBookingId?: string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -1467,6 +1494,7 @@ export type HotelStayCreateWithoutPartnerBookingInput = {
   idDocumentNumber?: string | null
   idDocumentImageUrl?: string | null
   idDocumentCapturedAt?: Date | string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -1506,6 +1534,7 @@ export type HotelStayUncheckedCreateWithoutPartnerBookingInput = {
   idDocumentImageUrl?: string | null
   idDocumentCapturedAt?: Date | string | null
   partnerId?: string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -1565,6 +1594,7 @@ export type HotelStayCreateWithoutRoomInput = {
   idDocumentNumber?: string | null
   idDocumentImageUrl?: string | null
   idDocumentCapturedAt?: Date | string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -1604,6 +1634,7 @@ export type HotelStayUncheckedCreateWithoutRoomInput = {
   idDocumentCapturedAt?: Date | string | null
   partnerId?: string | null
   partnerBookingId?: string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -1663,6 +1694,7 @@ export type HotelStayCreateWithoutFolioInput = {
   idDocumentNumber?: string | null
   idDocumentImageUrl?: string | null
   idDocumentCapturedAt?: Date | string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -1703,6 +1735,7 @@ export type HotelStayUncheckedCreateWithoutFolioInput = {
   idDocumentCapturedAt?: Date | string | null
   partnerId?: string | null
   partnerBookingId?: string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -1751,6 +1784,7 @@ export type HotelStayUpdateWithoutFolioInput = {
   idDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -1791,6 +1825,7 @@ export type HotelStayUncheckedUpdateWithoutFolioInput = {
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   partnerBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -1823,6 +1858,7 @@ export type HotelStayCreateWithoutOrdersInput = {
   idDocumentNumber?: string | null
   idDocumentImageUrl?: string | null
   idDocumentCapturedAt?: Date | string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -1863,6 +1899,7 @@ export type HotelStayUncheckedCreateWithoutOrdersInput = {
   idDocumentCapturedAt?: Date | string | null
   partnerId?: string | null
   partnerBookingId?: string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -1911,6 +1948,7 @@ export type HotelStayUpdateWithoutOrdersInput = {
   idDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -1951,6 +1989,7 @@ export type HotelStayUncheckedUpdateWithoutOrdersInput = {
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   partnerBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -1986,6 +2025,7 @@ export type HotelStayCreateManyBranchInput = {
   idDocumentCapturedAt?: Date | string | null
   partnerId?: string | null
   partnerBookingId?: string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -2017,6 +2057,7 @@ export type HotelStayUpdateWithoutBranchInput = {
   idDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -2056,6 +2097,7 @@ export type HotelStayUncheckedUpdateWithoutBranchInput = {
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   partnerBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -2092,6 +2134,7 @@ export type HotelStayUncheckedUpdateManyWithoutBranchInput = {
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   partnerBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -2126,6 +2169,7 @@ export type HotelStayCreateManyPartnerInput = {
   idDocumentImageUrl?: string | null
   idDocumentCapturedAt?: Date | string | null
   partnerBookingId?: string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -2157,6 +2201,7 @@ export type HotelStayUpdateWithoutPartnerInput = {
   idDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -2196,6 +2241,7 @@ export type HotelStayUncheckedUpdateWithoutPartnerInput = {
   idDocumentImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   partnerBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -2232,6 +2278,7 @@ export type HotelStayUncheckedUpdateManyWithoutPartnerInput = {
   idDocumentImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   partnerBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -2266,6 +2313,7 @@ export type HotelStayCreateManyPartnerBookingInput = {
   idDocumentImageUrl?: string | null
   idDocumentCapturedAt?: Date | string | null
   partnerId?: string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -2297,6 +2345,7 @@ export type HotelStayUpdateWithoutPartnerBookingInput = {
   idDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -2336,6 +2385,7 @@ export type HotelStayUncheckedUpdateWithoutPartnerBookingInput = {
   idDocumentImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -2372,6 +2422,7 @@ export type HotelStayUncheckedUpdateManyWithoutPartnerBookingInput = {
   idDocumentImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -2406,6 +2457,7 @@ export type HotelStayCreateManyRoomInput = {
   idDocumentCapturedAt?: Date | string | null
   partnerId?: string | null
   partnerBookingId?: string | null
+  guestPending?: boolean
   checkInDate: Date | string
   checkOutDate: Date | string
   status?: $Enums.HotelStayStatus
@@ -2437,6 +2489,7 @@ export type HotelStayUpdateWithoutRoomInput = {
   idDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -2476,6 +2529,7 @@ export type HotelStayUncheckedUpdateWithoutRoomInput = {
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   partnerBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -2512,6 +2566,7 @@ export type HotelStayUncheckedUpdateManyWithoutRoomInput = {
   idDocumentCapturedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   partnerBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guestPending?: Prisma.BoolFieldUpdateOperationsInput | boolean
   checkInDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkOutDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumHotelStayStatusFieldUpdateOperationsInput | $Enums.HotelStayStatus
@@ -2578,6 +2633,7 @@ export type HotelStaySelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   idDocumentCapturedAt?: boolean
   partnerId?: boolean
   partnerBookingId?: boolean
+  guestPending?: boolean
   checkInDate?: boolean
   checkOutDate?: boolean
   status?: boolean
@@ -2620,6 +2676,7 @@ export type HotelStaySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   idDocumentCapturedAt?: boolean
   partnerId?: boolean
   partnerBookingId?: boolean
+  guestPending?: boolean
   checkInDate?: boolean
   checkOutDate?: boolean
   status?: boolean
@@ -2659,6 +2716,7 @@ export type HotelStaySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   idDocumentCapturedAt?: boolean
   partnerId?: boolean
   partnerBookingId?: boolean
+  guestPending?: boolean
   checkInDate?: boolean
   checkOutDate?: boolean
   status?: boolean
@@ -2698,6 +2756,7 @@ export type HotelStaySelectScalar = {
   idDocumentCapturedAt?: boolean
   partnerId?: boolean
   partnerBookingId?: boolean
+  guestPending?: boolean
   checkInDate?: boolean
   checkOutDate?: boolean
   status?: boolean
@@ -2718,7 +2777,7 @@ export type HotelStaySelectScalar = {
   updatedAt?: boolean
 }
 
-export type HotelStayOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "roomId" | "guestName" | "guestPhone" | "guestEmail" | "guestAddress" | "guestCity" | "idDocumentType" | "idDocumentNumber" | "idDocumentImageUrl" | "idDocumentCapturedAt" | "partnerId" | "partnerBookingId" | "checkInDate" | "checkOutDate" | "status" | "adults" | "notes" | "billingMode" | "catalogUnitPrice" | "unitPriceApplied" | "flatAmount" | "plannedHours" | "rateNote" | "depositAmountExpected" | "depositCollectedAt" | "negotiatedByUserId" | "checkedInAt" | "checkedOutAt" | "createdAt" | "updatedAt", ExtArgs["result"]["hotelStay"]>
+export type HotelStayOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "roomId" | "guestName" | "guestPhone" | "guestEmail" | "guestAddress" | "guestCity" | "idDocumentType" | "idDocumentNumber" | "idDocumentImageUrl" | "idDocumentCapturedAt" | "partnerId" | "partnerBookingId" | "guestPending" | "checkInDate" | "checkOutDate" | "status" | "adults" | "notes" | "billingMode" | "catalogUnitPrice" | "unitPriceApplied" | "flatAmount" | "plannedHours" | "rateNote" | "depositAmountExpected" | "depositCollectedAt" | "negotiatedByUserId" | "checkedInAt" | "checkedOutAt" | "createdAt" | "updatedAt", ExtArgs["result"]["hotelStay"]>
 export type HotelStayInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   room?: boolean | Prisma.HotelRoomDefaultArgs<ExtArgs>
@@ -2759,12 +2818,12 @@ export type $HotelStayPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     guestPhone: string | null
     guestEmail: string | null
     /**
-     * Adresse client individuel (walk-in)
+     * Adresse de l’occupant (obligatoire, y compris séjour partenaire)
      */
     guestAddress: string | null
     guestCity: string | null
     /**
-     * Pièce d’identité client individuel (scan / photo)
+     * Pièce d’identité de l’occupant (scan / photo) — tout séjour
      */
     idDocumentType: $Enums.IdDocumentType | null
     idDocumentNumber: string | null
@@ -2772,6 +2831,10 @@ export type $HotelStayPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     idDocumentCapturedAt: Date | null
     partnerId: string | null
     partnerBookingId: string | null
+    /**
+     * Identité / adresse différées → à saisir au check-in de cette chambre
+     */
+    guestPending: boolean
     checkInDate: Date
     checkOutDate: Date
     status: $Enums.HotelStayStatus
@@ -3254,6 +3317,7 @@ export interface HotelStayFieldRefs {
   readonly idDocumentCapturedAt: Prisma.FieldRef<"HotelStay", 'DateTime'>
   readonly partnerId: Prisma.FieldRef<"HotelStay", 'String'>
   readonly partnerBookingId: Prisma.FieldRef<"HotelStay", 'String'>
+  readonly guestPending: Prisma.FieldRef<"HotelStay", 'Boolean'>
   readonly checkInDate: Prisma.FieldRef<"HotelStay", 'DateTime'>
   readonly checkOutDate: Prisma.FieldRef<"HotelStay", 'DateTime'>
   readonly status: Prisma.FieldRef<"HotelStay", 'HotelStayStatus'>

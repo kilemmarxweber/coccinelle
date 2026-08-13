@@ -14,7 +14,9 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model PartnerBooking
- * * Dossier multi-espaces lié à un partenaire (hôtel).
+ * *
+ *  * Dossier multi-chambres : partenaire (PRT-) ou booker particulier (GRP-).
+ *  * 1 dossier → N HotelStay (1 chambre / folio chacun).
  */
 export type PartnerBookingModel = runtime.Types.Result.DefaultSelection<Prisma.$PartnerBookingPayload>
 
@@ -33,6 +35,13 @@ export type PartnerBookingMinAggregateOutputType = {
   payTiming: $Enums.PartnerPayTiming | null
   status: $Enums.PartnerBookingStatus | null
   notes: string | null
+  bookerName: string | null
+  bookerPhone: string | null
+  bookerEmail: string | null
+  invoiceNumber: string | null
+  invoiceIssuedAt: Date | null
+  invoiceIssuedByUserId: string | null
+  invoiceHandedOverAt: Date | null
   createdByUserId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -47,6 +56,13 @@ export type PartnerBookingMaxAggregateOutputType = {
   payTiming: $Enums.PartnerPayTiming | null
   status: $Enums.PartnerBookingStatus | null
   notes: string | null
+  bookerName: string | null
+  bookerPhone: string | null
+  bookerEmail: string | null
+  invoiceNumber: string | null
+  invoiceIssuedAt: Date | null
+  invoiceIssuedByUserId: string | null
+  invoiceHandedOverAt: Date | null
   createdByUserId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -61,6 +77,13 @@ export type PartnerBookingCountAggregateOutputType = {
   payTiming: number
   status: number
   notes: number
+  bookerName: number
+  bookerPhone: number
+  bookerEmail: number
+  invoiceNumber: number
+  invoiceIssuedAt: number
+  invoiceIssuedByUserId: number
+  invoiceHandedOverAt: number
   createdByUserId: number
   createdAt: number
   updatedAt: number
@@ -77,6 +100,13 @@ export type PartnerBookingMinAggregateInputType = {
   payTiming?: true
   status?: true
   notes?: true
+  bookerName?: true
+  bookerPhone?: true
+  bookerEmail?: true
+  invoiceNumber?: true
+  invoiceIssuedAt?: true
+  invoiceIssuedByUserId?: true
+  invoiceHandedOverAt?: true
   createdByUserId?: true
   createdAt?: true
   updatedAt?: true
@@ -91,6 +121,13 @@ export type PartnerBookingMaxAggregateInputType = {
   payTiming?: true
   status?: true
   notes?: true
+  bookerName?: true
+  bookerPhone?: true
+  bookerEmail?: true
+  invoiceNumber?: true
+  invoiceIssuedAt?: true
+  invoiceIssuedByUserId?: true
+  invoiceHandedOverAt?: true
   createdByUserId?: true
   createdAt?: true
   updatedAt?: true
@@ -105,6 +142,13 @@ export type PartnerBookingCountAggregateInputType = {
   payTiming?: true
   status?: true
   notes?: true
+  bookerName?: true
+  bookerPhone?: true
+  bookerEmail?: true
+  invoiceNumber?: true
+  invoiceIssuedAt?: true
+  invoiceIssuedByUserId?: true
+  invoiceHandedOverAt?: true
   createdByUserId?: true
   createdAt?: true
   updatedAt?: true
@@ -186,12 +230,19 @@ export type PartnerBookingGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 export type PartnerBookingGroupByOutputType = {
   id: string
   branchId: string
-  partnerId: string
+  partnerId: string | null
   code: string
   label: string | null
   payTiming: $Enums.PartnerPayTiming
   status: $Enums.PartnerBookingStatus
   notes: string | null
+  bookerName: string | null
+  bookerPhone: string | null
+  bookerEmail: string | null
+  invoiceNumber: string | null
+  invoiceIssuedAt: Date | null
+  invoiceIssuedByUserId: string | null
+  invoiceHandedOverAt: Date | null
   createdByUserId: string
   createdAt: Date
   updatedAt: Date
@@ -221,17 +272,24 @@ export type PartnerBookingWhereInput = {
   NOT?: Prisma.PartnerBookingWhereInput | Prisma.PartnerBookingWhereInput[]
   id?: Prisma.StringFilter<"PartnerBooking"> | string
   branchId?: Prisma.StringFilter<"PartnerBooking"> | string
-  partnerId?: Prisma.StringFilter<"PartnerBooking"> | string
+  partnerId?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
   code?: Prisma.StringFilter<"PartnerBooking"> | string
   label?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
   payTiming?: Prisma.EnumPartnerPayTimingFilter<"PartnerBooking"> | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFilter<"PartnerBooking"> | $Enums.PartnerBookingStatus
   notes?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  bookerName?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  bookerPhone?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  bookerEmail?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  invoiceNumber?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  invoiceIssuedAt?: Prisma.DateTimeNullableFilter<"PartnerBooking"> | Date | string | null
+  invoiceIssuedByUserId?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  invoiceHandedOverAt?: Prisma.DateTimeNullableFilter<"PartnerBooking"> | Date | string | null
   createdByUserId?: Prisma.StringFilter<"PartnerBooking"> | string
   createdAt?: Prisma.DateTimeFilter<"PartnerBooking"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PartnerBooking"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  partner?: Prisma.XOR<Prisma.BranchPartnerScalarRelationFilter, Prisma.BranchPartnerWhereInput>
+  partner?: Prisma.XOR<Prisma.BranchPartnerNullableScalarRelationFilter, Prisma.BranchPartnerWhereInput> | null
   stays?: Prisma.HotelStayListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
 }
@@ -239,12 +297,19 @@ export type PartnerBookingWhereInput = {
 export type PartnerBookingOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   branchId?: Prisma.SortOrder
-  partnerId?: Prisma.SortOrder
+  partnerId?: Prisma.SortOrderInput | Prisma.SortOrder
   code?: Prisma.SortOrder
   label?: Prisma.SortOrderInput | Prisma.SortOrder
   payTiming?: Prisma.SortOrder
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  bookerName?: Prisma.SortOrderInput | Prisma.SortOrder
+  bookerPhone?: Prisma.SortOrderInput | Prisma.SortOrder
+  bookerEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceIssuedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceIssuedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceHandedOverAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -261,17 +326,24 @@ export type PartnerBookingWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.PartnerBookingWhereInput[]
   NOT?: Prisma.PartnerBookingWhereInput | Prisma.PartnerBookingWhereInput[]
   branchId?: Prisma.StringFilter<"PartnerBooking"> | string
-  partnerId?: Prisma.StringFilter<"PartnerBooking"> | string
+  partnerId?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
   code?: Prisma.StringFilter<"PartnerBooking"> | string
   label?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
   payTiming?: Prisma.EnumPartnerPayTimingFilter<"PartnerBooking"> | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFilter<"PartnerBooking"> | $Enums.PartnerBookingStatus
   notes?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  bookerName?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  bookerPhone?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  bookerEmail?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  invoiceNumber?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  invoiceIssuedAt?: Prisma.DateTimeNullableFilter<"PartnerBooking"> | Date | string | null
+  invoiceIssuedByUserId?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  invoiceHandedOverAt?: Prisma.DateTimeNullableFilter<"PartnerBooking"> | Date | string | null
   createdByUserId?: Prisma.StringFilter<"PartnerBooking"> | string
   createdAt?: Prisma.DateTimeFilter<"PartnerBooking"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PartnerBooking"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
-  partner?: Prisma.XOR<Prisma.BranchPartnerScalarRelationFilter, Prisma.BranchPartnerWhereInput>
+  partner?: Prisma.XOR<Prisma.BranchPartnerNullableScalarRelationFilter, Prisma.BranchPartnerWhereInput> | null
   stays?: Prisma.HotelStayListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
 }, "id" | "branchId_code">
@@ -279,12 +351,19 @@ export type PartnerBookingWhereUniqueInput = Prisma.AtLeast<{
 export type PartnerBookingOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   branchId?: Prisma.SortOrder
-  partnerId?: Prisma.SortOrder
+  partnerId?: Prisma.SortOrderInput | Prisma.SortOrder
   code?: Prisma.SortOrder
   label?: Prisma.SortOrderInput | Prisma.SortOrder
   payTiming?: Prisma.SortOrder
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  bookerName?: Prisma.SortOrderInput | Prisma.SortOrder
+  bookerPhone?: Prisma.SortOrderInput | Prisma.SortOrder
+  bookerEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceIssuedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceIssuedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceHandedOverAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -299,12 +378,19 @@ export type PartnerBookingScalarWhereWithAggregatesInput = {
   NOT?: Prisma.PartnerBookingScalarWhereWithAggregatesInput | Prisma.PartnerBookingScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"PartnerBooking"> | string
   branchId?: Prisma.StringWithAggregatesFilter<"PartnerBooking"> | string
-  partnerId?: Prisma.StringWithAggregatesFilter<"PartnerBooking"> | string
+  partnerId?: Prisma.StringNullableWithAggregatesFilter<"PartnerBooking"> | string | null
   code?: Prisma.StringWithAggregatesFilter<"PartnerBooking"> | string
   label?: Prisma.StringNullableWithAggregatesFilter<"PartnerBooking"> | string | null
   payTiming?: Prisma.EnumPartnerPayTimingWithAggregatesFilter<"PartnerBooking"> | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusWithAggregatesFilter<"PartnerBooking"> | $Enums.PartnerBookingStatus
   notes?: Prisma.StringNullableWithAggregatesFilter<"PartnerBooking"> | string | null
+  bookerName?: Prisma.StringNullableWithAggregatesFilter<"PartnerBooking"> | string | null
+  bookerPhone?: Prisma.StringNullableWithAggregatesFilter<"PartnerBooking"> | string | null
+  bookerEmail?: Prisma.StringNullableWithAggregatesFilter<"PartnerBooking"> | string | null
+  invoiceNumber?: Prisma.StringNullableWithAggregatesFilter<"PartnerBooking"> | string | null
+  invoiceIssuedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PartnerBooking"> | Date | string | null
+  invoiceIssuedByUserId?: Prisma.StringNullableWithAggregatesFilter<"PartnerBooking"> | string | null
+  invoiceHandedOverAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PartnerBooking"> | Date | string | null
   createdByUserId?: Prisma.StringWithAggregatesFilter<"PartnerBooking"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PartnerBooking"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PartnerBooking"> | Date | string
@@ -317,11 +403,18 @@ export type PartnerBookingCreateInput = {
   payTiming?: $Enums.PartnerPayTiming
   status?: $Enums.PartnerBookingStatus
   notes?: string | null
+  bookerName?: string | null
+  bookerPhone?: string | null
+  bookerEmail?: string | null
+  invoiceNumber?: string | null
+  invoiceIssuedAt?: Date | string | null
+  invoiceIssuedByUserId?: string | null
+  invoiceHandedOverAt?: Date | string | null
   createdByUserId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutPartnerBookingsInput
-  partner: Prisma.BranchPartnerCreateNestedOneWithoutBookingsInput
+  partner?: Prisma.BranchPartnerCreateNestedOneWithoutBookingsInput
   stays?: Prisma.HotelStayCreateNestedManyWithoutPartnerBookingInput
   payments?: Prisma.PaymentCreateNestedManyWithoutPartnerBookingInput
 }
@@ -329,12 +422,19 @@ export type PartnerBookingCreateInput = {
 export type PartnerBookingUncheckedCreateInput = {
   id?: string
   branchId: string
-  partnerId: string
+  partnerId?: string | null
   code: string
   label?: string | null
   payTiming?: $Enums.PartnerPayTiming
   status?: $Enums.PartnerBookingStatus
   notes?: string | null
+  bookerName?: string | null
+  bookerPhone?: string | null
+  bookerEmail?: string | null
+  invoiceNumber?: string | null
+  invoiceIssuedAt?: Date | string | null
+  invoiceIssuedByUserId?: string | null
+  invoiceHandedOverAt?: Date | string | null
   createdByUserId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -349,11 +449,18 @@ export type PartnerBookingUpdateInput = {
   payTiming?: Prisma.EnumPartnerPayTimingFieldUpdateOperationsInput | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFieldUpdateOperationsInput | $Enums.PartnerBookingStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceIssuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceIssuedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceHandedOverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutPartnerBookingsNestedInput
-  partner?: Prisma.BranchPartnerUpdateOneRequiredWithoutBookingsNestedInput
+  partner?: Prisma.BranchPartnerUpdateOneWithoutBookingsNestedInput
   stays?: Prisma.HotelStayUpdateManyWithoutPartnerBookingNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutPartnerBookingNestedInput
 }
@@ -361,12 +468,19 @@ export type PartnerBookingUpdateInput = {
 export type PartnerBookingUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
-  partnerId?: Prisma.StringFieldUpdateOperationsInput | string
+  partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   code?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payTiming?: Prisma.EnumPartnerPayTimingFieldUpdateOperationsInput | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFieldUpdateOperationsInput | $Enums.PartnerBookingStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceIssuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceIssuedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceHandedOverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -377,12 +491,19 @@ export type PartnerBookingUncheckedUpdateInput = {
 export type PartnerBookingCreateManyInput = {
   id?: string
   branchId: string
-  partnerId: string
+  partnerId?: string | null
   code: string
   label?: string | null
   payTiming?: $Enums.PartnerPayTiming
   status?: $Enums.PartnerBookingStatus
   notes?: string | null
+  bookerName?: string | null
+  bookerPhone?: string | null
+  bookerEmail?: string | null
+  invoiceNumber?: string | null
+  invoiceIssuedAt?: Date | string | null
+  invoiceIssuedByUserId?: string | null
+  invoiceHandedOverAt?: Date | string | null
   createdByUserId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -395,6 +516,13 @@ export type PartnerBookingUpdateManyMutationInput = {
   payTiming?: Prisma.EnumPartnerPayTimingFieldUpdateOperationsInput | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFieldUpdateOperationsInput | $Enums.PartnerBookingStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceIssuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceIssuedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceHandedOverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -403,12 +531,19 @@ export type PartnerBookingUpdateManyMutationInput = {
 export type PartnerBookingUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
-  partnerId?: Prisma.StringFieldUpdateOperationsInput | string
+  partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   code?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payTiming?: Prisma.EnumPartnerPayTimingFieldUpdateOperationsInput | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFieldUpdateOperationsInput | $Enums.PartnerBookingStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceIssuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceIssuedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceHandedOverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -438,6 +573,13 @@ export type PartnerBookingCountOrderByAggregateInput = {
   payTiming?: Prisma.SortOrder
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  bookerName?: Prisma.SortOrder
+  bookerPhone?: Prisma.SortOrder
+  bookerEmail?: Prisma.SortOrder
+  invoiceNumber?: Prisma.SortOrder
+  invoiceIssuedAt?: Prisma.SortOrder
+  invoiceIssuedByUserId?: Prisma.SortOrder
+  invoiceHandedOverAt?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -452,6 +594,13 @@ export type PartnerBookingMaxOrderByAggregateInput = {
   payTiming?: Prisma.SortOrder
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  bookerName?: Prisma.SortOrder
+  bookerPhone?: Prisma.SortOrder
+  bookerEmail?: Prisma.SortOrder
+  invoiceNumber?: Prisma.SortOrder
+  invoiceIssuedAt?: Prisma.SortOrder
+  invoiceIssuedByUserId?: Prisma.SortOrder
+  invoiceHandedOverAt?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -466,6 +615,13 @@ export type PartnerBookingMinOrderByAggregateInput = {
   payTiming?: Prisma.SortOrder
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  bookerName?: Prisma.SortOrder
+  bookerPhone?: Prisma.SortOrder
+  bookerEmail?: Prisma.SortOrder
+  invoiceNumber?: Prisma.SortOrder
+  invoiceIssuedAt?: Prisma.SortOrder
+  invoiceIssuedByUserId?: Prisma.SortOrder
+  invoiceHandedOverAt?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -607,22 +763,36 @@ export type PartnerBookingCreateWithoutBranchInput = {
   payTiming?: $Enums.PartnerPayTiming
   status?: $Enums.PartnerBookingStatus
   notes?: string | null
+  bookerName?: string | null
+  bookerPhone?: string | null
+  bookerEmail?: string | null
+  invoiceNumber?: string | null
+  invoiceIssuedAt?: Date | string | null
+  invoiceIssuedByUserId?: string | null
+  invoiceHandedOverAt?: Date | string | null
   createdByUserId: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  partner: Prisma.BranchPartnerCreateNestedOneWithoutBookingsInput
+  partner?: Prisma.BranchPartnerCreateNestedOneWithoutBookingsInput
   stays?: Prisma.HotelStayCreateNestedManyWithoutPartnerBookingInput
   payments?: Prisma.PaymentCreateNestedManyWithoutPartnerBookingInput
 }
 
 export type PartnerBookingUncheckedCreateWithoutBranchInput = {
   id?: string
-  partnerId: string
+  partnerId?: string | null
   code: string
   label?: string | null
   payTiming?: $Enums.PartnerPayTiming
   status?: $Enums.PartnerBookingStatus
   notes?: string | null
+  bookerName?: string | null
+  bookerPhone?: string | null
+  bookerEmail?: string | null
+  invoiceNumber?: string | null
+  invoiceIssuedAt?: Date | string | null
+  invoiceIssuedByUserId?: string | null
+  invoiceHandedOverAt?: Date | string | null
   createdByUserId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -662,12 +832,19 @@ export type PartnerBookingScalarWhereInput = {
   NOT?: Prisma.PartnerBookingScalarWhereInput | Prisma.PartnerBookingScalarWhereInput[]
   id?: Prisma.StringFilter<"PartnerBooking"> | string
   branchId?: Prisma.StringFilter<"PartnerBooking"> | string
-  partnerId?: Prisma.StringFilter<"PartnerBooking"> | string
+  partnerId?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
   code?: Prisma.StringFilter<"PartnerBooking"> | string
   label?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
   payTiming?: Prisma.EnumPartnerPayTimingFilter<"PartnerBooking"> | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFilter<"PartnerBooking"> | $Enums.PartnerBookingStatus
   notes?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  bookerName?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  bookerPhone?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  bookerEmail?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  invoiceNumber?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  invoiceIssuedAt?: Prisma.DateTimeNullableFilter<"PartnerBooking"> | Date | string | null
+  invoiceIssuedByUserId?: Prisma.StringNullableFilter<"PartnerBooking"> | string | null
+  invoiceHandedOverAt?: Prisma.DateTimeNullableFilter<"PartnerBooking"> | Date | string | null
   createdByUserId?: Prisma.StringFilter<"PartnerBooking"> | string
   createdAt?: Prisma.DateTimeFilter<"PartnerBooking"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PartnerBooking"> | Date | string
@@ -680,6 +857,13 @@ export type PartnerBookingCreateWithoutPartnerInput = {
   payTiming?: $Enums.PartnerPayTiming
   status?: $Enums.PartnerBookingStatus
   notes?: string | null
+  bookerName?: string | null
+  bookerPhone?: string | null
+  bookerEmail?: string | null
+  invoiceNumber?: string | null
+  invoiceIssuedAt?: Date | string | null
+  invoiceIssuedByUserId?: string | null
+  invoiceHandedOverAt?: Date | string | null
   createdByUserId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -696,6 +880,13 @@ export type PartnerBookingUncheckedCreateWithoutPartnerInput = {
   payTiming?: $Enums.PartnerPayTiming
   status?: $Enums.PartnerBookingStatus
   notes?: string | null
+  bookerName?: string | null
+  bookerPhone?: string | null
+  bookerEmail?: string | null
+  invoiceNumber?: string | null
+  invoiceIssuedAt?: Date | string | null
+  invoiceIssuedByUserId?: string | null
+  invoiceHandedOverAt?: Date | string | null
   createdByUserId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -736,23 +927,37 @@ export type PartnerBookingCreateWithoutStaysInput = {
   payTiming?: $Enums.PartnerPayTiming
   status?: $Enums.PartnerBookingStatus
   notes?: string | null
+  bookerName?: string | null
+  bookerPhone?: string | null
+  bookerEmail?: string | null
+  invoiceNumber?: string | null
+  invoiceIssuedAt?: Date | string | null
+  invoiceIssuedByUserId?: string | null
+  invoiceHandedOverAt?: Date | string | null
   createdByUserId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutPartnerBookingsInput
-  partner: Prisma.BranchPartnerCreateNestedOneWithoutBookingsInput
+  partner?: Prisma.BranchPartnerCreateNestedOneWithoutBookingsInput
   payments?: Prisma.PaymentCreateNestedManyWithoutPartnerBookingInput
 }
 
 export type PartnerBookingUncheckedCreateWithoutStaysInput = {
   id?: string
   branchId: string
-  partnerId: string
+  partnerId?: string | null
   code: string
   label?: string | null
   payTiming?: $Enums.PartnerPayTiming
   status?: $Enums.PartnerBookingStatus
   notes?: string | null
+  bookerName?: string | null
+  bookerPhone?: string | null
+  bookerEmail?: string | null
+  invoiceNumber?: string | null
+  invoiceIssuedAt?: Date | string | null
+  invoiceIssuedByUserId?: string | null
+  invoiceHandedOverAt?: Date | string | null
   createdByUserId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -782,23 +987,37 @@ export type PartnerBookingUpdateWithoutStaysInput = {
   payTiming?: Prisma.EnumPartnerPayTimingFieldUpdateOperationsInput | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFieldUpdateOperationsInput | $Enums.PartnerBookingStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceIssuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceIssuedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceHandedOverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutPartnerBookingsNestedInput
-  partner?: Prisma.BranchPartnerUpdateOneRequiredWithoutBookingsNestedInput
+  partner?: Prisma.BranchPartnerUpdateOneWithoutBookingsNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutPartnerBookingNestedInput
 }
 
 export type PartnerBookingUncheckedUpdateWithoutStaysInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
-  partnerId?: Prisma.StringFieldUpdateOperationsInput | string
+  partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   code?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payTiming?: Prisma.EnumPartnerPayTimingFieldUpdateOperationsInput | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFieldUpdateOperationsInput | $Enums.PartnerBookingStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceIssuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceIssuedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceHandedOverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -812,23 +1031,37 @@ export type PartnerBookingCreateWithoutPaymentsInput = {
   payTiming?: $Enums.PartnerPayTiming
   status?: $Enums.PartnerBookingStatus
   notes?: string | null
+  bookerName?: string | null
+  bookerPhone?: string | null
+  bookerEmail?: string | null
+  invoiceNumber?: string | null
+  invoiceIssuedAt?: Date | string | null
+  invoiceIssuedByUserId?: string | null
+  invoiceHandedOverAt?: Date | string | null
   createdByUserId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutPartnerBookingsInput
-  partner: Prisma.BranchPartnerCreateNestedOneWithoutBookingsInput
+  partner?: Prisma.BranchPartnerCreateNestedOneWithoutBookingsInput
   stays?: Prisma.HotelStayCreateNestedManyWithoutPartnerBookingInput
 }
 
 export type PartnerBookingUncheckedCreateWithoutPaymentsInput = {
   id?: string
   branchId: string
-  partnerId: string
+  partnerId?: string | null
   code: string
   label?: string | null
   payTiming?: $Enums.PartnerPayTiming
   status?: $Enums.PartnerBookingStatus
   notes?: string | null
+  bookerName?: string | null
+  bookerPhone?: string | null
+  bookerEmail?: string | null
+  invoiceNumber?: string | null
+  invoiceIssuedAt?: Date | string | null
+  invoiceIssuedByUserId?: string | null
+  invoiceHandedOverAt?: Date | string | null
   createdByUserId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -858,23 +1091,37 @@ export type PartnerBookingUpdateWithoutPaymentsInput = {
   payTiming?: Prisma.EnumPartnerPayTimingFieldUpdateOperationsInput | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFieldUpdateOperationsInput | $Enums.PartnerBookingStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceIssuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceIssuedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceHandedOverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutPartnerBookingsNestedInput
-  partner?: Prisma.BranchPartnerUpdateOneRequiredWithoutBookingsNestedInput
+  partner?: Prisma.BranchPartnerUpdateOneWithoutBookingsNestedInput
   stays?: Prisma.HotelStayUpdateManyWithoutPartnerBookingNestedInput
 }
 
 export type PartnerBookingUncheckedUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
-  partnerId?: Prisma.StringFieldUpdateOperationsInput | string
+  partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   code?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payTiming?: Prisma.EnumPartnerPayTimingFieldUpdateOperationsInput | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFieldUpdateOperationsInput | $Enums.PartnerBookingStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceIssuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceIssuedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceHandedOverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -883,12 +1130,19 @@ export type PartnerBookingUncheckedUpdateWithoutPaymentsInput = {
 
 export type PartnerBookingCreateManyBranchInput = {
   id?: string
-  partnerId: string
+  partnerId?: string | null
   code: string
   label?: string | null
   payTiming?: $Enums.PartnerPayTiming
   status?: $Enums.PartnerBookingStatus
   notes?: string | null
+  bookerName?: string | null
+  bookerPhone?: string | null
+  bookerEmail?: string | null
+  invoiceNumber?: string | null
+  invoiceIssuedAt?: Date | string | null
+  invoiceIssuedByUserId?: string | null
+  invoiceHandedOverAt?: Date | string | null
   createdByUserId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -901,22 +1155,36 @@ export type PartnerBookingUpdateWithoutBranchInput = {
   payTiming?: Prisma.EnumPartnerPayTimingFieldUpdateOperationsInput | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFieldUpdateOperationsInput | $Enums.PartnerBookingStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceIssuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceIssuedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceHandedOverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  partner?: Prisma.BranchPartnerUpdateOneRequiredWithoutBookingsNestedInput
+  partner?: Prisma.BranchPartnerUpdateOneWithoutBookingsNestedInput
   stays?: Prisma.HotelStayUpdateManyWithoutPartnerBookingNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutPartnerBookingNestedInput
 }
 
 export type PartnerBookingUncheckedUpdateWithoutBranchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  partnerId?: Prisma.StringFieldUpdateOperationsInput | string
+  partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   code?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payTiming?: Prisma.EnumPartnerPayTimingFieldUpdateOperationsInput | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFieldUpdateOperationsInput | $Enums.PartnerBookingStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceIssuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceIssuedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceHandedOverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -926,12 +1194,19 @@ export type PartnerBookingUncheckedUpdateWithoutBranchInput = {
 
 export type PartnerBookingUncheckedUpdateManyWithoutBranchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  partnerId?: Prisma.StringFieldUpdateOperationsInput | string
+  partnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   code?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payTiming?: Prisma.EnumPartnerPayTimingFieldUpdateOperationsInput | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFieldUpdateOperationsInput | $Enums.PartnerBookingStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceIssuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceIssuedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceHandedOverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -945,6 +1220,13 @@ export type PartnerBookingCreateManyPartnerInput = {
   payTiming?: $Enums.PartnerPayTiming
   status?: $Enums.PartnerBookingStatus
   notes?: string | null
+  bookerName?: string | null
+  bookerPhone?: string | null
+  bookerEmail?: string | null
+  invoiceNumber?: string | null
+  invoiceIssuedAt?: Date | string | null
+  invoiceIssuedByUserId?: string | null
+  invoiceHandedOverAt?: Date | string | null
   createdByUserId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -957,6 +1239,13 @@ export type PartnerBookingUpdateWithoutPartnerInput = {
   payTiming?: Prisma.EnumPartnerPayTimingFieldUpdateOperationsInput | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFieldUpdateOperationsInput | $Enums.PartnerBookingStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceIssuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceIssuedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceHandedOverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -973,6 +1262,13 @@ export type PartnerBookingUncheckedUpdateWithoutPartnerInput = {
   payTiming?: Prisma.EnumPartnerPayTimingFieldUpdateOperationsInput | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFieldUpdateOperationsInput | $Enums.PartnerBookingStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceIssuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceIssuedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceHandedOverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -988,6 +1284,13 @@ export type PartnerBookingUncheckedUpdateManyWithoutPartnerInput = {
   payTiming?: Prisma.EnumPartnerPayTimingFieldUpdateOperationsInput | $Enums.PartnerPayTiming
   status?: Prisma.EnumPartnerBookingStatusFieldUpdateOperationsInput | $Enums.PartnerBookingStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bookerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceIssuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceIssuedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceHandedOverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1042,11 +1345,18 @@ export type PartnerBookingSelect<ExtArgs extends runtime.Types.Extensions.Intern
   payTiming?: boolean
   status?: boolean
   notes?: boolean
+  bookerName?: boolean
+  bookerPhone?: boolean
+  bookerEmail?: boolean
+  invoiceNumber?: boolean
+  invoiceIssuedAt?: boolean
+  invoiceIssuedByUserId?: boolean
+  invoiceHandedOverAt?: boolean
   createdByUserId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  partner?: boolean | Prisma.BranchPartnerDefaultArgs<ExtArgs>
+  partner?: boolean | Prisma.PartnerBooking$partnerArgs<ExtArgs>
   stays?: boolean | Prisma.PartnerBooking$staysArgs<ExtArgs>
   payments?: boolean | Prisma.PartnerBooking$paymentsArgs<ExtArgs>
   _count?: boolean | Prisma.PartnerBookingCountOutputTypeDefaultArgs<ExtArgs>
@@ -1061,11 +1371,18 @@ export type PartnerBookingSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   payTiming?: boolean
   status?: boolean
   notes?: boolean
+  bookerName?: boolean
+  bookerPhone?: boolean
+  bookerEmail?: boolean
+  invoiceNumber?: boolean
+  invoiceIssuedAt?: boolean
+  invoiceIssuedByUserId?: boolean
+  invoiceHandedOverAt?: boolean
   createdByUserId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  partner?: boolean | Prisma.BranchPartnerDefaultArgs<ExtArgs>
+  partner?: boolean | Prisma.PartnerBooking$partnerArgs<ExtArgs>
 }, ExtArgs["result"]["partnerBooking"]>
 
 export type PartnerBookingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1077,11 +1394,18 @@ export type PartnerBookingSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   payTiming?: boolean
   status?: boolean
   notes?: boolean
+  bookerName?: boolean
+  bookerPhone?: boolean
+  bookerEmail?: boolean
+  invoiceNumber?: boolean
+  invoiceIssuedAt?: boolean
+  invoiceIssuedByUserId?: boolean
+  invoiceHandedOverAt?: boolean
   createdByUserId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  partner?: boolean | Prisma.BranchPartnerDefaultArgs<ExtArgs>
+  partner?: boolean | Prisma.PartnerBooking$partnerArgs<ExtArgs>
 }, ExtArgs["result"]["partnerBooking"]>
 
 export type PartnerBookingSelectScalar = {
@@ -1093,45 +1417,65 @@ export type PartnerBookingSelectScalar = {
   payTiming?: boolean
   status?: boolean
   notes?: boolean
+  bookerName?: boolean
+  bookerPhone?: boolean
+  bookerEmail?: boolean
+  invoiceNumber?: boolean
+  invoiceIssuedAt?: boolean
+  invoiceIssuedByUserId?: boolean
+  invoiceHandedOverAt?: boolean
   createdByUserId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PartnerBookingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "partnerId" | "code" | "label" | "payTiming" | "status" | "notes" | "createdByUserId" | "createdAt" | "updatedAt", ExtArgs["result"]["partnerBooking"]>
+export type PartnerBookingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "partnerId" | "code" | "label" | "payTiming" | "status" | "notes" | "bookerName" | "bookerPhone" | "bookerEmail" | "invoiceNumber" | "invoiceIssuedAt" | "invoiceIssuedByUserId" | "invoiceHandedOverAt" | "createdByUserId" | "createdAt" | "updatedAt", ExtArgs["result"]["partnerBooking"]>
 export type PartnerBookingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  partner?: boolean | Prisma.BranchPartnerDefaultArgs<ExtArgs>
+  partner?: boolean | Prisma.PartnerBooking$partnerArgs<ExtArgs>
   stays?: boolean | Prisma.PartnerBooking$staysArgs<ExtArgs>
   payments?: boolean | Prisma.PartnerBooking$paymentsArgs<ExtArgs>
   _count?: boolean | Prisma.PartnerBookingCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PartnerBookingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  partner?: boolean | Prisma.BranchPartnerDefaultArgs<ExtArgs>
+  partner?: boolean | Prisma.PartnerBooking$partnerArgs<ExtArgs>
 }
 export type PartnerBookingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
-  partner?: boolean | Prisma.BranchPartnerDefaultArgs<ExtArgs>
+  partner?: boolean | Prisma.PartnerBooking$partnerArgs<ExtArgs>
 }
 
 export type $PartnerBookingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PartnerBooking"
   objects: {
     branch: Prisma.$BranchPayload<ExtArgs>
-    partner: Prisma.$BranchPartnerPayload<ExtArgs>
+    partner: Prisma.$BranchPartnerPayload<ExtArgs> | null
     stays: Prisma.$HotelStayPayload<ExtArgs>[]
     payments: Prisma.$PaymentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     branchId: string
-    partnerId: string
+    /**
+     * Null = réservation groupée particulier (bookerName requis)
+     */
+    partnerId: string | null
     code: string
     label: string | null
     payTiming: $Enums.PartnerPayTiming
     status: $Enums.PartnerBookingStatus
     notes: string | null
+    /**
+     * Organisateur / booker (obligatoire si pas de partenaire)
+     */
+    bookerName: string | null
+    bookerPhone: string | null
+    bookerEmail: string | null
+    invoiceNumber: string | null
+    invoiceIssuedAt: Date | null
+    invoiceIssuedByUserId: string | null
+    invoiceHandedOverAt: Date | null
     createdByUserId: string
     createdAt: Date
     updatedAt: Date
@@ -1530,7 +1874,7 @@ readonly fields: PartnerBookingFieldRefs;
 export interface Prisma__PartnerBookingClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  partner<T extends Prisma.BranchPartnerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchPartnerDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchPartnerClient<runtime.Types.Result.GetResult<Prisma.$BranchPartnerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  partner<T extends Prisma.PartnerBooking$partnerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PartnerBooking$partnerArgs<ExtArgs>>): Prisma.Prisma__BranchPartnerClient<runtime.Types.Result.GetResult<Prisma.$BranchPartnerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   stays<T extends Prisma.PartnerBooking$staysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PartnerBooking$staysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HotelStayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payments<T extends Prisma.PartnerBooking$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PartnerBooking$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1570,6 +1914,13 @@ export interface PartnerBookingFieldRefs {
   readonly payTiming: Prisma.FieldRef<"PartnerBooking", 'PartnerPayTiming'>
   readonly status: Prisma.FieldRef<"PartnerBooking", 'PartnerBookingStatus'>
   readonly notes: Prisma.FieldRef<"PartnerBooking", 'String'>
+  readonly bookerName: Prisma.FieldRef<"PartnerBooking", 'String'>
+  readonly bookerPhone: Prisma.FieldRef<"PartnerBooking", 'String'>
+  readonly bookerEmail: Prisma.FieldRef<"PartnerBooking", 'String'>
+  readonly invoiceNumber: Prisma.FieldRef<"PartnerBooking", 'String'>
+  readonly invoiceIssuedAt: Prisma.FieldRef<"PartnerBooking", 'DateTime'>
+  readonly invoiceIssuedByUserId: Prisma.FieldRef<"PartnerBooking", 'String'>
+  readonly invoiceHandedOverAt: Prisma.FieldRef<"PartnerBooking", 'DateTime'>
   readonly createdByUserId: Prisma.FieldRef<"PartnerBooking", 'String'>
   readonly createdAt: Prisma.FieldRef<"PartnerBooking", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"PartnerBooking", 'DateTime'>
@@ -1971,6 +2322,25 @@ export type PartnerBookingDeleteManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many PartnerBookings to delete.
    */
   limit?: number
+}
+
+/**
+ * PartnerBooking.partner
+ */
+export type PartnerBooking$partnerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BranchPartner
+   */
+  select?: Prisma.BranchPartnerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BranchPartner
+   */
+  omit?: Prisma.BranchPartnerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BranchPartnerInclude<ExtArgs> | null
+  where?: Prisma.BranchPartnerWhereInput
 }
 
 /**

@@ -44,17 +44,37 @@ export function MyOrdersReportClient(props: {
       <KpiGrid
         items={[
           {
-            label: "Commandes",
+            label: "Ventes du jour",
+            value: money(props.data.kpis.caToday),
+          },
+          {
+            label: "Tickets jour",
+            value: String(props.data.kpis.ordersToday),
+          },
+          {
+            label: "Ventes du mois",
+            value: money(props.data.kpis.caMonth),
+          },
+          {
+            label: "Tickets mois",
+            value: String(props.data.kpis.ordersMonth),
+          },
+          {
+            label: "Commandes (période)",
             value: String(props.data.kpis.orders),
             delta: props.data.kpis.ordersDelta,
           },
           {
-            label: "CA attribué",
+            label: "CA période",
             value: money(props.data.kpis.ca),
           },
           {
             label: "Ticket moyen",
             value: money(props.data.kpis.ticketAvg),
+          },
+          {
+            label: "Annulées",
+            value: String(props.data.kpis.cancelled),
           },
         ]}
       />

@@ -3,12 +3,15 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
+  Ban,
   CheckCircle2,
   Clock3,
   Flame,
+  Pencil,
   RefreshCw,
   Timer,
   Truck,
+  UserRound,
   UtensilsCrossed,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -31,7 +34,9 @@ import {
 import {
   advanceHotelOrderAction,
   createHotelOrderAction,
+  updateHotelOrderAction,
 } from "@/lib/hotel/actions";
+import { isHotelOrderOpenForServerEdit } from "@/lib/hotel/order-edit";
 import { ORDER_SETTLEMENT } from "@/lib/hotel/folio-note";
 import {
   extractRoomNumber,
@@ -66,6 +71,7 @@ type MenuItem = {
 };
 
 type OrderItem = {
+  menuItemId?: string | null;
   name: string;
   quantity: number;
   amount: number;
@@ -76,10 +82,13 @@ type OrderItem = {
 type Order = {
   id: string;
   tableLabel: string | null;
+  stayId?: string | null;
   status: string;
   settlementMode?: string | null;
   postedToFolioAt?: string | Date | null;
+  paidAt?: string | Date | null;
   serverNote?: string | null;
+  createdByName?: string | null;
   sentAt?: string | Date | null;
   prepStartedAt?: string | Date | null;
   estimatedMinutes?: number | null;
@@ -140,6 +149,10 @@ function isOnNote(order: Order) {
   return order.settlementMode === ORDER_SETTLEMENT.NOTE_CHAMBRE;
 }
 
+function canEditOrCancel(order: Order) {
+  return isHotelOrderOpenForServerEdit(order);
+}
+
 export function RestaurationClient(props: {
   organizationId: string;
   branchId: string;
@@ -194,7 +207,8 @@ export function RestaurationClient(props: {
   const [suiviFilter, setSuiviFilter] = useState<"actives" | "livrer" | "toutes">(
     "actives",
   );
-  const { cart, addItem, setQty, clear, toPayload } = usePosCart();
+  const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
+  const { cart, addItem, setQty, clear, load, toPayload } = usePosCart();
 
   const toDeliver = useMemo(
     () =>
@@ -278,25 +292,115 @@ export function RestaurationClient(props: {
       toast.message("Sélectionnez un séjour pour la note de chambre");
       return;
     }
+    const editingId = editingOrderId;
     start(async () => {
       try {
-        await createHotelOrderAction({
-          organizationId: props.organizationId,
-          branchId: props.branchId,
-          tableLabel: tableLabel.trim() || undefined,
-          stayId: stayId || undefined,
-          settlementMode: mode,
-          items,
-        });
-        toast.success(
-          mode === "NOTE_CHAMBRE"
-            ? "Commande Sur note de chambre"
-            : "Commande envoyée",
-        );
+        if (editingId) {
+          await updateHotelOrderAction({
+            organizationId: props.organizationId,
+            branchId: props.branchId,
+            orderId: editingId,
+            tableLabel: tableLabel.trim() || undefined,
+            stayId: stayId || undefined,
+            settlementMode: mode,
+            items,
+          });
+          toast.success("Commande mise à jour");
+        } else {
+          await createHotelOrderAction({
+            organizationId: props.organizationId,
+            branchId: props.branchId,
+            tableLabel: tableLabel.trim() || undefined,
+            stayId: stayId || undefined,
+            settlementMode: mode,
+            items,
+          });
+          toast.success(
+            mode === "NOTE_CHAMBRE"
+              ? "Commande Sur note de chambre"
+              : "Commande envoyée",
+          );
+        }
         clear();
+        setEditingOrderId(null);
         router.refresh();
         setView("suivi");
         setSuiviFilter("actives");
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Erreur");
+      }
+    });
+  }
+
+  function startEdit(order: Order) {
+    if (!canEditOrCancel(order)) {
+      toast.message("Cette commande n’est plus modifiable");
+      return;
+    }
+    const lines = [];
+    let skipped = 0;
+    for (const item of order.items) {
+      if (!item.menuItemId) {
+        skipped += 1;
+        continue;
+      }
+      const menu = props.menuItems.find((m) => m.id === item.menuItemId);
+      lines.push({
+        menuItemId: item.menuItemId,
+        name: item.name,
+        price:
+          item.unitPrice ??
+          menu?.price ??
+          item.amount / Math.max(1, item.quantity),
+        quantity: item.quantity,
+      });
+    }
+    if (!lines.length) {
+      toast.error("Impossible de modifier — articles hors catalogue");
+      return;
+    }
+    load(lines);
+    setEditingOrderId(order.id);
+    setTableLabel(order.tableLabel ?? "");
+    setStayId(order.stayId ?? "");
+    setSettlementMode(isOnNote(order) ? "NOTE_CHAMBRE" : "COMPTANT");
+    setSelectedId(null);
+    setView("commande");
+    if (skipped > 0) {
+      toast.message(`${skipped} article(s) hors catalogue ignoré(s)`);
+    }
+  }
+
+  function stopEdit() {
+    setEditingOrderId(null);
+    clear();
+  }
+
+  function cancelOrder(orderId: string) {
+    const order = props.orders.find((o) => o.id === orderId);
+    if (!order || !canEditOrCancel(order)) {
+      toast.message("Annulation impossible");
+      return;
+    }
+    if (
+      !window.confirm(
+        `Annuler la commande ${order.tableLabel ?? `#${order.id.slice(0, 8)}`} ? Le stock sera rétabli.`,
+      )
+    ) {
+      return;
+    }
+    start(async () => {
+      try {
+        await advanceHotelOrderAction({
+          organizationId: props.organizationId,
+          branchId: props.branchId,
+          orderId,
+          to: "ANNULEE",
+        });
+        toast.success("Commande annulée");
+        setSelectedId(null);
+        if (editingOrderId === orderId) stopEdit();
+        router.refresh();
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Erreur");
       }
@@ -405,10 +509,33 @@ export function RestaurationClient(props: {
           onSetQty={setQty}
           onClear={clear}
           formatPrice={fmt}
-          ticketTitle="Ticket serveur"
+          ticketTitle={
+            editingOrderId
+              ? `Modifier #${editingOrderId.slice(0, 8)}`
+              : "Ticket serveur"
+          }
           emptyHint="Touchez un plat ou une boisson pour composer le ticket"
           ticketMeta={
             <div className="grid gap-3">
+              <p className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                <UserRound className="size-3.5" />
+                Signé {props.currentUserName}
+              </p>
+              {editingOrderId ? (
+                <div className="flex items-center justify-between gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs">
+                  <span className="font-medium text-amber-800 dark:text-amber-200">
+                    Modification en cours — cuisine et caisse seront notifiées
+                  </span>
+                  <Button
+                    type="button"
+                    size="xs"
+                    variant="ghost"
+                    onClick={stopEdit}
+                  >
+                    Abandonner
+                  </Button>
+                </div>
+              ) : null}
               <div className="grid gap-1.5">
                 <Label htmlFor="table">
                   {hasStays ? "Table / n° chambre" : "Table / Client"}
@@ -583,9 +710,13 @@ export function RestaurationClient(props: {
             stayId ? (
               <PosChargeButton
                 label={
-                  settlementMode === "NOTE_CHAMBRE"
-                    ? "Envoyer · Sur note de chambre"
-                    : "Envoyer · Comptant"
+                  editingOrderId
+                    ? settlementMode === "NOTE_CHAMBRE"
+                      ? "Enregistrer · Sur note"
+                      : "Enregistrer · Comptant"
+                    : settlementMode === "NOTE_CHAMBRE"
+                      ? "Envoyer · Sur note de chambre"
+                      : "Envoyer · Comptant"
                 }
                 pending={pending}
                 disabled={cart.length === 0}
@@ -593,7 +724,11 @@ export function RestaurationClient(props: {
               />
             ) : (
               <PosChargeButton
-                label="Envoyer la commande"
+                label={
+                  editingOrderId
+                    ? "Enregistrer la modification"
+                    : "Envoyer la commande"
+                }
                 pending={pending}
                 disabled={cart.length === 0}
                 onClick={() => send("COMPTANT")}
@@ -683,6 +818,9 @@ export function RestaurationClient(props: {
                           </p>
                           <p className="text-xs text-muted-foreground">
                             #{order.id.slice(0, 8)}
+                            {order.createdByName
+                              ? ` · ${order.createdByName}`
+                              : ""}
                             {order.stay
                               ? ` · ${order.stay.guestName}${
                                   order.stay.room
@@ -771,17 +909,43 @@ export function RestaurationClient(props: {
                       </div>
                     </button>
 
-                    {isDeliver ? (
-                      <footer className="border-t border-border p-3">
-                        <Button
-                          className="w-full gap-1.5"
-                          disabled={pending}
-                          onClick={() => markDelivered(order.id)}
-                        >
-                          <CheckCircle2 className="size-4" />
-                          Livrer
-                          {isCooking ? " (stop cuisine)" : ""}
-                        </Button>
+                    {canEditOrCancel(order) || isDeliver ? (
+                      <footer className="space-y-2 border-t border-border p-3">
+                        {canEditOrCancel(order) ? (
+                          <div className="grid grid-cols-2 gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="gap-1.5"
+                              disabled={pending}
+                              onClick={() => startEdit(order)}
+                            >
+                              <Pencil className="size-4" />
+                              Modifier
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="gap-1.5 text-rose-700 hover:text-rose-800 dark:text-rose-300"
+                              disabled={pending}
+                              onClick={() => cancelOrder(order.id)}
+                            >
+                              <Ban className="size-4" />
+                              Annuler
+                            </Button>
+                          </div>
+                        ) : null}
+                        {isDeliver ? (
+                          <Button
+                            className="w-full gap-1.5"
+                            disabled={pending}
+                            onClick={() => markDelivered(order.id)}
+                          >
+                            <CheckCircle2 className="size-4" />
+                            Livrer
+                            {isCooking ? " (stop cuisine)" : ""}
+                          </Button>
+                        ) : null}
                       </footer>
                     ) : null}
                   </article>
@@ -809,6 +973,9 @@ export function RestaurationClient(props: {
                   Ticket #{selected.id.slice(0, 8)} ·{" "}
                   {STATUS_META[selected.status]?.label ?? selected.status}
                   {isOnNote(selected) ? " · Sur note de chambre" : ""}
+                  {selected.createdByName
+                    ? ` · Serveur ${selected.createdByName}`
+                    : ""}
                 </SheetDescription>
               </SheetHeader>
 
@@ -913,21 +1080,50 @@ export function RestaurationClient(props: {
                 ) : null}
               </div>
 
-              {canDeliver(selected.status) && !selected.deliveredAt ? (
-                <SheetFooter className="border-t border-border">
-                  <Button
-                    size="lg"
-                    className="w-full gap-2"
-                    disabled={pending}
-                    onClick={() => markDelivered(selected.id)}
-                  >
-                    <CheckCircle2 className="size-5" />
-                    Livrer
-                    {selected.status === "ENVOYEE" ||
-                    selected.status === "EN_PREPARATION"
-                      ? " — retire de la cuisine"
-                      : ""}
-                  </Button>
+              {canEditOrCancel(selected) ||
+              (canDeliver(selected.status) && !selected.deliveredAt) ? (
+                <SheetFooter className="flex-col gap-2 border-t border-border sm:flex-col">
+                  {canEditOrCancel(selected) ? (
+                    <div className="grid w-full grid-cols-2 gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="lg"
+                        className="gap-2"
+                        disabled={pending}
+                        onClick={() => startEdit(selected)}
+                      >
+                        <Pencil className="size-4" />
+                        Modifier
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="lg"
+                        className="gap-2 text-rose-700 hover:text-rose-800 dark:text-rose-300"
+                        disabled={pending}
+                        onClick={() => cancelOrder(selected.id)}
+                      >
+                        <Ban className="size-4" />
+                        Annuler
+                      </Button>
+                    </div>
+                  ) : null}
+                  {canDeliver(selected.status) && !selected.deliveredAt ? (
+                    <Button
+                      size="lg"
+                      className="w-full gap-2"
+                      disabled={pending}
+                      onClick={() => markDelivered(selected.id)}
+                    >
+                      <CheckCircle2 className="size-5" />
+                      Livrer
+                      {selected.status === "ENVOYEE" ||
+                      selected.status === "EN_PREPARATION"
+                        ? " — retire de la cuisine"
+                        : ""}
+                    </Button>
+                  ) : null}
                 </SheetFooter>
               ) : null}
             </>

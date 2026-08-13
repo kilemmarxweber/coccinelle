@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { formatBothAmounts } from "@/lib/cash/exchange";
-import { defaultReportRange, toIsoDate } from "@/lib/hotel/reports/period";
+import { defaultReportRange, currentMonthRange, toIsoDate } from "@/lib/hotel/reports/period";
 
 export function ReportShell(props: {
   title: string;
@@ -97,6 +97,18 @@ export function ReportShell(props: {
             className="rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:bg-muted/80"
           >
             Aujourd’hui
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const range = currentMonthRange();
+              setFrom(range.from);
+              setTo(range.to);
+              apply(range.from, range.to);
+            }}
+            className="rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:bg-muted/80"
+          >
+            Ce mois
           </button>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">

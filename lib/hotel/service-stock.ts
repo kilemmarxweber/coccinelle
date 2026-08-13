@@ -820,3 +820,41 @@ export async function consumeServiceFloatInTx(
 
   return session.id;
 }
+
+/** Remet le float après annulation / modification d’une commande non livrée. */
+export async function restoreServiceFloatInTx(
+  tx: Prisma.TransactionClient,
+  branchId: string,
+  lines: { menuItemId: string; quantity: number }[],
+) {
+  if (lines.length === 0) return null;
+  const session = await tx.serviceStockSession.findFirst({
+    where: {
+      branchId,
+      status: "OPEN",
+      openingConfirmedAt: { not: null },
+    },
+    include: { lines: true },
+  });
+  if (!session) return null;
+
+  const floatLines = new Map(session.lines.map((l) => [l.menuItemId, l]));
+  const needed = new Map<string, number>();
+  for (const line of lines) {
+    needed.set(
+      line.menuItemId,
+      (needed.get(line.menuItemId) ?? 0) + Math.max(1, line.quantity),
+    );
+  }
+
+  for (const [menuItemId, qty] of needed) {
+    const fl = floatLines.get(menuItemId);
+    if (!fl) continue;
+    await tx.serviceStockLine.update({
+      where: { id: fl.id },
+      data: { qtySold: Math.max(0, fl.qtySold - qty) },
+    });
+  }
+
+  return session.id;
+}

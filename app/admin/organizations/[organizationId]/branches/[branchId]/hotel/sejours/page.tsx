@@ -8,6 +8,7 @@ import {
   listStaysForYearAction,
 } from "@/lib/hotel/actions";
 import { listBranchPartnersAction } from "@/lib/partners/actions";
+import { listStayGroupsAction } from "@/lib/hotel/stay-group";
 import { SejoursClient } from "./sejours-client";
 
 type PageProps = {
@@ -33,13 +34,15 @@ export default async function SejoursPage({ params, searchParams }: PageProps) {
   const year = Number(sp.year) || now.getFullYear();
   const month = Number(sp.month) || now.getMonth() + 1;
 
-  const [rooms, stays, yearStays, rate, partners] = await Promise.all([
-    listRoomsWithTypesAction(organizationId, branchId),
-    listStaysForMonthAction(organizationId, branchId, year, month),
-    listStaysForYearAction(organizationId, branchId, year),
-    getActiveExchangeRate(branchId),
-    listBranchPartnersAction(organizationId, branchId),
-  ]);
+  const [rooms, stays, yearStays, rate, partners, stayGroups] =
+    await Promise.all([
+      listRoomsWithTypesAction(organizationId, branchId),
+      listStaysForMonthAction(organizationId, branchId, year, month),
+      listStaysForYearAction(organizationId, branchId, year),
+      getActiveExchangeRate(branchId),
+      listBranchPartnersAction(organizationId, branchId),
+      listStayGroupsAction(organizationId, branchId),
+    ]);
 
   const roomsOrdered = [...rooms].sort((a, b) => {
     const ka = a.roomType.kind === "MEETING" ? 1 : 0;
@@ -56,6 +59,7 @@ export default async function SejoursPage({ params, searchParams }: PageProps) {
       stays={stays}
       yearStays={yearStays}
       partners={partners}
+      stayGroups={stayGroups}
       initialYear={year}
       initialMonth={month}
       rate={rate}

@@ -66,12 +66,19 @@ import {
 } from "@/lib/hotel/guest-id-document";
 import { hotelRoutes } from "@/lib/branch/paths";
 import { cn } from "@/lib/utils";
+import {
+  StayGroupDossiersDialog,
+  StayGroupToolbar,
+  StayGroupWizardDialog,
+} from "@/components/hotel/stay-group-panel";
+import type { listStayGroupsAction } from "@/lib/hotel/stay-group";
 
 type Room = {
   id: string;
   number: string;
   status: string;
   roomType: {
+    id: string;
     name: string;
     priceNight: number;
     capacity?: number;
@@ -84,6 +91,7 @@ type Room = {
 type Stay = {
   id: string;
   guestName: string;
+  guestPending?: boolean;
   checkInDate: string | Date;
   checkOutDate: string | Date;
   status: string;
@@ -102,6 +110,8 @@ type Stay = {
     id: string;
     code: string;
     payTiming: string;
+    bookerName?: string | null;
+    partnerId?: string | null;
   } | null;
   room: {
     number: string;
@@ -311,6 +321,7 @@ export function SejoursClient(props: {
   stays: Stay[];
   yearStays: YearStay[];
   partners: BranchPartnerDTO[];
+  stayGroups: Awaited<ReturnType<typeof listStayGroupsAction>>;
   initialYear: number;
   initialMonth: number;
   rate?: NormalizedUsdCdfRate | null;
@@ -320,6 +331,8 @@ export function SejoursClient(props: {
   const [year, setYear] = useState(props.initialYear);
   const [month, setMonth] = useState(props.initialMonth);
   const [view, setView] = useState<"month" | "year">("month");
+  const [groupWizardOpen, setGroupWizardOpen] = useState(false);
+  const [groupDossiersOpen, setGroupDossiersOpen] = useState(false);
   const [form, setForm] = useState(() => {
     const today = localTodayInputValue();
     const t = new Date();
@@ -879,20 +892,44 @@ export function SejoursClient(props: {
 
   return (
     <div className="mx-auto flex max-w-[100vw] flex-col gap-4 px-4 py-6 lg:max-w-7xl">
-      <div>
-        <h1 className="text-2xl font-bold">Séjours</h1>
-        <p className="text-sm text-muted-foreground">
-          Planning · check-in · actifs · check-outs
-          {props.rate ? (
-            <>
-              {" · "}
-              <span className="font-medium">
-                {formatConfiguredRateLabel(props.rate)}
-              </span>
-            </>
-          ) : null}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Séjours</h1>
+          <p className="text-sm text-muted-foreground">
+            Planning · check-in · actifs · check-outs
+            {props.rate ? (
+              <>
+                {" · "}
+                <span className="font-medium">
+                  {formatConfiguredRateLabel(props.rate)}
+                </span>
+              </>
+            ) : null}
+          </p>
+        </div>
+        <StayGroupToolbar
+          onOpenWizard={() => setGroupWizardOpen(true)}
+          onOpenDossiers={() => setGroupDossiersOpen(true)}
+        />
       </div>
+
+      <StayGroupWizardDialog
+        open={groupWizardOpen}
+        onOpenChange={setGroupWizardOpen}
+        organizationId={props.organizationId}
+        branchId={props.branchId}
+        rooms={props.rooms}
+        partners={props.partners}
+        rate={props.rate}
+      />
+      <StayGroupDossiersDialog
+        open={groupDossiersOpen}
+        onOpenChange={setGroupDossiersOpen}
+        organizationId={props.organizationId}
+        branchId={props.branchId}
+        groups={props.stayGroups}
+        rate={props.rate}
+      />
 
       <Tabs
         value={mainTab}
@@ -1380,6 +1417,14 @@ export function SejoursClient(props: {
                           </Badge>
                           {s.partner ? (
                             <Badge variant="outline">Partenaire</Badge>
+                          ) : null}
+                          {s.partnerBooking?.code ? (
+                            <Badge variant="outline">
+                              {s.partnerBooking.code}
+                            </Badge>
+                          ) : null}
+                          {s.guestPending ? (
+                            <Badge variant="secondary">À identifier</Badge>
                           ) : null}
                           {m.isFlat ? (
                             <Badge variant="outline">

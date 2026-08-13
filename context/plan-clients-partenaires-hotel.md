@@ -5,7 +5,7 @@
 | **Status** | `in_progress` — Phases A–D partielles livrées (CRM hôtel + agence, lien séjour, BANK, crédit fin) |
 | **Périmètre** | Branche `HOTEL` (`hasStays`) — chambres (`ROOM`) **et** salles (`MEETING`) · **+ AGENCE** (même CRM `BranchPartner`) |
 | **Contexte** | Une **société / organisation partenaire** réserve 1 ou plusieurs chambres / salles. Fiche partenaire = coordonnées société (sans pièce d’identité). La **pièce d’identité + scan/photo** est saisie sur **chaque séjour** (occupant), y compris si facturé à une société. Prix négocié à la main ; paiement avant ou à la fin (cash / banque). |
-| **Lié** | [`plan-prix-negociable-sejour.md`](./plan-prix-negociable-sejour.md) (tarif appliqué / forfait), [`plan-salle-reservation-caution-consommation.md`](./plan-salle-reservation-caution-consommation.md), [`plan-sejour-note-chambre.md`](./plan-sejour-note-chambre.md), [`plan-hotel-caisse-sejours-restauration.md`](./plan-hotel-caisse-sejours-restauration.md) |
+| **Lié** | [`plan-prix-negociable-sejour.md`](./plan-prix-negociable-sejour.md) (tarif appliqué / forfait), [`plan-salle-reservation-caution-consommation.md`](./plan-salle-reservation-caution-consommation.md), [`plan-sejour-note-chambre.md`](./plan-sejour-note-chambre.md), [`plan-hotel-caisse-sejours-restauration.md`](./plan-hotel-caisse-sejours-restauration.md), [`plan-reservation-groupee-sejours.md`](./plan-reservation-groupee-sejours.md) (**wizard multi-chambres** + occupants sur place) |
 
 ---
 
@@ -353,7 +353,7 @@ Sous-routes : liste · fiche · nouveau dossier.
 
 - Check-out stay par stay (flux actuel) ; si `AT_CHECKOUT` et solde > 0 → file caisse (cash ou banque).
 - Quand tous les stays du dossier sont `CHECKED_OUT` / `CANCELLED` et solde dossier ≈ 0 → `PartnerBooking.CLOSED`.
-- Impression **facture société** (agrégat des notes du dossier) — Phase D.
+- Impression **facture globale dossier** (agrégat P.U. / qté / montants / totaux + identité société + signature gérant/manager) — détail & phases dans [`plan-reservation-groupee-sejours.md`](./plan-reservation-groupee-sejours.md) §5.5 / **G8** (même document pour groupe particulier).
 
 ---
 
@@ -411,7 +411,7 @@ Sous-routes : liste · fiche · nouveau dossier.
 | D2 | Paiement dossier + **ventilation** auto sur folios | Soldes corrects |
 | D3 | Caisse : encaisser solde partenaire (cash / banque) sans gonfler float si BANK | Helpers caisse |
 | D4 | Check-out + clôture dossier quand soldes OK | Status `CLOSED` |
-| D5 | Facture / récap agrégé dossier (aperçu + print) | PDF ou print |
+| D5 | Facture / récap agrégé dossier (aperçu + print) — **voir G8** [`plan-reservation-groupee-sejours.md`](./plan-reservation-groupee-sejours.md) : P.U./qté/totaux, identité société, signature gérant/manager, remise société | Document émis |
 
 **Critère phase D :** payer 1 200 $ par virement réparti sur 3 notes ; float cash inchangé ; dossier clos.
 

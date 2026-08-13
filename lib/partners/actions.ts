@@ -233,9 +233,12 @@ export async function assertPartnerReadyForCredit(
   return p;
 }
 
-export async function nextPartnerBookingCode(branchId: string): Promise<string> {
+export async function nextPartnerBookingCode(
+  branchId: string,
+  prefix: "PRT" | "GRP" = "PRT",
+): Promise<string> {
   const count = await prisma.partnerBooking.count({ where: { branchId } });
-  return `PRT-${String(count + 1).padStart(5, "0")}`;
+  return `${prefix}-${String(count + 1).padStart(5, "0")}`;
 }
 
 export async function createPartnerBookingAction(input: {

@@ -6,7 +6,7 @@ const adapter = new PrismaPg({
 });
 
 /** Incrémenter après tout changement de modèle Prisma pour invalider le singleton HMR. */
-const PRISMA_SCHEMA_REV = 27;
+const PRISMA_SCHEMA_REV = 28;
 
 const globalForPrisma = global as unknown as {
   prisma: PrismaClient | undefined;

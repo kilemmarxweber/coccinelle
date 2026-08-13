@@ -608,11 +608,6 @@ export type BranchPartnerSumOrderByAggregateInput = {
   defaultDiscountPctHint?: Prisma.SortOrder
 }
 
-export type BranchPartnerScalarRelationFilter = {
-  is?: Prisma.BranchPartnerWhereInput
-  isNot?: Prisma.BranchPartnerWhereInput
-}
-
 export type BranchPartnerNullableScalarRelationFilter = {
   is?: Prisma.BranchPartnerWhereInput | null
   isNot?: Prisma.BranchPartnerWhereInput | null
@@ -670,10 +665,12 @@ export type BranchPartnerCreateNestedOneWithoutBookingsInput = {
   connect?: Prisma.BranchPartnerWhereUniqueInput
 }
 
-export type BranchPartnerUpdateOneRequiredWithoutBookingsNestedInput = {
+export type BranchPartnerUpdateOneWithoutBookingsNestedInput = {
   create?: Prisma.XOR<Prisma.BranchPartnerCreateWithoutBookingsInput, Prisma.BranchPartnerUncheckedCreateWithoutBookingsInput>
   connectOrCreate?: Prisma.BranchPartnerCreateOrConnectWithoutBookingsInput
   upsert?: Prisma.BranchPartnerUpsertWithoutBookingsInput
+  disconnect?: Prisma.BranchPartnerWhereInput | boolean
+  delete?: Prisma.BranchPartnerWhereInput | boolean
   connect?: Prisma.BranchPartnerWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.BranchPartnerUpdateToOneWithWhereWithoutBookingsInput, Prisma.BranchPartnerUpdateWithoutBookingsInput>, Prisma.BranchPartnerUncheckedUpdateWithoutBookingsInput>
 }

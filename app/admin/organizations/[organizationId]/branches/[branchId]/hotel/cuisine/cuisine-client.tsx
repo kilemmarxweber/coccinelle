@@ -56,6 +56,7 @@ type Order = {
   tableLabel: string | null;
   status: string;
   serverNote: string | null;
+  createdByName?: string | null;
   sentAt: string | Date | null;
   prepStartedAt?: string | Date | null;
   estimatedMinutes?: number | null;
@@ -267,6 +268,9 @@ export function CuisineClient(props: {
                       </p>
                       <p className="text-xs text-muted-foreground">
                         #{order.id.slice(0, 8)}
+                        {order.createdByName
+                          ? ` · ${order.createdByName}`
+                          : ""}
                         {order.stay
                           ? ` · ${order.stay.guestName}${
                               order.stay.room
@@ -462,6 +466,9 @@ export function CuisineClient(props: {
                     ? "En préparation"
                     : "Nouvelle commande"}{" "}
                   · {elapsedLabel(selected.sentAt ?? selected.createdAt, now)}
+                  {selected.createdByName
+                    ? ` · Serveur ${selected.createdByName}`
+                    : ""}
                 </SheetDescription>
               </SheetHeader>
 

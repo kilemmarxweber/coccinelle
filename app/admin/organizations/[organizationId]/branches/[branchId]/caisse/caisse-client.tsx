@@ -14,6 +14,7 @@ import {
   RefreshCw,
   ShoppingBag,
   Truck,
+  UserRound,
   Wallet,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -87,6 +88,7 @@ type OrderRow = {
   tableLabel: string | null;
   status: string;
   serverNote?: string | null;
+  createdByName?: string | null;
   readyAt?: string | Date | null;
   sentAt?: string | Date | null;
   createdAt?: string | Date;
@@ -978,6 +980,12 @@ export function CaisseClient(props: Props) {
                             #{order.id.slice(0, 8)}
                             {order.stay ? ` · ${order.stay.guestName} · séjour` : ""}
                           </p>
+                          {order.createdByName ? (
+                            <p className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-foreground/80">
+                              <UserRound className="size-3" />
+                              Serveur {order.createdByName}
+                            </p>
+                          ) : null}
                           {order.stay ? (
                             <span className="mt-1 inline-flex rounded-full bg-sky-500/15 px-2 py-0.5 text-[11px] font-semibold text-sky-800 dark:text-sky-200">
                               Client en chambre
@@ -1099,6 +1107,9 @@ export function CaisseClient(props: Props) {
                           selectedOrder.createdAt,
                         now,
                       )}
+                      {selectedOrder.createdByName
+                        ? ` · Serveur ${selectedOrder.createdByName}`
+                        : ""}
                     </SheetDescription>
                   </SheetHeader>
 

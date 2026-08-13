@@ -24,6 +24,11 @@ export function defaultReportRange(days = 30) {
   return { from: toIsoDate(from), to: toIsoDate(to) };
 }
 
+export function currentMonthRange(d = new Date()) {
+  const from = new Date(d.getFullYear(), d.getMonth(), 1);
+  return { from: toIsoDate(from), to: toIsoDate(d) };
+}
+
 /** Période précédente de même durée (juste avant `from`). */
 export function previousRange(fromIso: string, toIso: string) {
   const from = startOfLocalDay(fromIso);

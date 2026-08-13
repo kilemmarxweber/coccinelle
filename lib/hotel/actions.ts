@@ -52,7 +52,8 @@ import {
   getActiveExchangeRate,
   getOpenCashSession,
 } from "@/lib/cash/actions";
-import { assertIndividualGuestId } from "@/lib/hotel/guest-id-document";
+import { assertIndividualGuestId, type GuestIdDocType } from "@/lib/hotel/guest-id-document";
+import { isHotelOrderOpenForServerEdit } from "@/lib/hotel/order-edit";
 
 async function ctx(
   organizationId: string,
@@ -86,6 +87,7 @@ function revalidateHotel(organizationId: string, branchId: string) {
   revalidatePath(`${base}/hotel/cuisine`);
   revalidatePath(`${base}/caisse`);
   revalidatePath(`${base}/rapports/tableau-bord`);
+  revalidatePath(`${base}/rapports/mes-commandes`);
   revalidatePath(base);
 }
 
@@ -627,7 +629,15 @@ export async function listStaysForMonthAction(
       room: { include: { roomType: true } },
       folio: { include: { lines: true, payments: true } },
       partner: { select: { id: true, name: true } },
-      partnerBooking: { select: { id: true, code: true, payTiming: true } },
+      partnerBooking: {
+        select: {
+          id: true,
+          code: true,
+          payTiming: true,
+          bookerName: true,
+          partnerId: true,
+        },
+      },
     },
     orderBy: { checkInDate: "asc" },
   });
@@ -690,7 +700,14 @@ export async function createStayAction(input: {
   /** Timing paiement dossier partenaire */
   partnerPayTiming?: "PREPAID" | "AT_CHECKOUT";
   partnerBookingLabel?: string | null;
-  /** Occupant : adresse + pièce (obligatoire pour tout séjour) */
+  /** Rattacher à un dossier existant (groupe / partenaire) au lieu d’en créer un */
+  partnerBookingId?: string | null;
+  /**
+   * Occupant différé (résa groupée) : pas d’adresse / pièce à la création ;
+   * check-in bloqué jusqu’à completeStayGuestAction.
+   */
+  guestPending?: boolean;
+  /** Occupant : adresse + pièce (obligatoire sauf guestPending) */
   guestAddress?: string | null;
   guestCity?: string | null;
   idDocumentType?: string | null;
@@ -707,6 +724,10 @@ export async function createStayAction(input: {
   if (!room) throw new Error("Espace introuvable.");
 
   const isMeeting = room.roomType.kind === "MEETING";
+  const guestPending = Boolean(input.guestPending);
+  if (guestPending && isMeeting) {
+    throw new Error("Identité différée non disponible pour les salles.");
+  }
   const billingMode: StayBillingMode =
     input.billingMode === STAY_BILLING.FLAT
       ? STAY_BILLING.FLAT
@@ -809,7 +830,7 @@ export async function createStayAction(input: {
   const bankReference = input.bankReference?.trim() || null;
 
   let partnerId: string | null = input.partnerId?.trim() || null;
-  let partnerBookingId: string | null = null;
+  let partnerBookingId: string | null = input.partnerBookingId?.trim() || null;
   const partnerPayTiming =
     input.partnerPayTiming === "PREPAID" ? "PREPAID" : "AT_CHECKOUT";
   const creditAtCheckout =
@@ -817,14 +838,36 @@ export async function createStayAction(input: {
 
   const guestAddress = input.guestAddress?.trim() || null;
   const guestCity = input.guestCity?.trim() || null;
-  if (!guestAddress || !guestCity) {
-    throw new Error("Adresse du client obligatoire.");
+  let guestId: {
+    idDocumentType: GuestIdDocType | null;
+    idDocumentNumber: string | null;
+    idDocumentImageUrl: string | null;
+  } = {
+    idDocumentType: null,
+    idDocumentNumber: null,
+    idDocumentImageUrl: null,
+  };
+  if (!guestPending) {
+    if (!guestAddress || !guestCity) {
+      throw new Error("Adresse du client obligatoire.");
+    }
+    guestId = assertIndividualGuestId({
+      idDocumentType: input.idDocumentType,
+      idDocumentNumber: input.idDocumentNumber,
+      idDocumentImageUrl: input.idDocumentImageUrl,
+    });
   }
-  const guestId = assertIndividualGuestId({
-    idDocumentType: input.idDocumentType,
-    idDocumentNumber: input.idDocumentNumber,
-    idDocumentImageUrl: input.idDocumentImageUrl,
-  });
+
+  if (partnerBookingId) {
+    const existing = await prisma.partnerBooking.findFirst({
+      where: { id: partnerBookingId, branchId: input.branchId },
+    });
+    if (!existing) throw new Error("Dossier introuvable.");
+    if (existing.status === "CANCELLED" || existing.status === "CLOSED") {
+      throw new Error("Dossier clos ou annulé.");
+    }
+    partnerId = existing.partnerId;
+  }
 
   if (partnerId) {
     const partner = await prisma.branchPartner.findFirst({
@@ -888,7 +931,7 @@ export async function createStayAction(input: {
   }
 
   const stay = await prisma.$transaction(async (tx) => {
-    if (partnerId) {
+    if (partnerId && !partnerBookingId) {
       const count = await tx.partnerBooking.count({
         where: { branchId: input.branchId },
       });
@@ -912,9 +955,8 @@ export async function createStayAction(input: {
       Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()),
     );
     const checkInIsToday = checkIn.getTime() === todayUtc.getTime();
-    // Check-in immédiat uniquement le jour d’entrée (passage ou nuitée).
-    // Une réservation à une date future reste RESERVED.
-    const immediateCheckIn = checkInIsToday;
+    // Identité différée : jamais de check-in immédiat
+    const immediateCheckIn = checkInIsToday && !guestPending;
     const now = new Date();
     const s = await tx.hotelStay.create({
       data: {
@@ -922,12 +964,13 @@ export async function createStayAction(input: {
         roomId: room.id,
         guestName: input.guestName.trim(),
         guestPhone: input.guestPhone?.trim() || null,
-        guestAddress,
-        guestCity,
-        idDocumentType: guestId.idDocumentType,
-        idDocumentNumber: guestId.idDocumentNumber,
-        idDocumentImageUrl: guestId.idDocumentImageUrl,
-        idDocumentCapturedAt: now,
+        guestAddress: guestPending ? null : guestAddress,
+        guestCity: guestPending ? null : guestCity,
+        guestPending,
+        idDocumentType: guestPending ? null : guestId.idDocumentType,
+        idDocumentNumber: guestPending ? null : guestId.idDocumentNumber,
+        idDocumentImageUrl: guestPending ? null : guestId.idDocumentImageUrl,
+        idDocumentCapturedAt: guestPending ? null : now,
         partnerId,
         partnerBookingId,
         checkInDate: checkIn,
@@ -1128,6 +1171,14 @@ export async function checkInStayAction(input: {
   });
   if (!stay) throw new Error("Séjour introuvable.");
   if (stay.status !== "RESERVED") throw new Error("Check-in impossible.");
+  if (stay.guestPending) {
+    throw new Error(
+      "Identité de l’occupant manquante — complétez-la avant le check-in.",
+    );
+  }
+  if (!stay.guestAddress?.trim() || !stay.idDocumentNumber?.trim()) {
+    throw new Error("Identité / adresse incomplète pour le check-in.");
+  }
 
   await prisma.$transaction([
     prisma.hotelStay.update({
@@ -1138,6 +1189,14 @@ export async function checkInStayAction(input: {
       where: { id: stay.roomId },
       data: { status: "OCCUPIED" },
     }),
+    ...(stay.partnerBookingId
+      ? [
+          prisma.partnerBooking.update({
+            where: { id: stay.partnerBookingId },
+            data: { status: "IN_HOUSE" },
+          }),
+        ]
+      : []),
     prisma.branchNotification.create({
       data: {
         branchId: input.branchId,
@@ -1690,6 +1749,16 @@ async function resolveUserNames(userIds: string[]) {
   return map;
 }
 
+async function withOrderServerNames<
+  T extends { createdByUserId: string },
+>(orders: T[]) {
+  const names = await resolveUserNames(orders.map((o) => o.createdByUserId));
+  return orders.map((o) => ({
+    ...o,
+    createdByName: names.get(o.createdByUserId) ?? "Serveur",
+  }));
+}
+
 function normalizeProductImage(imageUrl?: string | null) {
   const v = imageUrl?.trim() || null;
   if (!v) return null;
@@ -2002,6 +2071,63 @@ async function consumeMenuStock(
       where: { id: line.menuItemId },
       data: { stockQty: { decrement: line.quantity } },
     });
+  }
+}
+
+async function restoreMenuStock(
+  tx: Prisma.TransactionClient,
+  branchId: string,
+  lines: { menuItemId: string | null; quantity: number }[],
+) {
+  const usable = lines.filter(
+    (l): l is { menuItemId: string; quantity: number } => Boolean(l.menuItemId),
+  );
+  if (usable.length === 0) return;
+
+  const ids = [...new Set(usable.map((l) => l.menuItemId))];
+  const rows = await tx.hotelMenuItem.findMany({
+    where: { branchId, id: { in: ids } },
+    select: { id: true, needsKitchen: true },
+  });
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  const kitchenLines: { menuItemId: string; quantity: number }[] = [];
+  const serviceLines: { menuItemId: string; quantity: number }[] = [];
+  for (const line of usable) {
+    const row = byId.get(line.menuItemId);
+    if (!row) continue;
+    const qty = Math.max(1, line.quantity);
+    if (row.needsKitchen) {
+      kitchenLines.push({ menuItemId: line.menuItemId, quantity: qty });
+    } else {
+      serviceLines.push({ menuItemId: line.menuItemId, quantity: qty });
+    }
+  }
+
+  if (serviceLines.length > 0) {
+    const { restoreServiceFloatInTx } = await import(
+      "@/lib/hotel/service-stock"
+    );
+    await restoreServiceFloatInTx(tx, branchId, serviceLines);
+  }
+
+  for (const line of kitchenLines) {
+    await tx.hotelMenuItem.update({
+      where: { id: line.menuItemId },
+      data: { stockQty: { increment: line.quantity } },
+    });
+  }
+}
+
+function assertOrderOpenForServerEdit(order: {
+  status: string;
+  deliveredAt?: Date | string | null;
+  paidAt?: Date | string | null;
+  postedToFolioAt?: Date | string | null;
+}) {
+  if (!isHotelOrderOpenForServerEdit(order)) {
+    throw new Error(
+      "Cette commande n’est plus modifiable (déjà livrée, payée ou imputée).",
+    );
   }
 }
 
@@ -2502,6 +2628,174 @@ export async function createHotelOrderAction(input: {
   return order;
 }
 
+export async function updateHotelOrderAction(input: {
+  organizationId: string;
+  branchId: string;
+  orderId: string;
+  tableLabel?: string;
+  stayId?: string;
+  settlementMode?: OrderSettlementMode;
+  items: { menuItemId: string; quantity: number }[];
+}) {
+  await ctx(input.organizationId, input.branchId, "restaurant");
+  if (!input.items.length) throw new Error("Ajoutez au moins un article.");
+
+  const existing = await prisma.hotelOrder.findFirst({
+    where: { id: input.orderId, branchId: input.branchId },
+    include: { items: true },
+  });
+  if (!existing) throw new Error("Commande introuvable.");
+  assertOrderOpenForServerEdit(existing);
+
+  const settlementMode: OrderSettlementMode =
+    input.settlementMode === ORDER_SETTLEMENT.NOTE_CHAMBRE
+      ? ORDER_SETTLEMENT.NOTE_CHAMBRE
+      : ORDER_SETTLEMENT.COMPTANT;
+
+  let folioId: string | null = null;
+  let stayId: string | null = input.stayId?.trim() || null;
+  let tableLabel = input.tableLabel?.trim() || existing.tableLabel;
+
+  if (settlementMode === ORDER_SETTLEMENT.NOTE_CHAMBRE) {
+    if (!stayId) {
+      throw new Error("Sélectionnez un séjour pour reporter sur la note.");
+    }
+    const stay = await prisma.hotelStay.findFirst({
+      where: {
+        id: stayId,
+        branchId: input.branchId,
+        status: "CHECKED_IN",
+      },
+      include: { room: true, folio: true },
+    });
+    if (!stay?.folio || stay.folio.closed) {
+      throw new Error("Note de chambre indisponible pour ce séjour.");
+    }
+    folioId = stay.folio.id;
+    if (!tableLabel) {
+      tableLabel = `Ch. ${stay.room.number} · ${stay.guestName}`;
+    }
+  } else if (stayId) {
+    const stay = await prisma.hotelStay.findFirst({
+      where: {
+        id: stayId,
+        branchId: input.branchId,
+        status: "CHECKED_IN",
+      },
+      include: { room: true },
+    });
+    if (!stay) throw new Error("Séjour introuvable.");
+    if (!tableLabel) {
+      tableLabel = `Ch. ${stay.room.number} · ${stay.guestName}`;
+    }
+  }
+
+  const menuIds = input.items.map((i) => i.menuItemId);
+  const menu = await prisma.hotelMenuItem.findMany({
+    where: {
+      branchId: input.branchId,
+      id: { in: menuIds },
+      active: true,
+      isConsumable: false,
+    },
+  });
+  if (menu.length !== menuIds.length) throw new Error("Article invalide.");
+
+  const byId = new Map(menu.map((m) => [m.id, m]));
+  const needsKitchen = menu.some((m) => m.needsKitchen);
+  const onNote = settlementMode === ORDER_SETTLEMENT.NOTE_CHAMBRE;
+
+  let nextStatus: "ENVOYEE" | "EN_PREPARATION" | "PRETE" = "PRETE";
+  let readyAt: Date | null = existing.readyAt;
+  if (needsKitchen) {
+    if (existing.status === "EN_PREPARATION") {
+      nextStatus = "EN_PREPARATION";
+    } else if (existing.status === "PRETE" || existing.status === "EN_CAISSE") {
+      nextStatus = "ENVOYEE";
+      readyAt = null;
+    } else {
+      nextStatus = "ENVOYEE";
+    }
+  } else {
+    nextStatus = "PRETE";
+    readyAt = existing.readyAt ?? new Date();
+  }
+
+  const order = await prisma.$transaction(async (tx) => {
+    await restoreMenuStock(
+      tx,
+      input.branchId,
+      existing.items.map((i) => ({
+        menuItemId: i.menuItemId,
+        quantity: i.quantity,
+      })),
+    );
+    await consumeMenuStock(tx, input.branchId, input.items);
+
+    await tx.hotelOrderItem.deleteMany({ where: { orderId: existing.id } });
+    const o = await tx.hotelOrder.update({
+      where: { id: existing.id },
+      data: {
+        stayId,
+        folioId,
+        tableLabel,
+        settlementMode,
+        status: nextStatus,
+        readyAt,
+        items: {
+          create: input.items.map((i) => {
+            const m = byId.get(i.menuItemId)!;
+            const qty = Math.max(1, i.quantity);
+            return {
+              menuItemId: m.id,
+              name: m.name,
+              quantity: qty,
+              unitPrice: m.price,
+              amount: m.price * qty,
+              needsKitchen: m.needsKitchen,
+            };
+          }),
+        },
+      },
+      include: { items: true },
+    });
+
+    await tx.branchNotification.updateMany({
+      where: {
+        branchId: input.branchId,
+        readAt: null,
+        href: { contains: `orderId=${existing.id}` },
+      },
+      data: { readAt: new Date() },
+    });
+
+    const href = needsKitchen
+      ? `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/cuisine?orderId=${o.id}`
+      : onNote
+        ? `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/restauration?view=suivi&orderId=${o.id}`
+        : `/admin/organizations/${input.organizationId}/branches/${input.branchId}/caisse?orderId=${o.id}`;
+
+    await tx.branchNotification.create({
+      data: {
+        branchId: input.branchId,
+        title: needsKitchen
+          ? "Commande modifiée — cuisine"
+          : onNote
+            ? "Commande modifiée — Sur note"
+            : "Commande modifiée — caisse",
+        body: `${o.tableLabel ?? "Salle"} · ${o.items.length} article(s)`,
+        kind: "order_modified",
+        href,
+      },
+    });
+
+    return o;
+  });
+
+  revalidateHotel(input.organizationId, input.branchId);
+  return order;
+}
+
 export async function advanceHotelOrderAction(input: {
   organizationId: string;
   branchId: string;
@@ -2518,15 +2812,12 @@ export async function advanceHotelOrderAction(input: {
   const { user } = await ctx(input.organizationId, input.branchId, "restaurant");
   const order = await prisma.hotelOrder.findFirst({
     where: { id: input.orderId, branchId: input.branchId },
+    include: { items: true },
   });
   if (!order) throw new Error("Commande introuvable.");
 
   if (input.to === "ANNULEE") {
-    if (order.postedToFolioAt) {
-      throw new Error(
-        "Commande déjà imputée à la note — annulation impossible (V1).",
-      );
-    }
+    assertOrderOpenForServerEdit(order);
   }
 
   if (input.to === "EN_PREPARATION") {
@@ -2678,6 +2969,39 @@ export async function advanceHotelOrderAction(input: {
       return;
     }
 
+    if (input.to === "ANNULEE") {
+      await restoreMenuStock(
+        tx,
+        input.branchId,
+        order.items.map((i) => ({
+          menuItemId: i.menuItemId,
+          quantity: i.quantity,
+        })),
+      );
+      await tx.hotelOrder.update({
+        where: { id: order.id },
+        data: { status: "ANNULEE" },
+      });
+      await tx.branchNotification.updateMany({
+        where: {
+          branchId: input.branchId,
+          readAt: null,
+          href: { contains: `orderId=${order.id}` },
+        },
+        data: { readAt: new Date() },
+      });
+      await tx.branchNotification.create({
+        data: {
+          branchId: input.branchId,
+          title: "Commande annulée",
+          body: `${order.tableLabel ?? "Salle"} · ticket retiré cuisine / caisse`,
+          kind: "order_annulee",
+          href: `/admin/organizations/${input.organizationId}/branches/${input.branchId}/hotel/restauration?view=suivi`,
+        },
+      });
+      return;
+    }
+
     await tx.hotelOrder.update({ where: { id: order.id }, data });
 
     const onNote = isNoteChambreMode(order.settlementMode);
@@ -2729,7 +3053,7 @@ export async function listOrdersByStatusAction(
   >,
 ) {
   await ctx(organizationId, branchId, "restaurant");
-  return prisma.hotelOrder.findMany({
+  const orders = await prisma.hotelOrder.findMany({
     where: { branchId, status: { in: statuses } },
     include: {
       items: true,
@@ -2738,6 +3062,7 @@ export async function listOrdersByStatusAction(
     orderBy: { updatedAt: "desc" },
     take: 80,
   });
+  return withOrderServerNames(orders);
 }
 
 export async function listNotificationsAction(

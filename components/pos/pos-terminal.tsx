@@ -687,6 +687,10 @@ export function usePosCart() {
     setCart([]);
   }
 
+  function load(lines: PosCartLine[]) {
+    setCart(lines.filter((l) => l.quantity > 0));
+  }
+
   function toPayload() {
     return cart.map((l) => ({
       menuItemId: l.menuItemId,
@@ -694,7 +698,7 @@ export function usePosCart() {
     }));
   }
 
-  return { cart, addItem, setQty, clear, toPayload };
+  return { cart, addItem, setQty, clear, load, toPayload };
 }
 
 export function PosPayMethodPicker(props: {

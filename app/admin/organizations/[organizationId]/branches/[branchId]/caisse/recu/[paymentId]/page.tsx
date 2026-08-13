@@ -109,6 +109,7 @@ export default async function ReceiptPage({ params }: PageProps) {
     : payment.folio?.stay
       ? `${payment.folio.stay.guestName} · ch. ${payment.folio.stay.room.number}`
       : payment.folio?.label ?? payment.order?.tableLabel ?? null;
+  const serverName = payment.order?.createdByName ?? null;
   const isHospitalityBranch = isHospitality(branch.type);
   const currencySuffix = isHospitalityBranch || isShopReceipt ? " $" : "";
   const paidUsd = paymentAmountUsd(payment);
@@ -205,6 +206,12 @@ export default async function ReceiptPage({ params }: PageProps) {
                 {isShopReceipt ? "Client" : "Réf."}
               </dt>
               <dd className="text-right">{guestLabel}</dd>
+            </div>
+          ) : null}
+          {serverName ? (
+            <div className="flex justify-between gap-4">
+              <dt className="text-muted-foreground">Serveur</dt>
+              <dd className="text-right">{serverName}</dd>
             </div>
           ) : null}
         </dl>
