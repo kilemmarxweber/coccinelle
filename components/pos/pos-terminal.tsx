@@ -698,19 +698,34 @@ export function usePosCart() {
 }
 
 export function PosPayMethodPicker(props: {
-  value: "CASH" | "MOBILE_MONEY" | "CARTE";
-  onChange: (v: "CASH" | "MOBILE_MONEY" | "CARTE") => void;
+  value: "CASH" | "MOBILE_MONEY" | "CARTE" | "BANK";
+  onChange: (v: "CASH" | "MOBILE_MONEY" | "CARTE" | "BANK") => void;
   className?: string;
+  /** Afficher Banque (virement) — partenaires / crédit */
+  includeBank?: boolean;
 }) {
-  return (
-    <div className={cn("grid grid-cols-3 gap-1.5", props.className)}>
-      {(
-        [
+  const methods = (
+    props.includeBank
+      ? ([
           ["CASH", "Cash"],
           ["MOBILE_MONEY", "Mobile"],
           ["CARTE", "Carte"],
-        ] as const
-      ).map(([id, label]) => (
+          ["BANK", "Banque"],
+        ] as const)
+      : ([
+          ["CASH", "Cash"],
+          ["MOBILE_MONEY", "Mobile"],
+          ["CARTE", "Carte"],
+        ] as const)
+  );
+  return (
+    <div
+      className={cn(
+        props.includeBank ? "grid grid-cols-4 gap-1.5" : "grid grid-cols-3 gap-1.5",
+        props.className,
+      )}
+    >
+      {methods.map(([id, label]) => (
         <button
           key={id}
           type="button"

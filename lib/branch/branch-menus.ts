@@ -33,6 +33,11 @@ import {
   sharedBranchRoutes,
 } from "@/lib/branch/paths";
 import { isHospitality } from "@/lib/branch/hospitality";
+import {
+  canSeeDashCard,
+  DASH_CARD,
+  type OpsRole,
+} from "@/lib/branch/ops-roles";
 
 export type BranchMenuFlags = {
   hasStays?: boolean;
@@ -40,6 +45,8 @@ export type BranchMenuFlags = {
 };
 
 export type BranchMenuItem = {
+  /** Identifiant stable pour filtrage par rôle ops. */
+  id?: string;
   title: string;
   description: string;
   href: string;
@@ -64,6 +71,7 @@ function caisseVentesCard(
   venteLabel: string,
 ): BranchMenuItem {
   return {
+    id: DASH_CARD.CAISSE,
     title: "Caisse & Ventes",
     description: venteLabel,
     href: branchCaissePath(organizationId, branchId),
@@ -79,6 +87,7 @@ function tauxChangeCard(
   branchId: string,
 ): BranchMenuItem {
   return {
+    id: DASH_CARD.TAUX_CHANGE,
     title: "Taux de Change",
     description: "Mise à jour des devises.",
     href: sharedBranchRoutes.tauxChange(organizationId, branchId),
@@ -93,6 +102,7 @@ function bonsCommandeCard(
   branchId: string,
 ): BranchMenuItem {
   return {
+    id: DASH_CARD.BONS_COMMANDE,
     title: "Bons de commande",
     description: "Achats fournisseur, impression et validation caisse.",
     href: sharedBranchRoutes.bonsCommande(organizationId, branchId),
@@ -107,6 +117,7 @@ function depensesCard(
   branchId: string,
 ): BranchMenuItem {
   return {
+    id: DASH_CARD.DEPENSES,
     title: "Dépenses",
     description: "Sorties de caisse et suivi du solde net.",
     href: sharedBranchRoutes.depenses(organizationId, branchId),
@@ -120,57 +131,101 @@ function depensesCard(
 function rapportsSections(
   organizationId: string,
   branchId: string,
+  opts?: { includeMesCommandes?: boolean; includeSejoursReport?: boolean },
 ): BranchMenuSection[] {
+  const items: BranchMenuItem[] = [
+    {
+      id: DASH_CARD.RAPPORT_TABLEAU,
+      title: "Tableau de Bord",
+      description: "Statistiques et indicateurs clés.",
+      href: sharedBranchRoutes.tableauBord(organizationId, branchId),
+      icon: LayoutDashboard,
+      iconBg: "bg-violet-500/15",
+      iconColor: "text-violet-400",
+    },
+    {
+      id: DASH_CARD.RAPPORT_VENTES,
+      title: "Rapport Ventes",
+      description: "CA, tickets, méthodes — graphs & comparaison.",
+      href: sharedBranchRoutes.ventes(organizationId, branchId),
+      icon: FileBarChart,
+      iconBg: "bg-sky-500/15",
+      iconColor: "text-sky-400",
+    },
+    {
+      id: DASH_CARD.RAPPORT_ACHATS,
+      title: "Rapport Achats",
+      description: "Entrées vs sorties stock — période & deltas.",
+      href: sharedBranchRoutes.achats(organizationId, branchId),
+      icon: Package,
+      iconBg: "bg-primary/15",
+      iconColor: "text-primary",
+    },
+    {
+      id: DASH_CARD.RAPPORT_FINANCIER,
+      title: "Rapport Financier",
+      description: "Revenus croisés aux flux d’appro / décompte.",
+      href: sharedBranchRoutes.financier(organizationId, branchId),
+      icon: FileText,
+      iconBg: "bg-sky-500/15",
+      iconColor: "text-sky-400",
+    },
+    {
+      id: DASH_CARD.RAPPORT_ARTICLES,
+      title: "Rapport Article",
+      description: "Top ventes, catégories et sorties liées.",
+      href: sharedBranchRoutes.articles(organizationId, branchId),
+      icon: FileBarChart,
+      iconBg: "bg-primary/15",
+      iconColor: "text-primary",
+    },
+  ];
+  if (opts?.includeMesCommandes) {
+    items.push({
+      id: DASH_CARD.RAPPORT_MES_COMMANDES,
+      title: "Mes commandes",
+      description: "Votre activité F&B sur une période — stats & graphs.",
+      href: sharedBranchRoutes.mesCommandes(organizationId, branchId),
+      icon: UtensilsCrossed,
+      iconBg: "bg-violet-500/15",
+      iconColor: "text-violet-400",
+    });
+  }
+  if (opts?.includeSejoursReport) {
+    items.push({
+      id: DASH_CARD.RAPPORT_SEJOURS,
+      title: "Rapport séjours",
+      description: "Check-in / out, statuts et disponibilités.",
+      href: sharedBranchRoutes.rapportSejours(organizationId, branchId),
+      icon: BedDouble,
+      iconBg: "bg-emerald-500/15",
+      iconColor: "text-emerald-400",
+    });
+  }
   return [
     {
       title: "ANALYSES & RAPPORTS",
       titleColor: "text-teal-400",
       icon: Globe2,
       iconColor: "text-teal-400",
-      items: [
-        {
-          title: "Tableau de Bord",
-          description: "Statistiques et indicateurs clés.",
-          href: sharedBranchRoutes.tableauBord(organizationId, branchId),
-          icon: LayoutDashboard,
-          iconBg: "bg-violet-500/15",
-          iconColor: "text-violet-400",
-        },
-        {
-          title: "Rapport Ventes",
-          description: "CA, tickets, méthodes — graphs & comparaison.",
-          href: sharedBranchRoutes.ventes(organizationId, branchId),
-          icon: FileBarChart,
-          iconBg: "bg-sky-500/15",
-          iconColor: "text-sky-400",
-        },
-        {
-          title: "Rapport Achats",
-          description: "Entrées vs sorties stock — période & deltas.",
-          href: sharedBranchRoutes.achats(organizationId, branchId),
-          icon: Package,
-          iconBg: "bg-primary/15",
-          iconColor: "text-primary",
-        },
-        {
-          title: "Rapport Financier",
-          description: "Revenus croisés aux flux d’appro / décompte.",
-          href: sharedBranchRoutes.financier(organizationId, branchId),
-          icon: FileText,
-          iconBg: "bg-sky-500/15",
-          iconColor: "text-sky-400",
-        },
-        {
-          title: "Rapport Article",
-          description: "Top ventes, catégories et sorties liées.",
-          href: sharedBranchRoutes.articles(organizationId, branchId),
-          icon: FileBarChart,
-          iconBg: "bg-primary/15",
-          iconColor: "text-primary",
-        },
-      ],
+      items,
     },
   ];
+}
+
+/** Filtre les sections selon le rôle ops (hospitalité). */
+export function filterMenuSectionsForOpsRole(
+  sections: BranchMenuSection[],
+  opsRole: OpsRole | string,
+): BranchMenuSection[] {
+  return sections
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) =>
+        canSeeDashCard(opsRole, item.id),
+      ),
+    }))
+    .filter((section) => section.items.length > 0);
 }
 
 /** Menu du hub selon BranchType — métier + taux change + rapports. */
@@ -180,10 +235,13 @@ export function menuSectionsForBranch(
   type: "AGENCE" | "HOTEL" | "BOUTIQUE" | "RESTAURANT" | string,
   flags: BranchMenuFlags = {},
 ): BranchMenuSection[] {
-  const shared = rapportsSections(organizationId, branchId);
   const hasStays = flags.hasStays ?? type === "HOTEL";
   const hasRestaurant =
     flags.hasRestaurant ?? (type === "HOTEL" || type === "RESTAURANT");
+  const shared = rapportsSections(organizationId, branchId, {
+    includeMesCommandes: hasRestaurant,
+    includeSejoursReport: hasStays,
+  });
 
   if (isHospitality(type)) {
     const dailyItems: BranchMenuItem[] = [
@@ -198,18 +256,31 @@ export function menuSectionsForBranch(
       ),
     ];
     if (hasStays) {
-      dailyItems.push({
-        title: "Séjours",
-        description: "Réservations, check-in / check-out.",
-        href: hotelRoutes.sejours(organizationId, branchId),
-        icon: ClipboardList,
-        iconBg: "bg-emerald-500/15",
-        iconColor: "text-emerald-400",
-      });
+      dailyItems.push(
+        {
+          id: DASH_CARD.SEJOURS,
+          title: "Séjours",
+          description: "Réservations, check-in / check-out.",
+          href: hotelRoutes.sejours(organizationId, branchId),
+          icon: ClipboardList,
+          iconBg: "bg-emerald-500/15",
+          iconColor: "text-emerald-400",
+        },
+        {
+          id: DASH_CARD.CLIENTS_PARTENAIRES,
+          title: "Clients partenaires",
+          description: "Sociétés — coordonnées et dossiers.",
+          href: hotelRoutes.partenaires(organizationId, branchId),
+          icon: Users,
+          iconBg: "bg-violet-500/15",
+          iconColor: "text-violet-400",
+        },
+      );
     }
     if (hasRestaurant) {
       dailyItems.push(
         {
+          id: DASH_CARD.RESTAURATION,
           title: "Restauration",
           description: "Commandes F&B et additions.",
           href: hotelRoutes.restauration(organizationId, branchId),
@@ -218,6 +289,7 @@ export function menuSectionsForBranch(
           iconColor: "text-violet-400",
         },
         {
+          id: DASH_CARD.CUISINE,
           title: "Cuisine",
           description: "File de préparation — marquer prêt.",
           href: hotelRoutes.cuisine(organizationId, branchId),
@@ -235,6 +307,7 @@ export function menuSectionsForBranch(
     if (hasStays) {
       stockItems.push(
         {
+          id: DASH_CARD.CHAMBRES,
           title: "Chambres",
           description: "Types, inventaire et statuts.",
           href: hotelRoutes.chambres(organizationId, branchId),
@@ -243,6 +316,7 @@ export function menuSectionsForBranch(
           iconColor: "text-sky-400",
         },
         {
+          id: DASH_CARD.SALLES,
           title: "Salles de réunion",
           description: "Salles, capacité et réservations.",
           href: hotelRoutes.sallesReunion(organizationId, branchId),
@@ -255,6 +329,7 @@ export function menuSectionsForBranch(
     if (hasRestaurant) {
       stockItems.push(
         {
+          id: DASH_CARD.PRODUITS_HOTEL,
           title: "Produits",
           description: "Carte F&B, photos, stock et cuisine.",
           href: hotelRoutes.produits(organizationId, branchId),
@@ -263,6 +338,7 @@ export function menuSectionsForBranch(
           iconColor: "text-sky-400",
         },
         {
+          id: DASH_CARD.SERVICE_STOCK,
           title: "Service stock",
           description: "Float vendeur — ouverture, réassort, clôture signée.",
           href: hotelRoutes.serviceStock(organizationId, branchId),
@@ -273,6 +349,7 @@ export function menuSectionsForBranch(
       );
     }
     stockItems.push({
+      id: DASH_CARD.LIVRAISON,
       title: "Livraison",
       description: "Consommables — entrées et décompte stock.",
       href: hotelRoutes.livraison(organizationId, branchId),
@@ -290,7 +367,12 @@ export function menuSectionsForBranch(
         items: dailyItems,
       },
       {
-        title: hasStays && !hasRestaurant ? "HÉBERGEMENT" : hasRestaurant && !hasStays ? "RESTAURANT & STOCK" : "HÉBERGEMENT & STOCK",
+        title:
+          hasStays && !hasRestaurant
+            ? "HÉBERGEMENT"
+            : hasRestaurant && !hasStays
+              ? "RESTAURANT & STOCK"
+              : "HÉBERGEMENT & STOCK",
         titleColor: "text-sky-400",
         icon: hasStays ? BedDouble : UtensilsCrossed,
         iconColor: "text-sky-400",
@@ -309,6 +391,7 @@ export function menuSectionsForBranch(
         iconColor: "text-emerald-400",
         items: [
           {
+            id: DASH_CARD.POS,
             title: "Point de vente",
             description: "Panier rapide, tickets en attente et encaissement.",
             href: boutiqueRoutes.pos(organizationId, branchId),
@@ -321,6 +404,7 @@ export function menuSectionsForBranch(
           bonsCommandeCard(organizationId, branchId),
           depensesCard(organizationId, branchId),
           {
+            id: DASH_CARD.BOUTIQUE_PRODUITS,
             title: "Produits",
             description: "Articles, plats, prix et promotions.",
             href: boutiqueRoutes.produits(organizationId, branchId),
@@ -329,6 +413,7 @@ export function menuSectionsForBranch(
             iconColor: "text-violet-400",
           },
           {
+            id: DASH_CARD.BOUTIQUE_STOCK,
             title: "Stock",
             description: "Niveaux et mouvements.",
             href: boutiqueRoutes.stock(organizationId, branchId),
@@ -338,7 +423,7 @@ export function menuSectionsForBranch(
           },
         ],
       },
-      ...shared,
+      ...rapportsSections(organizationId, branchId),
     ];
   }
 
@@ -356,6 +441,7 @@ export function menuSectionsForBranch(
           "Ouvrir la caisse et vendre des billets au guichet.",
         ),
         {
+          id: DASH_CARD.GUICHET,
           title: "Guichet",
           description: "Vendre un billet au comptoir.",
           href: agenceRoutes.guichet(organizationId, branchId),
@@ -364,6 +450,7 @@ export function menuSectionsForBranch(
           iconColor: "text-emerald-400",
         },
         {
+          id: DASH_CARD.RESERVATIONS,
           title: "Réservations",
           description: "Liste et suivi des dossiers.",
           href: agenceRoutes.reservations(organizationId, branchId),
@@ -372,8 +459,9 @@ export function menuSectionsForBranch(
           iconColor: "text-violet-400",
         },
         {
-          title: "Clients",
-          description: "Portefeuille voyageurs.",
+          id: DASH_CARD.CLIENTS,
+          title: "Clients partenaires",
+          description: "Sociétés & clients — coordonnées.",
           href: agenceRoutes.clients(organizationId, branchId),
           icon: Users,
           iconBg: "bg-violet-500/15",
@@ -391,6 +479,7 @@ export function menuSectionsForBranch(
       iconColor: "text-sky-400",
       items: [
         {
+          id: DASH_CARD.TRAJETS,
           title: "Trajets",
           description: "Lignes et tarifs de la branche.",
           href: agenceRoutes.trajets(organizationId, branchId),
@@ -399,6 +488,7 @@ export function menuSectionsForBranch(
           iconColor: "text-sky-400",
         },
         {
+          id: DASH_CARD.COLIS,
           title: "Colis",
           description: "Expéditions et livraisons.",
           href: agenceRoutes.colis(organizationId, branchId),
@@ -407,6 +497,7 @@ export function menuSectionsForBranch(
           iconColor: "text-primary",
         },
         {
+          id: DASH_CARD.EMBARQUEMENT,
           title: "Embarquement",
           description: "Scan QR et passages.",
           href: agenceRoutes.passages(organizationId, branchId),
@@ -416,7 +507,7 @@ export function menuSectionsForBranch(
         },
       ],
     },
-    ...shared,
+    ...rapportsSections(organizationId, branchId),
   ];
 }
 

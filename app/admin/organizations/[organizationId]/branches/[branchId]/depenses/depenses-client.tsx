@@ -199,7 +199,9 @@ export function DepensesClient(props: {
   const [beneficiary, setBeneficiary] = useState("");
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
-  const [method, setMethod] = useState<"CASH" | "MOBILE_MONEY" | "CARTE">(
+  const [method, setMethod] = useState<
+    "CASH" | "MOBILE_MONEY" | "CARTE" | "BANK"
+  >(
     "CASH",
   );
 

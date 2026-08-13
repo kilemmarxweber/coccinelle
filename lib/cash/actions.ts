@@ -104,13 +104,15 @@ export async function getOpenCashDrawerSummary(branchId: string) {
     getActiveExchangeRate(branchId),
     prisma.payment.findMany({
       where: { cashSessionId: session.id },
-      select: { amountCdf: true, amountForeign: true },
+      select: { amountCdf: true, amountForeign: true, method: true },
     }),
   ]);
 
   const usdRate = rateRow?.rate && rateRow.rate > 0 ? rateRow.rate : null;
   let movementsUsd = 0;
   for (const p of payments) {
+    // Virement / banque : hors float cash physique
+    if (p.method === "BANK") continue;
     if (p.amountForeign != null && p.amountForeign !== 0) {
       movementsUsd += p.amountForeign;
     } else if (usdRate) {
@@ -185,7 +187,7 @@ export async function createPaymentAction(input: {
   organizationId: string;
   branchId: string;
   amountCdf: number;
-  method: "CASH" | "MOBILE_MONEY" | "CARTE";
+  method: "CASH" | "MOBILE_MONEY" | "CARTE" | "BANK";
   folioId?: string;
   orderId?: string;
   amountForeign?: number;

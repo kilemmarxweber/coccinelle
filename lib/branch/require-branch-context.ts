@@ -13,6 +13,9 @@ import {
   moduleForBranchType,
   type BranchModule,
 } from "@/lib/branch/paths";
+import { canSeeDashCard } from "@/lib/branch/ops-roles";
+import { resolveCurrentBranchOpsRole } from "@/lib/branch/resolve-ops-role";
+import { isHospitality } from "@/lib/branch/hospitality";
 
 type LoadOpts = {
   organizationId: string;
@@ -21,6 +24,8 @@ type LoadOpts = {
   requireModule?: BranchModule;
   /** Module hospitalité (stays / restaurant / livraison). */
   requireHospitality?: HospitalityModule;
+  /** Carte hub requise (filtre rôle ops, hospitalité uniquement). */
+  requireDashCard?: string;
 };
 
 /**
@@ -62,6 +67,16 @@ export async function requireBranchContext(
           ? canAccessRestaurant(branch)
           : canAccessLivraison(branch);
     if (!ok) redirect(hub);
+  }
+
+  if (opts.requireDashCard && isHospitality(branch.type)) {
+    const opsRole = await resolveCurrentBranchOpsRole(
+      opts.organizationId,
+      opts.branchId,
+    );
+    if (!canSeeDashCard(opsRole, opts.requireDashCard)) {
+      redirect(hub);
+    }
   }
 
   return branch;

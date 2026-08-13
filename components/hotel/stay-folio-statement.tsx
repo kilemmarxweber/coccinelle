@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 
 export type StayFolioStatementViewModel = {
   guestName: string;
+  billedToPartnerName?: string | null;
   roomNumber: string;
   closed?: boolean;
   sections: {
@@ -87,7 +88,14 @@ export function StayFolioStatementView(props: {
         <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
           Client
         </p>
-        <p className="text-lg font-bold tracking-tight">{s.guestName}</p>
+        {s.billedToPartnerName ? (
+          <p className="text-sm font-medium text-violet-700 dark:text-violet-300">
+            Facturé à : {s.billedToPartnerName}
+          </p>
+        ) : null}
+        <p className="text-lg font-bold tracking-tight">
+          {s.billedToPartnerName ? `Occupant : ${s.guestName}` : s.guestName}
+        </p>
         <p className="text-sm text-muted-foreground">
           Chambre {s.roomNumber}
           {" · "}

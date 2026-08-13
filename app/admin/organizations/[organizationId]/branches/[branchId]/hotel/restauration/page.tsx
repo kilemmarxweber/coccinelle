@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { canAccessStays } from "@/lib/branch/hospitality";
 import { hotelRoutes } from "@/lib/branch/paths";
+import { DASH_CARD } from "@/lib/branch/ops-roles";
 import { auth } from "@/lib/auth";
 import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
@@ -34,6 +35,7 @@ export default async function RestaurationPage({
     branchId,
     requireModule: "hotel",
     requireHospitality: "restaurant",
+    requireDashCard: DASH_CARD.RESTAURATION,
   });
   await ensureHotelMenuSeedAction(organizationId, branchId);
   const hasStays = canAccessStays(branch);

@@ -52,6 +52,7 @@ import {
   getActiveExchangeRate,
   getOpenCashSession,
 } from "@/lib/cash/actions";
+import { assertIndividualGuestId } from "@/lib/hotel/guest-id-document";
 
 async function ctx(
   organizationId: string,
@@ -75,6 +76,7 @@ async function ctx(
 function revalidateHotel(organizationId: string, branchId: string) {
   const base = branchBasePath(organizationId, branchId);
   revalidatePath(`${base}/hotel/sejours`);
+  revalidatePath(`${base}/hotel/partenaires`);
   revalidatePath(`${base}/hotel/chambres`);
   revalidatePath(`${base}/hotel/salles-reunion`);
   revalidatePath(`${base}/hotel/produits`);
@@ -624,6 +626,8 @@ export async function listStaysForMonthAction(
     include: {
       room: { include: { roomType: true } },
       folio: { include: { lines: true, payments: true } },
+      partner: { select: { id: true, name: true } },
+      partnerBooking: { select: { id: true, code: true, payTiming: true } },
     },
     orderBy: { checkInDate: "asc" },
   });
@@ -674,11 +678,24 @@ export async function createStayAction(input: {
   rateNote?: string | null;
   /**
    * Salle MEETING : paiement location obligatoire (acompte ou total), USD note.
+   * Exception : partenaire + payTiming AT_CHECKOUT.
    */
   locationPaymentUsd?: number;
-  paymentMethod?: "CASH" | "MOBILE_MONEY" | "CARTE";
+  paymentMethod?: "CASH" | "MOBILE_MONEY" | "CARTE" | "BANK";
+  bankReference?: string | null;
   /** Caution consommation optionnelle (USD note), saisie manuelle */
   depositAmountUsd?: number | null;
+  /** Client partenaire (société) */
+  partnerId?: string | null;
+  /** Timing paiement dossier partenaire */
+  partnerPayTiming?: "PREPAID" | "AT_CHECKOUT";
+  partnerBookingLabel?: string | null;
+  /** Occupant : adresse + pièce (obligatoire pour tout séjour) */
+  guestAddress?: string | null;
+  guestCity?: string | null;
+  idDocumentType?: string | null;
+  idDocumentNumber?: string | null;
+  idDocumentImageUrl?: string | null;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId, "stays");
   const checkIn = parseDateOnly(input.checkInDate);
@@ -785,17 +802,49 @@ export async function createStayAction(input: {
 
   let locationPaymentUsd = 0;
   let depositAmountUsd = 0;
-  let paymentMethod: "CASH" | "MOBILE_MONEY" | "CARTE" = "CASH";
+  let paymentMethod: "CASH" | "MOBILE_MONEY" | "CARTE" | "BANK" = "CASH";
   let cashSessionId: string | null = null;
   let exchangeRate: number | null = null;
   let foreignCurrency = "USD";
+  const bankReference = input.bankReference?.trim() || null;
+
+  let partnerId: string | null = input.partnerId?.trim() || null;
+  let partnerBookingId: string | null = null;
+  const partnerPayTiming =
+    input.partnerPayTiming === "PREPAID" ? "PREPAID" : "AT_CHECKOUT";
+  const creditAtCheckout =
+    Boolean(partnerId) && partnerPayTiming === "AT_CHECKOUT";
+
+  const guestAddress = input.guestAddress?.trim() || null;
+  const guestCity = input.guestCity?.trim() || null;
+  if (!guestAddress || !guestCity) {
+    throw new Error("Adresse du client obligatoire.");
+  }
+  const guestId = assertIndividualGuestId({
+    idDocumentType: input.idDocumentType,
+    idDocumentNumber: input.idDocumentNumber,
+    idDocumentImageUrl: input.idDocumentImageUrl,
+  });
+
+  if (partnerId) {
+    const partner = await prisma.branchPartner.findFirst({
+      where: { id: partnerId, branchId: input.branchId, status: "ACTIVE" },
+    });
+    if (!partner) throw new Error("Partenaire introuvable ou inactif.");
+    if (!partner.address?.trim() || !partner.city?.trim()) {
+      throw new Error("Adresse partenaire incomplète.");
+    }
+  }
 
   if (isMeeting) {
-    locationPaymentUsd = Number(input.locationPaymentUsd);
-    if (!(locationPaymentUsd > 0)) {
+    locationPaymentUsd = Number(input.locationPaymentUsd ?? 0);
+    if (!(locationPaymentUsd > 0) && !creditAtCheckout) {
       throw new Error(
         "Réservation salle : encaisser un acompte ou le total de la location.",
       );
+    }
+    if (creditAtCheckout && !(locationPaymentUsd > 0)) {
+      locationPaymentUsd = 0;
     }
     const due =
       billingMode === STAY_BILLING.FLAT
@@ -809,11 +858,28 @@ export async function createStayAction(input: {
         ? Math.max(0, Number(input.depositAmountUsd))
         : 0;
     paymentMethod = input.paymentMethod ?? "CASH";
+    if (locationPaymentUsd > 0 || depositAmountUsd > 0) {
+      const cashSession = await getOpenCashSession(input.branchId);
+      if (!cashSession) {
+        throw new Error(
+          "Ouvrez une session de caisse pour encaisser la location / caution.",
+        );
+      }
+      cashSessionId = cashSession.id;
+      const rate = await getActiveExchangeRate(input.branchId);
+      exchangeRate = rate?.rate ?? null;
+      foreignCurrency = rate?.fromCurrency ?? "USD";
+    }
+  } else if (
+    partnerId &&
+    partnerPayTiming === "PREPAID" &&
+    Number(input.locationPaymentUsd ?? 0) > 0
+  ) {
+    locationPaymentUsd = Number(input.locationPaymentUsd);
+    paymentMethod = input.paymentMethod ?? "CASH";
     const cashSession = await getOpenCashSession(input.branchId);
     if (!cashSession) {
-      throw new Error(
-        "Ouvrez une session de caisse pour encaisser la location / caution.",
-      );
+      throw new Error("Ouvrez une session de caisse pour l’acompte partenaire.");
     }
     cashSessionId = cashSession.id;
     const rate = await getActiveExchangeRate(input.branchId);
@@ -822,6 +888,25 @@ export async function createStayAction(input: {
   }
 
   const stay = await prisma.$transaction(async (tx) => {
+    if (partnerId) {
+      const count = await tx.partnerBooking.count({
+        where: { branchId: input.branchId },
+      });
+      const code = `PRT-${String(count + 1).padStart(5, "0")}`;
+      const booking = await tx.partnerBooking.create({
+        data: {
+          branchId: input.branchId,
+          partnerId,
+          code,
+          label: input.partnerBookingLabel?.trim() || null,
+          payTiming: partnerPayTiming,
+          status: "CONFIRMED",
+          createdByUserId: user.id,
+        },
+      });
+      partnerBookingId = booking.id;
+    }
+
     const today = new Date();
     const todayUtc = new Date(
       Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()),
@@ -837,6 +922,14 @@ export async function createStayAction(input: {
         roomId: room.id,
         guestName: input.guestName.trim(),
         guestPhone: input.guestPhone?.trim() || null,
+        guestAddress,
+        guestCity,
+        idDocumentType: guestId.idDocumentType,
+        idDocumentNumber: guestId.idDocumentNumber,
+        idDocumentImageUrl: guestId.idDocumentImageUrl,
+        idDocumentCapturedAt: now,
+        partnerId,
+        partnerBookingId,
         checkInDate: checkIn,
         checkOutDate:
           billingMode === STAY_BILLING.FLAT &&
@@ -862,6 +955,13 @@ export async function createStayAction(input: {
           negotiated || billingMode === STAY_BILLING.FLAT ? user.id : null,
       },
     });
+
+    if (partnerBookingId && immediateCheckIn) {
+      await tx.partnerBooking.update({
+        where: { id: partnerBookingId },
+        data: { status: "IN_HOUSE" },
+      });
+    }
     if (immediateCheckIn) {
       await tx.hotelRoom.update({
         where: { id: room.id },
@@ -919,45 +1019,55 @@ export async function createStayAction(input: {
       },
     });
 
-    if (isMeeting && cashSessionId) {
+    if (cashSessionId && locationPaymentUsd > 0.01) {
       const payCount = await tx.payment.count({
         where: { branchId: input.branchId },
       });
       let receiptSeq = payCount;
       const rateVal = exchangeRate && exchangeRate > 0 ? exchangeRate : 1;
-      const locNote =
-        locationPaymentUsd + 0.01 >= nightAmount
+      const locNote = isMeeting
+        ? locationPaymentUsd + 0.01 >= nightAmount
           ? MEETING_PAYMENT_NOTES.locationFull
-          : MEETING_PAYMENT_NOTES.locationAcompte;
+          : MEETING_PAYMENT_NOTES.locationAcompte
+        : "Acompte partenaire";
       receiptSeq += 1;
       await tx.payment.create({
         data: {
           branchId: input.branchId,
           cashSessionId,
           folioId: folio.id,
+          partnerId,
+          partnerBookingId,
           receiptNumber: `RC-${String(receiptSeq).padStart(5, "0")}`,
           method: paymentMethod,
           amountCdf: locationPaymentUsd * rateVal,
           amountForeign: locationPaymentUsd,
           foreignCurrency,
           exchangeRateUsed: exchangeRate,
+          bankReference: paymentMethod === "BANK" ? bankReference : null,
           cashierUserId: user.id,
-          note: locNote,
+          note:
+            paymentMethod === "BANK" && bankReference
+              ? `${locNote} · réf. ${bankReference}`
+              : locNote,
         },
       });
-      if (depositAmountUsd > 0.01) {
+      if (isMeeting && depositAmountUsd > 0.01) {
         receiptSeq += 1;
         await tx.payment.create({
           data: {
             branchId: input.branchId,
             cashSessionId,
             folioId: folio.id,
+            partnerId,
+            partnerBookingId,
             receiptNumber: `RC-${String(receiptSeq).padStart(5, "0")}`,
             method: paymentMethod,
             amountCdf: depositAmountUsd * rateVal,
             amountForeign: depositAmountUsd,
             foreignCurrency,
             exchangeRateUsed: exchangeRate,
+            bankReference: paymentMethod === "BANK" ? bankReference : null,
             cashierUserId: user.id,
             note: MEETING_PAYMENT_NOTES.caution,
           },
@@ -1986,6 +2096,7 @@ export async function getStayFolioStatementAction(
     where: { id: stayId, branchId },
     include: {
       room: { include: { roomType: true } },
+      partner: { select: { id: true, name: true } },
       folio: {
         include: {
           lines: { orderBy: { createdAt: "asc" } },

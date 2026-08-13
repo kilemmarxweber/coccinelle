@@ -203,10 +203,49 @@ export type CashSessionStatus = (typeof CashSessionStatus)[keyof typeof CashSess
 export const PaymentMethod = {
   CASH: 'CASH',
   MOBILE_MONEY: 'MOBILE_MONEY',
-  CARTE: 'CARTE'
+  CARTE: 'CARTE',
+  BANK: 'BANK'
 } as const
 
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
+
+
+export const BranchPartnerStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE'
+} as const
+
+export type BranchPartnerStatus = (typeof BranchPartnerStatus)[keyof typeof BranchPartnerStatus]
+
+
+export const IdDocumentType = {
+  CNI: 'CNI',
+  PASSPORT: 'PASSPORT',
+  PERMIS: 'PERMIS',
+  AUTRE: 'AUTRE'
+} as const
+
+export type IdDocumentType = (typeof IdDocumentType)[keyof typeof IdDocumentType]
+
+
+export const PartnerBookingStatus = {
+  DRAFT: 'DRAFT',
+  CONFIRMED: 'CONFIRMED',
+  IN_HOUSE: 'IN_HOUSE',
+  CHECKING_OUT: 'CHECKING_OUT',
+  CLOSED: 'CLOSED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type PartnerBookingStatus = (typeof PartnerBookingStatus)[keyof typeof PartnerBookingStatus]
+
+
+export const PartnerPayTiming = {
+  PREPAID: 'PREPAID',
+  AT_CHECKOUT: 'AT_CHECKOUT'
+} as const
+
+export type PartnerPayTiming = (typeof PartnerPayTiming)[keyof typeof PartnerPayTiming]
 
 
 export const HotelStayStatus = {

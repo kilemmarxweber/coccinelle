@@ -467,7 +467,7 @@ export async function checkoutShopSaleAction(input: {
   /** Reprendre un hold existant (sinon nouvelle vente). */
   saleId?: string;
   items?: { productId: string; quantity: number }[];
-  method: "CASH" | "MOBILE_MONEY" | "CARTE";
+  method: "CASH" | "MOBILE_MONEY" | "CARTE" | "BANK";
   clientLabel?: string;
   clientPhone?: string;
   anonymous?: boolean;

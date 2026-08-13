@@ -3,13 +3,16 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import { resolveCurrentBranchOpsRole } from "@/lib/branch/resolve-ops-role";
 import { BranchDashboard } from "./branch-dashboard";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
 };
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { organizationId, branchId } = await params;
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) {
@@ -32,6 +35,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function BranchDashboardPage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
   const branch = await requireBranchContext({ organizationId, branchId });
+  const opsRole = await resolveCurrentBranchOpsRole(organizationId, branchId);
 
   return (
     <BranchDashboard
@@ -49,6 +53,7 @@ export default async function BranchDashboardPage({ params }: PageProps) {
       hasShop={branch.hasShop}
       hasAlimentation={branch.hasAlimentation}
       organizationName={branch.organizationName}
+      opsRole={opsRole}
     />
   );
 }

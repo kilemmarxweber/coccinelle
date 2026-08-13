@@ -31,6 +31,17 @@ type PageProps = {
 export default async function BranchCaissePage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
   const branch = await requireBranchContext({ organizationId, branchId });
+  // Hospitalité : filtre métier caissier / owner / …
+  if (isHospitality(branch.type)) {
+    const { canSeeDashCard, DASH_CARD } = await import("@/lib/branch/ops-roles");
+    const { resolveCurrentBranchOpsRole } = await import(
+      "@/lib/branch/resolve-ops-role"
+    );
+    const ops = await resolveCurrentBranchOpsRole(organizationId, branchId);
+    if (!canSeeDashCard(ops, DASH_CARD.CAISSE)) {
+      redirect(`/admin/organizations/${organizationId}/branches/${branchId}`);
+    }
+  }
 
   if (branch.type === "BOUTIQUE") {
     redirect(boutiqueRoutes.pos(organizationId, branchId));

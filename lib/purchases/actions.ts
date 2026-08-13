@@ -149,7 +149,7 @@ async function createCashMovement(input: {
   note: string;
   purchaseOrderId?: string;
   expenseId?: string;
-  method?: "CASH" | "MOBILE_MONEY" | "CARTE";
+  method?: "CASH" | "MOBILE_MONEY" | "CARTE" | "BANK";
 }) {
   const cashSession = await getOpenCashSession(input.branchId);
   if (!cashSession) {
@@ -868,7 +868,7 @@ export async function createExpenseAction(input: {
   beneficiary?: string | null;
   amountUsd: number;
   note?: string | null;
-  method?: "CASH" | "MOBILE_MONEY" | "CARTE";
+  method?: "CASH" | "MOBILE_MONEY" | "CARTE" | "BANK";
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
   const kind = normalizeExpenseKind(input.kind);

@@ -1,4 +1,5 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import { DASH_CARD } from "@/lib/branch/ops-roles";
 import { listOrdersByStatusAction } from "@/lib/hotel/actions";
 import { CuisineClient } from "./cuisine-client";
 
@@ -13,6 +14,7 @@ export default async function CuisinePage({ params }: PageProps) {
     branchId,
     requireModule: "hotel",
     requireHospitality: "restaurant",
+    requireDashCard: DASH_CARD.CUISINE,
   });
   const orders = await listOrdersByStatusAction(organizationId, branchId, [
     "ENVOYEE",

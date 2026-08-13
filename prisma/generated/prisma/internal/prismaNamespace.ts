@@ -403,6 +403,8 @@ export const ModelName = {
   Paiement: 'Paiement',
   Penalite: 'Penalite',
   Branch: 'Branch',
+  BranchPartner: 'BranchPartner',
+  PartnerBooking: 'PartnerBooking',
   BranchMember: 'BranchMember',
   HotelRoomType: 'HotelRoomType',
   HotelRoom: 'HotelRoom',
@@ -443,7 +445,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationRole" | "member" | "invitation" | "client" | "trajet" | "trajetProgramme" | "trajetDepart" | "passager" | "reservation" | "colis" | "reservationDraft" | "paiement" | "penalite" | "branch" | "branchMember" | "hotelRoomType" | "hotelRoom" | "shopCategory" | "shopProduct" | "shopSale" | "shopSaleItem" | "shopStockMovement" | "exchangeRate" | "cashSession" | "hotelStay" | "folio" | "folioLine" | "payment" | "hotelMenuItem" | "hotelStockMovement" | "serviceStockSession" | "serviceStockLine" | "serviceStockTopUp" | "hotelOrder" | "hotelOrderItem" | "branchNotification" | "purchaseOrder" | "purchaseOrderItem" | "branchExpense"
+    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationRole" | "member" | "invitation" | "client" | "trajet" | "trajetProgramme" | "trajetDepart" | "passager" | "reservation" | "colis" | "reservationDraft" | "paiement" | "penalite" | "branch" | "branchPartner" | "partnerBooking" | "branchMember" | "hotelRoomType" | "hotelRoom" | "shopCategory" | "shopProduct" | "shopSale" | "shopSaleItem" | "shopStockMovement" | "exchangeRate" | "cashSession" | "hotelStay" | "folio" | "folioLine" | "payment" | "hotelMenuItem" | "hotelStockMovement" | "serviceStockSession" | "serviceStockLine" | "serviceStockTopUp" | "hotelOrder" | "hotelOrderItem" | "branchNotification" | "purchaseOrder" | "purchaseOrderItem" | "branchExpense"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1850,6 +1852,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.BranchCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.BranchCountAggregateOutputType> | number
+        }
+      }
+    }
+    BranchPartner: {
+      payload: Prisma.$BranchPartnerPayload<ExtArgs>
+      fields: Prisma.BranchPartnerFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BranchPartnerFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchPartnerPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BranchPartnerFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchPartnerPayload>
+        }
+        findFirst: {
+          args: Prisma.BranchPartnerFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchPartnerPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BranchPartnerFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchPartnerPayload>
+        }
+        findMany: {
+          args: Prisma.BranchPartnerFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchPartnerPayload>[]
+        }
+        create: {
+          args: Prisma.BranchPartnerCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchPartnerPayload>
+        }
+        createMany: {
+          args: Prisma.BranchPartnerCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BranchPartnerCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchPartnerPayload>[]
+        }
+        delete: {
+          args: Prisma.BranchPartnerDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchPartnerPayload>
+        }
+        update: {
+          args: Prisma.BranchPartnerUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchPartnerPayload>
+        }
+        deleteMany: {
+          args: Prisma.BranchPartnerDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BranchPartnerUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BranchPartnerUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchPartnerPayload>[]
+        }
+        upsert: {
+          args: Prisma.BranchPartnerUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchPartnerPayload>
+        }
+        aggregate: {
+          args: Prisma.BranchPartnerAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBranchPartner>
+        }
+        groupBy: {
+          args: Prisma.BranchPartnerGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BranchPartnerGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BranchPartnerCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BranchPartnerCountAggregateOutputType> | number
+        }
+      }
+    }
+    PartnerBooking: {
+      payload: Prisma.$PartnerBookingPayload<ExtArgs>
+      fields: Prisma.PartnerBookingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PartnerBookingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerBookingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PartnerBookingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerBookingPayload>
+        }
+        findFirst: {
+          args: Prisma.PartnerBookingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerBookingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PartnerBookingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerBookingPayload>
+        }
+        findMany: {
+          args: Prisma.PartnerBookingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerBookingPayload>[]
+        }
+        create: {
+          args: Prisma.PartnerBookingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerBookingPayload>
+        }
+        createMany: {
+          args: Prisma.PartnerBookingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PartnerBookingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerBookingPayload>[]
+        }
+        delete: {
+          args: Prisma.PartnerBookingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerBookingPayload>
+        }
+        update: {
+          args: Prisma.PartnerBookingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerBookingPayload>
+        }
+        deleteMany: {
+          args: Prisma.PartnerBookingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PartnerBookingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PartnerBookingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerBookingPayload>[]
+        }
+        upsert: {
+          args: Prisma.PartnerBookingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartnerBookingPayload>
+        }
+        aggregate: {
+          args: Prisma.PartnerBookingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePartnerBooking>
+        }
+        groupBy: {
+          args: Prisma.PartnerBookingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PartnerBookingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PartnerBookingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PartnerBookingCountAggregateOutputType> | number
         }
       }
     }
@@ -4056,6 +4206,44 @@ export const BranchScalarFieldEnum = {
 export type BranchScalarFieldEnum = (typeof BranchScalarFieldEnum)[keyof typeof BranchScalarFieldEnum]
 
 
+export const BranchPartnerScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  name: 'name',
+  contactName: 'contactName',
+  phone: 'phone',
+  email: 'email',
+  address: 'address',
+  city: 'city',
+  taxId: 'taxId',
+  notes: 'notes',
+  status: 'status',
+  defaultUnitPriceHint: 'defaultUnitPriceHint',
+  defaultDiscountPctHint: 'defaultDiscountPctHint',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BranchPartnerScalarFieldEnum = (typeof BranchPartnerScalarFieldEnum)[keyof typeof BranchPartnerScalarFieldEnum]
+
+
+export const PartnerBookingScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  partnerId: 'partnerId',
+  code: 'code',
+  label: 'label',
+  payTiming: 'payTiming',
+  status: 'status',
+  notes: 'notes',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PartnerBookingScalarFieldEnum = (typeof PartnerBookingScalarFieldEnum)[keyof typeof PartnerBookingScalarFieldEnum]
+
+
 export const BranchMemberScalarFieldEnum = {
   id: 'id',
   branchId: 'branchId',
@@ -4227,6 +4415,14 @@ export const HotelStayScalarFieldEnum = {
   guestName: 'guestName',
   guestPhone: 'guestPhone',
   guestEmail: 'guestEmail',
+  guestAddress: 'guestAddress',
+  guestCity: 'guestCity',
+  idDocumentType: 'idDocumentType',
+  idDocumentNumber: 'idDocumentNumber',
+  idDocumentImageUrl: 'idDocumentImageUrl',
+  idDocumentCapturedAt: 'idDocumentCapturedAt',
+  partnerId: 'partnerId',
+  partnerBookingId: 'partnerBookingId',
   checkInDate: 'checkInDate',
   checkOutDate: 'checkOutDate',
   status: 'status',
@@ -4287,12 +4483,15 @@ export const PaymentScalarFieldEnum = {
   shopSaleId: 'shopSaleId',
   purchaseOrderId: 'purchaseOrderId',
   expenseId: 'expenseId',
+  partnerId: 'partnerId',
+  partnerBookingId: 'partnerBookingId',
   receiptNumber: 'receiptNumber',
   method: 'method',
   amountCdf: 'amountCdf',
   amountForeign: 'amountForeign',
   foreignCurrency: 'foreignCurrency',
   exchangeRateUsed: 'exchangeRateUsed',
+  bankReference: 'bankReference',
   paidAt: 'paidAt',
   cashierUserId: 'cashierUserId',
   note: 'note',
@@ -4836,6 +5035,48 @@ export type ListEnumBranchStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
+ * Reference to a field of type 'BranchPartnerStatus'
+ */
+export type EnumBranchPartnerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BranchPartnerStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'BranchPartnerStatus[]'
+ */
+export type ListEnumBranchPartnerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BranchPartnerStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PartnerPayTiming'
+ */
+export type EnumPartnerPayTimingFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PartnerPayTiming'>
+    
+
+
+/**
+ * Reference to a field of type 'PartnerPayTiming[]'
+ */
+export type ListEnumPartnerPayTimingFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PartnerPayTiming[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PartnerBookingStatus'
+ */
+export type EnumPartnerBookingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PartnerBookingStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'PartnerBookingStatus[]'
+ */
+export type ListEnumPartnerBookingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PartnerBookingStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'BranchMemberStatus'
  */
 export type EnumBranchMemberStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BranchMemberStatus'>
@@ -4930,6 +5171,20 @@ export type EnumCashSessionStatusFieldRefInput<$PrismaModel> = FieldRefInputType
  * Reference to a field of type 'CashSessionStatus[]'
  */
 export type ListEnumCashSessionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CashSessionStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'IdDocumentType'
+ */
+export type EnumIdDocumentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IdDocumentType'>
+    
+
+
+/**
+ * Reference to a field of type 'IdDocumentType[]'
+ */
+export type ListEnumIdDocumentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IdDocumentType[]'>
     
 
 
@@ -5145,6 +5400,8 @@ export type GlobalOmitConfig = {
   paiement?: Prisma.PaiementOmit
   penalite?: Prisma.PenaliteOmit
   branch?: Prisma.BranchOmit
+  branchPartner?: Prisma.BranchPartnerOmit
+  partnerBooking?: Prisma.PartnerBookingOmit
   branchMember?: Prisma.BranchMemberOmit
   hotelRoomType?: Prisma.HotelRoomTypeOmit
   hotelRoom?: Prisma.HotelRoomOmit

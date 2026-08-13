@@ -143,6 +143,34 @@ enum PaymentMethod {
   CASH
   MOBILE_MONEY
   CARTE
+  BANK
+}
+
+enum BranchPartnerStatus {
+  ACTIVE
+  INACTIVE
+}
+
+/// Pièce d’identité (client individuel séjour — pas partenaire société)
+enum IdDocumentType {
+  CNI
+  PASSPORT
+  PERMIS
+  AUTRE
+}
+
+enum PartnerBookingStatus {
+  DRAFT
+  CONFIRMED
+  IN_HOUSE
+  CHECKING_OUT
+  CLOSED
+  CANCELLED
+}
+
+enum PartnerPayTiming {
+  PREPAID
+  AT_CHECKOUT
 }
 
 enum HotelStayStatus {
@@ -588,10 +616,61 @@ model Branch {
   purchaseOrders PurchaseOrder[]
   expenses       BranchExpense[]
   serviceStockSessions ServiceStockSession[]
+  partners             BranchPartner[]
+  partnerBookings      PartnerBooking[]
 
   @@unique([organizationId, code])
   @@index([organizationId, type])
   @@index([organizationId, status])
+}
+
+/** Client partenaire (société) — hôtel ou agence, scoped par branche. */
+model BranchPartner {
+  id                   String                 @id @default(uuid())
+  branchId             String
+  name                 String
+  contactName          String?
+  phone                String?
+  email                String?
+  address              String
+  city                 String
+  taxId                String?
+  notes                String?
+  status               BranchPartnerStatus    @default(ACTIVE)
+  defaultUnitPriceHint Float?
+  defaultDiscountPctHint Float?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  branch               Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  bookings             PartnerBooking[]
+  stays                HotelStay[]
+  payments             Payment[]
+
+  @@index([branchId, status])
+  @@index([branchId, name])
+}
+
+/** Dossier multi-espaces lié à un partenaire (hôtel). */
+model PartnerBooking {
+  id              String               @id @default(uuid())
+  branchId        String
+  partnerId       String
+  code            String
+  label           String?
+  payTiming       PartnerPayTiming     @default(AT_CHECKOUT)
+  status          PartnerBookingStatus @default(CONFIRMED)
+  notes           String?
+  createdByUserId String
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  branch          Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  partner         BranchPartner        @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  stays           HotelStay[]
+  payments        Payment[]
+
+  @@unique([branchId, code])
+  @@index([branchId, status])
+  @@index([partnerId])
 }
 
 model BranchMember {
@@ -799,6 +878,16 @@ model HotelStay {
   guestName          String
   guestPhone         String?
   guestEmail         String?
+  /// Adresse de l’occupant (obligatoire, y compris séjour partenaire)
+  guestAddress       String?
+  guestCity          String?
+  /// Pièce d’identité de l’occupant (scan / photo) — tout séjour
+  idDocumentType     IdDocumentType?
+  idDocumentNumber   String?
+  idDocumentImageUrl String?
+  idDocumentCapturedAt DateTime?
+  partnerId          String?
+  partnerBookingId   String?
   checkInDate        DateTime        @db.Date
   checkOutDate       DateTime        @db.Date
   status             HotelStayStatus @default(RESERVED)
@@ -826,11 +915,15 @@ model HotelStay {
   updatedAt          DateTime        @updatedAt
   branch             Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
   room               HotelRoom       @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  partner            BranchPartner?  @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+  partnerBooking     PartnerBooking? @relation(fields: [partnerBookingId], references: [id], onDelete: SetNull)
   folio              Folio?
   orders             HotelOrder[]
 
   @@index([branchId, checkInDate, checkOutDate])
   @@index([roomId, status])
+  @@index([partnerId])
+  @@index([partnerBookingId])
 }
 
 model Folio {
@@ -876,12 +969,15 @@ model Payment {
   shopSaleId       String?
   purchaseOrderId  String?
   expenseId        String?       @unique
+  partnerId        String?
+  partnerBookingId String?
   receiptNumber    String
   method           PaymentMethod @default(CASH)
   amountCdf        Float
   amountForeign    Float?
   foreignCurrency  String?
   exchangeRateUsed Float?
+  bankReference    String?
   paidAt           DateTime      @default(now())
   cashierUserId    String
   note             String?
@@ -893,6 +989,8 @@ model Payment {
   shopSale         ShopSale?     @relation(fields: [shopSaleId], references: [id], onDelete: SetNull)
   purchaseOrder    PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id], onDelete: SetNull)
   expense          BranchExpense? @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  partner          BranchPartner? @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+  partnerBooking   PartnerBooking? @relation(fields: [partnerBookingId], references: [id], onDelete: SetNull)
 
   @@unique([branchId, receiptNumber])
   @@index([branchId, paidAt])
@@ -900,6 +998,8 @@ model Payment {
   @@index([orderId])
   @@index([shopSaleId])
   @@index([purchaseOrderId])
+  @@index([partnerId])
+  @@index([partnerBookingId])
 }
 
 /** Catalogue F&B / vente rapide / consommables hôtel. */

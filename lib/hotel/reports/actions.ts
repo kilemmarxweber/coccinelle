@@ -633,3 +633,182 @@ export async function getFinanceReportAction(input: PeriodInput) {
     compare: { revenuePrev, qtyInPrev, qtyOutPrev },
   };
 }
+
+export async function getMyOrdersReportAction(input: PeriodInput) {
+  const { user } = await ctx(input.organizationId, input.branchId);
+  const exchange = await getActiveExchangeRate(input.branchId);
+  const days = eachDayIso(input.from, input.to);
+  const orders = await prisma.hotelOrder.findMany({
+    where: {
+      branchId: input.branchId,
+      createdByUserId: user.id,
+      createdAt: rangeBounds(input.from, input.to),
+      status: { not: "BROUILLON" },
+    },
+    include: {
+      items: { select: { name: true, quantity: true, amount: true } },
+    },
+    orderBy: { createdAt: "asc" },
+  });
+
+  const prev = previousRange(input.from, input.to);
+  const prevCount = await prisma.hotelOrder.count({
+    where: {
+      branchId: input.branchId,
+      createdByUserId: user.id,
+      createdAt: rangeBounds(prev.from, prev.to),
+      status: { not: "BROUILLON" },
+    },
+  });
+
+  let ca = 0;
+  const byDay = new Map<string, number>();
+  const byStatus = new Map<string, number>();
+  const byProduct = new Map<string, number>();
+
+  for (const o of orders) {
+    const total = o.items.reduce((s, i) => s + i.amount, 0);
+    ca += total;
+    const day = dayKey(o.createdAt);
+    byDay.set(day, (byDay.get(day) ?? 0) + total);
+    byStatus.set(o.status, (byStatus.get(o.status) ?? 0) + 1);
+    for (const it of o.items) {
+      byProduct.set(it.name, (byProduct.get(it.name) ?? 0) + it.amount);
+    }
+  }
+
+  return {
+    kpis: {
+      orders: orders.length,
+      ordersDelta: pctDelta(orders.length, prevCount),
+      ca: Math.round(ca * 100) / 100,
+      ticketAvg:
+        orders.length > 0 ? Math.round((ca / orders.length) * 100) / 100 : 0,
+    },
+    caByDay: days.map((day) => ({
+      day,
+      value: Math.round((byDay.get(day) ?? 0) * 100) / 100,
+    })),
+    byStatus: [...byStatus.entries()].map(([name, value]) => ({ name, value })),
+    topProducts: [...byProduct.entries()]
+      .map(([name, value]) => ({
+        name: name.length > 18 ? `${name.slice(0, 16)}…` : name,
+        value: Math.round(value * 100) / 100,
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 8),
+    rate: toReportExchangeRate(exchange),
+  };
+}
+
+export async function getStaysReportAction(input: PeriodInput) {
+  await ctx(input.organizationId, input.branchId);
+  const days = eachDayIso(input.from, input.to);
+  const [arrivals, departures, rooms, inHouse] = await Promise.all([
+    prisma.hotelStay.findMany({
+      where: {
+        branchId: input.branchId,
+        checkInDate: rangeBounds(input.from, input.to),
+      },
+      select: {
+        id: true,
+        guestName: true,
+        status: true,
+        checkInDate: true,
+        checkOutDate: true,
+        checkedInAt: true,
+        checkedOutAt: true,
+        room: { select: { number: true } },
+      },
+      orderBy: { checkInDate: "asc" },
+    }),
+    prisma.hotelStay.findMany({
+      where: {
+        branchId: input.branchId,
+        checkOutDate: rangeBounds(input.from, input.to),
+      },
+      select: {
+        id: true,
+        guestName: true,
+        status: true,
+        checkInDate: true,
+        checkOutDate: true,
+        checkedInAt: true,
+        checkedOutAt: true,
+        room: { select: { number: true } },
+      },
+      orderBy: { checkOutDate: "asc" },
+    }),
+    prisma.hotelRoom.count({
+      where: { roomType: { branchId: input.branchId } },
+    }),
+    prisma.hotelStay.count({
+      where: {
+        branchId: input.branchId,
+        status: "CHECKED_IN",
+      },
+    }),
+  ]);
+
+  const checkIns = arrivals.filter(
+    (s) =>
+      s.checkedInAt ||
+      s.status === "CHECKED_IN" ||
+      s.status === "CHECKED_OUT",
+  ).length;
+  const checkOuts = departures.filter(
+    (s) => s.checkedOutAt || s.status === "CHECKED_OUT",
+  ).length;
+  const byStatus = new Map<string, number>();
+  for (const s of [...arrivals, ...departures]) {
+    byStatus.set(s.status, (byStatus.get(s.status) ?? 0) + 1);
+  }
+
+  const arrivalsByDay = new Map<string, number>();
+  for (const s of arrivals) {
+    const day = dayKey(s.checkInDate);
+    arrivalsByDay.set(day, (arrivalsByDay.get(day) ?? 0) + 1);
+  }
+  const departuresByDay = new Map<string, number>();
+  for (const s of departures) {
+    const day = dayKey(s.checkOutDate);
+    departuresByDay.set(day, (departuresByDay.get(day) ?? 0) + 1);
+  }
+
+  const available = Math.max(0, rooms - inHouse);
+
+  return {
+    kpis: {
+      arrivals: arrivals.length,
+      checkIns,
+      departures: departures.length,
+      checkOuts,
+      rooms,
+      inHouse,
+      available,
+      occupancyPct: rooms > 0 ? Math.round((inHouse / rooms) * 1000) / 10 : 0,
+    },
+    flowByDay: days.map((day) => ({
+      day,
+      entrees: arrivalsByDay.get(day) ?? 0,
+      sorties: departuresByDay.get(day) ?? 0,
+    })),
+    byStatus: [...byStatus.entries()].map(([name, value]) => ({ name, value })),
+    arrivals: arrivals.slice(0, 40).map((s) => ({
+      id: s.id,
+      guestName: s.guestName,
+      status: s.status,
+      room: s.room?.number ?? "—",
+      checkInDate: s.checkInDate,
+      checkOutDate: s.checkOutDate,
+    })),
+    departures: departures.slice(0, 40).map((s) => ({
+      id: s.id,
+      guestName: s.guestName,
+      status: s.status,
+      room: s.room?.number ?? "—",
+      checkInDate: s.checkInDate,
+      checkOutDate: s.checkOutDate,
+    })),
+  };
+}

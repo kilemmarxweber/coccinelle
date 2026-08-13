@@ -54,14 +54,18 @@ async function resolveValidBranchIds(
   return { ok: true, ids: unique };
 }
 
-async function syncMemberBranches(memberId: string, branchIds: string[]): Promise<void> {
+async function syncMemberBranches(
+  memberId: string,
+  branchIds: string[],
+  opsRole: string,
+): Promise<void> {
   await prisma.$transaction(async (tx) => {
     await tx.branchMember.deleteMany({ where: { memberId } });
     await tx.branchMember.createMany({
       data: branchIds.map((branchId, index) => ({
         branchId,
         memberId,
-        role: "branch_manager",
+        role: opsRole,
         isPrimary: index === 0,
         status: "ACTIVE" as const,
       })),
@@ -75,6 +79,7 @@ export type MemberBranchSummary = {
   code: string;
   type: string;
   isPrimary: boolean;
+  opsRole: string;
 };
 
 export async function listOrganizationMemberBranchesAction(
@@ -96,6 +101,7 @@ export async function listOrganizationMemberBranchesAction(
     select: {
       memberId: true,
       isPrimary: true,
+      role: true,
       branch: {
         select: { id: true, name: true, code: true, type: true },
       },
@@ -112,6 +118,7 @@ export async function listOrganizationMemberBranchesAction(
       code: row.branch.code,
       type: row.branch.type,
       isPrimary: row.isPrimary,
+      opsRole: row.role,
     });
     byMemberId[row.memberId] = list;
   }
@@ -125,7 +132,8 @@ export async function createOrganizationMemberAction(
   if (!parsed.success) {
     return { ok: false, message: zodFirstMessage(parsed.error) };
   }
-  const { organizationId, email, name, orgRole, branchIds } = parsed.data;
+  const { organizationId, email, name, orgRole, opsRole, branchIds } =
+    parsed.data;
 
   const gate = await assertOrganizationPermission(organizationId, {
     equipe: ["manage"],
@@ -173,7 +181,7 @@ export async function createOrganizationMemberAction(
     if (!member) {
       throw new Error("Membre créé mais introuvable pour l’affectation aux branches.");
     }
-    await syncMemberBranches(member.id, branches.ids);
+    await syncMemberBranches(member.id, branches.ids, opsRole);
 
     revalidatePath(`/admin/organizations/${organizationId}/members`, "page");
     return { ok: true };
@@ -193,7 +201,7 @@ export async function updateOrganizationMemberAction(
   if (!parsed.success) {
     return { ok: false, message: zodFirstMessage(parsed.error) };
   }
-  const { organizationId, memberId, orgRole, branchIds } = parsed.data;
+  const { organizationId, memberId, orgRole, opsRole, branchIds } = parsed.data;
 
   const gate = await assertOrganizationPermission(organizationId, {
     equipe: ["manage"],
@@ -221,7 +229,7 @@ export async function updateOrganizationMemberAction(
       },
       headers: h,
     });
-    await syncMemberBranches(memberId, branches.ids);
+    await syncMemberBranches(memberId, branches.ids, opsRole);
     revalidatePath(`/admin/organizations/${organizationId}/members`, "page");
     revalidatePath(`/admin/organizations/${organizationId}/members/${memberId}/edit`, "page");
     return { ok: true };

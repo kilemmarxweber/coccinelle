@@ -202,7 +202,9 @@ export function CaisseClient(props: Props) {
   const searchParams = useSearchParams();
   const [pending, start] = useTransition();
   const [float, setFloat] = useState("0");
-  const [method, setMethod] = useState<"CASH" | "MOBILE_MONEY" | "CARTE">("CASH");
+  const [method, setMethod] = useState<
+    "CASH" | "MOBILE_MONEY" | "CARTE" | "BANK"
+  >("CASH");
   const hasStays = props.hasStays !== false;
   const hasRestaurant = props.hasRestaurant !== false;
   const [tab, setTab] = useState<HubTab>(() =>
@@ -1621,7 +1623,11 @@ export function CaisseClient(props: Props) {
                 </p>
               ) : null}
             </div>
-            <PosPayMethodPicker value={method} onChange={setMethod} />
+            <PosPayMethodPicker
+              value={method}
+              onChange={setMethod}
+              includeBank
+            />
           </div>
           <DialogFooter>
             <Button

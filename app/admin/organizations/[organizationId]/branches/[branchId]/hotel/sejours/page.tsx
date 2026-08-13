@@ -1,4 +1,5 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import { DASH_CARD } from "@/lib/branch/ops-roles";
 import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
   applyLateCheckoutFeesAction,
@@ -6,6 +7,7 @@ import {
   listStaysForMonthAction,
   listStaysForYearAction,
 } from "@/lib/hotel/actions";
+import { listBranchPartnersAction } from "@/lib/partners/actions";
 import { SejoursClient } from "./sejours-client";
 
 type PageProps = {
@@ -21,6 +23,7 @@ export default async function SejoursPage({ params, searchParams }: PageProps) {
     branchId,
     requireModule: "hotel",
     requireHospitality: "stays",
+    requireDashCard: DASH_CARD.SEJOURS,
   });
 
   // Nuitée auto si occupant encore présent après 10h le jour de sortie
@@ -30,11 +33,12 @@ export default async function SejoursPage({ params, searchParams }: PageProps) {
   const year = Number(sp.year) || now.getFullYear();
   const month = Number(sp.month) || now.getMonth() + 1;
 
-  const [rooms, stays, yearStays, rate] = await Promise.all([
+  const [rooms, stays, yearStays, rate, partners] = await Promise.all([
     listRoomsWithTypesAction(organizationId, branchId),
     listStaysForMonthAction(organizationId, branchId, year, month),
     listStaysForYearAction(organizationId, branchId, year),
     getActiveExchangeRate(branchId),
+    listBranchPartnersAction(organizationId, branchId),
   ]);
 
   const roomsOrdered = [...rooms].sort((a, b) => {
@@ -51,6 +55,7 @@ export default async function SejoursPage({ params, searchParams }: PageProps) {
       rooms={roomsOrdered}
       stays={stays}
       yearStays={yearStays}
+      partners={partners}
       initialYear={year}
       initialMonth={month}
       rate={rate}

@@ -113,6 +113,16 @@ export type Penalite = Prisma.PenaliteModel
  */
 export type Branch = Prisma.BranchModel
 /**
+ * Model BranchPartner
+ * * Client partenaire (société) — hôtel ou agence, scoped par branche.
+ */
+export type BranchPartner = Prisma.BranchPartnerModel
+/**
+ * Model PartnerBooking
+ * * Dossier multi-espaces lié à un partenaire (hôtel).
+ */
+export type PartnerBooking = Prisma.PartnerBookingModel
+/**
  * Model BranchMember
  * 
  */

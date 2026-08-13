@@ -70,6 +70,8 @@ export const ModelName = {
   Paiement: 'Paiement',
   Penalite: 'Penalite',
   Branch: 'Branch',
+  BranchPartner: 'BranchPartner',
+  PartnerBooking: 'PartnerBooking',
   BranchMember: 'BranchMember',
   HotelRoomType: 'HotelRoomType',
   HotelRoom: 'HotelRoom',
@@ -427,6 +429,44 @@ export const BranchScalarFieldEnum = {
 export type BranchScalarFieldEnum = (typeof BranchScalarFieldEnum)[keyof typeof BranchScalarFieldEnum]
 
 
+export const BranchPartnerScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  name: 'name',
+  contactName: 'contactName',
+  phone: 'phone',
+  email: 'email',
+  address: 'address',
+  city: 'city',
+  taxId: 'taxId',
+  notes: 'notes',
+  status: 'status',
+  defaultUnitPriceHint: 'defaultUnitPriceHint',
+  defaultDiscountPctHint: 'defaultDiscountPctHint',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BranchPartnerScalarFieldEnum = (typeof BranchPartnerScalarFieldEnum)[keyof typeof BranchPartnerScalarFieldEnum]
+
+
+export const PartnerBookingScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  partnerId: 'partnerId',
+  code: 'code',
+  label: 'label',
+  payTiming: 'payTiming',
+  status: 'status',
+  notes: 'notes',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PartnerBookingScalarFieldEnum = (typeof PartnerBookingScalarFieldEnum)[keyof typeof PartnerBookingScalarFieldEnum]
+
+
 export const BranchMemberScalarFieldEnum = {
   id: 'id',
   branchId: 'branchId',
@@ -598,6 +638,14 @@ export const HotelStayScalarFieldEnum = {
   guestName: 'guestName',
   guestPhone: 'guestPhone',
   guestEmail: 'guestEmail',
+  guestAddress: 'guestAddress',
+  guestCity: 'guestCity',
+  idDocumentType: 'idDocumentType',
+  idDocumentNumber: 'idDocumentNumber',
+  idDocumentImageUrl: 'idDocumentImageUrl',
+  idDocumentCapturedAt: 'idDocumentCapturedAt',
+  partnerId: 'partnerId',
+  partnerBookingId: 'partnerBookingId',
   checkInDate: 'checkInDate',
   checkOutDate: 'checkOutDate',
   status: 'status',
@@ -658,12 +706,15 @@ export const PaymentScalarFieldEnum = {
   shopSaleId: 'shopSaleId',
   purchaseOrderId: 'purchaseOrderId',
   expenseId: 'expenseId',
+  partnerId: 'partnerId',
+  partnerBookingId: 'partnerBookingId',
   receiptNumber: 'receiptNumber',
   method: 'method',
   amountCdf: 'amountCdf',
   amountForeign: 'amountForeign',
   foreignCurrency: 'foreignCurrency',
   exchangeRateUsed: 'exchangeRateUsed',
+  bankReference: 'bankReference',
   paidAt: 'paidAt',
   cashierUserId: 'cashierUserId',
   note: 'note',

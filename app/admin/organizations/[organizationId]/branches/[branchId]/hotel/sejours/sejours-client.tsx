@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CalendarDays, ClipboardList, Printer } from "lucide-react";
+import { CalendarDays, Camera, ClipboardList, ImagePlus, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,6 +57,14 @@ import {
 import { StayPeriodField } from "@/components/hotel/stay-period-field";
 import { PosPayMethodPicker } from "@/components/pos/pos-terminal";
 import { meetingCheckoutSettlement } from "@/lib/hotel/meeting-deposit";
+import type { BranchPartnerDTO } from "@/lib/partners/types";
+import {
+  GUEST_ID_DOC_TYPES,
+  guestIdDocLabel,
+  readGuestIdFileAsDataUrl,
+  type GuestIdDocType,
+} from "@/lib/hotel/guest-id-document";
+import { hotelRoutes } from "@/lib/branch/paths";
 import { cn } from "@/lib/utils";
 
 type Room = {
@@ -89,6 +97,12 @@ type Stay = {
   plannedHours?: number | null;
   rateNote?: string | null;
   depositAmountExpected?: number | null;
+  partner?: { id: string; name: string } | null;
+  partnerBooking?: {
+    id: string;
+    code: string;
+    payTiming: string;
+  } | null;
   room: {
     number: string;
     roomType: { name: string; priceNight: number; kind?: string };
@@ -296,6 +310,7 @@ export function SejoursClient(props: {
   rooms: Room[];
   stays: Stay[];
   yearStays: YearStay[];
+  partners: BranchPartnerDTO[];
   initialYear: number;
   initialMonth: number;
   rate?: NormalizedUsdCdfRate | null;
@@ -325,7 +340,15 @@ export function SejoursClient(props: {
       rateNote: "",
       locationPayment: "",
       depositAmount: "",
-      paymentMethod: "CASH" as "CASH" | "MOBILE_MONEY" | "CARTE",
+      paymentMethod: "CASH" as "CASH" | "MOBILE_MONEY" | "CARTE" | "BANK",
+      bankReference: "",
+      partnerId: "",
+      partnerPayTiming: "AT_CHECKOUT" as "PREPAID" | "AT_CHECKOUT",
+      guestAddress: "",
+      guestCity: "",
+      idDocumentType: "CNI" as GuestIdDocType,
+      idDocumentNumber: "",
+      idDocumentImageUrl: "",
     };
   });
   const [extendStayId, setExtendStayId] = useState<string | null>(null);
@@ -512,6 +535,14 @@ export function SejoursClient(props: {
       locationPayment: isMeeting ? catalogInput : "",
       depositAmount: "",
       paymentMethod: "CASH",
+      bankReference: "",
+      partnerId: "",
+      partnerPayTiming: "AT_CHECKOUT",
+      guestAddress: "",
+      guestCity: "",
+      idDocumentType: "CNI",
+      idDocumentNumber: "",
+      idDocumentImageUrl: "",
     });
     setBookingOpen(true);
   }
@@ -528,6 +559,9 @@ export function SejoursClient(props: {
           return;
         }
         const isMeeting = selectedIsMeeting;
+        const hasPartner = Boolean(form.partnerId);
+        const creditAtCheckout =
+          hasPartner && form.partnerPayTiming === "AT_CHECKOUT";
         const flatUsd =
           form.billingMode === "FLAT"
             ? primaryAmountToUsd(Number(form.flatAmount), props.rate)
@@ -541,7 +575,7 @@ export function SejoursClient(props: {
             Number(form.locationPayment),
             props.rate,
           );
-          if (!(locPay > 0)) {
+          if (!(locPay > 0) && !creditAtCheckout) {
             toast.error("Saisissez le paiement location (acompte ou total).");
             return;
           }
@@ -549,6 +583,23 @@ export function SejoursClient(props: {
             toast.error("Paiement location supérieur au montant dû.");
             return;
           }
+        }
+        if (
+          form.paymentMethod === "BANK" &&
+          (isMeeting || (hasPartner && form.partnerPayTiming === "PREPAID")) &&
+          !form.bankReference.trim() &&
+          Number(form.locationPayment) > 0
+        ) {
+          toast.error("Référence virement banque obligatoire.");
+          return;
+        }
+        if (!form.guestAddress.trim() || !form.guestCity.trim()) {
+          toast.error("Adresse du client obligatoire.");
+          return;
+        }
+        if (!form.idDocumentNumber.trim() || !form.idDocumentImageUrl) {
+          toast.error("Pièce d’identité (n° + scan/photo) obligatoire.");
+          return;
         }
         await createStayAction({
           organizationId: props.organizationId,
@@ -569,15 +620,26 @@ export function SejoursClient(props: {
               ? Number(form.plannedHours)
               : null,
           rateNote: form.rateNote.trim() || null,
-          ...(isMeeting
+          partnerId: form.partnerId || null,
+          partnerPayTiming: hasPartner ? form.partnerPayTiming : undefined,
+          guestAddress: form.guestAddress,
+          guestCity: form.guestCity,
+          idDocumentType: form.idDocumentType,
+          idDocumentNumber: form.idDocumentNumber,
+          idDocumentImageUrl: form.idDocumentImageUrl,
+          ...(isMeeting ||
+          (hasPartner &&
+            form.partnerPayTiming === "PREPAID" &&
+            Number(form.locationPayment) > 0)
             ? {
                 locationPaymentUsd: primaryAmountToUsd(
-                  Number(form.locationPayment),
+                  Number(form.locationPayment || 0),
                   props.rate,
                 ),
                 paymentMethod: form.paymentMethod,
+                bankReference: form.bankReference.trim() || null,
                 depositAmountUsd:
-                  form.depositAmount.trim() !== ""
+                  isMeeting && form.depositAmount.trim() !== ""
                     ? primaryAmountToUsd(
                         Number(form.depositAmount),
                         props.rate,
@@ -588,7 +650,9 @@ export function SejoursClient(props: {
         });
         toast.success(
           isMeeting
-            ? "Salle réservée · encaissement enregistré"
+            ? creditAtCheckout
+              ? "Salle réservée · paiement à la fin (partenaire)"
+              : "Salle réservée · encaissement enregistré"
             : formImmediateCheckIn
               ? form.billingMode === "FLAT"
                 ? "Passage démarré · check-in effectué"
@@ -598,6 +662,8 @@ export function SejoursClient(props: {
         setForm((f) => ({
           ...f,
           guestName: "",
+          partnerId: "",
+          bankReference: "",
           guestPhone: "",
           unitPriceApplied: "",
           flatAmount: "",
@@ -607,6 +673,11 @@ export function SejoursClient(props: {
           locationPayment: "",
           depositAmount: "",
           paymentMethod: "CASH",
+          guestAddress: "",
+          guestCity: "",
+          idDocumentType: "CNI",
+          idDocumentNumber: "",
+          idDocumentImageUrl: "",
         }));
         setBookingOpen(false);
         setMainTab("sejours");
@@ -1289,6 +1360,16 @@ export function SejoursClient(props: {
                             ? `salle ${s.room.number}`
                             : `ch. ${s.room.number}`}
                         </p>
+                        {s.partner?.name ? (
+                          <p className="text-xs text-violet-700 dark:text-violet-300">
+                            Facturé à {s.partner.name}
+                            {s.partnerBooking?.payTiming === "AT_CHECKOUT"
+                              ? " · paiement à la fin"
+                              : s.partnerBooking?.payTiming === "PREPAID"
+                                ? " · prépayé"
+                                : ""}
+                          </p>
+                        ) : null}
                         <div className="flex flex-wrap gap-1.5">
                           <Badge
                             variant={
@@ -1297,6 +1378,9 @@ export function SejoursClient(props: {
                           >
                             {STATUS_LABEL[s.status] ?? s.status}
                           </Badge>
+                          {s.partner ? (
+                            <Badge variant="outline">Partenaire</Badge>
+                          ) : null}
                           {m.isFlat ? (
                             <Badge variant="outline">
                               {m.plannedHours > 0
@@ -1585,8 +1669,8 @@ export function SejoursClient(props: {
       </Tabs>
 
       <Dialog open={bookingOpen} onOpenChange={setBookingOpen}>
-        <DialogContent className="max-h-[92svh] overflow-visible sm:max-w-4xl">
-          <DialogHeader>
+        <DialogContent className="flex max-h-[92svh] flex-col overflow-hidden sm:max-w-4xl">
+          <DialogHeader className="shrink-0 pr-8">
             <DialogTitle>
               {formImmediateCheckIn
                 ? form.billingMode === "FLAT"
@@ -1604,7 +1688,8 @@ export function SejoursClient(props: {
                 : `Entrée ${form.checkInDate}`}
             </DialogDescription>
           </DialogHeader>
-          <div className="mt-2 grid gap-4 lg:grid-cols-2">
+          <div className="mt-2 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
+          <div className="grid gap-4 lg:grid-cols-2">
             <div className="space-y-3">
               <div className="grid gap-1.5">
                 <Label>Chambre / salle</Label>
@@ -1698,9 +1783,92 @@ export function SejoursClient(props: {
                   </p>
                 ) : null}
               </div>
+              <div className="grid gap-1.5">
+                <Label>Client partenaire (société)</Label>
+                <select
+                  className="h-9 rounded-md border bg-background px-2 text-sm"
+                  value={form.partnerId}
+                  onChange={(e) => {
+                    const partnerId = e.target.value;
+                    const partner = props.partners.find((p) => p.id === partnerId);
+                    setForm((f) => ({
+                      ...f,
+                      partnerId,
+                      unitPriceApplied:
+                        partner?.defaultUnitPriceHint != null &&
+                        f.billingMode === "NIGHTLY" &&
+                        !f.unitPriceApplied
+                          ? formatUsdPrimaryInputValue(
+                              partner.defaultUnitPriceHint,
+                              props.rate,
+                            )
+                          : f.unitPriceApplied,
+                    }));
+                  }}
+                >
+                  <option value="">— Walk-in / particulier —</option>
+                  {props.partners.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                      {p.contactName ? ` · ${p.contactName}` : ""}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[11px] text-muted-foreground">
+                  Gérer la base dans{" "}
+                  <Link
+                    href={hotelRoutes.partenaires(
+                      props.organizationId,
+                      props.branchId,
+                    )}
+                    className="underline underline-offset-2"
+                  >
+                    Clients partenaires
+                  </Link>
+                  .
+                </p>
+              </div>
+              {form.partnerId ? (
+                <div className="grid gap-2 rounded-xl border border-violet-500/30 bg-violet-500/5 p-3">
+                  <Label>Paiement partenaire</Label>
+                  <div className="grid grid-cols-2 gap-1 rounded-lg border bg-background/70 p-1">
+                    {(
+                      [
+                        ["AT_CHECKOUT", "À la fin"],
+                        ["PREPAID", "Avant séjour"],
+                      ] as const
+                    ).map(([id, label]) => (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() =>
+                          setForm((f) => ({ ...f, partnerPayTiming: id }))
+                        }
+                        className={cn(
+                          "rounded-md px-2 py-2 text-xs font-semibold transition",
+                          form.partnerPayTiming === id
+                            ? "bg-primary text-primary-foreground shadow-sm"
+                            : "text-muted-foreground hover:bg-muted",
+                        )}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  {form.partnerPayTiming === "AT_CHECKOUT" ? (
+                    <p className="text-[11px] text-muted-foreground">
+                      Check-in sans paiement immédiat (solde à la fin).
+                    </p>
+                  ) : (
+                    <p className="text-[11px] text-muted-foreground">
+                      Acompte / total avant ou à l’arrivée.
+                    </p>
+                  )}
+                </div>
+              ) : null}
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1.2fr_0.8fr]">
                 <div className="grid gap-1.5">
-                  <Label>Client</Label>
+                  <Label>{form.partnerId ? "Occupant" : "Client"}</Label>
                   <Input
                     value={form.guestName}
                     onChange={(e) =>
@@ -1759,6 +1927,136 @@ export function SejoursClient(props: {
             </div>
 
             <div className="space-y-3">
+              <div className="grid gap-3 rounded-xl border border-sky-500/25 bg-sky-500/5 p-3">
+                <p className="text-xs font-semibold tracking-wide text-sky-900 uppercase dark:text-sky-200">
+                  Identité client individuel
+                </p>
+                {form.partnerId ? (
+                  <p className="text-[11px] text-muted-foreground">
+                    Pièce de l’occupant — obligatoire même si facturé à la société.
+                  </p>
+                ) : null}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="grid gap-1.5">
+                    <Label>Adresse *</Label>
+                    <Input
+                      value={form.guestAddress}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          guestAddress: e.target.value,
+                        }))
+                      }
+                      placeholder="Rue, avenue…"
+                    />
+                  </div>
+                  <div className="grid gap-1.5">
+                    <Label>Ville *</Label>
+                    <Input
+                      value={form.guestCity}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, guestCity: e.target.value }))
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="grid gap-1.5">
+                    <Label>Type pièce *</Label>
+                    <select
+                      className="h-9 rounded-md border bg-background px-2 text-sm"
+                      value={form.idDocumentType}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          idDocumentType: e.target.value as GuestIdDocType,
+                        }))
+                      }
+                    >
+                      {GUEST_ID_DOC_TYPES.map((t) => (
+                        <option key={t} value={t}>
+                          {guestIdDocLabel(t)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="grid gap-1.5">
+                    <Label>N° pièce *</Label>
+                    <Input
+                      value={form.idDocumentNumber}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          idDocumentNumber: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-muted">
+                    <ImagePlus className="size-4" />
+                    Scanner / fichier
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        try {
+                          const dataUrl = await readGuestIdFileAsDataUrl(file);
+                          setForm((f) => ({
+                            ...f,
+                            idDocumentImageUrl: dataUrl,
+                          }));
+                        } catch (err) {
+                          toast.error(
+                            err instanceof Error ? err.message : "Image invalide",
+                          );
+                        }
+                      }}
+                    />
+                  </label>
+                  <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-muted">
+                    <Camera className="size-4" />
+                    Photo
+                    <input
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        try {
+                          const dataUrl = await readGuestIdFileAsDataUrl(file);
+                          setForm((f) => ({
+                            ...f,
+                            idDocumentImageUrl: dataUrl,
+                          }));
+                        } catch (err) {
+                          toast.error(
+                            err instanceof Error ? err.message : "Image invalide",
+                          );
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                {form.idDocumentImageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={form.idDocumentImageUrl}
+                    alt="Pièce d’identité"
+                    className="max-h-36 w-full rounded-md border object-contain bg-muted"
+                  />
+                ) : (
+                  <p className="text-[11px] text-muted-foreground">
+                    Scan ou photo de la pièce obligatoire.
+                  </p>
+                )}
+              </div>
               <div className="grid gap-2 rounded-xl border border-border/70 bg-muted/20 p-3">
                 <Label>Facturation hébergement</Label>
                 <div className="grid grid-cols-2 gap-1 rounded-lg border border-border/60 bg-background/70 p-1">
@@ -1966,17 +2264,28 @@ export function SejoursClient(props: {
               {selectedIsMeeting ? (
                 <div className="grid gap-3 rounded-xl border border-violet-500/25 bg-violet-500/5 p-3">
                   <p className="text-xs font-semibold tracking-wide text-violet-900 uppercase dark:text-violet-200">
-                    Encaissement salle (obligatoire)
+                    {form.partnerId && form.partnerPayTiming === "AT_CHECKOUT"
+                      ? "Encaissement salle (crédit partenaire)"
+                      : "Encaissement salle (obligatoire)"}
                   </p>
+                  {form.partnerId && form.partnerPayTiming === "AT_CHECKOUT" ? (
+                    <p className="text-[11px] text-muted-foreground">
+                      Paiement location reporté à la fin du séjour. Caution
+                      optionnelle si vous encaisser maintenant.
+                    </p>
+                  ) : null}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="grid gap-1.5">
                       <Label htmlFor="location-pay">
                         Paiement location ({priceCurrency})
+                        {form.partnerId && form.partnerPayTiming === "AT_CHECKOUT"
+                          ? " — optionnel"
+                          : ""}
                       </Label>
                       <Input
                         id="location-pay"
                         type="number"
-                        min={0.01}
+                        min={0}
                         step={priceStep}
                         value={form.locationPayment}
                         onChange={(e) =>
@@ -1985,7 +2294,12 @@ export function SejoursClient(props: {
                             locationPayment: e.target.value,
                           }))
                         }
-                        required
+                        required={
+                          !(
+                            form.partnerId &&
+                            form.partnerPayTiming === "AT_CHECKOUT"
+                          )
+                        }
                       />
                       <p className="text-[11px] text-muted-foreground">
                         Dû{" "}
@@ -2027,10 +2341,26 @@ export function SejoursClient(props: {
                   </div>
                   <PosPayMethodPicker
                     value={form.paymentMethod}
+                    includeBank
                     onChange={(m) =>
                       setForm((f) => ({ ...f, paymentMethod: m }))
                     }
                   />
+                  {form.paymentMethod === "BANK" ? (
+                    <div className="grid gap-1.5">
+                      <Label>Référence virement *</Label>
+                      <Input
+                        value={form.bankReference}
+                        onChange={(e) =>
+                          setForm((f) => ({
+                            ...f,
+                            bankReference: e.target.value,
+                          }))
+                        }
+                        placeholder="N° virement / bordereau"
+                      />
+                    </div>
+                  ) : null}
                 </div>
               ) : null}
 
@@ -2049,7 +2379,15 @@ export function SejoursClient(props: {
                     form.unitPriceApplied.trim() !== "" &&
                     Math.abs(appliedNightPrice - catalogPrice) >= 0.01 &&
                     !form.rateNote.trim()) ||
-                  (selectedIsMeeting && !(Number(form.locationPayment) > 0))
+                  (selectedIsMeeting &&
+                    !(Number(form.locationPayment) > 0) &&
+                    !(
+                      form.partnerId && form.partnerPayTiming === "AT_CHECKOUT"
+                    )) ||
+                  !form.guestAddress.trim() ||
+                  !form.guestCity.trim() ||
+                  !form.idDocumentNumber.trim() ||
+                  !form.idDocumentImageUrl
                 }
                 onClick={create}
               >
@@ -2062,6 +2400,7 @@ export function SejoursClient(props: {
                   : "Réserver"}
               </Button>
             </div>
+          </div>
           </div>
         </DialogContent>
       </Dialog>

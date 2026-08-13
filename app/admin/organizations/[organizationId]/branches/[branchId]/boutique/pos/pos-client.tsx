@@ -81,7 +81,9 @@ export function BoutiquePosClient(props: Props) {
   const [kindFilter, setKindFilter] = useState<"ALL" | "ARTICLE" | "PLAT">(
     "ALL",
   );
-  const [method, setMethod] = useState<"CASH" | "MOBILE_MONEY" | "CARTE">(
+  const [method, setMethod] = useState<
+    "CASH" | "MOBILE_MONEY" | "CARTE" | "BANK"
+  >(
     "CASH",
   );
   const [sessionDialogOpen, setSessionDialogOpen] = useState(

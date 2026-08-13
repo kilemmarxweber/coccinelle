@@ -53,6 +53,8 @@ export type StayFolioStatement = {
   folioId: string;
   closed: boolean;
   guestName: string;
+  /** Raison sociale partenaire (facturé à) */
+  billedToPartnerName?: string | null;
   roomNumber: string;
   checkInDate: Date;
   checkOutDate: Date;
@@ -96,6 +98,7 @@ export function buildStayFolioStatement(input: {
     checkOutDate: Date;
     status: string;
     room: { number: string };
+    partner?: { name: string } | null;
   };
   folio: {
     id: string;
@@ -196,6 +199,7 @@ export function buildStayFolioStatement(input: {
     folioId: input.folio.id,
     closed: input.folio.closed,
     guestName: input.stay.guestName,
+    billedToPartnerName: input.stay.partner?.name ?? null,
     roomNumber: input.stay.room.number,
     checkInDate: input.stay.checkInDate,
     checkOutDate: input.stay.checkOutDate,

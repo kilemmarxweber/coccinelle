@@ -73,6 +73,10 @@ export const sharedBranchRoutes = {
     `${branchBasePath(orgId, branchId)}/rapports/financier`,
   articles: (orgId: string, branchId: string) =>
     `${branchBasePath(orgId, branchId)}/rapports/articles`,
+  mesCommandes: (orgId: string, branchId: string) =>
+    `${branchBasePath(orgId, branchId)}/rapports/mes-commandes`,
+  rapportSejours: (orgId: string, branchId: string) =>
+    `${branchBasePath(orgId, branchId)}/rapports/sejours`,
 } as const;
 
 /** Sous-routes AGENCE (voyage). */
@@ -113,6 +117,8 @@ export const hotelRoutes = {
     `${branchModulePath(orgId, branchId, "hotel")}/restauration`,
   cuisine: (orgId: string, branchId: string) =>
     `${branchModulePath(orgId, branchId, "hotel")}/cuisine`,
+  partenaires: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "hotel")}/partenaires`,
 } as const;
 
 export const caisseRoutes = {

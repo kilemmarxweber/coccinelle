@@ -9,6 +9,11 @@ import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { ALL_ORG_ROLE_SLUGS, ORG_ROLE } from "@/lib/permissions";
 import { orgRoleLabel } from "@/lib/org-role-labels";
+import {
+  OPS_ROLE,
+  OPS_ROLE_SLUGS,
+  opsRoleLabel,
+} from "@/lib/branch/ops-roles";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -40,6 +45,7 @@ export function CreateMemberForm({ organizationId, branches }: Props) {
       email: "",
       name: "",
       orgRole: ORG_ROLE.GUICHETIER,
+      opsRole: OPS_ROLE.CAISSIER,
       branchIds: branches.length === 1 ? [branches[0]!.id] : [],
     },
     mode: "onSubmit",
@@ -119,6 +125,32 @@ export function CreateMemberForm({ organizationId, branches }: Props) {
                   {[...ALL_ORG_ROLE_SLUGS].map((slug) => (
                     <option key={slug} value={slug}>
                       {orgRoleLabel(slug)}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="opsRole"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Métier sur la / les branche(s)</FormLabel>
+              <p className="text-xs text-muted-foreground">
+                Détermine le dashboard (serveur, caissier, réception, gérant…).
+              </p>
+              <FormControl>
+                <Select
+                  {...field}
+                  className="h-12 min-h-[48px] w-full text-base touch-manipulation sm:h-11 sm:min-h-0 sm:text-sm"
+                  disabled={pending}
+                >
+                  {[...OPS_ROLE_SLUGS].map((slug) => (
+                    <option key={slug} value={slug}>
+                      {opsRoleLabel(slug)}
                     </option>
                   ))}
                 </Select>

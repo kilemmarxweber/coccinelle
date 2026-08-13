@@ -8,6 +8,12 @@ import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { ALL_ORG_ROLE_SLUGS, ORG_ROLE } from "@/lib/permissions";
 import { orgRoleLabel } from "@/lib/org-role-labels";
+import {
+  OPS_ROLE,
+  OPS_ROLE_SLUGS,
+  opsRoleLabel,
+  isAssignableOpsRole,
+} from "@/lib/branch/ops-roles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -37,6 +43,7 @@ export function EditMemberForm({ organizationId, memberId, branches }: Props) {
   const router = useRouter();
   const [member, setMember] = useState<MemberRow | null | undefined>(undefined);
   const [role, setRole] = useState<string>(ORG_ROLE.PARENT);
+  const [opsRole, setOpsRole] = useState<string>(OPS_ROLE.GERANT);
   const [branchIds, setBranchIds] = useState<string[]>([]);
   const [branchError, setBranchError] = useState<string | undefined>();
   const [pending, startTransition] = useTransition();
@@ -68,6 +75,14 @@ export function EditMemberForm({ organizationId, memberId, branches }: Props) {
         if (branchesRes.ok) {
           const assigned = branchesRes.byMemberId[found.id] ?? [];
           setBranchIds(assigned.map((b) => b.id));
+          const primaryOps =
+            assigned.find((b) => b.isPrimary)?.opsRole ??
+            assigned[0]?.opsRole;
+          if (primaryOps && isAssignableOpsRole(primaryOps)) {
+            setOpsRole(primaryOps);
+          } else if (primaryOps === "branch_manager") {
+            setOpsRole(OPS_ROLE.GERANT);
+          }
         }
       }
     } catch {
@@ -92,6 +107,7 @@ export function EditMemberForm({ organizationId, memberId, branches }: Props) {
         organizationId,
         memberId,
         orgRole: role,
+        opsRole,
         branchIds,
       });
       if (!res.ok) {
@@ -167,6 +183,7 @@ export function EditMemberForm({ organizationId, memberId, branches }: Props) {
         <div className="flex flex-wrap items-center gap-2">
           <p className="font-medium leading-snug break-words">{member.user.name}</p>
           <Badge variant="secondary">{orgRoleLabel(role)}</Badge>
+          <Badge variant="outline">{opsRoleLabel(opsRole)}</Badge>
         </div>
         <p className="mt-1 break-all text-sm text-muted-foreground">{member.user.email}</p>
       </div>
@@ -184,6 +201,26 @@ export function EditMemberForm({ organizationId, memberId, branches }: Props) {
             {[...ALL_ORG_ROLE_SLUGS].map((slug) => (
               <option key={slug} value={slug}>
                 {orgRoleLabel(slug)}
+              </option>
+            ))}
+          </Select>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="edit-ops-role">Métier sur la / les branche(s)</Label>
+          <p className="text-xs text-muted-foreground">
+            Dashboard filtré : serveur, caissier, réception, gérant / manager…
+          </p>
+          <Select
+            id="edit-ops-role"
+            value={opsRole}
+            onChange={(e) => setOpsRole(e.target.value)}
+            disabled={busy}
+            className="h-12 min-h-[48px] text-base touch-manipulation sm:h-11 sm:min-h-0 sm:text-sm"
+          >
+            {[...OPS_ROLE_SLUGS].map((slug) => (
+              <option key={slug} value={slug}>
+                {opsRoleLabel(slug)}
               </option>
             ))}
           </Select>

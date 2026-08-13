@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import { DASH_CARD } from "@/lib/branch/ops-roles";
 import { auth } from "@/lib/auth";
 import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
@@ -22,6 +23,7 @@ export default async function ServiceStockPage({ params }: PageProps) {
     branchId,
     requireModule: "hotel",
     requireHospitality: "restaurant",
+    requireDashCard: DASH_CARD.SERVICE_STOCK,
   });
   const sessionAuth = await auth.api.getSession({ headers: await headers() });
   const [session, staff, depotItems, history, rate, pendingHandover] =
