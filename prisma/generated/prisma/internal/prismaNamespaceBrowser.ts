@@ -121,6 +121,7 @@ export const UserScalarFieldEnum = {
   email: 'email',
   emailVerified: 'emailVerified',
   image: 'image',
+  phone: 'phone',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   role: 'role',
@@ -670,6 +671,8 @@ export const HotelStayScalarFieldEnum = {
   negotiatedByUserId: 'negotiatedByUserId',
   checkedInAt: 'checkedInAt',
   checkedOutAt: 'checkedOutAt',
+  checkoutReminderSentAt: 'checkoutReminderSentAt',
+  checkoutThanksSentAt: 'checkoutThanksSentAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

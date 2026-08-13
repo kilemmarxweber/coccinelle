@@ -29,6 +29,9 @@ importers:
       '@teispace/next-themes':
         specifier: ^2.0.4
         version: 2.0.4(next@16.3.0(@babel/core@7.29.0)(@types/node@20.19.39)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@zindua/sdk':
+        specifier: ^1.4.0
+        version: 1.4.0
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
@@ -1647,6 +1650,10 @@ packages:
     resolution: {integrity: sha512-lrW200hZdbfRtztbygyaq/6jP6AKE8qQN2KvPcJ+x7wiD038YtnYtZ82IMNJ69GJibV7bwL3y9FgK+5w/pYt6g==}
     cpu: [x64]
     os: [win32]
+
+  '@zindua/sdk@1.4.0':
+    resolution: {integrity: sha512-Uw3Wy73KSs1+/tP/Q1qV6jTeDZ09ZVQNGFKDAmTXIGG9zZn/3nxQS9lpH91jNJb19yMBRHwXLLNhne1CzgfzAA==}
+    engines: {node: '>=18'}
 
   accepts@2.0.0:
     resolution: {integrity: sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng==}
@@ -5697,6 +5704,8 @@ snapshots:
 
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
+
+  '@zindua/sdk@1.4.0': {}
 
   accepts@2.0.0:
     dependencies:

@@ -44,6 +44,7 @@ export function CreateMemberForm({ organizationId, branches }: Props) {
       organizationId,
       email: "",
       name: "",
+      phone: "",
       orgRole: ORG_ROLE.GUICHETIER,
       opsRole: OPS_ROLE.CAISSIER,
       branchIds: branches.length === 1 ? [branches[0]!.id] : [],
@@ -61,7 +62,9 @@ export function CreateMemberForm({ organizationId, branches }: Props) {
         toast.error(res.message);
         return;
       }
-      toast.success("Membre créé. Un email avec le mot de passe temporaire a été envoyé.");
+      toast.success(
+        "Membre créé. Mot de passe envoyé par email et WhatsApp (si numéro renseigné).",
+      );
       router.push(`/admin/organizations/${organizationId}/members`);
       router.refresh();
     });
@@ -102,6 +105,26 @@ export function CreateMemberForm({ organizationId, branches }: Props) {
                   autoCapitalize="none"
                   autoCorrect="off"
                   autoComplete="email"
+                  className="h-12 min-h-[48px] text-base sm:h-11 sm:min-h-0 sm:text-sm"
+                  disabled={pending}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Téléphone WhatsApp</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="tel"
+                  inputMode="tel"
+                  placeholder="+243…"
                   className="h-12 min-h-[48px] text-base sm:h-11 sm:min-h-0 sm:text-sm"
                   disabled={pending}
                 />

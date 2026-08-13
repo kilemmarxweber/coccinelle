@@ -365,6 +365,23 @@ export async function createStayGroupAction(input: {
   });
 
   revalidate(input.organizationId, input.branchId);
+  void import("@/lib/notifications/send-stay-reservation")
+    .then(({ sendStayReservationNotification }) =>
+      sendStayReservationNotification({
+        branchId: input.branchId,
+        stayId: result.stayIds[0] ?? null,
+        guestName: bookerName || "Client",
+        guestPhone: input.bookerPhone,
+        guestEmail: input.bookerEmail,
+        checkInDate: input.checkInDate,
+        checkOutDate: input.checkOutDate,
+        roomLabel: `Dossier ${result.code} · ${result.stayIds.length} chambre(s)`,
+      }),
+    )
+    .catch((err) => {
+      // eslint-disable-next-line no-console
+      console.warn("[createStayGroupAction] notif réservation:", err);
+    });
   return result;
 }
 

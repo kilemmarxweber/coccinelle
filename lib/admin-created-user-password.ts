@@ -1,15 +1,41 @@
 /**
- * Mot de passe en clair, réservé au flux admin `createUser` : associé à l’email juste avant l’appel
- * Better Auth, consommé dans `databaseHooks.user.create.after` pour l’email de bienvenue.
- * Mémoire processus uniquement (multi-instances / serverless : prévoir un store partagé si besoin).
+ * Contexte création admin `createUser` : MDP + téléphone + branding,
+ * consommé dans `databaseHooks.user.create.after`.
  */
-const pendingByEmail = new Map<string, string>();
+export type AdminCreatedUserStash = {
+  password: string;
+  phone?: string | null;
+  branchId?: string | null;
+  organizationName?: string | null;
+  role?: string | null;
+};
 
-export function stashAdminCreatedUserPlainPassword(email: string, plainPassword: string): void {
-  pendingByEmail.set(email.trim().toLowerCase(), plainPassword);
+const pendingByEmail = new Map<string, AdminCreatedUserStash>();
+
+export function stashAdminCreatedUserPlainPassword(
+  email: string,
+  plainPassword: string,
+  extra?: Omit<AdminCreatedUserStash, "password">,
+): void {
+  pendingByEmail.set(email.trim().toLowerCase(), {
+    password: plainPassword,
+    phone: extra?.phone ?? null,
+    branchId: extra?.branchId ?? null,
+    organizationName: extra?.organizationName ?? null,
+    role: extra?.role ?? null,
+  });
 }
 
-export function consumeAdminCreatedUserPlainPassword(email: string): string | undefined {
+export function consumeAdminCreatedUserPlainPassword(
+  email: string,
+): string | undefined {
+  const stash = consumeAdminCreatedUserStash(email);
+  return stash?.password;
+}
+
+export function consumeAdminCreatedUserStash(
+  email: string,
+): AdminCreatedUserStash | undefined {
   const key = email.trim().toLowerCase();
   const value = pendingByEmail.get(key);
   pendingByEmail.delete(key);

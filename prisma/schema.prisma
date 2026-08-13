@@ -229,6 +229,8 @@ model User {
   email         String       @unique
   emailVerified Boolean      @default(false)
   image         String?
+  /// Téléphone WhatsApp (création membre / notifs)
+  phone         String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   role          String?
@@ -925,6 +927,10 @@ model HotelStay {
   negotiatedByUserId String?
   checkedInAt        DateTime?
   checkedOutAt       DateTime?
+  /// Rappel WhatsApp ~20 min avant 10 h (anti-doublon)
+  checkoutReminderSentAt DateTime?
+  /// Message remerciement post check-out
+  checkoutThanksSentAt DateTime?
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
   branch             Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)

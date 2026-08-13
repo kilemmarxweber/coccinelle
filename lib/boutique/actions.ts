@@ -809,4 +809,31 @@ export async function getBoutiqueDashboardKpisAction(
   return { caJour, ticketsJour: tickets, heldCount: held, lowStock };
 }
 
+/** Diffuse une promo produit active par WhatsApp (numéros branche). */
+export async function notifyShopProductPromoWhatsAppAction(input: {
+  organizationId: string;
+  branchId: string;
+  productId: string;
+}) {
+  await ctx(input.organizationId, input.branchId);
+  const product = await prisma.shopProduct.findFirst({
+    where: { id: input.productId, branchId: input.branchId },
+  });
+  if (!product) throw new Error("Produit introuvable.");
+  if (!product.promoActive || product.promoPrice == null) {
+    throw new Error("Activez une promotion valide avant de notifier.");
+  }
+
+  const { broadcastBranchPromoWhatsApp } = await import(
+    "@/lib/notifications/send-promo-broadcast"
+  );
+  const label = product.promoLabel?.trim() || "Promotion";
+  return broadcastBranchPromoWhatsApp({
+    branchId: input.branchId,
+    title: label,
+    productName: product.name,
+    body: `${product.name} : ${product.promoPrice.toFixed(2)} $ (au lieu de ${product.price.toFixed(2)} $)`,
+  });
+}
+
 export { normalizeBarcode, generateInternalBarcode };

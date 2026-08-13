@@ -17,6 +17,12 @@ export const createOrgMemberSchema = z.object({
     .trim()
     .min(2, "Le nom doit contenir au moins 2 caractères.")
     .max(120, "Le nom est trop long."),
+  phone: z
+    .string()
+    .trim()
+    .max(30, "Téléphone trop long.")
+    .optional()
+    .or(z.literal("")),
   orgRole: z.string().refine(orgRoleRefine, "Rôle d’organisation invalide."),
   /** Validé via isAssignableOpsRole (string pour RHF). */
   opsRole: z

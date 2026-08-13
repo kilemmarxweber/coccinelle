@@ -1,22 +1,33 @@
-import { sendMail, isSmtpConfigured } from "./mailer";
+import { sendMail, isSmtpConfigured, getDefaultMailFrom } from "./mailer";
+import { sendResetPasswordWhatsApp } from "@/lib/zindua";
+import { logNotification } from "@/lib/notifications/log";
 
 const APP_NAME = process.env.APP_NAME ?? "Coccinelle";
 
-/**
- * Envoie (ou journalise) un mot de passe temporaire après réinitialisation admin.
- */
+function escapeHtml(s: string): string {
+  return s
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
 export async function sendPasswordResetCredentialsEmail(input: {
   to: string;
+  phone?: string | null;
   name: string;
   temporaryPassword: string;
+  branchName?: string | null;
+  branchId?: string | null;
   loginUrl?: string;
-}): Promise<void> {
+}): Promise<{ emailSent: boolean; whatsappSent: boolean }> {
   const { to, name, temporaryPassword } = input;
+  const brand = input.branchName?.trim() || APP_NAME;
   const loginUrl =
     input.loginUrl ??
     `${process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "http://localhost:3000"}/auth/sign-in`;
 
-  const subject = `${APP_NAME} — Mot de passe réinitialisé`;
+  const subject = `${brand} — Mot de passe réinitialisé`;
   const text = [
     `Bonjour ${name},`,
     "",
@@ -29,7 +40,7 @@ export async function sendPasswordResetCredentialsEmail(input: {
     "",
     "Pour des raisons de sécurité, changez ce mot de passe après votre connexion.",
     "",
-    "— L’équipe " + APP_NAME,
+    `— ${brand}`,
   ].join("\n");
 
   const html = `
@@ -40,43 +51,75 @@ export async function sendPasswordResetCredentialsEmail(input: {
       <li><strong>Mot de passe temporaire</strong> : <code>${escapeHtml(temporaryPassword)}</code></li>
     </ul>
     <p><a href="${escapeHtml(loginUrl)}">Se connecter</a></p>
-    <p>Pour des raisons de sécurité, changez ce mot de passe après votre connexion.</p>
-    <p>— ${escapeHtml(APP_NAME)}</p>
+    <p>— ${escapeHtml(brand)}</p>
   `;
 
-  const from =
-    process.env.EMAIL_FROM ??
-    (process.env.EMAIL_USER ? `${APP_NAME} <${process.env.EMAIL_USER}>` : `no-reply@example.com`);
-
+  let emailSent = false;
   if (isSmtpConfigured()) {
     try {
-      await sendMail({ from, to, subject, text, html });
-      return;
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : String(err);
-      throw new Error(`Nodemailer: ${message}`);
+      await sendMail({
+        from: getDefaultMailFrom(),
+        to,
+        subject,
+        text,
+        html,
+      });
+      emailSent = true;
+      logNotification({
+        channel: "email",
+        status: "sent",
+        refType: "member_password_reset",
+        branchId: input.branchId,
+        branchName: input.branchName,
+        to,
+      });
+    } catch (err) {
+      logNotification({
+        channel: "email",
+        status: "failed",
+        refType: "member_password_reset",
+        to,
+        reason: err instanceof Error ? err.message : String(err),
+      });
+      throw new Error(
+        `Nodemailer: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+  } else {
+    logNotification({
+      channel: "email",
+      status: "skipped",
+      refType: "member_password_reset",
+      reason: "smtp_off",
+      to,
+    });
+    if (process.env.NODE_ENV === "development") {
+      // eslint-disable-next-line no-console
+      console.info(
+        `[sendPasswordResetCredentialsEmail] to=${to} (dev, pas de SMTP)`,
+      );
     }
   }
 
-  if (process.env.NODE_ENV === "development") {
-    // eslint-disable-next-line no-console
-    console.info(`[sendPasswordResetCredentialsEmail] to=${to} (dev, pas de SMTP configuré)`);
-    // eslint-disable-next-line no-console
-    console.info(
-      `[sendPasswordResetCredentialsEmail] mot de passe temporaire (dev uniquement) : ${temporaryPassword}`,
-    );
-  } else {
-    // eslint-disable-next-line no-console
-    console.warn(
-      "[sendPasswordResetCredentialsEmail] SMTP non configuré : email non envoyé (production).",
-    );
+  let whatsappSent = false;
+  if (input.phone?.trim()) {
+    const wa = await sendResetPasswordWhatsApp({
+      to: input.phone,
+      name,
+      email: to,
+      temporaryPassword,
+      branchName: input.branchName,
+      loginUrl,
+    });
+    whatsappSent = Boolean(wa?.success ?? wa);
+    logNotification({
+      channel: "whatsapp",
+      status: whatsappSent ? "sent" : "failed",
+      refType: "member_password_reset",
+      branchId: input.branchId,
+      to: input.phone,
+    });
   }
-}
 
-function escapeHtml(s: string): string {
-  return s
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
+  return { emailSent, whatsappSent };
 }

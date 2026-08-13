@@ -1,7 +1,7 @@
 import { betterAuth, type BetterAuthOptions } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "@/lib/prisma";
-import { consumeAdminCreatedUserPlainPassword } from "@/lib/admin-created-user-password";
+import { consumeAdminCreatedUserStash } from "@/lib/admin-created-user-password";
 import {
   assertUserCanJoinOrganization,
   countUserOrganizations,
@@ -10,6 +10,7 @@ import {
 import { isAppAdminRole } from "@/lib/permissions";
 import { sendNewUserCredentialsEmail } from "@/lib/email/send-new-user-credentials";
 import { sendVerificationEmail } from "@/lib/email/send-verification-email";
+import { resolveNotificationBranch } from "@/lib/notifications/branch-context";
 import { admin, customSession, organization } from "better-auth/plugins";
 import {
   APP_ROLE,
@@ -51,17 +52,37 @@ const authOptions = {
       create: {
         after: async (user) => {
           if (!user?.email) return;
-          const plain = consumeAdminCreatedUserPlainPassword(user.email);
-          if (!plain) return;
+          const stash = consumeAdminCreatedUserStash(user.email);
+          if (!stash?.password) return;
           try {
+            if (stash.phone?.trim()) {
+              await prisma.user
+                .update({
+                  where: { id: user.id },
+                  data: { phone: stash.phone.trim() },
+                })
+                .catch(() => undefined);
+            }
+            const branch = await resolveNotificationBranch({
+              branchId: stash.branchId,
+            });
             await sendNewUserCredentialsEmail({
               to: user.email,
+              phone: stash.phone,
               name: user.name,
-              temporaryPassword: plain,
+              temporaryPassword: stash.password,
+              role: stash.role,
+              organizationName: stash.organizationName,
+              branchName: branch.name,
+              branchPhone: branch.phone,
+              branchId: branch.id,
             });
           } catch (err) {
             // eslint-disable-next-line no-console
-            console.error("[databaseHooks.user.create.after] envoi email nouveau compte:", err);
+            console.error(
+              "[databaseHooks.user.create.after] envoi credentials nouveau compte:",
+              err,
+            );
           }
         },
       },

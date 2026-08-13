@@ -76,6 +76,8 @@ export type HotelStayMinAggregateOutputType = {
   negotiatedByUserId: string | null
   checkedInAt: Date | null
   checkedOutAt: Date | null
+  checkoutReminderSentAt: Date | null
+  checkoutThanksSentAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -112,6 +114,8 @@ export type HotelStayMaxAggregateOutputType = {
   negotiatedByUserId: string | null
   checkedInAt: Date | null
   checkedOutAt: Date | null
+  checkoutReminderSentAt: Date | null
+  checkoutThanksSentAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -148,6 +152,8 @@ export type HotelStayCountAggregateOutputType = {
   negotiatedByUserId: number
   checkedInAt: number
   checkedOutAt: number
+  checkoutReminderSentAt: number
+  checkoutThanksSentAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -204,6 +210,8 @@ export type HotelStayMinAggregateInputType = {
   negotiatedByUserId?: true
   checkedInAt?: true
   checkedOutAt?: true
+  checkoutReminderSentAt?: true
+  checkoutThanksSentAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -240,6 +248,8 @@ export type HotelStayMaxAggregateInputType = {
   negotiatedByUserId?: true
   checkedInAt?: true
   checkedOutAt?: true
+  checkoutReminderSentAt?: true
+  checkoutThanksSentAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -276,6 +286,8 @@ export type HotelStayCountAggregateInputType = {
   negotiatedByUserId?: true
   checkedInAt?: true
   checkedOutAt?: true
+  checkoutReminderSentAt?: true
+  checkoutThanksSentAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -399,6 +411,8 @@ export type HotelStayGroupByOutputType = {
   negotiatedByUserId: string | null
   checkedInAt: Date | null
   checkedOutAt: Date | null
+  checkoutReminderSentAt: Date | null
+  checkoutThanksSentAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: HotelStayCountAggregateOutputType | null
@@ -458,6 +472,8 @@ export type HotelStayWhereInput = {
   negotiatedByUserId?: Prisma.StringNullableFilter<"HotelStay"> | string | null
   checkedInAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   checkedOutAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
+  checkoutReminderSentAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
+  checkoutThanksSentAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"HotelStay"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"HotelStay"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
@@ -500,6 +516,8 @@ export type HotelStayOrderByWithRelationInput = {
   negotiatedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   checkedInAt?: Prisma.SortOrderInput | Prisma.SortOrder
   checkedOutAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  checkoutReminderSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  checkoutThanksSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   branch?: Prisma.BranchOrderByWithRelationInput
@@ -545,6 +563,8 @@ export type HotelStayWhereUniqueInput = Prisma.AtLeast<{
   negotiatedByUserId?: Prisma.StringNullableFilter<"HotelStay"> | string | null
   checkedInAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   checkedOutAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
+  checkoutReminderSentAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
+  checkoutThanksSentAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"HotelStay"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"HotelStay"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
@@ -587,6 +607,8 @@ export type HotelStayOrderByWithAggregationInput = {
   negotiatedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   checkedInAt?: Prisma.SortOrderInput | Prisma.SortOrder
   checkedOutAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  checkoutReminderSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  checkoutThanksSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.HotelStayCountOrderByAggregateInput
@@ -631,6 +653,8 @@ export type HotelStayScalarWhereWithAggregatesInput = {
   negotiatedByUserId?: Prisma.StringNullableWithAggregatesFilter<"HotelStay"> | string | null
   checkedInAt?: Prisma.DateTimeNullableWithAggregatesFilter<"HotelStay"> | Date | string | null
   checkedOutAt?: Prisma.DateTimeNullableWithAggregatesFilter<"HotelStay"> | Date | string | null
+  checkoutReminderSentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"HotelStay"> | Date | string | null
+  checkoutThanksSentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"HotelStay"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"HotelStay"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"HotelStay"> | Date | string
 }
@@ -663,6 +687,8 @@ export type HotelStayCreateInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutHotelStaysInput
@@ -705,6 +731,8 @@ export type HotelStayUncheckedCreateInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   folio?: Prisma.FolioUncheckedCreateNestedOneWithoutStayInput
@@ -739,6 +767,8 @@ export type HotelStayUpdateInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutHotelStaysNestedInput
@@ -781,6 +811,8 @@ export type HotelStayUncheckedUpdateInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   folio?: Prisma.FolioUncheckedUpdateOneWithoutStayNestedInput
@@ -819,6 +851,8 @@ export type HotelStayCreateManyInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -851,6 +885,8 @@ export type HotelStayUpdateManyMutationInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -887,6 +923,8 @@ export type HotelStayUncheckedUpdateManyInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -933,6 +971,8 @@ export type HotelStayCountOrderByAggregateInput = {
   negotiatedByUserId?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrder
   checkedOutAt?: Prisma.SortOrder
+  checkoutReminderSentAt?: Prisma.SortOrder
+  checkoutThanksSentAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -978,6 +1018,8 @@ export type HotelStayMaxOrderByAggregateInput = {
   negotiatedByUserId?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrder
   checkedOutAt?: Prisma.SortOrder
+  checkoutReminderSentAt?: Prisma.SortOrder
+  checkoutThanksSentAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -1014,6 +1056,8 @@ export type HotelStayMinOrderByAggregateInput = {
   negotiatedByUserId?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrder
   checkedOutAt?: Prisma.SortOrder
+  checkoutReminderSentAt?: Prisma.SortOrder
+  checkoutThanksSentAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -1272,6 +1316,8 @@ export type HotelStayCreateWithoutBranchInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   room: Prisma.HotelRoomCreateNestedOneWithoutStaysInput
@@ -1312,6 +1358,8 @@ export type HotelStayUncheckedCreateWithoutBranchInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   folio?: Prisma.FolioUncheckedCreateNestedOneWithoutStayInput
@@ -1379,6 +1427,8 @@ export type HotelStayScalarWhereInput = {
   negotiatedByUserId?: Prisma.StringNullableFilter<"HotelStay"> | string | null
   checkedInAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   checkedOutAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
+  checkoutReminderSentAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
+  checkoutThanksSentAt?: Prisma.DateTimeNullableFilter<"HotelStay"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"HotelStay"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"HotelStay"> | Date | string
 }
@@ -1411,6 +1461,8 @@ export type HotelStayCreateWithoutPartnerInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutHotelStaysInput
@@ -1451,6 +1503,8 @@ export type HotelStayUncheckedCreateWithoutPartnerInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   folio?: Prisma.FolioUncheckedCreateNestedOneWithoutStayInput
@@ -1511,6 +1565,8 @@ export type HotelStayCreateWithoutPartnerBookingInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutHotelStaysInput
@@ -1551,6 +1607,8 @@ export type HotelStayUncheckedCreateWithoutPartnerBookingInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   folio?: Prisma.FolioUncheckedCreateNestedOneWithoutStayInput
@@ -1611,6 +1669,8 @@ export type HotelStayCreateWithoutRoomInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutHotelStaysInput
@@ -1651,6 +1711,8 @@ export type HotelStayUncheckedCreateWithoutRoomInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   folio?: Prisma.FolioUncheckedCreateNestedOneWithoutStayInput
@@ -1711,6 +1773,8 @@ export type HotelStayCreateWithoutFolioInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutHotelStaysInput
@@ -1752,6 +1816,8 @@ export type HotelStayUncheckedCreateWithoutFolioInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   orders?: Prisma.HotelOrderUncheckedCreateNestedManyWithoutStayInput
@@ -1801,6 +1867,8 @@ export type HotelStayUpdateWithoutFolioInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutHotelStaysNestedInput
@@ -1842,6 +1910,8 @@ export type HotelStayUncheckedUpdateWithoutFolioInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orders?: Prisma.HotelOrderUncheckedUpdateManyWithoutStayNestedInput
@@ -1875,6 +1945,8 @@ export type HotelStayCreateWithoutOrdersInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutHotelStaysInput
@@ -1916,6 +1988,8 @@ export type HotelStayUncheckedCreateWithoutOrdersInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   folio?: Prisma.FolioUncheckedCreateNestedOneWithoutStayInput
@@ -1965,6 +2039,8 @@ export type HotelStayUpdateWithoutOrdersInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutHotelStaysNestedInput
@@ -2006,6 +2082,8 @@ export type HotelStayUncheckedUpdateWithoutOrdersInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   folio?: Prisma.FolioUncheckedUpdateOneWithoutStayNestedInput
@@ -2042,6 +2120,8 @@ export type HotelStayCreateManyBranchInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2074,6 +2154,8 @@ export type HotelStayUpdateWithoutBranchInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   room?: Prisma.HotelRoomUpdateOneRequiredWithoutStaysNestedInput
@@ -2114,6 +2196,8 @@ export type HotelStayUncheckedUpdateWithoutBranchInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   folio?: Prisma.FolioUncheckedUpdateOneWithoutStayNestedInput
@@ -2151,6 +2235,8 @@ export type HotelStayUncheckedUpdateManyWithoutBranchInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2186,6 +2272,8 @@ export type HotelStayCreateManyPartnerInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2218,6 +2306,8 @@ export type HotelStayUpdateWithoutPartnerInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutHotelStaysNestedInput
@@ -2258,6 +2348,8 @@ export type HotelStayUncheckedUpdateWithoutPartnerInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   folio?: Prisma.FolioUncheckedUpdateOneWithoutStayNestedInput
@@ -2295,6 +2387,8 @@ export type HotelStayUncheckedUpdateManyWithoutPartnerInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2330,6 +2424,8 @@ export type HotelStayCreateManyPartnerBookingInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2362,6 +2458,8 @@ export type HotelStayUpdateWithoutPartnerBookingInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutHotelStaysNestedInput
@@ -2402,6 +2500,8 @@ export type HotelStayUncheckedUpdateWithoutPartnerBookingInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   folio?: Prisma.FolioUncheckedUpdateOneWithoutStayNestedInput
@@ -2439,6 +2539,8 @@ export type HotelStayUncheckedUpdateManyWithoutPartnerBookingInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2474,6 +2576,8 @@ export type HotelStayCreateManyRoomInput = {
   negotiatedByUserId?: string | null
   checkedInAt?: Date | string | null
   checkedOutAt?: Date | string | null
+  checkoutReminderSentAt?: Date | string | null
+  checkoutThanksSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2506,6 +2610,8 @@ export type HotelStayUpdateWithoutRoomInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutHotelStaysNestedInput
@@ -2546,6 +2652,8 @@ export type HotelStayUncheckedUpdateWithoutRoomInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   folio?: Prisma.FolioUncheckedUpdateOneWithoutStayNestedInput
@@ -2583,6 +2691,8 @@ export type HotelStayUncheckedUpdateManyWithoutRoomInput = {
   negotiatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkoutThanksSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2650,6 +2760,8 @@ export type HotelStaySelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   negotiatedByUserId?: boolean
   checkedInAt?: boolean
   checkedOutAt?: boolean
+  checkoutReminderSentAt?: boolean
+  checkoutThanksSentAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -2693,6 +2805,8 @@ export type HotelStaySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   negotiatedByUserId?: boolean
   checkedInAt?: boolean
   checkedOutAt?: boolean
+  checkoutReminderSentAt?: boolean
+  checkoutThanksSentAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -2733,6 +2847,8 @@ export type HotelStaySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   negotiatedByUserId?: boolean
   checkedInAt?: boolean
   checkedOutAt?: boolean
+  checkoutReminderSentAt?: boolean
+  checkoutThanksSentAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -2773,11 +2889,13 @@ export type HotelStaySelectScalar = {
   negotiatedByUserId?: boolean
   checkedInAt?: boolean
   checkedOutAt?: boolean
+  checkoutReminderSentAt?: boolean
+  checkoutThanksSentAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type HotelStayOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "roomId" | "guestName" | "guestPhone" | "guestEmail" | "guestAddress" | "guestCity" | "idDocumentType" | "idDocumentNumber" | "idDocumentImageUrl" | "idDocumentCapturedAt" | "partnerId" | "partnerBookingId" | "guestPending" | "checkInDate" | "checkOutDate" | "status" | "adults" | "notes" | "billingMode" | "catalogUnitPrice" | "unitPriceApplied" | "flatAmount" | "plannedHours" | "rateNote" | "depositAmountExpected" | "depositCollectedAt" | "negotiatedByUserId" | "checkedInAt" | "checkedOutAt" | "createdAt" | "updatedAt", ExtArgs["result"]["hotelStay"]>
+export type HotelStayOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "roomId" | "guestName" | "guestPhone" | "guestEmail" | "guestAddress" | "guestCity" | "idDocumentType" | "idDocumentNumber" | "idDocumentImageUrl" | "idDocumentCapturedAt" | "partnerId" | "partnerBookingId" | "guestPending" | "checkInDate" | "checkOutDate" | "status" | "adults" | "notes" | "billingMode" | "catalogUnitPrice" | "unitPriceApplied" | "flatAmount" | "plannedHours" | "rateNote" | "depositAmountExpected" | "depositCollectedAt" | "negotiatedByUserId" | "checkedInAt" | "checkedOutAt" | "checkoutReminderSentAt" | "checkoutThanksSentAt" | "createdAt" | "updatedAt", ExtArgs["result"]["hotelStay"]>
 export type HotelStayInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   room?: boolean | Prisma.HotelRoomDefaultArgs<ExtArgs>
@@ -2872,6 +2990,14 @@ export type $HotelStayPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     negotiatedByUserId: string | null
     checkedInAt: Date | null
     checkedOutAt: Date | null
+    /**
+     * Rappel WhatsApp ~20 min avant 10 h (anti-doublon)
+     */
+    checkoutReminderSentAt: Date | null
+    /**
+     * Message remerciement post check-out
+     */
+    checkoutThanksSentAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["hotelStay"]>
@@ -3334,6 +3460,8 @@ export interface HotelStayFieldRefs {
   readonly negotiatedByUserId: Prisma.FieldRef<"HotelStay", 'String'>
   readonly checkedInAt: Prisma.FieldRef<"HotelStay", 'DateTime'>
   readonly checkedOutAt: Prisma.FieldRef<"HotelStay", 'DateTime'>
+  readonly checkoutReminderSentAt: Prisma.FieldRef<"HotelStay", 'DateTime'>
+  readonly checkoutThanksSentAt: Prisma.FieldRef<"HotelStay", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"HotelStay", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"HotelStay", 'DateTime'>
 }

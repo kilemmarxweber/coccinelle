@@ -132,7 +132,7 @@ export async function createOrganizationMemberAction(
   if (!parsed.success) {
     return { ok: false, message: zodFirstMessage(parsed.error) };
   }
-  const { organizationId, email, name, orgRole, opsRole, branchIds } =
+  const { organizationId, email, name, orgRole, opsRole, branchIds, phone } =
     parsed.data;
 
   const gate = await assertOrganizationPermission(organizationId, {
@@ -143,10 +143,21 @@ export async function createOrganizationMemberAction(
   const branches = await resolveValidBranchIds(organizationId, branchIds);
   if (!branches.ok) return branches;
 
+  const org = await prisma.organization.findUnique({
+    where: { id: organizationId },
+    select: { name: true },
+  });
+
   const h = await headers();
   const emailLower = email.toLowerCase();
   const password = generateSecurePassword(16);
-  stashAdminCreatedUserPlainPassword(emailLower, password);
+  const primaryBranchId = branches.ids[0]!;
+  stashAdminCreatedUserPlainPassword(emailLower, password, {
+    phone: phone?.trim() || null,
+    branchId: primaryBranchId,
+    organizationName: org?.name ?? null,
+    role: opsRole,
+  });
 
   let userId: string | null = null;
   try {
@@ -304,7 +315,15 @@ export async function resetOrganizationMemberPasswordAction(
     where: { id: memberId, organizationId },
     select: {
       userId: true,
-      user: { select: { email: true, name: true } },
+      user: { select: { email: true, name: true, phone: true } },
+      branchMembers: {
+        where: { status: "ACTIVE" },
+        orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+        take: 1,
+        select: {
+          branch: { select: { id: true, name: true } },
+        },
+      },
     },
   });
   if (!member?.user?.email) {
@@ -314,10 +333,14 @@ export async function resetOrganizationMemberPasswordAction(
   const temporaryPassword = generateSecurePassword(16);
   try {
     await setCredentialPassword(member.userId, temporaryPassword);
+    const primary = member.branchMembers[0]?.branch;
     await sendPasswordResetCredentialsEmail({
       to: member.user.email,
+      phone: member.user.phone,
       name: member.user.name || member.user.email,
       temporaryPassword,
+      branchName: primary?.name,
+      branchId: primary?.id,
     });
     return { ok: true };
   } catch (e) {

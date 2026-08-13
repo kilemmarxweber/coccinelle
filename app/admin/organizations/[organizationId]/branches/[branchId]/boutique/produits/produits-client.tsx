@@ -31,6 +31,7 @@ import {
   createShopCategoryAction,
   createShopProductAction,
   generateShopBarcodeAction,
+  notifyShopProductPromoWhatsAppAction,
   updateShopProductAction,
   type ShopProductDto,
 } from "@/lib/boutique/actions";
@@ -368,6 +369,35 @@ export function BoutiqueProduitsClient(props: Props) {
                 </Badge>
               ) : null}
               {!p.active ? <Badge variant="outline">Inactif</Badge> : null}
+              {p.promoLive ? (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="h-7 text-xs"
+                  disabled={pending}
+                  onClick={() => {
+                    start(async () => {
+                      try {
+                        const res = await notifyShopProductPromoWhatsAppAction({
+                          organizationId: props.organizationId,
+                          branchId: props.branchId,
+                          productId: p.id,
+                        });
+                        toast.success(
+                          `WhatsApp promo : ${res.sent}/${res.total} envoyé(s)`,
+                        );
+                      } catch (e) {
+                        toast.error(
+                          e instanceof Error ? e.message : "Envoi impossible",
+                        );
+                      }
+                    });
+                  }}
+                >
+                  Notifier WhatsApp
+                </Button>
+              ) : null}
             </div>
             <div className="mt-3 flex items-end justify-between">
               <div>

@@ -674,6 +674,7 @@ export async function createStayAction(input: {
   roomId: string;
   guestName: string;
   guestPhone?: string;
+  guestEmail?: string;
   checkInDate: string;
   checkOutDate: string;
   adults?: number;
@@ -964,6 +965,7 @@ export async function createStayAction(input: {
         roomId: room.id,
         guestName: input.guestName.trim(),
         guestPhone: input.guestPhone?.trim() || null,
+        guestEmail: input.guestEmail?.trim() || null,
         guestAddress: guestPending ? null : guestAddress,
         guestCity: guestPending ? null : guestCity,
         guestPending,
@@ -1157,6 +1159,23 @@ export async function createStayAction(input: {
   });
 
   revalidateHotel(input.organizationId, input.branchId);
+  void import("@/lib/notifications/send-stay-reservation")
+    .then(({ sendStayReservationNotification }) =>
+      sendStayReservationNotification({
+        branchId: input.branchId,
+        stayId: stay.id,
+        guestName: stay.guestName,
+        guestPhone: stay.guestPhone,
+        guestEmail: stay.guestEmail,
+        checkInDate: stay.checkInDate,
+        checkOutDate: stay.checkOutDate,
+        roomLabel: `${room.roomType.kind === "MEETING" ? "Salle" : "Ch."} ${room.number}`,
+      }),
+    )
+    .catch((err) => {
+      // eslint-disable-next-line no-console
+      console.warn("[createStayAction] notif réservation:", err);
+    });
   return stay;
 }
 
@@ -1335,6 +1354,26 @@ export async function checkOutStayAction(input: {
     }),
   ]);
   revalidateHotel(input.organizationId, input.branchId);
+  void import("@/lib/notifications/send-stay-checkout-thanks")
+    .then(async ({ sendStayCheckoutThanksNotification }) => {
+      await sendStayCheckoutThanksNotification({
+        branchId: input.branchId,
+        stayId: stay.id,
+        guestName: stay.guestName,
+        guestPhone: stay.guestPhone,
+        guestEmail: stay.guestEmail,
+      });
+      await prisma.hotelStay
+        .update({
+          where: { id: stay.id },
+          data: { checkoutThanksSentAt: new Date() },
+        })
+        .catch(() => undefined);
+    })
+    .catch((err) => {
+      // eslint-disable-next-line no-console
+      console.warn("[checkOutStayAction] notif remerciement:", err);
+    });
   return {
     ok: true as const,
     needsPayment: false,
@@ -1343,12 +1382,6 @@ export async function checkOutStayAction(input: {
     folioId: stay.folio?.id ?? null,
   };
 }
-
-/**
- * Prolongation de séjour :
- * - NIGHTLY : décale la sortie et facture les nuitées ajoutées
- * - FLAT : ajoute un créneau de même durée / même forfait (pas de règle 10h)
- */
 export async function extendStayAction(input: {
   organizationId: string;
   branchId: string;
