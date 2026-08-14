@@ -125,6 +125,35 @@ export async function listOrganizationMemberBranchesAction(
   return { ok: true, byMemberId };
 }
 
+export async function getOrganizationMemberContactAction(
+  organizationId: string,
+  memberId: string,
+): Promise<
+  | { ok: true; phone: string | null; email: string; name: string }
+  | { ok: false; message: string }
+> {
+  const gate = await assertOrganizationPermission(organizationId, {
+    equipe: ["read"],
+  });
+  if (!gate.ok) return gate;
+
+  const member = await prisma.member.findFirst({
+    where: { id: memberId, organizationId },
+    select: {
+      user: { select: { phone: true, email: true, name: true } },
+    },
+  });
+  if (!member?.user) {
+    return { ok: false, message: "Membre introuvable dans cette organisation." };
+  }
+  return {
+    ok: true,
+    phone: member.user.phone,
+    email: member.user.email,
+    name: member.user.name,
+  };
+}
+
 export async function createOrganizationMemberAction(
   input: CreateOrgMemberInput,
 ): Promise<{ ok: true } | { ok: false; message: string }> {
@@ -212,7 +241,8 @@ export async function updateOrganizationMemberAction(
   if (!parsed.success) {
     return { ok: false, message: zodFirstMessage(parsed.error) };
   }
-  const { organizationId, memberId, orgRole, opsRole, branchIds } = parsed.data;
+  const { organizationId, memberId, orgRole, opsRole, branchIds, phone } =
+    parsed.data;
 
   const gate = await assertOrganizationPermission(organizationId, {
     equipe: ["manage"],
@@ -221,7 +251,7 @@ export async function updateOrganizationMemberAction(
 
   const member = await prisma.member.findFirst({
     where: { id: memberId, organizationId },
-    select: { id: true },
+    select: { id: true, userId: true },
   });
   if (!member) {
     return { ok: false, message: "Membre introuvable dans cette organisation." };
@@ -241,6 +271,11 @@ export async function updateOrganizationMemberAction(
       headers: h,
     });
     await syncMemberBranches(memberId, branches.ids, opsRole);
+    const phoneValue = phone?.trim() || null;
+    await prisma.user.update({
+      where: { id: member.userId },
+      data: { phone: phoneValue },
+    });
     revalidatePath(`/admin/organizations/${organizationId}/members`, "page");
     revalidatePath(`/admin/organizations/${organizationId}/members/${memberId}/edit`, "page");
     return { ok: true };

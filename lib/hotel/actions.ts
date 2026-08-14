@@ -903,7 +903,7 @@ export async function createStayAction(input: {
         : 0;
     paymentMethod = input.paymentMethod ?? "CASH";
     if (locationPaymentUsd > 0 || depositAmountUsd > 0) {
-      const cashSession = await getOpenCashSession(input.branchId);
+      const cashSession = await getOpenCashSession(input.branchId, user.id);
       if (!cashSession) {
         throw new Error(
           "Ouvrez une session de caisse pour encaisser la location / caution.",
@@ -921,7 +921,7 @@ export async function createStayAction(input: {
   ) {
     locationPaymentUsd = Number(input.locationPaymentUsd);
     paymentMethod = input.paymentMethod ?? "CASH";
-    const cashSession = await getOpenCashSession(input.branchId);
+    const cashSession = await getOpenCashSession(input.branchId, user.id);
     if (!cashSession) {
       throw new Error("Ouvrez une session de caisse pour l’acompte partenaire.");
     }
@@ -2045,6 +2045,7 @@ async function consumeMenuStock(
   tx: Prisma.TransactionClient,
   branchId: string,
   lines: { menuItemId: string; quantity: number }[],
+  userId?: string,
 ) {
   const ids = [...new Set(lines.map((l) => l.menuItemId))];
   const rows = await tx.hotelMenuItem.findMany({
@@ -2088,7 +2089,7 @@ async function consumeMenuStock(
     const { consumeServiceFloatInTx } = await import(
       "@/lib/hotel/service-stock"
     );
-    await consumeServiceFloatInTx(tx, branchId, serviceLines);
+    await consumeServiceFloatInTx(tx, branchId, serviceLines, userId);
   }
 
   for (const line of kitchenLines) {
@@ -2591,7 +2592,7 @@ export async function createHotelOrderAction(input: {
   const onNote = settlementMode === ORDER_SETTLEMENT.NOTE_CHAMBRE;
 
   const order = await prisma.$transaction(async (tx) => {
-    await consumeMenuStock(tx, input.branchId, input.items);
+    await consumeMenuStock(tx, input.branchId, input.items, user.id);
 
     const o = await tx.hotelOrder.create({
       data: {
@@ -2670,7 +2671,7 @@ export async function updateHotelOrderAction(input: {
   settlementMode?: OrderSettlementMode;
   items: { menuItemId: string; quantity: number }[];
 }) {
-  await ctx(input.organizationId, input.branchId, "restaurant");
+  const { user } = await ctx(input.organizationId, input.branchId, "restaurant");
   if (!input.items.length) throw new Error("Ajoutez au moins un article.");
 
   const existing = await prisma.hotelOrder.findFirst({
@@ -2763,7 +2764,7 @@ export async function updateHotelOrderAction(input: {
         quantity: i.quantity,
       })),
     );
-    await consumeMenuStock(tx, input.branchId, input.items);
+    await consumeMenuStock(tx, input.branchId, input.items, user.id);
 
     await tx.hotelOrderItem.deleteMany({ where: { orderId: existing.id } });
     const o = await tx.hotelOrder.update({
@@ -3098,6 +3099,69 @@ export async function listOrdersByStatusAction(
   return withOrderServerNames(orders);
 }
 
+function startOfCalendarDay(timeZone = "Africa/Kinshasa") {
+  const ymd = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+  return new Date(`${ymd}T00:00:00+01:00`);
+}
+
+const SUIVI_OPEN_STATUSES = [
+  "ENVOYEE",
+  "EN_PREPARATION",
+  "PRETE",
+  "EN_CAISSE",
+  "PAYEE",
+] as const;
+
+/** Suivi serveur : toutes les commandes en cours + livrées du jour (pas limitées par un take global). */
+export async function listRestaurationSuiviAction(
+  organizationId: string,
+  branchId: string,
+) {
+  await ctx(organizationId, branchId, "restaurant");
+  const start = startOfCalendarDay();
+  const include = {
+    items: true,
+    stay: { include: { room: true } },
+  } as const;
+  const [open, deliveredToday] = await Promise.all([
+    prisma.hotelOrder.findMany({
+      where: {
+        branchId,
+        status: { in: [...SUIVI_OPEN_STATUSES] },
+      },
+      include,
+      orderBy: [{ readyAt: "asc" }, { updatedAt: "asc" }],
+      take: 200,
+    }),
+    prisma.hotelOrder.findMany({
+      where: {
+        branchId,
+        status: "LIVREE",
+        OR: [
+          { deliveredAt: { gte: start } },
+          { AND: [{ deliveredAt: null }, { updatedAt: { gte: start } }] },
+        ],
+      },
+      include,
+      orderBy: { deliveredAt: "desc" },
+      take: 200,
+    }),
+  ]);
+  const seen = new Set<string>();
+  const merged = [];
+  for (const row of [...open, ...deliveredToday]) {
+    if (seen.has(row.id)) continue;
+    seen.add(row.id);
+    merged.push(row);
+  }
+  return withOrderServerNames(merged);
+}
+
 export async function listNotificationsAction(
   organizationId: string,
   branchId: string,
@@ -3366,7 +3430,7 @@ export async function createQuickSaleAction(input: {
   const now = new Date();
 
   const order = await prisma.$transaction(async (tx) => {
-    await consumeMenuStock(tx, input.branchId, input.items);
+    await consumeMenuStock(tx, input.branchId, input.items, user.id);
 
     const o = await tx.hotelOrder.create({
       data: {

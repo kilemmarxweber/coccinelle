@@ -4,13 +4,14 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { canAccessBranch } from "@/lib/branch/user-branches";
-import { branchBasePath } from "@/lib/branch/paths";
+import { branchBasePath, hotelRoutes } from "@/lib/branch/paths";
 import prisma from "@/lib/prisma";
 import { integerUsdCdfRate, normalizeUsdCdfRate } from "@/lib/cash/exchange";
 import {
   folioBalanceWithDeposit,
   MEETING_PAYMENT_NOTES,
 } from "@/lib/hotel/meeting-deposit";
+import { isNonSalesPaymentNote } from "@/lib/cash/cashier-report";
 
 async function ctx(organizationId: string, branchId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -35,6 +36,7 @@ function revalidateBranch(organizationId: string, branchId: string) {
   revalidatePath(`${base}/hotel/chambres`);
   revalidatePath(`${base}/hotel/restauration`);
   revalidatePath(`${base}/hotel/cuisine`);
+  revalidatePath(hotelRoutes.serviceStock(organizationId, branchId));
   revalidatePath(`${base}/rapports/tableau-bord`);
 }
 
@@ -88,16 +90,55 @@ export async function setExchangeRateAction(input: {
   return row;
 }
 
-export async function getOpenCashSession(branchId: string) {
+/** Session de caisse OPEN du caissier courant (jamais celle d’un autre). */
+export async function getOpenCashSession(branchId: string, userId: string) {
   return prisma.cashSession.findFirst({
-    where: { branchId, status: "OPEN" },
+    where: { branchId, status: "OPEN", openedByUserId: userId },
     orderBy: { openedAt: "desc" },
   });
 }
 
-/** Situation caisse ouverte : fond + mouvements → solde théorique. */
-export async function getOpenCashDrawerSummary(branchId: string) {
-  const session = await getOpenCashSession(branchId);
+/** Sessions OPEN laissées par d’autres caissiers (oubli de clôture) — lecture seule. */
+export async function getForeignOpenCashSessions(
+  branchId: string,
+  userId: string,
+) {
+  const rows = await prisma.cashSession.findMany({
+    where: { branchId, status: "OPEN", openedByUserId: { not: userId } },
+    orderBy: { openedAt: "desc" },
+    select: {
+      id: true,
+      openedAt: true,
+      openingFloat: true,
+      openedByUserId: true,
+    },
+  });
+  if (rows.length === 0) return [];
+  const users = await prisma.user.findMany({
+    where: { id: { in: [...new Set(rows.map((r) => r.openedByUserId))] } },
+    select: { id: true, name: true, email: true },
+  });
+  const byId = new Map(
+    users.map((u) => [
+      u.id,
+      (u.name?.trim() || u.email || "Caissier").trim(),
+    ]),
+  );
+  return rows.map((r) => ({
+    id: r.id,
+    openedAt: r.openedAt,
+    openingFloat: r.openingFloat,
+    openedByUserId: r.openedByUserId,
+    openedByName: byId.get(r.openedByUserId) ?? "Caissier",
+  }));
+}
+
+/** Situation caisse ouverte : fond + mouvements → solde théorique (session du user). */
+export async function getOpenCashDrawerSummary(
+  branchId: string,
+  userId: string,
+) {
+  const session = await getOpenCashSession(branchId, userId);
   if (!session) return null;
 
   const [rateRow, payments] = await Promise.all([
@@ -142,8 +183,8 @@ export async function openCashSessionAction(input: {
   openingFloat?: number;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
-  const open = await getOpenCashSession(input.branchId);
-  if (open) throw new Error("Une session de caisse est déjà ouverte.");
+  const open = await getOpenCashSession(input.branchId, user.id);
+  if (open) throw new Error("Vous avez déjà une session de caisse ouverte.");
   const session = await prisma.cashSession.create({
     data: {
       branchId: input.branchId,
@@ -162,8 +203,12 @@ export async function closeCashSessionAction(input: {
   closingCash?: number;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
-  const open = await getOpenCashSession(input.branchId);
-  if (!open) throw new Error("Aucune session ouverte.");
+  const open = await getOpenCashSession(input.branchId, user.id);
+  if (!open) {
+    throw new Error(
+      "Aucune session de caisse ouverte pour vous. Une session d’un autre caissier reste la sienne jusqu’à sa clôture.",
+    );
+  }
   const session = await prisma.cashSession.update({
     where: { id: open.id },
     data: {
@@ -208,7 +253,7 @@ export async function createPaymentAction(input: {
     throw new Error("Montant invalide.");
   }
 
-  const cashSession = await getOpenCashSession(input.branchId);
+  const cashSession = await getOpenCashSession(input.branchId, user.id);
   if (!cashSession) throw new Error("Ouvrez une session de caisse d’abord.");
 
   const rate = await getActiveExchangeRate(input.branchId);
@@ -344,9 +389,19 @@ export async function listOpenFoliosAction(
   organizationId: string,
   branchId: string,
 ) {
-  await ctx(organizationId, branchId);
+  const { user } = await ctx(organizationId, branchId);
+  const cash = await getOpenCashSession(branchId, user.id);
+  if (!cash) return [];
   const folios = await prisma.folio.findMany({
-    where: { branchId, closed: false },
+    where: {
+      branchId,
+      closed: false,
+      OR: [
+        { createdAt: { gte: cash.openedAt } },
+        { checkoutQueuedAt: { gte: cash.openedAt } },
+        { payments: { some: { cashSessionId: cash.id } } },
+      ],
+    },
     include: {
       stay: { include: { room: true } },
       lines: true,
@@ -371,7 +426,9 @@ export async function listReadyOrdersAction(
   organizationId: string,
   branchId: string,
 ) {
-  await ctx(organizationId, branchId);
+  const { user } = await ctx(organizationId, branchId);
+  const cash = await getOpenCashSession(branchId, user.id);
+  if (!cash) return [];
   const orders = await prisma.hotelOrder.findMany({
     where: {
       branchId,
@@ -380,6 +437,12 @@ export async function listReadyOrdersAction(
       },
       // Sur note : hors file encaissement F&B (réglé via note de chambre)
       NOT: { settlementMode: "NOTE_CHAMBRE" },
+      OR: [
+        { createdAt: { gte: cash.openedAt } },
+        { readyAt: { gte: cash.openedAt } },
+        { paidAt: { gte: cash.openedAt } },
+        { payments: { some: { cashSessionId: cash.id } } },
+      ],
     },
     include: {
       items: true,
@@ -407,18 +470,212 @@ export async function listReadyOrdersAction(
   }));
 }
 
+/** Paiements de la session caisse du caissier courant (pas le total du jour). */
 export async function getTodayPaymentsAction(
   organizationId: string,
   branchId: string,
 ) {
-  await ctx(organizationId, branchId);
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
+  const { user } = await ctx(organizationId, branchId);
+  const cash = await getOpenCashSession(branchId, user.id);
+  if (!cash) return [];
   return prisma.payment.findMany({
-    where: { branchId, paidAt: { gte: start } },
+    where: {
+      branchId,
+      cashSessionId: cash.id,
+      cashierUserId: user.id,
+    },
     orderBy: { paidAt: "desc" },
-    take: 50,
+    take: 200,
   });
+}
+
+function paymentUsdAmount(
+  p: { amountCdf: number; amountForeign: number | null },
+  cdfPerUsd: number | null,
+) {
+  if (p.amountForeign != null && p.amountForeign !== 0) return p.amountForeign;
+  if (cdfPerUsd && cdfPerUsd > 0) return p.amountCdf / cdfPerUsd;
+  return p.amountCdf;
+}
+
+/** Snapshot imprimable de la session caisse ouverte (avant clôture). */
+export async function getCashierShiftReportAction(
+  organizationId: string,
+  branchId: string,
+) {
+  const { user, branch } = await ctx(organizationId, branchId);
+  const cash = await getOpenCashSession(branchId, user.id);
+  if (!cash) {
+    throw new Error("Aucune session de caisse ouverte pour vous.");
+  }
+  const rate = await getActiveExchangeRate(branchId);
+  const cdfPerUsd = rate?.rate && rate.rate > 0 ? rate.rate : null;
+
+  const payments = await prisma.payment.findMany({
+    where: { cashSessionId: cash.id, cashierUserId: user.id },
+    include: {
+      folio: {
+        include: {
+          stay: { include: { room: true } },
+        },
+      },
+      order: {
+        include: {
+          items: true,
+          stay: { include: { room: true } },
+        },
+      },
+      shopSale: { include: { items: true } },
+    },
+    orderBy: { paidAt: "asc" },
+  });
+
+  const leftoverFolios = await prisma.folio.findMany({
+    where: {
+      branchId,
+      closed: false,
+      OR: [
+        { createdAt: { gte: cash.openedAt } },
+        { checkoutQueuedAt: { gte: cash.openedAt } },
+      ],
+    },
+    include: {
+      stay: { include: { room: true } },
+      lines: true,
+      payments: true,
+    },
+  });
+  const leftoverOrders = await prisma.hotelOrder.findMany({
+    where: {
+      branchId,
+      status: { in: ["PRETE", "EN_CAISSE"] },
+      createdAt: { gte: cash.openedAt },
+      NOT: { settlementMode: "NOTE_CHAMBRE" },
+    },
+    include: { items: true, stay: { include: { room: true } } },
+  });
+
+  const roomsMap = new Map<
+    string,
+    { guestName: string; roomNumber: string; receipts: string[]; amountUsd: number }
+  >();
+  const fnbTickets: {
+    label: string;
+    items: string;
+    amountUsd: number;
+  }[] = [];
+  const productsMap = new Map<string, { name: string; quantity: number; amountUsd: number }>();
+
+  const mappedPayments = payments.map((p) => {
+    const usd = paymentUsdAmount(p, cdfPerUsd);
+    const guestName = p.folio?.stay?.guestName ?? p.order?.stay?.guestName ?? null;
+    const roomNumber =
+      p.folio?.stay?.room?.number ?? p.order?.stay?.room?.number ?? null;
+    if (p.folioId && p.folio && !isNonSalesPaymentNote(p.note)) {
+      const key = p.folioId;
+      const cur = roomsMap.get(key) ?? {
+        guestName: guestName || p.folio.label || "Note",
+        roomNumber: roomNumber || "—",
+        receipts: [],
+        amountUsd: 0,
+      };
+      cur.receipts.push(p.receiptNumber);
+      cur.amountUsd += usd;
+      roomsMap.set(key, cur);
+    }
+    if (p.order) {
+      const itemsLabel = p.order.items
+        .map((i) => `${i.quantity}× ${i.name}`)
+        .join(", ");
+      fnbTickets.push({
+        label:
+          p.order.tableLabel ||
+          (roomNumber ? `Ch. ${roomNumber}` : p.receiptNumber),
+        items: itemsLabel || "—",
+        amountUsd: usd,
+      });
+      for (const item of p.order.items) {
+        const cur = productsMap.get(item.name) ?? {
+          name: item.name,
+          quantity: 0,
+          amountUsd: 0,
+        };
+        cur.quantity += item.quantity;
+        cur.amountUsd += item.amount;
+        productsMap.set(item.name, cur);
+      }
+    }
+    if (p.shopSale) {
+      for (const item of p.shopSale.items) {
+        const cur = productsMap.get(item.name) ?? {
+          name: item.name,
+          quantity: 0,
+          amountUsd: 0,
+        };
+        cur.quantity += item.quantity;
+        cur.amountUsd += item.quantity * item.unitPrice;
+        productsMap.set(item.name, cur);
+      }
+    }
+    return {
+      id: p.id,
+      receiptNumber: p.receiptNumber,
+      method: p.method,
+      amountCdf: p.amountCdf,
+      amountForeign: p.amountForeign,
+      paidAt: p.paidAt,
+      note: p.note,
+      folioLabel: p.folio?.label ?? null,
+      roomNumber,
+      guestName,
+      orderLabel: p.order?.tableLabel ?? null,
+      orderItems: (p.order?.items ?? []).map((i) => ({
+        name: i.name,
+        quantity: i.quantity,
+        amount: i.amount,
+      })),
+    };
+  });
+
+  const leftoverNotes = leftoverFolios
+    .map((f) => {
+      const balance = folioBalanceWithDeposit({
+        lines: f.lines,
+        payments: f.payments,
+      });
+      if (Math.abs(balance) <= 0.01) return null;
+      const label = f.stay
+        ? `${f.stay.guestName} · ch. ${f.stay.room.number}`
+        : f.label || "Note";
+      return { label, balanceUsd: balance };
+    })
+    .filter((x): x is { label: string; balanceUsd: number } => x != null);
+
+  const leftoverFnb = leftoverOrders.map((o) => ({
+    label:
+      o.tableLabel ||
+      (o.stay ? `${o.stay.guestName} · ch. ${o.stay.room.number}` : o.id.slice(0, 8)),
+    amountUsd: o.items.reduce((s, i) => s + i.amount, 0),
+  }));
+
+  return {
+    branchName: branch.name,
+    cashierName: user.name?.trim() || user.email || "Caissier",
+    openedAt: cash.openedAt,
+    openingFloat: cash.openingFloat,
+    cdfPerUsd,
+    payments: mappedPayments,
+    rooms: [...roomsMap.values()].map((r) => ({
+      guestName: r.guestName,
+      roomNumber: r.roomNumber,
+      receipts: r.receipts.join(", "),
+      amountUsd: r.amountUsd,
+    })),
+    fnbTickets,
+    products: [...productsMap.values()].sort((a, b) => b.amountUsd - a.amountUsd),
+    leftoverNotes,
+    leftoverFnb,
+  };
 }
 
 export async function getPaymentByIdAction(

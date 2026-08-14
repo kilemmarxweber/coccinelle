@@ -24,7 +24,7 @@ export default async function EditOrganizationMemberPage({ params }: PageProps) 
       <div className="space-y-1.5">
         <h1 className="text-2xl font-semibold tracking-tight">Modifier le membre</h1>
         <p className="max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground">
-          Modifier le rôle, les branches, réinitialiser le mot de passe ou retirer le membre.
+          Modifier le rôle, le téléphone WhatsApp, les branches, réinitialiser le mot de passe ou retirer le membre.
         </p>
       </div>
 

@@ -80,7 +80,6 @@ const ROLE_CARDS: Record<
   [OPS_ROLE.PROPRIETAIRE]: "ALL",
   [OPS_ROLE.SERVEUR]: new Set([
     DASH_CARD.RESTAURATION,
-    DASH_CARD.SERVICE_STOCK,
     DASH_CARD.RAPPORT_MES_COMMANDES,
   ]),
   [OPS_ROLE.CAISSIER]: new Set([
@@ -90,6 +89,7 @@ const ROLE_CARDS: Record<
     DASH_CARD.CUISINE,
     DASH_CARD.SEJOURS,
     DASH_CARD.CLIENTS_PARTENAIRES,
+    DASH_CARD.SERVICE_STOCK,
     DASH_CARD.RAPPORT_TABLEAU,
     DASH_CARD.RAPPORT_VENTES,
   ]),
@@ -167,6 +167,11 @@ export function canSeeDashCard(
     return !GERANT_EXCLUDED.has(cardId);
   }
   return spec.has(cardId);
+}
+
+/** Ouverture / clôture / réassort du float — caissier (et gérant / owner), pas le serveur. */
+export function canOperateServiceStock(opsRole: OpsRole | string): boolean {
+  return canSeeDashCard(opsRole, DASH_CARD.SERVICE_STOCK);
 }
 
 /** Toutes les cartes hospitalité connues (tests / debug). */

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Plus, Printer } from "lucide-react";
@@ -17,13 +17,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  formatAlreadyPrimaryAmount,
   formatConfiguredRateLabel,
   formatPrimaryAmount,
   formatUsdLineTotal,
   formatUsdLinesTotal,
-  usdLinePrimaryNumber,
-  usdLinesPrimaryTotal,
   type NormalizedUsdCdfRate,
 } from "@/lib/cash/exchange";
 import { branchDashboardPath, hotelRoutes } from "@/lib/branch/paths";
@@ -33,6 +30,7 @@ import {
   markOpeningDocumentPrintedAction,
   openServiceStockSessionAction,
   topUpServiceStockAction,
+  type LiveShiftSituation,
 } from "@/lib/hotel/service-stock";
 import {
   buildServiceStockClosingHtml,
@@ -41,10 +39,8 @@ import {
   summarizeRecover,
 } from "@/lib/hotel/service-stock-print";
 import {
-  DualBarChart,
-  SimpleBarChart,
-  TrendAreaChart,
-} from "@/components/reports/report-charts";
+  LiveShiftSituationCharts,
+} from "@/components/hotel/service-stock-ops-panel";
 import { cn } from "@/lib/utils";
 
 type Staff = { userId: string; name: string; role: string };
@@ -120,6 +116,20 @@ type PendingHandover = {
   }[];
 } | null;
 
+type ProposedFloat = {
+  sessionId: string;
+  number: string;
+  vendorDisplayName: string;
+  lines: {
+    menuItemId: string;
+    name: string;
+    quantity: number;
+    unitPriceUsd: number;
+    sourceZone: string;
+    storageZone?: string;
+  }[];
+} | null;
+
 function printHtml(html: string) {
   const iframe = document.createElement("iframe");
   iframe.setAttribute("aria-hidden", "true");
@@ -158,20 +168,28 @@ export function ServiceStockClient(props: {
   branchId: string;
   branchName: string;
   session: Session;
+  /** Session d’un autre entrant encore ouverte (oubli de clôture) — à clôturer, pas à réutiliser. */
+  foreignSession?: Session;
+  proposedFloat?: ProposedFloat;
   staff: Staff[];
   depotItems: DepotItem[];
   history: HistoryRow[];
+  liveSituation: LiveShiftSituation;
   pendingHandover: PendingHandover;
   rate: NormalizedUsdCdfRate | null;
+  currentUserId?: string;
   currentUserName: string;
+  autoOpen?: boolean;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
-  const [openWizard, setOpenWizard] = useState(false);
+  const [openWizard, setOpenWizard] = useState(
+    Boolean(props.autoOpen && !props.session && !props.foreignSession),
+  );
   const [topUpOpen, setTopUpOpen] = useState(false);
   const [closeOpen, setCloseOpen] = useState(false);
   const [vendorUserId, setVendorUserId] = useState(
-    props.staff[0]?.userId ?? "",
+    props.currentUserId || props.staff[0]?.userId || "",
   );
   const [inheritHandover, setInheritHandover] = useState(
     Boolean(props.pendingHandover),
@@ -191,6 +209,15 @@ export function ServiceStockClient(props: {
   const [topUpQty, setTopUpQty] = useState("1");
 
   const session = props.session;
+  const foreignSession = props.foreignSession ?? null;
+  /** Clôture possible sur sa session ou sur une session étrangère oubliée. */
+  const closeTarget = session ?? foreignSession;
+
+  useEffect(() => {
+    if (!session && !foreignSession) return;
+    const refresh = window.setInterval(() => router.refresh(), 8000);
+    return () => window.clearInterval(refresh);
+  }, [session, foreignSession, router]);
   const money = (n: number) => formatPrimaryAmount(n, props.rate);
   const moneyLine = (qty: number, unitUsd: number) =>
     formatUsdLineTotal(qty, unitUsd, props.rate);
@@ -253,134 +280,23 @@ export function ServiceStockClient(props: {
           unitPriceUsd: l.unitPriceUsd,
         }))),
   );
-  const soldLabel = moneyLines(
-    docLines.map((l) => ({
-      quantity: l.qtySold ?? 0,
-      unitPriceUsd: l.unitPriceUsd,
-    })),
-  );
+  const soldLabel = props.liveSituation.cashOpen
+    ? money(props.liveSituation.soldUsd)
+    : moneyLines(
+        docLines.map((l) => ({
+          quantity: l.qtySold ?? 0,
+          unitPriceUsd: l.unitPriceUsd,
+        })),
+      );
+  const recoverRateLabel = props.liveSituation.cashOpen
+    ? props.liveSituation.recoverRate
+    : liveSummary.recoverRate;
   const remainingLabel = moneyLines(
     (session?.lines ?? []).map((l) => ({
       quantity: remaining(l),
       unitPriceUsd: l.unitPriceUsd,
     })),
   );
-
-  /** CA par session (historique) pour courbe. */
-  const salesTrend = useMemo(() => {
-    return [...props.history]
-      .filter((h) => h.status === "CLOSED")
-      .reverse()
-      .slice(-14)
-      .map((h) => {
-        const ca = usdLinesPrimaryTotal(
-          h.lines.map((l) => ({
-            quantity: l.qtySold,
-            unitPriceUsd: l.unitPriceUsd,
-          })),
-          props.rate,
-        );
-        const d =
-          h.closedAt instanceof Date
-            ? h.closedAt
-            : new Date(h.closedAt ?? h.openedAt);
-        const day = d.toISOString().slice(0, 10);
-        return { day, value: ca };
-      });
-  }, [props.history, props.rate]);
-
-  /** Efficacité vendeur : CA + taux de recouvrement. */
-  const vendorStats = useMemo(() => {
-    const map = new Map<
-      string,
-      { toRecover: number; sold: number; sessions: number; caPrimary: number }
-    >();
-    for (const h of props.history) {
-      const key = h.vendorDisplayName || "Entrant";
-      const cur = map.get(key) ?? {
-        toRecover: 0,
-        sold: 0,
-        sessions: 0,
-        caPrimary: 0,
-      };
-      cur.sessions += 1;
-      const s = summarizeRecover(
-        h.lines.map((l) => ({
-          name: "",
-          sourceZone: "",
-          qtyAttributed: l.qtyAttributed,
-          qtyOpeningCounted: l.qtyOpeningCounted,
-          qtySold: l.qtySold,
-          qtyLoss: l.qtyLoss,
-          unitPriceUsd: l.unitPriceUsd,
-        })),
-      );
-      cur.toRecover += s.toRecover;
-      cur.sold += s.sold;
-      cur.caPrimary += usdLinesPrimaryTotal(
-        h.lines.map((l) => ({
-          quantity: l.qtySold,
-          unitPriceUsd: l.unitPriceUsd,
-        })),
-        props.rate,
-      );
-      map.set(key, cur);
-    }
-    return [...map.entries()]
-      .map(([name, v]) => ({
-        name: name.length > 14 ? `${name.slice(0, 12)}…` : name,
-        fullName: name,
-        ca: v.caPrimary,
-        rate:
-          v.toRecover > 0.0001
-            ? Math.round((v.sold / v.toRecover) * 1000) / 10
-            : 0,
-        sessions: v.sessions,
-      }))
-      .sort((a, b) => b.ca - a.ca);
-  }, [props.history, props.rate]);
-
-  const vendorRateChart = useMemo(
-    () =>
-      vendorStats.map((v) => ({
-        name: v.name,
-        value: v.rate,
-      })),
-    [vendorStats],
-  );
-
-  const vendorCaChart = useMemo(
-    () =>
-      vendorStats.map((v) => ({
-        name: v.name,
-        value: v.ca,
-      })),
-    [vendorStats],
-  );
-
-  const productSalesChart = useMemo(() => {
-    if (!session) return [] as { name: string; value: number }[];
-    return session.lines
-      .filter((l) => l.qtySold > 0)
-      .map((l) => ({
-        name:
-          l.menuItem.name.length > 14
-            ? `${l.menuItem.name.slice(0, 12)}…`
-            : l.menuItem.name,
-        value: usdLinePrimaryNumber(l.qtySold, l.unitPriceUsd, props.rate),
-      }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 8);
-  }, [session, props.rate]);
-
-  const sessionQtyChart = useMemo(() => {
-    if (!session) return [] as { day: string; entrees: number; sorties: number }[];
-    return session.lines.map((l) => ({
-      day: l.menuItem.name.slice(0, 10),
-      entrees: l.qtyAttributed,
-      sorties: l.qtySold,
-    }));
-  }, [session]);
 
   function printOpening(updatedNote?: string) {
     if (!session) return;
@@ -520,8 +436,8 @@ export function ServiceStockClient(props: {
   }
 
   function doClose() {
-    if (!session) return;
-    const counts = session.lines.map((l) => ({
+    if (!closeTarget) return;
+    const counts = closeTarget.lines.map((l) => ({
       lineId: l.id,
       qtyClosingCounted: Math.round(
         Number(closingCounts[l.id] ?? remaining(l)) || 0,
@@ -529,7 +445,7 @@ export function ServiceStockClient(props: {
       qtyLoss: Math.round(Number(closingLoss[l.id]) || 0),
     }));
     const countById = new Map(counts.map((c) => [c.lineId, c]));
-    const linesForDoc = session.lines.map((l) => {
+    const linesForDoc = closeTarget.lines.map((l) => {
       const c = countById.get(l.id)!;
       const theo = remaining({
         qtyAttributed: l.qtyAttributed,
@@ -556,7 +472,7 @@ export function ServiceStockClient(props: {
         await closeServiceStockSessionAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
-          sessionId: session.id,
+          sessionId: closeTarget.id,
           disposition: closeDisposition,
           counts,
         });
@@ -569,10 +485,10 @@ export function ServiceStockClient(props: {
         printHtml(
           buildServiceStockClosingHtml({
             branchName: props.branchName,
-            number: session.number,
-            vendorDisplayName: session.vendorDisplayName,
+            number: closeTarget.number,
+            vendorDisplayName: closeTarget.vendorDisplayName,
             managerName: props.currentUserName,
-            openedAt: session.openedAt,
+            openedAt: closeTarget.openedAt,
             closedAt: new Date(),
             lines: linesForDoc,
             formatMoney: money,
@@ -614,10 +530,33 @@ export function ServiceStockClient(props: {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {!session ? (
+          {!session && !foreignSession ? (
             <Button onClick={() => setOpenWizard(true)}>
               <Plus className="mr-1.5 size-4" /> Ouvrir le service
             </Button>
+          ) : null}
+          {!session && foreignSession ? (
+            <>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setCloseDisposition("HANDOVER");
+                  setCloseOpen(true);
+                }}
+              >
+                Clôturer la session de {foreignSession.vendorDisplayName}
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  toast.message(
+                    "Clôturez d’abord la session ouverte (transmission), puis ouvrez la vôtre.",
+                  )
+                }
+              >
+                <Plus className="mr-1.5 size-4" /> Ouvrir le mien
+              </Button>
+            </>
           ) : null}
           {isLive ? (
             <>
@@ -638,22 +577,69 @@ export function ServiceStockClient(props: {
 
       {!session ? (
         <div className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-          Aucune session active. Ouvrez le service, choisissez l’entrant et
-          attribuez le float depuis le dépôt.
-          {props.pendingHandover ? (
-            <p className="mt-3 text-emerald-700 dark:text-emerald-300">
-              Float en transmission disponible ({props.pendingHandover.number} ·{" "}
-              {props.pendingHandover.vendorDisplayName}) — l’ouverture peut
-              l’hériter.
-            </p>
-          ) : null}
+          {foreignSession ? (
+            <div className="space-y-3 text-left">
+              <p className="text-foreground">
+                Session{" "}
+                <strong>{foreignSession.number}</strong> encore ouverte pour{" "}
+                <strong>{foreignSession.vendorDisplayName}</strong> — état
+                conservé. Vous ne pouvez pas l’utiliser : clôturez-la en
+                transmission, puis ouvrez <em>votre</em> service.
+              </p>
+              {props.proposedFloat && props.proposedFloat.lines.length > 0 ? (
+                <div className="rounded-lg border border-border bg-card px-3 py-2">
+                  <p className="text-xs font-medium text-foreground mb-2">
+                    État actuel proposé (restant)
+                  </p>
+                  <ul className="space-y-1 text-xs">
+                    {props.proposedFloat.lines.map((l) => (
+                      <li
+                        key={l.menuItemId}
+                        className="flex justify-between gap-2"
+                      >
+                        <span>{l.name}</span>
+                        <span className="tabular-nums font-medium text-foreground">
+                          {l.quantity}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+          ) : (
+            <>
+              Aucune session active. Ouvrez le service, choisissez l’entrant et
+              attribuez le float depuis le dépôt.
+              {props.pendingHandover ? (
+                <p className="mt-3 text-emerald-700 dark:text-emerald-300">
+                  Float en transmission disponible ({props.pendingHandover.number}{" "}
+                  · {props.pendingHandover.vendorDisplayName}) — l’ouverture peut
+                  l’hériter.
+                </p>
+              ) : null}
+            </>
+          )}
         </div>
       ) : (
         <div className="space-y-4">
           <div className="rounded-xl border border-border bg-card px-4 py-3">
             <div className="flex flex-wrap items-center gap-2">
               <p className="font-semibold">{session.number}</p>
-              <Badge variant="secondary">{session.status}</Badge>
+              <Badge
+                variant={
+                  session.status === "OPEN" &&
+                  props.liveSituation.waitersConnected
+                    ? "default"
+                    : "secondary"
+                }
+              >
+                {session.status === "OPEN"
+                  ? props.liveSituation.waitersConnected
+                    ? "OPEN"
+                    : "CLOSE"
+                  : session.status}
+              </Badge>
               {session.openingConfirmedAt ? (
                 <Badge>État des lieux OK</Badge>
               ) : (
@@ -697,7 +683,7 @@ export function ServiceStockClient(props: {
                 Taux de recouvrement
               </p>
               <p className="mt-1 text-lg font-semibold tabular-nums">
-                {liveSummary.recoverRate.toLocaleString("fr-FR")} %
+                {recoverRateLabel.toLocaleString("fr-FR")} %
               </p>
             </div>
           </div>
@@ -787,159 +773,132 @@ export function ServiceStockClient(props: {
             </div>
           ) : null}
 
-          {isLive && sessionQtyChart.length > 0 ? (
-            <div className="grid gap-3 lg:grid-cols-2">
-              <div className="rounded-xl border border-border bg-card p-4">
-                <h3 className="text-sm font-semibold">
-                  Situation de vente (session)
-                </h3>
-                <p className="mb-3 text-xs text-muted-foreground">
-                  Attribué vs vendu par produit
-                </p>
-                <div className="h-[220px]">
-                  <DualBarChart
-                    data={sessionQtyChart}
-                    entreesLabel="Attribué"
-                    sortiesLabel="Vendu"
-                  />
-                </div>
-              </div>
-              <div className="rounded-xl border border-border bg-card p-4">
-                <h3 className="text-sm font-semibold">CA par produit</h3>
-                <p className="mb-3 text-xs text-muted-foreground">
-                  Montant recouvré sur cette session
-                </p>
-                <div className="h-[220px]">
-                  {productSalesChart.length > 0 ? (
-                    <SimpleBarChart data={productSalesChart} color="#0d9488" />
-                  ) : (
-                    <p className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                      Pas encore de vente
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
+          {isLive ? (
+            <LiveShiftSituationCharts
+              situation={props.liveSituation}
+              rate={props.rate}
+            />
           ) : null}
         </div>
       )}
 
-      <div className="space-y-3">
-        <h2 className="text-sm font-semibold">Statistiques de vente</h2>
-        <div className="grid gap-3 lg:grid-cols-2">
-          <div className="rounded-xl border border-border bg-card p-4">
-            <h3 className="text-sm font-medium">CA des sessions clôturées</h3>
-            <p className="mb-3 text-xs text-muted-foreground">
-              Évolution récente (14 dernières)
-            </p>
-            <div className="h-[220px]">
-              {salesTrend.length > 0 ? (
-                <TrendAreaChart
-                  data={salesTrend}
-                  color="#0d9488"
-                  valueLabel="CA"
-                />
-              ) : (
-                <p className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                  Aucune session clôturée
-                </p>
-              )}
-            </div>
-          </div>
-          <div className="rounded-xl border border-border bg-card p-4">
-            <h3 className="text-sm font-medium">Efficacité vendeurs (CA)</h3>
-            <p className="mb-3 text-xs text-muted-foreground">
-              Montant recouvré cumulé par entrant
-            </p>
-            <div className="h-[220px]">
-              {vendorCaChart.length > 0 ? (
-                <SimpleBarChart data={vendorCaChart} color="#0369a1" />
-              ) : (
-                <p className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                  Pas encore d’historique
-                </p>
-              )}
-            </div>
-          </div>
-          <div className="rounded-xl border border-border bg-card p-4 lg:col-span-2">
-            <h3 className="text-sm font-medium">
-              Taux de recouvrement par vendeur
-            </h3>
-            <p className="mb-3 text-xs text-muted-foreground">
-              Vendu ÷ valeur à recouvrir (efficacité)
-            </p>
-            <div className="h-[240px]">
-              {vendorRateChart.length > 0 ? (
-                <SimpleBarChart data={vendorRateChart} color="#b45309" />
-              ) : (
-                <p className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                  Pas encore d’historique
-                </p>
-              )}
-            </div>
-            {vendorStats.length > 0 ? (
-              <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-                {vendorStats.map((v) => (
-                  <li
-                    key={v.fullName}
-                    className="flex items-center justify-between rounded-lg border border-border/70 px-3 py-2 text-xs"
-                  >
-                    <span className="font-medium">{v.fullName}</span>
-                    <span className="text-muted-foreground tabular-nums">
-                      {formatAlreadyPrimaryAmount(v.ca, props.rate)} ·{" "}
-                      {v.rate.toLocaleString("fr-FR")} % ·{" "}
-                      {v.sessions} sess.
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </div>
-        </div>
-      </div>
-
       <div>
-        <h2 className="mb-2 text-sm font-semibold">Historique</h2>
-        <ul className="space-y-2">
-          {props.history.map((h) => {
-            const s = summarizeRecover(
-              h.lines.map((l) => ({
-                name: "",
-                sourceZone: "",
-                qtyAttributed: l.qtyAttributed,
-                qtyOpeningCounted: l.qtyOpeningCounted,
-                qtySold: l.qtySold,
-                qtyLoss: l.qtyLoss,
-                unitPriceUsd: l.unitPriceUsd,
-              })),
-            );
-            return (
-              <li
-                key={h.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border px-3 py-2 text-sm"
-              >
+        <h2 className="mb-2 text-sm font-semibold">
+          Historique actuel · caisse en cours
+        </h2>
+        {props.liveSituation.cashOpen && props.liveSituation.sessionNumber ? (
+          <ul className="space-y-2">
+            <li className="rounded-lg border border-border px-3 py-2 text-sm">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <span>
-                  {h.number} · {h.vendorDisplayName} · {h.status}
+                  {props.liveSituation.sessionNumber} ·{" "}
+                  {props.liveSituation.vendorName ?? "Entrant"} ·{" "}
+                  <span
+                    className={
+                      props.liveSituation.waitersConnected
+                        ? "font-semibold text-emerald-700 dark:text-emerald-300"
+                        : "font-semibold text-muted-foreground"
+                    }
+                  >
+                    {props.liveSituation.waitersConnected ? "OPEN" : "CLOSE"}
+                  </span>
                 </span>
                 <span className="text-muted-foreground tabular-nums">
-                  À recouvrir {moneyLines(h.lines.map((l) => ({
-                    quantity:
-                      l.qtyOpeningCounted != null
-                        ? l.qtyOpeningCounted
-                        : l.qtyAttributed,
-                    unitPriceUsd: l.unitPriceUsd,
-                  })))}{" "}
-                  · Recouvré {moneyLines(h.lines.map((l) => ({
-                    quantity: l.qtySold,
-                    unitPriceUsd: l.unitPriceUsd,
-                  })))}{" "}
-                  ·{" "}
-                  {s.recoverRate.toLocaleString("fr-FR")} %
+                  À recouvrir {money(props.liveSituation.toRecoverUsd)} ·
+                  Recouvré {money(props.liveSituation.soldUsd)} ·{" "}
+                  {props.liveSituation.recoverRate.toLocaleString("fr-FR")} %
                 </span>
-              </li>
-            );
-          })}
-        </ul>
+              </div>
+              {props.liveSituation.waiters.length > 0 ? (
+                <ul className="mt-2 space-y-1 border-t border-border/70 pt-2">
+                  {props.liveSituation.waiters.map((w) => (
+                    <li
+                      key={w.userId}
+                      className="flex flex-wrap items-center justify-between gap-2 text-xs"
+                    >
+                      <span>
+                        {w.name} ·{" "}
+                        <span
+                          className={
+                            w.connected
+                              ? "font-semibold text-emerald-700 dark:text-emerald-300"
+                              : "text-muted-foreground"
+                          }
+                        >
+                          {w.connected ? "OPEN" : "CLOSE"}
+                        </span>
+                      </span>
+                      <span className="tabular-nums text-muted-foreground">
+                        Recouvré {money(w.amountUsd)} · {w.qtySold} pcs
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Aucun serveur récent sur cette ouverture de caisse.
+                </p>
+              )}
+            </li>
+          </ul>
+        ) : (
+          <p className="rounded-lg border border-dashed border-border px-3 py-4 text-sm text-muted-foreground">
+            Caisse clôturée — historique serveur réinitialisé. Il se remplira à
+            la prochaine ouverture de caisse.
+          </p>
+        )}
+        {props.history.length > 0 ? (
+          <div className="mt-4">
+            <h3 className="mb-2 text-xs font-medium text-muted-foreground">
+              Sessions stock clôturées
+            </h3>
+            <ul className="space-y-2">
+              {props.history.map((h) => {
+                const s = summarizeRecover(
+                  h.lines.map((l) => ({
+                    name: "",
+                    sourceZone: "",
+                    qtyAttributed: l.qtyAttributed,
+                    qtyOpeningCounted: l.qtyOpeningCounted,
+                    qtySold: l.qtySold,
+                    qtyLoss: l.qtyLoss,
+                    unitPriceUsd: l.unitPriceUsd,
+                  })),
+                );
+                return (
+                  <li
+                    key={h.id}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border/60 px-3 py-2 text-sm text-muted-foreground"
+                  >
+                    <span>
+                      {h.number} · {h.vendorDisplayName} · {h.status}
+                    </span>
+                    <span className="tabular-nums">
+                      À recouvrir{" "}
+                      {moneyLines(
+                        h.lines.map((l) => ({
+                          quantity:
+                            l.qtyOpeningCounted != null
+                              ? l.qtyOpeningCounted
+                              : l.qtyAttributed,
+                          unitPriceUsd: l.unitPriceUsd,
+                        })),
+                      )}{" "}
+                      · Recouvré{" "}
+                      {moneyLines(
+                        h.lines.map((l) => ({
+                          quantity: l.qtySold,
+                          unitPriceUsd: l.unitPriceUsd,
+                        })),
+                      )}{" "}
+                      · {s.recoverRate.toLocaleString("fr-FR")} %
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ) : null}
       </div>
 
       <Dialog open={openWizard} onOpenChange={setOpenWizard}>
@@ -1104,13 +1063,18 @@ export function ServiceStockClient(props: {
       <Dialog open={closeOpen} onOpenChange={setCloseOpen}>
         <DialogContent className="max-h-[94svh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Clôturer le service</DialogTitle>
+            <DialogTitle>
+              {foreignSession && !session
+                ? `Clôturer · ${foreignSession.vendorDisplayName}`
+                : "Clôturer le service"}
+            </DialogTitle>
             <DialogDescription>
-              Comptez le restant. Le document de fermeture sera imprimé
-              (entrant + manager).
+              {foreignSession && !session
+                ? "Session d’un autre entrant — clôturez en transmission pour pouvoir ouvrir la vôtre."
+                : "Comptez le restant. Le document de fermeture sera imprimé (entrant + manager)."}
             </DialogDescription>
           </DialogHeader>
-          {session ? (
+          {closeTarget ? (
             <div className="space-y-3">
               <div className="space-y-2 rounded-xl border border-border p-3">
                 <Label>Disposition du restant</Label>
@@ -1146,7 +1110,7 @@ export function ServiceStockClient(props: {
                   </span>
                 </label>
               </div>
-              {session.lines.map((l) => (
+              {closeTarget.lines.map((l) => (
                 <div
                   key={l.id}
                   className="grid gap-2 rounded-lg border border-border/70 p-2 sm:grid-cols-[1.2fr_0.6fr_0.5fr]"

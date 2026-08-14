@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Ban,
@@ -10,7 +10,6 @@ import {
   Pencil,
   RefreshCw,
   Timer,
-  Truck,
   UserRound,
   UtensilsCrossed,
 } from "lucide-react";
@@ -57,9 +56,12 @@ import { SearchCombobox } from "@/components/ui/search-combobox";
 import { cn } from "@/lib/utils";
 import {
   ServiceStockOpsPanel,
-  type ServiceStockOpsHistoryRow,
   type ServiceStockOpsSession,
 } from "@/components/hotel/service-stock-ops-panel";
+import {
+  touchServiceStockPresenceAction,
+  type LiveShiftSituation,
+} from "@/lib/hotel/service-stock";
 
 type MenuItem = {
   id: string;
@@ -97,6 +99,7 @@ type Order = {
   readyAt?: string | Date | null;
   deliveredAt?: string | Date | null;
   createdAt?: string | Date;
+  updatedAt?: string | Date;
   items: OrderItem[];
   stay?: { guestName: string; room?: { number: string } | null } | null;
 };
@@ -109,11 +112,11 @@ type ActiveStay = {
 };
 
 const STATUS_RANK: Record<string, number> = {
-  PAYEE: 0,
-  PRETE: 1,
-  EN_CAISSE: 2,
-  EN_PREPARATION: 3,
-  ENVOYEE: 4,
+  ENVOYEE: 0,
+  EN_PREPARATION: 1,
+  PRETE: 2,
+  EN_CAISSE: 3,
+  PAYEE: 4,
   LIVREE: 5,
 };
 
@@ -129,23 +132,37 @@ function canDeliver(status: string) {
   return DELIVERABLE.has(status);
 }
 
-const STATUS_META: Record<
-  string,
-  { label: string; tone: string }
-> = {
-  ENVOYEE: { label: "Envoyée", tone: "bg-sky-500/15 text-sky-700 dark:text-sky-300" },
-  EN_PREPARATION: {
-    label: "En cuisine",
-    tone: "bg-orange-500/15 text-orange-800 dark:text-orange-200",
-  },
-  PRETE: { label: "Prête", tone: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" },
-  EN_CAISSE: {
+/** Côté serveur : En cours = lancée ; Prêt = livrée à table (pas la cuisine). */
+function isWaiterPret(order: {
+  status: string;
+  deliveredAt?: Date | string | null;
+}) {
+  return order.status === "LIVREE" || Boolean(order.deliveredAt);
+}
+
+function waiterPhaseMeta(order: {
+  status: string;
+  deliveredAt?: Date | string | null;
+}) {
+  if (isWaiterPret(order)) {
+    return {
+      label: "Prêt",
+      tone: "bg-emerald-500/15 text-emerald-800 dark:text-emerald-200",
+    };
+  }
+  return {
     label: "En cours",
     tone: "bg-sky-500/15 text-sky-800 dark:text-sky-200",
-  },
-  PAYEE: { label: "À livrer", tone: "bg-primary/15 text-primary" },
-  LIVREE: { label: "Livrée", tone: "bg-muted text-muted-foreground" },
-};
+  };
+}
+
+function kitchenHint(status: string): string | null {
+  if (status === "ENVOYEE") return "Lancée";
+  if (status === "EN_PREPARATION") return "Cuisine";
+  if (status === "PRETE") return "Cuisine prête";
+  if (status === "EN_CAISSE" || status === "PAYEE") return "Caisse";
+  return null;
+}
 
 function isOnNote(order: Order) {
   return order.settlementMode === ORDER_SETTLEMENT.NOTE_CHAMBRE;
@@ -168,7 +185,9 @@ export function RestaurationClient(props: {
   currentUserName: string;
   stockReady: boolean;
   stockSession: ServiceStockOpsSession | null;
-  stockHistory: ServiceStockOpsHistoryRow[];
+  stockForeignSession?: ServiceStockOpsSession | null;
+  liveSituation?: LiveShiftSituation | null;
+  stockCanOperate?: boolean;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -209,43 +228,41 @@ export function RestaurationClient(props: {
       props.rate,
     );
   }
-  const toDeliverCount = props.orders.filter(
-    (o) => canDeliver(o.status) && !o.deliveredAt,
+  const initialEnCoursCount = props.orders.filter(
+    (o) => o.status !== "ANNULEE" && !isWaiterPret(o),
   ).length;
   const [view, setView] = useState<"commande" | "suivi">(
-    props.initialView === "suivi" || toDeliverCount > 0 ? "suivi" : "commande",
+    props.initialView === "suivi" || initialEnCoursCount > 0
+      ? "suivi"
+      : "commande",
   );
-  const [suiviFilter, setSuiviFilter] = useState<"actives" | "livrer" | "toutes">(
-    "actives",
+  const [suiviFilter, setSuiviFilter] = useState<"en_cours" | "pret">(
+    "en_cours",
   );
   const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
   const { cart, addItem, setQty, clear, load, toPayload } = usePosCart();
 
-  const toDeliver = useMemo(
-    () =>
-      props.orders.filter((o) => canDeliver(o.status) && !o.deliveredAt),
-    [props.orders],
-  );
-  const activeOrders = useMemo(
+  const enCoursOrders = useMemo(
     () =>
       props.orders.filter(
-        (o) =>
-          o.status !== "LIVREE" &&
-          o.status !== "ANNULEE" &&
-          !o.deliveredAt,
+        (o) => o.status !== "ANNULEE" && !isWaiterPret(o),
       ),
+    [props.orders],
+  );
+  const pretOrders = useMemo(
+    () => props.orders.filter((o) => isWaiterPret(o)),
     [props.orders],
   );
 
   useEffect(() => {
     if (searchParams.get("view") === "suivi") {
       setView("suivi");
-      setSuiviFilter("actives");
+      setSuiviFilter("en_cours");
     }
     const orderId = searchParams.get("orderId");
     if (orderId) {
       setView("suivi");
-      setSuiviFilter("actives");
+      setSuiviFilter("en_cours");
       setSelectedId(orderId);
     }
   }, [searchParams]);
@@ -255,14 +272,49 @@ export function RestaurationClient(props: {
   }, []);
 
   useEffect(() => {
-    if (view !== "suivi") return;
-    const tick = window.setInterval(() => setNow(Date.now()), 1000);
-    const refresh = window.setInterval(() => router.refresh(), 12000);
-    return () => {
-      window.clearInterval(tick);
-      window.clearInterval(refresh);
+    const tick =
+      view === "suivi"
+        ? window.setInterval(() => setNow(Date.now()), 1000)
+        : undefined;
+    const ms = props.stockReady ? 10000 : 4000;
+    const ping = () => {
+      void touchServiceStockPresenceAction(
+        props.organizationId,
+        props.branchId,
+      ).finally(() => router.refresh());
     };
-  }, [view, router]);
+    ping();
+    const refresh = window.setInterval(ping, ms);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") ping();
+    };
+    window.addEventListener("focus", onVisible);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      if (tick) window.clearInterval(tick);
+      window.clearInterval(refresh);
+      window.removeEventListener("focus", onVisible);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [
+    view,
+    props.stockReady,
+    props.organizationId,
+    props.branchId,
+    router,
+  ]);
+
+  const prevStockReady = useRef(props.stockReady);
+  useEffect(() => {
+    if (!prevStockReady.current && props.stockReady) {
+      toast.success(
+        props.stockCanOperate
+          ? "Service stock ouvert."
+          : "Le caissier a ouvert le service stock — vous pouvez vendre.",
+      );
+    }
+    prevStockReady.current = props.stockReady;
+  }, [props.stockReady, props.stockCanOperate]);
 
   function applyMatchedStay(stay: ActiveStay) {
     setStayId(stay.id);
@@ -276,17 +328,19 @@ export function RestaurationClient(props: {
   }
 
   const suiviRows = useMemo(() => {
-    let rows = props.orders;
-    if (suiviFilter === "actives") {
-      rows = activeOrders;
-    } else if (suiviFilter === "livrer") {
-      rows = toDeliver;
-    }
-    return [...rows].sort(
-      (a, b) =>
-        (STATUS_RANK[a.status] ?? 99) - (STATUS_RANK[b.status] ?? 99),
-    );
-  }, [props.orders, suiviFilter, activeOrders, toDeliver]);
+    const rows = suiviFilter === "pret" ? pretOrders : enCoursOrders;
+    return [...rows].sort((a, b) => {
+      if (suiviFilter === "pret") {
+        const da = new Date(a.deliveredAt ?? a.updatedAt ?? a.createdAt ?? 0).getTime();
+        const db = new Date(b.deliveredAt ?? b.updatedAt ?? b.createdAt ?? 0).getTime();
+        return db - da;
+      }
+      const sa = new Date(a.sentAt ?? a.createdAt ?? 0).getTime();
+      const sb = new Date(b.sentAt ?? b.createdAt ?? 0).getTime();
+      if (sb !== sa) return sb - sa;
+      return (STATUS_RANK[a.status] ?? 99) - (STATUS_RANK[b.status] ?? 99);
+    });
+  }, [suiviFilter, pretOrders, enCoursOrders]);
 
   const selected = useMemo(
     () => props.orders.find((o) => o.id === selectedId) ?? null,
@@ -336,7 +390,7 @@ export function RestaurationClient(props: {
         setEditingOrderId(null);
         router.refresh();
         setView("suivi");
-        setSuiviFilter("actives");
+        setSuiviFilter("en_cours");
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Erreur");
       }
@@ -433,12 +487,12 @@ export function RestaurationClient(props: {
         });
         toast.success(
           onNote
-            ? "Livrée · imputée à la note de chambre"
+            ? "Prêt · imputée à la note de chambre"
             : fromKitchen
-              ? "Livrée — hors cuisine · encaissement en caisse"
+              ? "Prêt — hors cuisine · encaissement en caisse"
               : order?.status === "PAYEE"
-                ? "Livrée"
-                : "Livrée — reste à encaisser en caisse",
+                ? "Prêt"
+                : "Prêt — reste à encaisser en caisse",
         );
         setSelectedId(null);
         router.refresh();
@@ -448,7 +502,7 @@ export function RestaurationClient(props: {
     });
   }
 
-  const enCoursCount = activeOrders.length;
+  const enCoursCount = enCoursOrders.length;
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-5 px-3 py-5 sm:px-5 lg:px-6">
@@ -511,6 +565,20 @@ export function RestaurationClient(props: {
           </button>
         ))}
       </div>
+
+      {props.stockCanOperate && props.stockForeignSession ? (
+        <ServiceStockOpsPanel
+          organizationId={props.organizationId}
+          branchId={props.branchId}
+          branchName={props.branchName}
+          currentUserName={props.currentUserName}
+          rate={props.rate ?? null}
+          ready={false}
+          session={null}
+          foreignSession={props.stockForeignSession}
+          title="Service stock à clôturer"
+        />
+      ) : null}
 
       {view === "commande" ? (
         <PosTerminal
@@ -756,9 +824,8 @@ export function RestaurationClient(props: {
             <div className="flex gap-1 rounded-lg border border-border bg-muted/20 p-1">
               {(
                 [
-                  ["actives", `En cours (${activeOrders.length})`],
-                  ["livrer", `À livrer (${toDeliver.length})`],
-                  ["toutes", "Toutes"],
+                  ["en_cours", `En cours (${enCoursOrders.length})`],
+                  ["pret", `Prêt (${pretOrders.length})`],
                 ] as const
               ).map(([id, label]) => (
                 <button
@@ -782,23 +849,24 @@ export function RestaurationClient(props: {
             <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 px-6 py-16 text-center">
               <UtensilsCrossed className="mb-3 size-10 text-muted-foreground/50" />
               <p className="font-medium">
-                {suiviFilter === "livrer"
-                  ? "Aucune commande à livrer"
-                  : "Aucune commande pour le moment"}
+                {suiviFilter === "pret"
+                  ? "Aucune commande prête"
+                  : "Aucune commande en cours"}
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Les tickets envoyés apparaîtront ici avec le temps cuisine.
+                {suiviFilter === "pret"
+                  ? "Les commandes livrées à table s’afficheront ici."
+                  : "Les tickets lancés apparaîtront ici jusqu’à la livraison."}
               </p>
             </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {suiviRows.map((order) => {
-                const meta = STATUS_META[order.status] ?? {
-                  label: order.status,
-                  tone: "bg-muted text-muted-foreground",
-                };
+                const meta = waiterPhaseMeta(order);
+                const hint = kitchenHint(order.status);
                 const isCooking = order.status === "EN_PREPARATION";
-                const isDeliver = canDeliver(order.status) && !order.deliveredAt;
+                const isDeliver =
+                  canDeliver(order.status) && !isWaiterPret(order);
                 const cd = isCooking
                   ? prepCountdown(
                       order.estimatedMinutes,
@@ -858,13 +926,20 @@ export function RestaurationClient(props: {
                               meta.tone,
                             )}
                           >
-                            {isCooking ? (
+                            {isWaiterPret(order) ? (
+                              <CheckCircle2 className="size-3" />
+                            ) : isCooking ? (
                               <Flame className="size-3" />
-                            ) : isDeliver ? (
-                              <Truck className="size-3" />
-                            ) : null}
+                            ) : (
+                              <Clock3 className="size-3" />
+                            )}
                             {meta.label}
                           </span>
+                          {hint && !isWaiterPret(order) ? (
+                            <span className="text-[10px] font-medium text-muted-foreground">
+                              {hint}
+                            </span>
+                          ) : null}
                           {started ? (
                             <span className="inline-flex items-center gap-1 text-xs font-semibold tabular-nums text-muted-foreground">
                               <Clock3 className="size-3.5" />
@@ -959,7 +1034,7 @@ export function RestaurationClient(props: {
                             onClick={() => markDelivered(order.id)}
                           >
                             <CheckCircle2 className="size-4" />
-                            Livrer
+                            Prêt
                             {isCooking ? " (stop cuisine)" : ""}
                           </Button>
                         ) : null}
@@ -988,7 +1063,10 @@ export function RestaurationClient(props: {
                 </SheetTitle>
                 <SheetDescription>
                   Ticket #{selected.id.slice(0, 8)} ·{" "}
-                  {STATUS_META[selected.status]?.label ?? selected.status}
+                  {waiterPhaseMeta(selected).label}
+                  {kitchenHint(selected.status) && !isWaiterPret(selected)
+                    ? ` · ${kitchenHint(selected.status)}`
+                    : ""}
                   {isOnNote(selected) ? " · Sur note de chambre" : ""}
                   {selected.createdByName
                     ? ` · Serveur ${selected.createdByName}`
@@ -1130,7 +1208,7 @@ export function RestaurationClient(props: {
                       </Button>
                     </div>
                   ) : null}
-                  {canDeliver(selected.status) && !selected.deliveredAt ? (
+                  {canDeliver(selected.status) && !isWaiterPret(selected) ? (
                     <Button
                       size="lg"
                       className="w-full gap-2"
@@ -1138,7 +1216,7 @@ export function RestaurationClient(props: {
                       onClick={() => markDelivered(selected.id)}
                     >
                       <CheckCircle2 className="size-5" />
-                      Livrer
+                      Prêt
                       {selected.status === "ENVOYEE" ||
                       selected.status === "EN_PREPARATION"
                         ? " — retire de la cuisine"
@@ -1152,17 +1230,24 @@ export function RestaurationClient(props: {
         </SheetContent>
       </Sheet>
 
-      <ServiceStockOpsPanel
-        organizationId={props.organizationId}
-        branchId={props.branchId}
-        branchName={props.branchName}
-        currentUserName={props.currentUserName}
-        rate={props.rate ?? null}
-        ready={props.stockReady}
-        session={props.stockSession}
-        history={props.stockHistory}
-        title="Stats service & fermeture restaurant"
-      />
+      {props.stockCanOperate && !props.stockForeignSession ? (
+        <ServiceStockOpsPanel
+          organizationId={props.organizationId}
+          branchId={props.branchId}
+          branchName={props.branchName}
+          currentUserName={props.currentUserName}
+          rate={props.rate ?? null}
+          ready={props.stockReady}
+          session={props.stockSession}
+          liveSituation={props.liveSituation}
+          title="Stats service & fermeture restaurant"
+        />
+      ) : !props.stockCanOperate && props.stockReady && props.stockSession ? (
+        <p className="text-xs text-muted-foreground">
+          Stock service ouvert par {props.stockSession.vendorDisplayName} (
+          {props.stockSession.number}) — vous vendez sur ce float.
+        </p>
+      ) : null}
     </div>
   );
 }

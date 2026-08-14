@@ -474,7 +474,7 @@ export async function checkoutShopSaleAction(input: {
   amountForeign?: number;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
-  const cashSession = await getOpenCashSession(input.branchId);
+  const cashSession = await getOpenCashSession(input.branchId, user.id);
   if (!cashSession) throw new Error("Ouvrez une session de caisse d’abord.");
 
   const isAnonymous =

@@ -4,6 +4,7 @@ import { DASH_CARD } from "@/lib/branch/ops-roles";
 import { auth } from "@/lib/auth";
 import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
+  getLiveShiftSituationAction,
   getOpenServiceStockSessionAction,
   getPendingHandoverFloatAction,
   listBranchStaffForServiceStockAction,
@@ -14,10 +15,12 @@ import { ServiceStockClient } from "./service-stock-client";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
+  searchParams: Promise<{ ouvrir?: string }>;
 };
 
-export default async function ServiceStockPage({ params }: PageProps) {
+export default async function ServiceStockPage({ params, searchParams }: PageProps) {
   const { organizationId, branchId } = await params;
+  const { ouvrir } = await searchParams;
   const branch = await requireBranchContext({
     organizationId,
     branchId,
@@ -26,7 +29,7 @@ export default async function ServiceStockPage({ params }: PageProps) {
     requireDashCard: DASH_CARD.SERVICE_STOCK,
   });
   const sessionAuth = await auth.api.getSession({ headers: await headers() });
-  const [session, staff, depotItems, history, rate, pendingHandover] =
+  const [stockState, staff, depotItems, history, rate, pendingHandover, liveSituation] =
     await Promise.all([
       getOpenServiceStockSessionAction(organizationId, branchId),
       listBranchStaffForServiceStockAction(organizationId, branchId),
@@ -34,6 +37,7 @@ export default async function ServiceStockPage({ params }: PageProps) {
       listServiceStockSessionsAction(organizationId, branchId),
       getActiveExchangeRate(branchId),
       getPendingHandoverFloatAction(organizationId, branchId),
+      getLiveShiftSituationAction(organizationId, branchId),
     ]);
 
   return (
@@ -41,17 +45,22 @@ export default async function ServiceStockPage({ params }: PageProps) {
       organizationId={organizationId}
       branchId={branchId}
       branchName={branch.name}
-      session={session}
+      session={stockState.session}
+      foreignSession={stockState.foreignSession}
+      proposedFloat={stockState.proposedFloat}
       staff={staff}
       depotItems={depotItems}
       history={history}
+      liveSituation={liveSituation}
       pendingHandover={pendingHandover}
       rate={rate}
+      currentUserId={sessionAuth?.user?.id ?? ""}
       currentUserName={
         sessionAuth?.user?.name?.trim() ||
         sessionAuth?.user?.email ||
         "Manager"
       }
+      autoOpen={ouvrir === "1"}
     />
   );
 }

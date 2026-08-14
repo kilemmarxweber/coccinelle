@@ -1,5 +1,11 @@
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
-import { getOpenCashSession } from "@/lib/cash/actions";
+import { auth } from "@/lib/auth";
+import {
+  getForeignOpenCashSessions,
+  getOpenCashSession,
+} from "@/lib/cash/actions";
 import {
   listHeldSalesAction,
   listShopProductsAction,
@@ -17,11 +23,17 @@ export default async function BoutiquePosPage({ params }: PageProps) {
     branchId,
     requireModule: "boutique",
   });
-  const [products, heldSales, cashSession] = await Promise.all([
-    listShopProductsAction(organizationId, branchId, { activeOnly: true }),
-    listHeldSalesAction(organizationId, branchId),
-    getOpenCashSession(branchId),
-  ]);
+  const sessionAuth = await auth.api.getSession({ headers: await headers() });
+  const userId = sessionAuth?.user?.id;
+  if (!userId) redirect("/auth/sign-in");
+
+  const [products, heldSales, cashSession, foreignCashSessions] =
+    await Promise.all([
+      listShopProductsAction(organizationId, branchId, { activeOnly: true }),
+      listHeldSalesAction(organizationId, branchId),
+      getOpenCashSession(branchId, userId),
+      getForeignOpenCashSessions(branchId, userId),
+    ]);
   return (
     <BoutiquePosClient
       organizationId={organizationId}
@@ -30,6 +42,7 @@ export default async function BoutiquePosPage({ params }: PageProps) {
       products={products}
       heldSales={heldSales}
       cashSession={cashSession}
+      foreignCashSessions={foreignCashSessions}
     />
   );
 }

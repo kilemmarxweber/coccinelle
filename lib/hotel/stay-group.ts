@@ -146,7 +146,7 @@ export async function createStayGroupAction(input: {
   let exchangeRate: number | null = null;
   let foreignCurrency = "USD";
   if (depositUsd > 0.01) {
-    const cashSession = await getOpenCashSession(input.branchId);
+    const cashSession = await getOpenCashSession(input.branchId, user.id);
     if (!cashSession) {
       throw new Error("Ouvrez une session de caisse pour l’acompte dossier.");
     }
@@ -734,7 +734,7 @@ export async function recordStayGroupPaymentAction(input: {
       return { folioId: s.folio!.id, charges: Math.max(0, charges) };
     });
   if (!targets.length) throw new Error("Aucun folio actif sur ce dossier.");
-  const cashSession = await getOpenCashSession(input.branchId);
+  const cashSession = await getOpenCashSession(input.branchId, user.id);
   if (!cashSession) {
     throw new Error("Ouvrez une session de caisse.");
   }
@@ -862,7 +862,7 @@ export async function recordStayGroupRefundAction(input: {
     targets.push({ folioId: any.folio.id, paid: amount });
   }
 
-  const cashSession = await getOpenCashSession(input.branchId);
+  const cashSession = await getOpenCashSession(input.branchId, user.id);
   if (!cashSession) {
     throw new Error("Ouvrez une session de caisse pour rembourser.");
   }

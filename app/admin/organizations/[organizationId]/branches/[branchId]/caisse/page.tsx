@@ -8,6 +8,7 @@ import { boutiqueRoutes, hotelRoutes } from "@/lib/branch/paths";
 import { auth } from "@/lib/auth";
 import {
   getActiveExchangeRate,
+  getForeignOpenCashSessions,
   getOpenCashSession,
   getTodayPaymentsAction,
   listOpenFoliosAction,
@@ -19,8 +20,8 @@ import {
   listMenuItemsAction,
 } from "@/lib/hotel/actions";
 import {
+  getLiveShiftSituationAction,
   getServiceStockGateAction,
-  listServiceStockSessionsAction,
 } from "@/lib/hotel/service-stock";
 import { CaisseClient } from "./caisse-client";
 
@@ -56,9 +57,12 @@ export default async function BranchCaissePage({ params }: PageProps) {
   }
 
   const sessionAuth = await auth.api.getSession({ headers: await headers() });
+  const userId = sessionAuth?.user?.id;
+  if (!userId) redirect("/auth/sign-in");
 
   const [
     cashSession,
+    foreignCashSessions,
     rate,
     folios,
     readyOrders,
@@ -66,9 +70,10 @@ export default async function BranchCaissePage({ params }: PageProps) {
     menuItemsRaw,
     activeStays,
     stockGate,
-    stockHistory,
+    liveSituation,
   ] = await Promise.all([
-    getOpenCashSession(branchId),
+    getOpenCashSession(branchId, userId),
+    getForeignOpenCashSessions(branchId, userId),
     getActiveExchangeRate(branchId),
     hasStays
       ? listOpenFoliosAction(organizationId, branchId)
@@ -88,11 +93,13 @@ export default async function BranchCaissePage({ params }: PageProps) {
       : Promise.resolve({
           ready: true as const,
           session: null,
+          foreignSession: null,
+          proposedFloat: null,
           floatByItemId: {} as Record<string, number>,
         }),
     hasRestaurant
-      ? listServiceStockSessionsAction(organizationId, branchId)
-      : Promise.resolve([]),
+      ? getLiveShiftSituationAction(organizationId, branchId)
+      : Promise.resolve(null),
   ]);
 
   const menuItems = menuItemsRaw.map((item) => {
@@ -109,12 +116,21 @@ export default async function BranchCaissePage({ params }: PageProps) {
       {hasRestaurant && !stockGate.ready ? (
         <div className="mx-auto max-w-6xl px-4 pt-4">
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm">
-            Service stock non ouvert — vente rapide hors cuisine bloquée.{" "}
+            {stockGate.foreignSession ? (
+              <>
+                Service stock encore ouvert par{" "}
+                <strong>{stockGate.foreignSession.vendorDisplayName}</strong> (
+                {stockGate.foreignSession.number}) — clôturez-le ci-dessous puis
+                ouvrez le vôtre.{" "}
+              </>
+            ) : (
+              <>Service stock non ouvert — vente rapide hors cuisine bloquée. </>
+            )}
             <Link
               className="font-semibold underline underline-offset-2"
               href={hotelRoutes.serviceStock(organizationId, branchId)}
             >
-              Ouvrir le service stock
+              Service stock
             </Link>
           </div>
         </div>
@@ -124,6 +140,7 @@ export default async function BranchCaissePage({ params }: PageProps) {
         branchId={branchId}
         branchName={branch.name}
         cashSession={cashSession}
+        foreignCashSessions={foreignCashSessions}
         rate={rate}
         folios={folios}
         readyOrders={readyOrders}
@@ -139,7 +156,8 @@ export default async function BranchCaissePage({ params }: PageProps) {
         }
         stockReady={hasRestaurant ? stockGate.ready : false}
         stockSession={stockGate.session}
-        stockHistory={stockHistory}
+        stockForeignSession={stockGate.foreignSession}
+        liveSituation={liveSituation}
       />
     </Suspense>
   );

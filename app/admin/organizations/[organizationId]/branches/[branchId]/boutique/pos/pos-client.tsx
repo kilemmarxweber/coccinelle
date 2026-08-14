@@ -72,6 +72,13 @@ type Props = {
   products: ShopProductDto[];
   heldSales: HeldSale[];
   cashSession: CashSession;
+  foreignCashSessions?: {
+    id: string;
+    openedAt: Date | string;
+    openingFloat: number;
+    openedByUserId: string;
+    openedByName: string;
+  }[];
 };
 
 export function BoutiquePosClient(props: Props) {
@@ -341,6 +348,14 @@ export function BoutiquePosClient(props: Props) {
           </Button>
         </div>
       </div>
+
+      {(props.foreignCashSessions?.length ?? 0) > 0 ? (
+        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-sm">
+          Session caisse encore ouverte par{" "}
+          <strong>{props.foreignCashSessions![0]!.openedByName}</strong> —
+          ouvrez la vôtre pour encaisser (l’autre reste intacte).
+        </div>
+      ) : null}
 
       <div className="flex flex-wrap gap-1.5">
         {(["ALL", "ARTICLE", "PLAT"] as const).map((k) => (

@@ -48,6 +48,7 @@ import {
 import {
   closeCashSessionAction,
   createPaymentAction,
+  getCashierShiftReportAction,
   openCashSessionAction,
 } from "@/lib/cash/actions";
 import { createQuickSaleAction, advanceHotelOrderAction } from "@/lib/hotel/actions";
@@ -67,10 +68,14 @@ import {
 import { SearchCombobox } from "@/components/ui/search-combobox";
 import { cn } from "@/lib/utils";
 import {
+  buildCashierShiftReportHtml,
+  isNonSalesPaymentNote,
+} from "@/lib/cash/cashier-report";
+import {
   ServiceStockOpsPanel,
-  type ServiceStockOpsHistoryRow,
   type ServiceStockOpsSession,
 } from "@/components/hotel/service-stock-ops-panel";
+import type { LiveShiftSituation } from "@/lib/hotel/service-stock";
 
 type FolioRow = {
   id: string;
@@ -143,6 +148,13 @@ type Props = {
   branchId: string;
   branchName: string;
   cashSession: { id: string; openedAt: string | Date; openingFloat: number } | null;
+  foreignCashSessions?: {
+    id: string;
+    openedAt: string | Date;
+    openingFloat: number;
+    openedByUserId: string;
+    openedByName: string;
+  }[];
   rate: {
     rate: number;
     fromCurrency: string;
@@ -161,7 +173,8 @@ type Props = {
   currentUserName?: string;
   stockReady?: boolean;
   stockSession?: ServiceStockOpsSession | null;
-  stockHistory?: ServiceStockOpsHistoryRow[];
+  stockForeignSession?: ServiceStockOpsSession | null;
+  liveSituation?: LiveShiftSituation | null;
 };
 
 type HubTab = "fnb" | "vente" | "folios" | "paiements";
@@ -185,6 +198,31 @@ function elapsedLabel(from: string | Date | null | undefined, now: number | null
   if (mins < 1) return "< 1 min";
   if (mins < 60) return `${mins} min`;
   return `${Math.floor(mins / 60)} h ${mins % 60} min`;
+}
+
+function printHtml(html: string) {
+  const iframe = document.createElement("iframe");
+  iframe.setAttribute("aria-hidden", "true");
+  iframe.style.cssText =
+    "position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0;pointer-events:none";
+  document.body.appendChild(iframe);
+  const doc = iframe.contentDocument ?? iframe.contentWindow?.document;
+  if (!doc) {
+    iframe.remove();
+    toast.error("Impression impossible.");
+    return;
+  }
+  doc.open();
+  doc.write(html);
+  doc.close();
+  window.setTimeout(() => {
+    try {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+    } finally {
+      window.setTimeout(() => iframe.remove(), 1000);
+    }
+  }, 200);
 }
 
 function defaultHubTab(hasStays: boolean, hasRestaurant: boolean): HubTab {
@@ -314,12 +352,7 @@ export function CaisseClient(props: Props) {
   const caJour = useMemo(() => {
     return props.todayPayments.reduce(
       (acc, p) => {
-        const note = (p.note ?? "").toLowerCase();
-        // Caution / remboursement caution ≠ CA ventes
-        if (
-          note.includes("caution consommation") ||
-          note.startsWith("remboursement caution")
-        ) {
+        if (isNonSalesPaymentNote(p.note)) {
           return acc;
         }
         if (p.amountForeign != null && p.amountForeign !== 0) {
@@ -409,12 +442,43 @@ export function CaisseClient(props: Props) {
   function closeSession() {
     start(async () => {
       try {
+        const report = await getCashierShiftReportAction(
+          props.organizationId,
+          props.branchId,
+        );
         await closeCashSessionAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
         });
-        toast.success("Caisse clôturée");
+        printHtml(
+          buildCashierShiftReportHtml({
+            ...report,
+            closedAt: new Date(),
+            formatMoney: (n) => fmt(n),
+          }),
+        );
+        toast.success("Caisse clôturée — rapport journalier envoyé à l’impression");
         router.refresh();
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Erreur");
+      }
+    });
+  }
+
+  function printShiftReport() {
+    start(async () => {
+      try {
+        const report = await getCashierShiftReportAction(
+          props.organizationId,
+          props.branchId,
+        );
+        printHtml(
+          buildCashierShiftReportHtml({
+            ...report,
+            closedAt: new Date(),
+            formatMoney: (n) => fmt(n),
+          }),
+        );
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Erreur");
       }
@@ -719,7 +783,7 @@ export function CaisseClient(props: Props) {
       tone: "text-foreground",
     },
     {
-      label: "CA du jour",
+      label: "CA de ma session",
       value: isCdfPrimary(moneyRate)
         ? `${caJour.cdf.toLocaleString("fr-FR", {
             maximumFractionDigits: 0,
@@ -764,6 +828,15 @@ export function CaisseClient(props: Props) {
                 Session ouverte · fond {props.cashSession.openingFloat}
               </Badge>
               <Button
+                variant="outline"
+                size="sm"
+                disabled={pending}
+                onClick={printShiftReport}
+              >
+                <Printer className="mr-1.5 size-3.5" />
+                Rapport
+              </Button>
+              <Button
                 variant="destructive"
                 size="sm"
                 disabled={pending}
@@ -785,6 +858,39 @@ export function CaisseClient(props: Props) {
         </div>
       </header>
 
+      {(props.foreignCashSessions?.length ?? 0) > 0 ? (
+        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm">
+          {props.foreignCashSessions!.length === 1 ? (
+            <>
+              Session de caisse encore ouverte par{" "}
+              <strong>{props.foreignCashSessions![0]!.openedByName}</strong> —
+              son état est conservé. Vous devez ouvrir <em>votre</em> propre
+              session pour encaisser.
+            </>
+          ) : (
+            <>
+              {props.foreignCashSessions!.length} autres sessions de caisse
+              encore ouvertes (oubli de clôture) — elles restent à leurs
+              caissiers. Ouvrez la vôtre pour travailler.
+            </>
+          )}
+        </div>
+      ) : null}
+
+      {hasRestaurant && props.stockForeignSession ? (
+        <ServiceStockOpsPanel
+          organizationId={props.organizationId}
+          branchId={props.branchId}
+          branchName={props.branchName}
+          currentUserName={props.currentUserName ?? "Manager"}
+          rate={props.rate}
+          ready={false}
+          session={null}
+          foreignSession={props.stockForeignSession}
+          title="Service stock à clôturer"
+        />
+      ) : null}
+
       <Dialog
         open={sessionDialogOpen && !props.cashSession}
         onOpenChange={(open) => {
@@ -796,7 +902,8 @@ export function CaisseClient(props: Props) {
             <DialogTitle>Ouvrir la session de caisse</DialogTitle>
             <DialogDescription>
               Indiquez le fond d’ouverture (0 ou autre montant) avant
-              d’encaisser.
+              d’encaisser. Votre CA, notes chambre et F&B partent de zéro —
+              les mouvements d’un autre caissier restent les siens.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-2 py-2">
@@ -1533,7 +1640,7 @@ export function CaisseClient(props: Props) {
               emptyText={
                 checkoutQueue.length > 0
                   ? "Aucune autre note ouverte."
-                  : "Aucune note ouverte avec solde."
+                  : "Aucune note sur votre session."
               }
               mobileCardTitle={(row) => folioLabel(row)}
               mobileCardSubtitle={(row) =>
@@ -1557,11 +1664,11 @@ export function CaisseClient(props: Props) {
 
       {tab === "paiements" ? (
         <section className="space-y-4 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
-          <h2 className="font-semibold">Paiements du jour</h2>
+          <h2 className="font-semibold">Paiements de ma session</h2>
           <ResponsiveDataTable
             columns={paymentColumns}
             data={props.todayPayments}
-            emptyText="Aucun paiement aujourd’hui."
+            emptyText="Aucun paiement sur votre session."
             mobileCardTitle={(row) => row.receiptNumber}
             mobileCardSubtitle={(row) => {
               const usd =
@@ -1700,7 +1807,7 @@ export function CaisseClient(props: Props) {
         </DialogContent>
       </Dialog>
 
-      {hasRestaurant ? (
+      {hasRestaurant && !props.stockForeignSession ? (
         <ServiceStockOpsPanel
           organizationId={props.organizationId}
           branchId={props.branchId}
@@ -1709,7 +1816,8 @@ export function CaisseClient(props: Props) {
           rate={props.rate}
           ready={Boolean(props.stockReady)}
           session={props.stockSession ?? null}
-          history={props.stockHistory ?? []}
+          foreignSession={props.stockForeignSession ?? null}
+          liveSituation={props.liveSituation}
           title="Stats service & fermeture (vente rapide)"
         />
       ) : null}

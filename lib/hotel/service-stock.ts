@@ -6,6 +6,12 @@ import { auth } from "@/lib/auth";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { assertHospitalityModule } from "@/lib/branch/hospitality";
 import { branchBasePath, hotelRoutes } from "@/lib/branch/paths";
+import {
+  canOperateServiceStock,
+  normalizeOpsRole,
+  OPS_ROLE,
+} from "@/lib/branch/ops-roles";
+import { resolveCurrentBranchOpsRole } from "@/lib/branch/resolve-ops-role";
 import prisma from "@/lib/prisma";
 import type { Prisma } from "@/prisma/generated/prisma/client";
 
@@ -32,11 +38,11 @@ async function ctx(organizationId: string, branchId: string) {
 
 function revalidateServiceStock(organizationId: string, branchId: string) {
   const base = branchBasePath(organizationId, branchId);
-  revalidatePath(base);
-  revalidatePath(hotelRoutes.serviceStock(organizationId, branchId));
-  revalidatePath(hotelRoutes.restauration(organizationId, branchId));
-  revalidatePath(hotelRoutes.produits(organizationId, branchId));
-  revalidatePath(`${base}/caisse`);
+  revalidatePath(base, "layout");
+  revalidatePath(hotelRoutes.serviceStock(organizationId, branchId), "page");
+  revalidatePath(hotelRoutes.restauration(organizationId, branchId), "page");
+  revalidatePath(hotelRoutes.produits(organizationId, branchId), "page");
+  revalidatePath(`${base}/caisse`, "page");
 }
 
 async function nextSessionNumber(branchId: string) {
@@ -100,45 +106,87 @@ export async function getOpenServiceStockSessionAction(
   organizationId: string,
   branchId: string,
 ) {
-  await ctx(organizationId, branchId);
-  return prisma.serviceStockSession.findFirst({
+  const { user } = await ctx(organizationId, branchId);
+  const include = {
+    lines: {
+      include: {
+        menuItem: {
+          select: {
+            id: true,
+            name: true,
+            category: true,
+            price: true,
+            stockQty: true,
+            storageZone: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "asc" as const },
+    },
+    topUps: {
+      orderBy: { createdAt: "desc" as const },
+      take: 50,
+    },
+  };
+
+  const active = await prisma.serviceStockSession.findFirst({
     where: {
       branchId,
       status: { in: ["DRAFT", "OPEN", "CLOSING"] },
     },
-    include: {
-      lines: {
-        include: {
-          menuItem: {
-            select: {
-              id: true,
-              name: true,
-              category: true,
-              price: true,
-              stockQty: true,
-              storageZone: true,
-            },
-          },
-        },
-        orderBy: { createdAt: "asc" },
-      },
-      topUps: {
-        orderBy: { createdAt: "desc" },
-        take: 50,
-      },
-    },
+    include,
     orderBy: { openedAt: "desc" },
   });
+
+  if (!active) {
+    return { session: null, foreignSession: null, proposedFloat: null };
+  }
+
+  const isMine =
+    active.vendorUserId === user.id || active.openedByUserId === user.id;
+
+  if (isMine) {
+    return { session: active, foreignSession: null, proposedFloat: null };
+  }
+
+  const proposedFloat = active.lines
+    .map((l) => ({
+      menuItemId: l.menuItemId,
+      name: l.menuItem.name,
+      quantity: remainingFloat(l),
+      unitPriceUsd: l.unitPriceUsd,
+      sourceZone: l.sourceZone,
+      storageZone: l.menuItem.storageZone,
+    }))
+    .filter((l) => l.quantity > 0);
+
+  return {
+    /** Pas la vôtre — ne pas opérer (réassort / ventes) ; clôture transmission possible. */
+    session: null,
+    foreignSession: active,
+    proposedFloat:
+      proposedFloat.length > 0
+        ? {
+            sessionId: active.id,
+            number: active.number,
+            vendorDisplayName: active.vendorDisplayName,
+            lines: proposedFloat,
+          }
+        : null,
+  };
 }
 
-/** Snapshot float pour POS / resto (gate + stock restant). */
+/** Snapshot float pour POS / resto (gate + stock restant) — session de l’utilisateur. */
 export async function getServiceStockGateAction(
   organizationId: string,
   branchId: string,
 ) {
-  await ctx(organizationId, branchId);
+  const { user } = await ctx(organizationId, branchId);
   const session = await prisma.serviceStockSession.findFirst({
-    where: { branchId, status: "OPEN", openingConfirmedAt: { not: null } },
+    where: {
+      branchId,
+      status: { in: ["DRAFT", "OPEN", "CLOSING"] },
+    },
     include: {
       lines: {
         select: {
@@ -163,24 +211,349 @@ export async function getServiceStockGateAction(
     return {
       ready: false as const,
       session: null,
+      foreignSession: null,
+      proposedFloat: null,
       floatByItemId: {} as Record<string, number>,
     };
   }
+
+  const isMine =
+    session.vendorUserId === user.id || session.openedByUserId === user.id;
+
+  const proposedLines = session.lines
+    .map((l) => ({
+      menuItemId: l.menuItemId,
+      name: l.menuItem.name,
+      quantity: remainingFloat(l),
+      unitPriceUsd: l.unitPriceUsd,
+    }))
+    .filter((l) => l.quantity > 0);
+
+  const sessionSnapshot = {
+    id: session.id,
+    number: session.number,
+    vendorDisplayName: session.vendorDisplayName,
+    openedAt: session.openedAt,
+    openingConfirmedAt: session.openingConfirmedAt,
+    lines: session.lines,
+  };
+
+  const confirmed = Boolean(session.openingConfirmedAt) && session.status === "OPEN";
+  const opsRole = await resolveCurrentBranchOpsRole(organizationId, branchId);
+  const operator = canOperateServiceStock(opsRole);
+
   const floatByItemId: Record<string, number> = {};
-  for (const line of session.lines) {
-    floatByItemId[line.menuItemId] = remainingFloat(line);
+  if (confirmed) {
+    for (const line of session.lines) {
+      floatByItemId[line.menuItemId] = remainingFloat(line);
+    }
   }
+
+  /** Serveur : utilise le float ouvert par le caissier, sans clôturer ni ouvrir. */
+  if (!operator) {
+    return {
+      ready: confirmed,
+      session: confirmed ? sessionSnapshot : null,
+      foreignSession: null,
+      proposedFloat: null,
+      floatByItemId: confirmed ? floatByItemId : {},
+    };
+  }
+
+  if (!isMine) {
+    return {
+      ready: false as const,
+      session: null,
+      foreignSession: sessionSnapshot,
+      proposedFloat: {
+        number: session.number,
+        vendorDisplayName: session.vendorDisplayName,
+        lines: proposedLines,
+      },
+      floatByItemId: {} as Record<string, number>,
+    };
+  }
+
   return {
-    ready: true as const,
-    session: {
-      id: session.id,
-      number: session.number,
-      vendorDisplayName: session.vendorDisplayName,
-      openedAt: session.openedAt,
-      openingConfirmedAt: session.openingConfirmedAt,
-      lines: session.lines,
-    },
+    ready: confirmed as true | false,
+    session: confirmed ? sessionSnapshot : null,
+    foreignSession: null,
+    proposedFloat: null,
     floatByItemId,
+  };
+}
+
+export type LiveShiftSituation = {
+  cashOpen: boolean;
+  stockOpen: boolean;
+  /** Au moins un serveur en ligne (session auth récente). */
+  waitersConnected: boolean;
+  cashierName: string | null;
+  sessionNumber: string | null;
+  vendorName: string | null;
+  toRecoverUsd: number;
+  soldUsd: number;
+  recoverRate: number;
+  waiters: {
+    userId: string;
+    name: string;
+    connected: boolean;
+    qtySold: number;
+    amountUsd: number;
+  }[];
+  products: {
+    name: string;
+    attributed: number;
+    sold: number;
+    amountUsd: number;
+  }[];
+};
+
+const PRESENCE_TTL_MS = 25_000;
+
+function emptyLiveShift(partial?: Partial<LiveShiftSituation>): LiveShiftSituation {
+  return {
+    cashOpen: false,
+    stockOpen: false,
+    waitersConnected: false,
+    cashierName: null,
+    sessionNumber: null,
+    vendorName: null,
+    toRecoverUsd: 0,
+    soldUsd: 0,
+    recoverRate: 0,
+    waiters: [],
+    products: [],
+    ...partial,
+  };
+}
+
+/** Heartbeat serveur : maintient OPEN tant qu’il est sur restauration. */
+export async function touchServiceStockPresenceAction(
+  organizationId: string,
+  branchId: string,
+) {
+  const { user } = await ctx(organizationId, branchId);
+  const now = new Date();
+  await prisma.session.updateMany({
+    where: { userId: user.id, expiresAt: { gt: now } },
+    data: { updatedAt: now },
+  });
+}
+
+/**
+ * Situation live : serveurs connectés (ou ayant vendu) sur la caisse ouverte
+ * du caissier qui a ouvert le service stock. Clôture caisse → liste vide.
+ */
+export async function getLiveShiftSituationAction(
+  organizationId: string,
+  branchId: string,
+): Promise<LiveShiftSituation> {
+  await ctx(organizationId, branchId);
+
+  const stock = await prisma.serviceStockSession.findFirst({
+    where: {
+      branchId,
+      status: { in: ["DRAFT", "OPEN", "CLOSING"] },
+    },
+    include: {
+      lines: {
+        include: { menuItem: { select: { name: true } } },
+        orderBy: { createdAt: "asc" },
+      },
+    },
+    orderBy: { openedAt: "desc" },
+  });
+  if (!stock) return emptyLiveShift();
+
+  const cashier = await prisma.user.findUnique({
+    where: { id: stock.openedByUserId },
+    select: { name: true, email: true },
+  });
+  const cashierName =
+    cashier?.name?.trim() ||
+    cashier?.email ||
+    stock.vendorDisplayName;
+
+  const cash = await prisma.cashSession.findFirst({
+    where: {
+      branchId,
+      status: "OPEN",
+      openedByUserId: stock.openedByUserId,
+    },
+    orderBy: { openedAt: "desc" },
+  });
+  if (!cash) {
+    return emptyLiveShift({ stockOpen: true, cashierName });
+  }
+
+  const since =
+    cash.openedAt > stock.openedAt ? cash.openedAt : stock.openedAt;
+
+  const members = await prisma.branchMember.findMany({
+    where: { branchId, status: "ACTIVE" },
+    include: {
+      member: {
+        include: {
+          user: { select: { id: true, name: true, email: true } },
+        },
+      },
+    },
+  });
+  const waiterById = new Map<string, { name: string }>();
+  for (const row of members) {
+    if (normalizeOpsRole(row.role) !== OPS_ROLE.SERVEUR) continue;
+    const u = row.member.user;
+    waiterById.set(u.id, {
+      name: u.name?.trim() || u.email || "Serveur",
+    });
+  }
+
+  const now = new Date();
+  const cutoff = new Date(now.getTime() - PRESENCE_TTL_MS);
+  const waiterIdsForPresence = [...waiterById.keys()];
+  const sessions =
+    waiterIdsForPresence.length > 0
+      ? await prisma.session.findMany({
+          where: {
+            expiresAt: { gt: now },
+            userId: { in: waiterIdsForPresence },
+          },
+          select: { userId: true, updatedAt: true },
+        })
+      : [];
+  const loggedInIds = new Set(sessions.map((s) => s.userId));
+  const connectedIds = new Set(
+    sessions
+      .filter((s) => s.updatedAt >= cutoff)
+      .map((s) => s.userId),
+  );
+  const waitersConnected = connectedIds.size > 0;
+
+  const orders = await prisma.hotelOrder.findMany({
+    where: {
+      branchId,
+      status: { notIn: ["ANNULEE", "BROUILLON"] },
+      OR: [
+        { sentAt: { gte: since } },
+        { AND: [{ sentAt: null }, { createdAt: { gte: since } }] },
+      ],
+    },
+    select: {
+      createdByUserId: true,
+      items: {
+        select: {
+          name: true,
+          quantity: true,
+          amount: true,
+          needsKitchen: true,
+          menuItemId: true,
+        },
+      },
+    },
+  });
+
+  const soldByUser = new Map<string, { qty: number; amountUsd: number }>();
+  const soldByProduct = new Map<string, { qty: number; amountUsd: number }>();
+  const attributedByName = new Map(
+    stock.lines.map((l) => [l.menuItem.name, l.qtyAttributed]),
+  );
+
+  for (const order of orders) {
+    const isWaiter = waiterById.has(order.createdByUserId);
+    const isCashier = order.createdByUserId === stock.openedByUserId;
+    if (!isWaiter && !isCashier) continue;
+    for (const item of order.items) {
+      if (item.needsKitchen) continue;
+      const qty = Math.max(0, item.quantity);
+      const amount = Number(item.amount) || 0;
+      const cur = soldByUser.get(order.createdByUserId) ?? {
+        qty: 0,
+        amountUsd: 0,
+      };
+      cur.qty += qty;
+      cur.amountUsd += amount;
+      soldByUser.set(order.createdByUserId, cur);
+      const pname = item.name;
+      const p = soldByProduct.get(pname) ?? { qty: 0, amountUsd: 0 };
+      p.qty += qty;
+      p.amountUsd += amount;
+      soldByProduct.set(pname, p);
+    }
+  }
+
+  const waiterIds = new Set<string>([
+    ...connectedIds,
+    ...loggedInIds,
+    ...[...soldByUser.keys()].filter((id) => waiterById.has(id)),
+  ]);
+
+  const waiters = [...waiterIds]
+    .map((userId) => {
+      const sold = soldByUser.get(userId) ?? { qty: 0, amountUsd: 0 };
+      return {
+        userId,
+        name: waiterById.get(userId)?.name ?? "Serveur",
+        connected: connectedIds.has(userId),
+        qtySold: sold.qty,
+        amountUsd: Math.round(sold.amountUsd * 100) / 100,
+      };
+    })
+    .sort((a, b) => b.amountUsd - a.amountUsd || a.name.localeCompare(b.name, "fr"));
+
+  const cashierSold = soldByUser.get(stock.openedByUserId);
+  if (cashierSold && cashierSold.qty > 0) {
+    waiters.unshift({
+      userId: stock.openedByUserId,
+      name: `${cashierName} (caisse)`,
+      connected: connectedIds.has(stock.openedByUserId),
+      qtySold: cashierSold.qty,
+      amountUsd: Math.round(cashierSold.amountUsd * 100) / 100,
+    });
+  }
+
+  const productNames = new Set([
+    ...stock.lines.map((l) => l.menuItem.name),
+    ...soldByProduct.keys(),
+  ]);
+  const products = [...productNames].map((name) => {
+    const sold = soldByProduct.get(name) ?? { qty: 0, amountUsd: 0 };
+    return {
+      name,
+      attributed: attributedByName.get(name) ?? 0,
+      sold: sold.qty,
+      amountUsd: Math.round(sold.amountUsd * 100) / 100,
+    };
+  });
+
+  const soldUsd =
+    Math.round(
+      products.reduce((s, p) => s + p.amountUsd, 0) * 100,
+    ) / 100;
+  let toRecoverUsd = 0;
+  for (const l of stock.lines) {
+    const qty =
+      l.qtyOpeningCounted != null ? l.qtyOpeningCounted : l.qtyAttributed;
+    toRecoverUsd += Math.max(0, qty) * l.unitPriceUsd;
+  }
+  toRecoverUsd = Math.round(toRecoverUsd * 100) / 100;
+  const recoverRate =
+    toRecoverUsd > 0.0001
+      ? Math.round((soldUsd / toRecoverUsd) * 1000) / 10
+      : 0;
+
+  return {
+    cashOpen: true,
+    stockOpen: true,
+    waitersConnected,
+    cashierName,
+    sessionNumber: stock.number,
+    vendorName: stock.vendorDisplayName,
+    toRecoverUsd,
+    soldUsd,
+    recoverRate,
+    waiters,
+    products,
   };
 }
 
@@ -190,7 +563,7 @@ export async function listServiceStockSessionsAction(
 ) {
   await ctx(organizationId, branchId);
   return prisma.serviceStockSession.findMany({
-    where: { branchId },
+    where: { branchId, status: "CLOSED" },
     orderBy: { openedAt: "desc" },
     take: 30,
     include: {
@@ -285,7 +658,7 @@ export async function openServiceStockSessionAction(input: {
   });
   if (open) {
     throw new Error(
-      `Une session stock est déjà active (${open.number}). Clôturez-la d’abord.`,
+      `Session stock encore ouverte (${open.number} · ${open.vendorDisplayName}). Elle reste à cet entrant jusqu’à clôture — clôturez-la (transmission), puis ouvrez la vôtre.`,
     );
   }
 
@@ -505,6 +878,14 @@ export async function confirmServiceStockOpeningAction(input: {
     include: { lines: true },
   });
   if (!session) throw new Error("Session introuvable.");
+  if (
+    session.vendorUserId !== user.id &&
+    session.openedByUserId !== user.id
+  ) {
+    throw new Error(
+      "Cette session stock appartient à un autre entrant. Clôturez-la en transmission si besoin, puis ouvrez la vôtre.",
+    );
+  }
   if (session.openingConfirmedAt && session.status === "OPEN") {
     throw new Error("État des lieux déjà confirmé.");
   }
@@ -578,6 +959,14 @@ export async function topUpServiceStockAction(input: {
     },
   });
   if (!session) throw new Error("Session ouverte requise.");
+  if (
+    session.vendorUserId !== user.id &&
+    session.openedByUserId !== user.id
+  ) {
+    throw new Error(
+      "Réassort réservé à l’entrant / ouvreur de cette session stock.",
+    );
+  }
 
   const item = await prisma.hotelMenuItem.findFirst({
     where: {
@@ -676,8 +1065,7 @@ export async function closeServiceStockSessionAction(input: {
     where: {
       id: input.sessionId,
       branchId: input.branchId,
-      status: "OPEN",
-      openingConfirmedAt: { not: null },
+      status: { in: ["DRAFT", "OPEN", "CLOSING"] },
     },
     include: { lines: { include: { menuItem: true } } },
   });
@@ -761,6 +1149,7 @@ export async function consumeServiceFloatInTx(
   tx: Prisma.TransactionClient,
   branchId: string,
   lines: { menuItemId: string; quantity: number }[],
+  _userId?: string,
 ) {
   const session = await tx.serviceStockSession.findFirst({
     where: {
@@ -780,7 +1169,7 @@ export async function consumeServiceFloatInTx(
   });
   if (!session) {
     throw new Error(
-      "Ouvrez et confirmez le service stock (état des lieux) avant de vendre hors cuisine.",
+      "Le caissier doit ouvrir et confirmer le service stock avant de vendre hors cuisine.",
     );
   }
 
@@ -805,7 +1194,7 @@ export async function consumeServiceFloatInTx(
     const rem = remainingFloat(fl);
     if (rem < qty) {
       throw new Error(
-        `Float insuffisant pour « ${fl.menuItem.name} » (restant ${rem}). Demandez un réassort.`,
+        `Float insuffisant pour « ${fl.menuItem.name} » (restant ${rem}). Demandez un réassort au caissier.`,
       );
     }
   }

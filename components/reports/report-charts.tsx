@@ -57,19 +57,24 @@ export function DualBarChart(props: {
   data: { day: string; entrees: number; sorties: number }[];
   entreesLabel?: string;
   sortiesLabel?: string;
+  /** Libellés catégories (produits) — ne pas formater comme des dates. */
+  categoryLabels?: boolean;
 }) {
+  const formatLabel = props.categoryLabels
+    ? (label: string) => label
+    : shortDay;
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={props.data}>
         <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
         <XAxis
           dataKey="day"
-          tickFormatter={shortDay}
+          tickFormatter={formatLabel}
           tick={{ fontSize: 11 }}
           minTickGap={24}
         />
         <YAxis tick={{ fontSize: 11 }} width={40} />
-        <Tooltip labelFormatter={(l) => shortDay(String(l))} />
+        <Tooltip labelFormatter={(l) => formatLabel(String(l))} />
         <Legend />
         <Bar
           dataKey="entrees"

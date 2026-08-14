@@ -51,6 +51,12 @@ export const updateOrgMemberSchema = z.object({
   branchIds: z
     .array(z.string().min(1))
     .min(1, "Sélectionnez au moins une branche."),
+  phone: z
+    .string()
+    .trim()
+    .max(30, "Téléphone trop long.")
+    .optional()
+    .or(z.literal("")),
 });
 
 export const removeOrgMemberSchema = z.object({

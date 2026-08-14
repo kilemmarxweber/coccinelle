@@ -151,7 +151,7 @@ async function createCashMovement(input: {
   expenseId?: string;
   method?: "CASH" | "MOBILE_MONEY" | "CARTE" | "BANK";
 }) {
-  const cashSession = await getOpenCashSession(input.branchId);
+  const cashSession = await getOpenCashSession(input.branchId, input.userId);
   if (!cashSession) {
     throw new Error("Ouvrez une session de caisse pour enregistrer la sortie.");
   }

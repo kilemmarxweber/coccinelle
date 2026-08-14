@@ -4,20 +4,23 @@ import { headers } from "next/headers";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { canAccessStays } from "@/lib/branch/hospitality";
 import { hotelRoutes } from "@/lib/branch/paths";
-import { DASH_CARD } from "@/lib/branch/ops-roles";
+import { DASH_CARD, canOperateServiceStock } from "@/lib/branch/ops-roles";
+import { resolveCurrentBranchOpsRole } from "@/lib/branch/resolve-ops-role";
 import { auth } from "@/lib/auth";
 import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
   ensureHotelMenuSeedAction,
   listActiveStaysForChargeAction,
   listMenuItemsAction,
-  listOrdersByStatusAction,
+  listRestaurationSuiviAction,
 } from "@/lib/hotel/actions";
 import {
+  getLiveShiftSituationAction,
   getServiceStockGateAction,
-  listServiceStockSessionsAction,
 } from "@/lib/hotel/service-stock";
 import { RestaurationClient } from "./restauration-client";
+
+export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
@@ -40,23 +43,18 @@ export default async function RestaurationPage({
   await ensureHotelMenuSeedAction(organizationId, branchId);
   const hasStays = canAccessStays(branch);
   const sessionAuth = await auth.api.getSession({ headers: await headers() });
-  const [menuItemsRaw, orders, rate, activeStays, stockGate, stockHistory] =
+  const opsRole = await resolveCurrentBranchOpsRole(organizationId, branchId);
+  const stockCanOperate = canOperateServiceStock(opsRole);
+  const [menuItemsRaw, orders, rate, activeStays, stockGate, liveSituation] =
     await Promise.all([
       listMenuItemsAction(organizationId, branchId),
-      listOrdersByStatusAction(organizationId, branchId, [
-        "ENVOYEE",
-        "EN_PREPARATION",
-        "PRETE",
-        "EN_CAISSE",
-        "PAYEE",
-        "LIVREE",
-      ]),
+      listRestaurationSuiviAction(organizationId, branchId),
       getActiveExchangeRate(branchId),
       hasStays
         ? listActiveStaysForChargeAction(organizationId, branchId)
         : Promise.resolve([]),
       getServiceStockGateAction(organizationId, branchId),
-      listServiceStockSessionsAction(organizationId, branchId),
+      getLiveShiftSituationAction(organizationId, branchId),
     ]);
 
   const menuItems = menuItemsRaw.map((item) => {
@@ -73,24 +71,30 @@ export default async function RestaurationPage({
       {!stockGate.ready ? (
         <div className="mx-auto max-w-6xl px-4 pt-4">
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm">
-            Service stock non ouvert — les produits hors cuisine sont bloqués.{" "}
-            <Link
-              className="font-semibold underline underline-offset-2"
-              href={hotelRoutes.serviceStock(organizationId, branchId)}
-            >
-              Ouvrir le service stock
-            </Link>
+            {stockGate.foreignSession && stockCanOperate ? (
+              <>
+                Service stock encore ouvert par{" "}
+                <strong>{stockGate.foreignSession.vendorDisplayName}</strong> (
+                {stockGate.foreignSession.number}) — clôturez-le ci-dessous puis
+                ouvrez le vôtre.{" "}
+              </>
+            ) : (
+              <>
+                Service stock non ouvert par le caissier — les produits hors
+                cuisine sont bloqués.{" "}
+              </>
+            )}
+            {stockCanOperate ? (
+              <Link
+                className="font-semibold underline underline-offset-2"
+                href={hotelRoutes.serviceStock(organizationId, branchId)}
+              >
+                Service stock
+              </Link>
+            ) : null}
           </div>
         </div>
-      )
-      // : (
-      //   <div className="mx-auto max-w-6xl px-4 pt-4">
-      //     <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/5 px-4 py-2 text-xs text-muted-foreground">
-      //       Float service {stockGate.session?.number} · entrant{" "}
-      //       {stockGate.session?.vendorDisplayName}
-      //     </div>
-      //   </div>)
-      : null}
+      ) : null}
       <RestaurationClient
         organizationId={organizationId}
         branchId={branchId}
@@ -108,7 +112,9 @@ export default async function RestaurationPage({
         }
         stockReady={stockGate.ready}
         stockSession={stockGate.session}
-        stockHistory={stockHistory}
+        stockForeignSession={stockCanOperate ? stockGate.foreignSession : null}
+        liveSituation={liveSituation}
+        stockCanOperate={stockCanOperate}
       />
     </Suspense>
   );

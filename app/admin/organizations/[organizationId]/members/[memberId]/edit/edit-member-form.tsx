@@ -16,9 +16,11 @@ import {
 } from "@/lib/branch/ops-roles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import {
+  getOrganizationMemberContactAction,
   listOrganizationMemberBranchesAction,
   removeOrganizationMemberAction,
   resetOrganizationMemberPasswordAction,
@@ -44,6 +46,7 @@ export function EditMemberForm({ organizationId, memberId, branches }: Props) {
   const [member, setMember] = useState<MemberRow | null | undefined>(undefined);
   const [role, setRole] = useState<string>(ORG_ROLE.PARENT);
   const [opsRole, setOpsRole] = useState<string>(OPS_ROLE.GERANT);
+  const [phone, setPhone] = useState("");
   const [branchIds, setBranchIds] = useState<string[]>([]);
   const [branchError, setBranchError] = useState<string | undefined>();
   const [pending, startTransition] = useTransition();
@@ -52,11 +55,12 @@ export function EditMemberForm({ organizationId, memberId, branches }: Props) {
 
   const load = useCallback(async () => {
     try {
-      const [res, branchesRes] = await Promise.all([
+      const [res, branchesRes, contactRes] = await Promise.all([
         authClient.organization.listMembers({
           query: { organizationId, limit: 200 },
         }),
         listOrganizationMemberBranchesAction(organizationId),
+        getOrganizationMemberContactAction(organizationId, memberId),
       ]);
       if (res.error) {
         toast.error(res.error.message ?? "Impossible de charger le membre.");
@@ -72,6 +76,9 @@ export function EditMemberForm({ organizationId, memberId, branches }: Props) {
         setRole(
           (ALL_ORG_ROLE_SLUGS as readonly string[]).includes(primary) ? primary : ORG_ROLE.PARENT,
         );
+        if (contactRes.ok) {
+          setPhone(contactRes.phone ?? "");
+        }
         if (branchesRes.ok) {
           const assigned = branchesRes.byMemberId[found.id] ?? [];
           setBranchIds(assigned.map((b) => b.id));
@@ -109,6 +116,7 @@ export function EditMemberForm({ organizationId, memberId, branches }: Props) {
         orgRole: role,
         opsRole,
         branchIds,
+        phone,
       });
       if (!res.ok) {
         toast.error(res.message);
@@ -142,7 +150,7 @@ export function EditMemberForm({ organizationId, memberId, branches }: Props) {
     if (!member) return;
     if (
       !window.confirm(
-        `Réinitialiser le mot de passe de ${member.user.name} ? Un mot de passe temporaire sera envoyé par email.`,
+        `Réinitialiser le mot de passe de ${member.user.name} ? Un mot de passe temporaire sera envoyé par email et WhatsApp (si téléphone renseigné).`,
       )
     ) {
       return;
@@ -156,7 +164,9 @@ export function EditMemberForm({ organizationId, memberId, branches }: Props) {
         toast.error(res.message);
         return;
       }
-      toast.success("Mot de passe réinitialisé. Email envoyé (ou journalisé en dev).");
+      toast.success(
+        "Mot de passe réinitialisé. Envoyé par email et WhatsApp (si numéro renseigné).",
+      );
     });
   }
 
@@ -186,9 +196,29 @@ export function EditMemberForm({ organizationId, memberId, branches }: Props) {
           <Badge variant="outline">{opsRoleLabel(opsRole)}</Badge>
         </div>
         <p className="mt-1 break-all text-sm text-muted-foreground">{member.user.email}</p>
+        {phone ? (
+          <p className="mt-0.5 text-sm text-muted-foreground tabular-nums">{phone}</p>
+        ) : null}
       </div>
 
       <form className="flex flex-col gap-4" onSubmit={onSave}>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="edit-phone">Téléphone WhatsApp</Label>
+          <Input
+            id="edit-phone"
+            type="tel"
+            inputMode="tel"
+            placeholder="+243…"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            disabled={busy}
+            className="h-12 min-h-[48px] text-base touch-manipulation sm:h-11 sm:min-h-0 sm:text-sm"
+          />
+          <p className="text-xs text-muted-foreground">
+            Utilisé pour envoyer le mot de passe et les notifications WhatsApp.
+          </p>
+        </div>
+
         <div className="flex flex-col gap-2">
           <Label htmlFor="edit-role">Rôle dans l’organisation</Label>
           <Select
