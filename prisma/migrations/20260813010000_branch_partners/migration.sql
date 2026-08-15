@@ -52,12 +52,12 @@ CREATE TABLE "PartnerBooking" (
     CONSTRAINT "PartnerBooking_pkey" PRIMARY KEY ("id")
 );
 
-ALTER TABLE "HotelStay" ADD COLUMN "partnerId" TEXT;
-ALTER TABLE "HotelStay" ADD COLUMN "partnerBookingId" TEXT;
+ALTER TABLE "HotelStay" ADD COLUMN IF NOT EXISTS "partnerId" TEXT;
+ALTER TABLE "HotelStay" ADD COLUMN IF NOT EXISTS "partnerBookingId" TEXT;
 
-ALTER TABLE "Payment" ADD COLUMN "partnerId" TEXT;
-ALTER TABLE "Payment" ADD COLUMN "partnerBookingId" TEXT;
-ALTER TABLE "Payment" ADD COLUMN "bankReference" TEXT;
+ALTER TABLE "Payment" ADD COLUMN IF NOT EXISTS "partnerId" TEXT;
+ALTER TABLE "Payment" ADD COLUMN IF NOT EXISTS "partnerBookingId" TEXT;
+ALTER TABLE "Payment" ADD COLUMN IF NOT EXISTS "bankReference" TEXT;
 
 CREATE INDEX "BranchPartner_branchId_status_idx" ON "BranchPartner"("branchId", "status");
 CREATE INDEX "BranchPartner_branchId_name_idx" ON "BranchPartner"("branchId", "name");

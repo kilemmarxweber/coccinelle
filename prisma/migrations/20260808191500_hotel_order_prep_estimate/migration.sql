@@ -1,3 +1,3 @@
 -- AlterTable
-ALTER TABLE "HotelOrder" ADD COLUMN "prepStartedAt" TIMESTAMP(3),
-ADD COLUMN "estimatedMinutes" INTEGER;
+ALTER TABLE "HotelOrder" ADD COLUMN IF NOT EXISTS "prepStartedAt" TIMESTAMP(3);
+ALTER TABLE "HotelOrder" ADD COLUMN IF NOT EXISTS "estimatedMinutes" INTEGER;
