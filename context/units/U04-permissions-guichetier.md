@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | A — Fondations |
-| **Status** | `done` |
+| **Status** | `done` — **évolué par** [`../units-roles/INDEX.md`](../units-roles/INDEX.md) (rôles custom DAC) |
 | **Dépend de** | — |
 | **Débloque** | U07, U09, U12, U15, U16, U18 |
 
@@ -90,6 +90,11 @@ Les 4 rôles produit sont correctement branchés sur Better Auth : **owner** (cr
 5. `guichetier` : **pas** d’accès rapports gérant (`rapport:read` → false).
 6. Aucun gate réservation sans `hasPermission` (ou helper).
 7. MCP Better Auth consulté avant édition de `lib/permissions.ts`.
+
+## Suite (rôles custom)
+
+U04 a posé la grille figée owner / gestionnaire / guichetier / parent.  
+La suite produit est dans [`../plan-roles-custom-dynamiques.md`](../plan-roles-custom-dynamiques.md) : seuls `admin` / `user` / `owner` restent système ; le reste est custom + matrice FR + équipe par branche (units R01–R07).
 
 ## Skills & MCPs (obligatoire)
 

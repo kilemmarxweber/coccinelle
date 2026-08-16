@@ -3,6 +3,10 @@
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
+import {
+  requireOrganizationPermission,
+  type OrganizationPermissionMap,
+} from "@/lib/auth/organization-permission";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { branchBasePath, moduleForBranchType } from "@/lib/branch/paths";
 import { prisma } from "@/lib/prisma";
@@ -11,7 +15,11 @@ import {
   type PartnerPayTiming,
 } from "@/lib/partners/types";
 
-async function partnerCtx(organizationId: string, branchId: string) {
+async function partnerCtx(
+  organizationId: string,
+  branchId: string,
+  permissions?: OrganizationPermissionMap,
+) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error("Non authentifié.");
   const branch = await canAccessBranch(
@@ -21,6 +29,9 @@ async function partnerCtx(organizationId: string, branchId: string) {
   );
   if (!branch || branch.organizationId !== organizationId) {
     throw new Error("Branche inaccessible.");
+  }
+  if (permissions) {
+    await requireOrganizationPermission(organizationId, permissions);
   }
   return { user: session.user, branch };
 }
@@ -78,7 +89,7 @@ export async function listBranchPartnersAction(
   branchId: string,
   opts?: { q?: string; includeInactive?: boolean },
 ): Promise<BranchPartnerDTO[]> {
-  await partnerCtx(organizationId, branchId);
+  await partnerCtx(organizationId, branchId, { partenaires: ["voir"] });
   const q = opts?.q?.trim();
   const rows = await prisma.branchPartner.findMany({
     where: {
@@ -105,7 +116,7 @@ export async function getBranchPartnerAction(
   branchId: string,
   partnerId: string,
 ): Promise<BranchPartnerDTO | null> {
-  await partnerCtx(organizationId, branchId);
+  await partnerCtx(organizationId, branchId, { partenaires: ["voir"] });
   const row = await prisma.branchPartner.findFirst({
     where: { id: partnerId, branchId },
   });
@@ -126,7 +137,9 @@ export async function createBranchPartnerAction(input: {
   defaultUnitPriceHint?: number | null;
   defaultDiscountPctHint?: number | null;
 }): Promise<BranchPartnerDTO> {
-  const { branch } = await partnerCtx(input.organizationId, input.branchId);
+  const { branch } = await partnerCtx(input.organizationId, input.branchId, {
+    partenaires: ["ajouter"],
+  });
   const core = assertPartnerInput(input);
   const row = await prisma.branchPartner.create({
     data: {
@@ -169,7 +182,9 @@ export async function updateBranchPartnerAction(input: {
   defaultUnitPriceHint?: number | null;
   defaultDiscountPctHint?: number | null;
 }): Promise<BranchPartnerDTO> {
-  const { branch } = await partnerCtx(input.organizationId, input.branchId);
+  const { branch } = await partnerCtx(input.organizationId, input.branchId, {
+    partenaires: ["modifier"],
+  });
   const existing = await prisma.branchPartner.findFirst({
     where: { id: input.partnerId, branchId: input.branchId },
   });
@@ -207,7 +222,9 @@ export async function setBranchPartnerStatusAction(input: {
   partnerId: string;
   status: "ACTIVE" | "INACTIVE";
 }): Promise<void> {
-  const { branch } = await partnerCtx(input.organizationId, input.branchId);
+  const { branch } = await partnerCtx(input.organizationId, input.branchId, {
+    partenaires: ["modifier"],
+  });
   const existing = await prisma.branchPartner.findFirst({
     where: { id: input.partnerId, branchId: input.branchId },
   });
@@ -252,6 +269,7 @@ export async function createPartnerBookingAction(input: {
   const { user, branch } = await partnerCtx(
     input.organizationId,
     input.branchId,
+    { partenaires: ["ajouter"] },
   );
   await assertPartnerReadyForCredit(input.branchId, input.partnerId);
   const code = await nextPartnerBookingCode(input.branchId);
@@ -277,7 +295,7 @@ export async function listPartnerBookingsAction(
   branchId: string,
   partnerId?: string,
 ) {
-  await partnerCtx(organizationId, branchId);
+  await partnerCtx(organizationId, branchId, { partenaires: ["voir"] });
   return prisma.partnerBooking.findMany({
     where: {
       branchId,

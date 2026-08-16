@@ -30,7 +30,7 @@ export type BoardingPassengerRow = {
 
 async function assertScan(organizationId: string) {
   return assertOrganizationPermission(organizationId, {
-    embarquement: ["scan"],
+    embarquement: ["scanner"],
   });
 }
 

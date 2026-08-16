@@ -2,6 +2,10 @@
 
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+import {
+  requireOrganizationPermission,
+  type OrganizationPermissionMap,
+} from "@/lib/auth/organization-permission";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
@@ -22,9 +26,13 @@ import {
   toIsoDate,
 } from "@/lib/hotel/reports/period";
 
-async function ctx(organizationId: string, branchId: string) {
+async function ctx(
+  organizationId: string,
+  branchId: string,
+  permissions?: OrganizationPermissionMap,
+) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user) throw new Error("Non authentifi?.");
+  if (!session?.user) throw new Error("Non authentifié.");
   const branch = await canAccessBranch(
     session.user.id,
     session.user.role,
@@ -32,6 +40,9 @@ async function ctx(organizationId: string, branchId: string) {
   );
   if (!branch || branch.organizationId !== organizationId) {
     throw new Error("Branche inaccessible.");
+  }
+  if (permissions) {
+    await requireOrganizationPermission(organizationId, permissions);
   }
   return { user: session.user, branch };
 }
@@ -239,7 +250,9 @@ function seriesByDay(
 }
 
 export async function getSalesReportAction(input: PeriodInput) {
-  await ctx(input.organizationId, input.branchId);
+  await ctx(input.organizationId, input.branchId, {
+    rapport_ventes: ["voir"],
+  });
   const prev = previousRange(input.from, input.to);
   const days = eachDayIso(input.from, input.to);
 
@@ -310,7 +323,9 @@ export async function getSalesReportAction(input: PeriodInput) {
 }
 
 export async function getPurchasesReportAction(input: PeriodInput) {
-  await ctx(input.organizationId, input.branchId);
+  await ctx(input.organizationId, input.branchId, {
+    rapport_achats: ["voir"],
+  });
   const prev = previousRange(input.from, input.to);
   const days = eachDayIso(input.from, input.to);
 
@@ -382,7 +397,9 @@ export async function getPurchasesReportAction(input: PeriodInput) {
 }
 
 export async function getArticlesReportAction(input: PeriodInput) {
-  await ctx(input.organizationId, input.branchId);
+  await ctx(input.organizationId, input.branchId, {
+    rapport_articles: ["voir"],
+  });
   const prev = previousRange(input.from, input.to);
   const days = eachDayIso(input.from, input.to);
 
@@ -489,7 +506,9 @@ export async function getArticlesReportAction(input: PeriodInput) {
 }
 
 export async function getFinanceReportAction(input: PeriodInput) {
-  await ctx(input.organizationId, input.branchId);
+  await ctx(input.organizationId, input.branchId, {
+    rapport_financier: ["voir"],
+  });
   const prev = previousRange(input.from, input.to);
   const days = eachDayIso(input.from, input.to);
 
@@ -641,7 +660,9 @@ export async function getFinanceReportAction(input: PeriodInput) {
 }
 
 export async function getMyOrdersReportAction(input: PeriodInput) {
-  const { user } = await ctx(input.organizationId, input.branchId);
+  const { user } = await ctx(input.organizationId, input.branchId, {
+    rapport_mes_commandes: ["voir"],
+  });
   const exchange = await getActiveExchangeRate(input.branchId);
   const days = eachDayIso(input.from, input.to);
   const soldWhere = {
@@ -777,7 +798,9 @@ export async function getMyOrdersReportAction(input: PeriodInput) {
 }
 
 export async function getStaysReportAction(input: PeriodInput) {
-  await ctx(input.organizationId, input.branchId);
+  await ctx(input.organizationId, input.branchId, {
+    rapport_sejours: ["voir"],
+  });
   const days = eachDayIso(input.from, input.to);
   const [arrivals, departures, rooms, inHouse] = await Promise.all([
     prisma.hotelStay.findMany({

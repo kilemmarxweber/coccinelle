@@ -19,6 +19,7 @@ import {
   authAccessControl,
   organizationRoles,
 } from "@/lib/permissions";
+import { seedOrganizationRolePresets } from "@/lib/org/seed-org-roles";
 
 const authOptions = {
   database: prismaAdapter(prisma, {
@@ -110,6 +111,18 @@ const authOptions = {
       },
       roles: organizationRoles,
       organizationHooks: {
+        afterCreateOrganization: async ({ organization }) => {
+          // R02 — presets DAC (caissier, serveur, …). Owner reste creatorRole système.
+          try {
+            await seedOrganizationRolePresets(organization.id);
+          } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error(
+              "[organizationHooks.afterCreateOrganization] seed org role presets:",
+              err,
+            );
+          }
+        },
         beforeAddMember: async ({ user, organization }) => {
           await assertUserCanJoinOrganization(user.id, organization.id);
         },

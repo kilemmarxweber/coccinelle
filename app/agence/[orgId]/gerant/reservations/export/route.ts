@@ -14,7 +14,7 @@ export async function GET(request: Request, context: RouteContext) {
   const { orgId } = await context.params;
 
   const perm = await assertOrganizationPermission(orgId, {
-    inscription: ["update"],
+    inscription: ["modifier"],
   });
   if (!perm.ok) {
     return NextResponse.json({ error: perm.message }, { status: 403 });

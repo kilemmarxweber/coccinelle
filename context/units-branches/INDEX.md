@@ -79,7 +79,8 @@ flowchart TD
 **Hôtel (caisse · séjours · resto) :** [`../plan-hotel-caisse-sejours-restauration.md`](../plan-hotel-caisse-sejours-restauration.md) — phases H0→H5, cartes Dashboard only.  
 **Hôtellerie-restaurant (modules Hôtel / Restaurant) :** [`../plan-hospitalite-modules-hotel-restaurant.md`](../plan-hospitalite-modules-hotel-restaurant.md) — séjours ± restaurant, type `RESTAURANT`, livraison commune.  
 **Agence & Boutique (modules) :** [`../plan-agence-boutique-modules.md`](../plan-agence-boutique-modules.md) — Avion/Bus/Bateau · Pharmacie/Boutique/Alimentation.  
-**Séjour — Note de chambre :** [`../plan-sejour-note-chambre.md`](../plan-sejour-note-chambre.md) — Comptant vs Sur note · consommations sur facture séjour.
+**Séjour — Note de chambre :** [`../plan-sejour-note-chambre.md`](../plan-sejour-note-chambre.md) — Comptant vs Sur note · consommations sur facture séjour.  
+**Rôles custom + équipe branche :** [`../plan-roles-custom-dynamiques.md`](../plan-roles-custom-dynamiques.md) — units [`../units-roles/INDEX.md`](../units-roles/INDEX.md) (R01→R07).
 
 ---
 

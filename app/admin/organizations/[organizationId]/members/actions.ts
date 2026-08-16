@@ -89,7 +89,7 @@ export async function listOrganizationMemberBranchesAction(
   | { ok: false; message: string }
 > {
   const gate = await assertOrganizationPermission(organizationId, {
-    equipe: ["read"],
+    equipe: ["voir"],
   });
   if (!gate.ok) return gate;
 
@@ -133,7 +133,7 @@ export async function getOrganizationMemberContactAction(
   | { ok: false; message: string }
 > {
   const gate = await assertOrganizationPermission(organizationId, {
-    equipe: ["read"],
+    equipe: ["voir"],
   });
   if (!gate.ok) return gate;
 
@@ -165,7 +165,7 @@ export async function createOrganizationMemberAction(
     parsed.data;
 
   const gate = await assertOrganizationPermission(organizationId, {
-    equipe: ["manage"],
+    equipe: ["gerer"],
   });
   if (!gate.ok) return gate;
 
@@ -245,7 +245,7 @@ export async function updateOrganizationMemberAction(
     parsed.data;
 
   const gate = await assertOrganizationPermission(organizationId, {
-    equipe: ["manage"],
+    equipe: ["gerer"],
   });
   if (!gate.ok) return gate;
 
@@ -342,7 +342,7 @@ export async function resetOrganizationMemberPasswordAction(
   const { organizationId, memberId } = parsed.data;
 
   const gate = await assertOrganizationPermission(organizationId, {
-    equipe: ["manage"],
+    equipe: ["gerer"],
   });
   if (!gate.ok) return gate;
 

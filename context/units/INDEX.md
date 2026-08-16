@@ -119,3 +119,13 @@ flowchart TD
 Chaque unit porte un champ `status` : `todo` | `in_progress` | `done` | `blocked`.
 
 Mettre à jour le statut dans le fichier unit **et** dans le tableau ci-dessus lors du démarrage / fin.
+
+---
+
+## Suite — Rôles custom dynamiques
+
+Évolution post-U04 (rôles créables, matrice FR, équipe par branche) :
+
+- Plan : [`../plan-roles-custom-dynamiques.md`](../plan-roles-custom-dynamiques.md)
+- Units exécutables : [`../units-roles/INDEX.md`](../units-roles/INDEX.md) (R01 → R07)
+

@@ -2,7 +2,12 @@ import {
   assertOrganizationPermission,
 } from "@/lib/auth/organization-permission";
 
-export type InscriptionPermission = "create" | "update" | "delete" | "share";
+export type InscriptionPermission =
+  | "voir"
+  | "ajouter"
+  | "modifier"
+  | "supprimer"
+  | "partager";
 
 /** Vérifie `inscription:*` via Better Auth `hasPermission` (helper générique). */
 export async function assertInscriptionPermission(

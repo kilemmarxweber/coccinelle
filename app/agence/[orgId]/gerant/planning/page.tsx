@@ -32,9 +32,9 @@ export default async function GerantPlanningPage({
   const [departs, trajets, canUpdate, canCancel, canCreate] = await Promise.all([
     listPlanningDeparts(orgId, period),
     listPlanningTrajetOptions(orgId),
-    assertOrganizationPermission(orgId, { depart: ["update"] }),
-    assertOrganizationPermission(orgId, { depart: ["cancel"] }),
-    assertOrganizationPermission(orgId, { depart: ["create"] }),
+    assertOrganizationPermission(orgId, { depart: ["modifier"] }),
+    assertOrganizationPermission(orgId, { depart: ["annuler"] }),
+    assertOrganizationPermission(orgId, { depart: ["ajouter"] }),
   ]);
 
   return (

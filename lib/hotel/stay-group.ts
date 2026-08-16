@@ -3,6 +3,10 @@
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
+import {
+  requireOrganizationPermission,
+  type OrganizationPermissionMap,
+} from "@/lib/auth/organization-permission";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { assertHospitalityModule } from "@/lib/branch/hospitality";
 import { branchBasePath } from "@/lib/branch/paths";
@@ -31,7 +35,11 @@ import {
 } from "@/lib/hotel/stay-group-settlement";
 import { folioPaidTowardBalance } from "@/lib/hotel/meeting-deposit";
 
-async function ctx(organizationId: string, branchId: string) {
+async function ctx(
+  organizationId: string,
+  branchId: string,
+  permissions?: OrganizationPermissionMap,
+) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error("Non authentifié.");
   const branch = await canAccessBranch(
@@ -43,6 +51,9 @@ async function ctx(organizationId: string, branchId: string) {
     throw new Error("Branche inaccessible.");
   }
   assertHospitalityModule(branch, "stays");
+  if (permissions) {
+    await requireOrganizationPermission(organizationId, permissions);
+  }
   return { user: session.user, branch };
 }
 
@@ -107,7 +118,9 @@ export async function createStayGroupAction(input: {
   paymentMethod?: "CASH" | "MOBILE_MONEY" | "CARTE" | "BANK";
   bankReference?: string | null;
 }): Promise<{ bookingId: string; code: string; stayIds: string[] }> {
-  const { user } = await ctx(input.organizationId, input.branchId);
+  const { user } = await ctx(input.organizationId, input.branchId, {
+    sejours: ["ajouter"],
+  });
   const checkIn = parseDay(input.checkInDate);
   const checkOut = parseDay(input.checkOutDate);
   if (!(checkOut.getTime() > checkIn.getTime())) {
@@ -406,7 +419,7 @@ export async function completeStayGuestAction(input: {
   idDocumentNumber: string;
   idDocumentImageUrl: string;
 }) {
-  await ctx(input.organizationId, input.branchId);
+  await ctx(input.organizationId, input.branchId, { sejours: ["modifier"] });
   const stay = await prisma.hotelStay.findFirst({
     where: { id: input.stayId, branchId: input.branchId },
   });
@@ -448,7 +461,7 @@ export async function checkInStayGroupBatchAction(input: {
   branchId: string;
   stayIds: string[];
 }) {
-  await ctx(input.organizationId, input.branchId);
+  await ctx(input.organizationId, input.branchId, { sejours: ["modifier"] });
   if (!input.stayIds.length) throw new Error("Sélectionnez des chambres.");
   const stays = await prisma.hotelStay.findMany({
     where: {
@@ -507,7 +520,7 @@ export async function cancelStayInGroupAction(input: {
 }): Promise<{
   settlement: ReturnType<typeof stayGroupSettlement>;
 }> {
-  await ctx(input.organizationId, input.branchId);
+  await ctx(input.organizationId, input.branchId, { sejours: ["supprimer"] });
   const stay = await prisma.hotelStay.findFirst({
     where: { id: input.stayId, branchId: input.branchId },
     include: {
@@ -582,7 +595,7 @@ export async function cancelStayGroupBatchAction(input: {
   cancelled: number;
   settlement: ReturnType<typeof stayGroupSettlement>;
 }> {
-  await ctx(input.organizationId, input.branchId);
+  await ctx(input.organizationId, input.branchId, { sejours: ["supprimer"] });
   if (!input.stayIds.length) throw new Error("Sélectionnez des chambres.");
   let cancelled = 0;
   let bookingId: string | null = null;
@@ -643,7 +656,7 @@ export async function listStayGroupsAction(
   organizationId: string,
   branchId: string,
 ) {
-  await ctx(organizationId, branchId);
+  await ctx(organizationId, branchId, { sejours: ["voir"] });
   return prisma.partnerBooking.findMany({
     where: {
       branchId,
@@ -680,7 +693,7 @@ export async function getStayGroupDetailAction(
   branchId: string,
   bookingId: string,
 ) {
-  await ctx(organizationId, branchId);
+  await ctx(organizationId, branchId, { sejours: ["voir"] });
   const booking = await prisma.partnerBooking.findFirst({
     where: { id: bookingId, branchId },
     include: {
@@ -712,7 +725,10 @@ export async function recordStayGroupPaymentAction(input: {
   bankReference?: string | null;
   note?: string | null;
 }) {
-  const { user } = await ctx(input.organizationId, input.branchId);
+  const { user } = await ctx(input.organizationId, input.branchId, {
+    sejours: ["modifier"],
+    caisse: ["encaisser"],
+  });
   const amount = Number(input.amountUsd);
   if (!(amount > 0)) throw new Error("Montant invalide.");
   const booking = await prisma.partnerBooking.findFirst({
@@ -806,7 +822,10 @@ export async function recordStayGroupRefundAction(input: {
   bankReference?: string | null;
   note?: string | null;
 }) {
-  const { user } = await ctx(input.organizationId, input.branchId);
+  const { user } = await ctx(input.organizationId, input.branchId, {
+    sejours: ["modifier"],
+    caisse: ["encaisser"],
+  });
   const amount = Number(input.amountUsd);
   if (!(amount > 0.01)) throw new Error("Montant de remboursement invalide.");
 
@@ -941,7 +960,7 @@ export async function getStayGroupInvoiceAction(
   branchId: string,
   bookingId: string,
 ): Promise<StayGroupInvoice> {
-  await ctx(organizationId, branchId);
+  await ctx(organizationId, branchId, { sejours: ["voir"] });
   return buildStayGroupInvoice(await loadBookingForInvoice(branchId, bookingId));
 }
 
@@ -953,7 +972,9 @@ export async function updateStayGroupRoomRateAction(input: {
   unitPriceAppliedUsd: number;
   rateNote?: string | null;
 }) {
-  const { user } = await ctx(input.organizationId, input.branchId);
+  const { user } = await ctx(input.organizationId, input.branchId, {
+    sejours: ["modifier"],
+  });
   const unit = Number(input.unitPriceAppliedUsd);
   if (!(unit >= 0) || !Number.isFinite(unit)) {
     throw new Error("Montant unitaire invalide.");
@@ -1049,7 +1070,9 @@ export async function previewStayGroupInvoiceAction(input: {
   branchId: string;
   bookingId: string;
 }): Promise<{ html: string; invoice: StayGroupInvoice }> {
-  const { user } = await ctx(input.organizationId, input.branchId);
+  const { user } = await ctx(input.organizationId, input.branchId, {
+    sejours: ["voir"],
+  });
   const booking = await loadBookingForInvoice(
     input.branchId,
     input.bookingId,
@@ -1067,7 +1090,9 @@ export async function issueStayGroupInvoiceAction(input: {
   branchId: string;
   bookingId: string;
 }): Promise<{ invoiceNumber: string; html: string }> {
-  const { user } = await ctx(input.organizationId, input.branchId);
+  const { user } = await ctx(input.organizationId, input.branchId, {
+    sejours: ["modifier"],
+  });
   const booking = await loadBookingForInvoice(
     input.branchId,
     input.bookingId,
@@ -1121,7 +1146,7 @@ export async function markStayGroupInvoiceHandedOverAction(input: {
   branchId: string;
   bookingId: string;
 }) {
-  await ctx(input.organizationId, input.branchId);
+  await ctx(input.organizationId, input.branchId, { sejours: ["modifier"] });
   const booking = await prisma.partnerBooking.findFirst({
     where: { id: input.bookingId, branchId: input.branchId },
   });

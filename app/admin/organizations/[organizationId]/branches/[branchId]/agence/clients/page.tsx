@@ -12,6 +12,7 @@ export default async function AgenceClientsPage({ params }: PageProps) {
     organizationId,
     branchId,
     requireModule: "agence",
+    requireDashCard: "clients",
   });
   const partners = await listBranchPartnersAction(organizationId, branchId, {
     includeInactive: true,

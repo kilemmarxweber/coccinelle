@@ -8,7 +8,7 @@ type PageProps = { params: Promise<{ organizationId: string }> };
 export default async function GuichetHomePage({ params }: PageProps) {
   const { organizationId } = await params;
 
-  const sellPerm = await assertInscriptionPermission(organizationId, "create");
+  const sellPerm = await assertInscriptionPermission(organizationId, "ajouter");
   const listResult = await getReservationsAction(organizationId);
 
   const lastSales: ReservationListItem[] =

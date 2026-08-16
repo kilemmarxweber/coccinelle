@@ -27,7 +27,11 @@ type PageProps = {
 
 export default async function TableauBordPage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
-  const branch = await requireBranchContext({ organizationId, branchId });
+  const branch = await requireBranchContext({
+    organizationId,
+    branchId,
+    requireDashCard: "rapport_tableau",
+  });
   const hospitality = isHospitality(branch.type);
   const isBoutique = branch.type === "BOUTIQUE";
   const showStays = canAccessStays(branch);

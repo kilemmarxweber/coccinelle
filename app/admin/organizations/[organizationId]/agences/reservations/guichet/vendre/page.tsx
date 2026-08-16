@@ -29,7 +29,7 @@ export default async function GuichetVendrePage({
   const guichetHref = `${base}/guichet`;
   const trajetsHref = `/admin/organizations/${organizationId}/agences/trajets`;
 
-  const sellPerm = await assertInscriptionPermission(organizationId, "create");
+  const sellPerm = await assertInscriptionPermission(organizationId, "ajouter");
   if (!sellPerm.ok) {
     return (
       <div className="min-h-screen">

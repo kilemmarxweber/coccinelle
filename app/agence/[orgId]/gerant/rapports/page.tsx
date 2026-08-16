@@ -19,7 +19,7 @@ export default async function GerantRapportsPage({
   const sp = await searchParams;
 
   const perm = await assertOrganizationPermission(orgId, {
-    rapport: ["read"],
+    rapport_agence: ["voir"],
   });
   if (!perm.ok) {
     return (
@@ -30,7 +30,7 @@ export default async function GerantRapportsPage({
         />
         <p className="px-4 py-8 text-sm text-muted-foreground md:px-6">
           Accès réservé aux rôles avec la permission{" "}
-          <code className="text-xs">rapport:read</code>.
+          <code className="text-xs">rapport_agence:voir</code>.
         </p>
       </div>
     );

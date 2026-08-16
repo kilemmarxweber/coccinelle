@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { StayFolioStatementView } from "@/components/hotel/stay-folio-statement";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import { DASH_CARD } from "@/lib/branch/ops-roles";
 import { getActiveExchangeRate } from "@/lib/cash/actions";
 import { formatConfiguredRateLabel } from "@/lib/cash/exchange";
 import { getStayFolioStatementAction } from "@/lib/hotel/actions";
@@ -30,6 +31,7 @@ export default async function StayNotePrintPage({
     branchId,
     requireModule: "hotel",
     requireHospitality: "stays",
+    requireDashCard: DASH_CARD.SEJOURS,
   });
 
   let statement;

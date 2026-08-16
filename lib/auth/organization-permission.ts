@@ -13,22 +13,33 @@ export type OrganizationPermissionMap = {
   [K in OrganizationResource]?: ReadonlyArray<(typeof accessControlStatements)[K][number]>;
 };
 
+/**
+ * Vérifie qu’une matrice accordée couvre toutes les actions demandées.
+ * Pure — utilisée par le gate serveur et les tests R07 (caisse / hôtel).
+ */
+export function permissionMapAllows(
+  granted: Record<string, readonly string[] | string[] | undefined> | null | undefined,
+  required: OrganizationPermissionMap,
+): boolean {
+  if (!granted) return false;
+  for (const [resource, actions] of Object.entries(required) as Array<
+    [OrganizationResource, ReadonlyArray<string> | undefined]
+  >) {
+    if (!actions?.length) continue;
+    const allowed = granted[resource];
+    if (!allowed) return false;
+    if (!actions.every((action) => allowed.includes(action))) return false;
+  }
+  return true;
+}
+
 function staticRoleAllows(
   role: string,
   permissions: OrganizationPermissionMap,
 ): boolean {
   const statements = organizationRoleStatements[role];
   if (!statements) return false;
-
-  for (const [resource, actions] of Object.entries(permissions) as Array<
-    [OrganizationResource, ReadonlyArray<string> | undefined]
-  >) {
-    if (!actions?.length) continue;
-    const allowed = statements[resource] as ReadonlyArray<string> | undefined;
-    if (!allowed) return false;
-    if (!actions.every((action) => allowed.includes(action))) return false;
-  }
-  return true;
+  return permissionMapAllows(statements, permissions);
 }
 
 async function dynamicRoleAllows(
@@ -44,15 +55,7 @@ async function dynamicRoleAllows(
 
   try {
     const parsed = JSON.parse(row.permission) as Record<string, string[]>;
-    for (const [resource, actions] of Object.entries(permissions) as Array<
-      [string, ReadonlyArray<string> | undefined]
-    >) {
-      if (!actions?.length) continue;
-      const allowed = parsed[resource];
-      if (!allowed) return false;
-      if (!actions.every((action) => allowed.includes(action))) return false;
-    }
-    return true;
+    return permissionMapAllows(parsed, permissions);
   } catch {
     return false;
   }
@@ -79,7 +82,8 @@ async function memberAllows(
 
 /**
  * Gate serveur Better Auth : `auth.api.hasPermission`,
- * avec repli matrice statique / rôles dynamiques.
+ * avec repli matrice statique / rôles dynamiques (catalogue FR R01).
+ * Platform `admin` : bypass org (comportement actuel).
  */
 export async function assertOrganizationPermission(
   organizationId: string,
@@ -116,4 +120,25 @@ export async function assertOrganizationPermission(
   }
 
   return { ok: true };
+}
+
+/** Variante booléenne — UI / filtres hub. */
+export async function hasOrganizationPermission(
+  organizationId: string,
+  permissions: OrganizationPermissionMap,
+): Promise<boolean> {
+  const result = await assertOrganizationPermission(organizationId, permissions);
+  return result.ok;
+}
+
+/**
+ * Gate actions serveur : refuse avec Error si permission manquante.
+ * À combiner avec `canAccessBranch` (appartenance établissement).
+ */
+export async function requireOrganizationPermission(
+  organizationId: string,
+  permissions: OrganizationPermissionMap,
+): Promise<void> {
+  const result = await assertOrganizationPermission(organizationId, permissions);
+  if (!result.ok) throw new Error(result.message);
 }

@@ -11,6 +11,7 @@ export default async function AgenceGuichetPage({ params }: PageProps) {
     organizationId,
     branchId,
     requireModule: "agence",
+    requireDashCard: "guichet",
   });
   return (
     <BranchModulePlaceholder

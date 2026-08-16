@@ -4,8 +4,8 @@ import { headers } from "next/headers";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { canAccessStays } from "@/lib/branch/hospitality";
 import { hotelRoutes } from "@/lib/branch/paths";
-import { DASH_CARD, canOperateServiceStock } from "@/lib/branch/ops-roles";
-import { resolveCurrentBranchOpsRole } from "@/lib/branch/resolve-ops-role";
+import { DASH_CARD } from "@/lib/branch/ops-roles";
+import { hasOrganizationPermission } from "@/lib/auth/organization-permission";
 import { auth } from "@/lib/auth";
 import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
@@ -43,8 +43,9 @@ export default async function RestaurationPage({
   await ensureHotelMenuSeedAction(organizationId, branchId);
   const hasStays = canAccessStays(branch);
   const sessionAuth = await auth.api.getSession({ headers: await headers() });
-  const opsRole = await resolveCurrentBranchOpsRole(organizationId, branchId);
-  const stockCanOperate = canOperateServiceStock(opsRole);
+  const stockCanOperate = await hasOrganizationPermission(organizationId, {
+    service_stock: ["ouvrir"],
+  });
   const [menuItemsRaw, orders, rate, activeStays, stockGate, liveSituation] =
     await Promise.all([
       listMenuItemsAction(organizationId, branchId),

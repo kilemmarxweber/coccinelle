@@ -16,13 +16,13 @@ const NEXT_STATUT: Partial<Record<ColisStatut, ColisStatut>> = {
 
 async function assertColisRead(organizationId: string) {
   return assertOrganizationPermission(organizationId, {
-    inscription: ["share"],
+    colis: ["voir"],
   });
 }
 
 async function assertColisUpdate(organizationId: string) {
   return assertOrganizationPermission(organizationId, {
-    inscription: ["update"],
+    colis: ["modifier"],
   });
 }
 
