@@ -12,7 +12,7 @@ import {
   branchDashboardPath,
   organizationBranchesPath,
 } from "@/lib/branch/paths";
-import { branchTypeDetailLabel, isHospitality } from "@/lib/branch/hospitality";
+import { isHospitality } from "@/lib/branch/hospitality";
 
 type LayoutProps = {
   children: ReactNode;
@@ -42,7 +42,6 @@ export default async function BranchWorkspaceLayout({
     <div className="min-h-svh bg-background">
       <DashboardNavbar
         title={branch.name}
-        subtitle={`${branch.organizationName} · ${branchTypeDetailLabel(branch)} · ${branch.code}`}
         titleHref={branchDashboardPath(organizationId, branchId)}
         actions={
           <div className="flex items-center gap-2">
@@ -67,7 +66,7 @@ export default async function BranchWorkspaceLayout({
           </div>
         }
       />
-      {children}
+      <div className="pt-14 sm:pt-16">{children}</div>
     </div>
   );
 }

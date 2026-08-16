@@ -3,7 +3,7 @@
  * (BranchMember, owner/admin org, ou admin plateforme).
  */
 
-import { getUserOrganizationMembership } from "@/lib/auth/org-membership";
+import { getUserOrganizationMembership, getMembershipInOrganization } from "@/lib/auth/org-membership";
 import {
   branchDashboardPath,
   organizationBranchesPath,
@@ -102,7 +102,10 @@ export async function listAccessibleBranches(
     return rows.map(mapBranch);
   }
 
-  const membership = await getUserOrganizationMembership(userId);
+  const membership = await getUserOrganizationMembership(
+    userId,
+    organizationId,
+  );
   if (!membership) return [];
 
   const orgId = organizationId ?? membership.organizationId;
@@ -136,7 +139,7 @@ export async function listAccessibleBranches(
   return rows.map(mapBranch);
 }
 
-/** Accès à une branche (doit appartenir à l’org du membre, sauf admin). */
+/** Accès à une branche (doit appartenir à une org dont le user est membre). */
 export async function canAccessBranch(
   userId: string,
   appRole: string | null | undefined,
@@ -150,36 +153,31 @@ export async function canAccessBranch(
     return b ? mapBranch(b) : null;
   }
 
-  const membership = await getUserOrganizationMembership(userId);
+  const branch = await prisma.branch.findFirst({
+    where: { id: branchId, status: "ACTIVE" },
+    select: branchSelect,
+  });
+  if (!branch) return null;
+
+  const membership = await getMembershipInOrganization(
+    userId,
+    branch.organizationId,
+  );
   if (!membership) return null;
 
   if (isOrgBranchChooser(membership.role)) {
-    const b = await prisma.branch.findFirst({
-      where: {
-        id: branchId,
-        organizationId: membership.organizationId,
-        status: "ACTIVE",
-      },
-      select: branchSelect,
-    });
-    return b ? mapBranch(b) : null;
+    return mapBranch(branch);
   }
 
-  const b = await prisma.branch.findFirst({
+  const assigned = await prisma.branchMember.findFirst({
     where: {
-      id: branchId,
-      organizationId: membership.organizationId,
+      branchId,
       status: "ACTIVE",
-      members: {
-        some: {
-          status: "ACTIVE",
-          member: { userId },
-        },
-      },
+      member: { userId },
     },
-    select: branchSelect,
+    select: { id: true },
   });
-  return b ? mapBranch(b) : null;
+  return assigned ? mapBranch(branch) : null;
 }
 
 /**
@@ -191,10 +189,14 @@ export async function canAccessBranch(
 export async function resolveDefaultBranchPath(
   userId: string,
   appRole: string | null | undefined,
+  preferredOrganizationId?: string | null,
 ): Promise<string | null> {
   if (isAppAdminRole(appRole)) return null;
 
-  const membership = await getUserOrganizationMembership(userId);
+  const membership = await getUserOrganizationMembership(
+    userId,
+    preferredOrganizationId,
+  );
   if (!membership) return null;
 
   const { organizationId, role } = membership;

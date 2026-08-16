@@ -4,7 +4,6 @@ import prisma from "@/lib/prisma";
 import { consumeAdminCreatedUserStash } from "@/lib/admin-created-user-password";
 import {
   assertUserCanJoinOrganization,
-  countUserOrganizations,
   getSessionOrganizationContext,
 } from "@/lib/auth/org-membership";
 import { isAppAdminRole } from "@/lib/permissions";
@@ -99,13 +98,10 @@ const authOptions = {
     organization({
       ac: authAccessControl,
       creatorRole: ORG_ROLE.OWNER,
-      // Création d’org réservée à l’admin plateforme (pas owner/admin/user org).
+      // Création d’org réservée à l’admin plateforme.
       allowUserToCreateOrganization: async (user) => isAppAdminRole(user.role),
-      organizationLimit: async (user) => {
-        if (isAppAdminRole(user.role)) return false;
-        const count = await countUserOrganizations(user.id);
-        return count >= 1;
-      },
+      // Multi-org : pas de limite (owner / admin / user peuvent appartenir à plusieurs orgs).
+      organizationLimit: async () => false,
       dynamicAccessControl: {
         enabled: true,
       },

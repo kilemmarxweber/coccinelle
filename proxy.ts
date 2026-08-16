@@ -88,17 +88,31 @@ export async function proxy(request: NextRequest) {
       const orgRoute = pathname.match(/^\/admin\/organizations\/([^/]+)/);
       if (orgRoute) {
         const requestedOrgId = orgRoute[1];
-        const membership = await getUserOrganizationMembership(session.user.id);
-        if (membership && membership.organizationId !== requestedOrgId) {
-          return NextResponse.redirect(new URL(homePath, request.url));
+        if (requestedOrgId !== "new") {
+          const { getMembershipInOrganization } = await import(
+            "@/lib/auth/org-membership"
+          );
+          const membership = await getMembershipInOrganization(
+            session.user.id,
+            requestedOrgId,
+          );
+          if (!membership) {
+            return NextResponse.redirect(new URL(homePath, request.url));
+          }
         }
       }
 
       const agenceRoute = pathname.match(/^\/agence\/([^/]+)/);
       if (agenceRoute) {
         const requestedOrgId = agenceRoute[1];
-        const membership = await getUserOrganizationMembership(session.user.id);
-        if (membership && membership.organizationId !== requestedOrgId) {
+        const { getMembershipInOrganization } = await import(
+          "@/lib/auth/org-membership"
+        );
+        const membership = await getMembershipInOrganization(
+          session.user.id,
+          requestedOrgId,
+        );
+        if (!membership) {
           return NextResponse.redirect(new URL(homePath, request.url));
         }
       }

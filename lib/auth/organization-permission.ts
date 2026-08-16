@@ -2,15 +2,17 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import {
-  accessControlStatements,
+  businessAccessControlStatements,
   isAppAdminRole,
   organizationRoleStatements,
 } from "@/lib/permissions";
 
-export type OrganizationResource = keyof typeof accessControlStatements;
+export type OrganizationResource = keyof typeof businessAccessControlStatements;
 
 export type OrganizationPermissionMap = {
-  [K in OrganizationResource]?: ReadonlyArray<(typeof accessControlStatements)[K][number]>;
+  [K in OrganizationResource]?: ReadonlyArray<
+    (typeof businessAccessControlStatements)[K][number]
+  >;
 };
 
 /**
@@ -39,7 +41,10 @@ function staticRoleAllows(
 ): boolean {
   const statements = organizationRoleStatements[role];
   if (!statements) return false;
-  return permissionMapAllows(statements, permissions);
+  return permissionMapAllows(
+    statements as Record<string, readonly string[] | undefined>,
+    permissions,
+  );
 }
 
 async function dynamicRoleAllows(

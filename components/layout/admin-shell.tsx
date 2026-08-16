@@ -7,6 +7,7 @@ import { Building2 } from "lucide-react";
 import { AdminTopBar } from "@/components/layout/admin-top-bar";
 import { DashboardNavbar } from "@/components/layout/dashboard-navbar";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { PendingInvitationsBanner } from "@/components/org/pending-invitations-banner";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 
@@ -37,16 +38,8 @@ function OrgConsoleNavbar() {
   const isList = pathname === "/admin/organizations";
   const isNew = pathname.startsWith("/admin/organizations/new");
 
-  let title = "Organisations";
-  let subtitle = "Coccinelle · Administration";
   let titleHref = "/admin/organizations";
-
-  if (isNew) {
-    title = "Nouvelle organisation";
-    subtitle = "Création";
-  } else if (org) {
-    title = org.name;
-    subtitle = org.slug ? `Slug · ${org.slug}` : "Organisation";
+  if (!isList && !isNew && org) {
     titleHref = `/admin/organizations/${org.id}`;
   }
 
@@ -65,12 +58,7 @@ function OrgConsoleNavbar() {
     ) : null;
 
   return (
-    <DashboardNavbar
-      title={title}
-      subtitle={subtitle}
-      titleHref={titleHref}
-      actions={actions}
-    />
+    <DashboardNavbar titleHref={titleHref} actions={actions} />
   );
 }
 
@@ -85,7 +73,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
     return (
       <div className="flex min-h-svh flex-col bg-background text-foreground">
         <OrgConsoleNavbar />
-        <main className="flex-1">{children}</main>
+        <div className="pt-14 sm:pt-16">
+          <div className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
+            <PendingInvitationsBanner />
+          </div>
+          <main className="flex-1">{children}</main>
+        </div>
       </div>
     );
   }

@@ -1,9 +1,6 @@
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
-import {
-  assertUserCanJoinOrganization,
-  userBelongsToAnotherOrganization,
-} from "@/lib/auth/org-membership";
+import { assertUserCanJoinOrganization } from "@/lib/auth/org-membership";
 import { ORG_ROLE } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 
@@ -12,9 +9,10 @@ export type EnsureClientResult =
   | { ok: false; error: string };
 
 /**
- * Garantit un profil `Client` + membership org (`parent` si nouvellement ajouté)
+ * Garantit un profil `Client` + membership org (`user` si nouvellement ajouté)
  * pour un utilisateur authentifié qui paie en ligne.
- * N’utilise pas `inscription:create` (parcours guichet).
+ * Multi-org autorisé : on rattache à l’org de la réservation sans bloquer
+ * les autres appartenances.
  */
 export async function ensureClientForOnlineUser(input: {
   userId: string;
@@ -22,14 +20,6 @@ export async function ensureClientForOnlineUser(input: {
   telephone?: string | null;
 }): Promise<EnsureClientResult> {
   const h = await headers();
-
-  if (await userBelongsToAnotherOrganization(input.userId, input.organizationId)) {
-    return {
-      ok: false,
-      error:
-        "Ce compte est déjà rattaché à une autre agence. Connectez-vous avec un compte client de cette agence.",
-    };
-  }
 
   const member = await prisma.member.findFirst({
     where: {
@@ -66,8 +56,7 @@ export async function ensureClientForOnlineUser(input: {
   }
 
   const telephone =
-    input.telephone?.trim() ||
-    `+243${String(Date.now()).slice(-9)}`;
+    input.telephone?.trim() || `+243${String(Date.now()).slice(-9)}`;
 
   const client = await prisma.client.create({
     data: {

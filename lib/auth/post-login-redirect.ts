@@ -21,19 +21,29 @@ export async function resolvePostLoginPath(requestHeaders: Headers): Promise<str
     return "/admin";
   }
 
-  const membership = await getUserOrganizationMembership(session.user.id);
+  const preferredOrgId =
+    session.session.activeOrganizationId ?? null;
+
+  const membership = await getUserOrganizationMembership(
+    session.user.id,
+    preferredOrgId,
+  );
   if (!membership) {
     return "/admin";
   }
 
-  await auth.api.setActiveOrganization({
-    body: { organizationId: membership.organizationId },
-    headers: requestHeaders,
-  });
+  // Conserve l’org active si valide, sinon active la membership résolue
+  if (preferredOrgId !== membership.organizationId) {
+    await auth.api.setActiveOrganization({
+      body: { organizationId: membership.organizationId },
+      headers: requestHeaders,
+    });
+  }
 
   const branchPath = await resolveDefaultBranchPath(
     session.user.id,
     session.user.role,
+    membership.organizationId,
   );
   if (branchPath) {
     return branchPath;

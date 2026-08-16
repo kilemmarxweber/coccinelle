@@ -35,6 +35,7 @@ import {
   resetOrganizationMemberPasswordAction,
   type MemberBranchSummary,
 } from "./actions";
+import { OrganizationInvitePanel } from "@/components/org/organization-invite-panel";
 
 const PAGE_SIZE = 8;
 
@@ -213,6 +214,8 @@ export default function OrganizationMembersPage() {
           </Button>
         </div>
       </div>
+
+      <OrganizationInvitePanel organizationId={organizationId} />
 
       <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card/40 p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-4">
         <SearchInput

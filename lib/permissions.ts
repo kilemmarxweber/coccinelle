@@ -66,7 +66,91 @@ export function normalizeOrgRole(
   return ORG_ROLE.USER;
 }
 
-/** Statements AC — resources métier + presets plugins admin / organization. */
+/**
+ * Ressources métier (agence / hôtel / boutique / équipe) + actions FR.
+ * Utilisé par les presets DAC (`role-presets`) et le catalogue produit —
+ * distinct de `accessControlStatements` (actions ASCII Better Auth).
+ */
+export const businessAccessControlStatements = {
+  equipe: ["voir", "gerer"],
+  branch: ["voir", "ajouter", "modifier", "supprimer", "assigner"],
+  // Agence
+  inscription: ["voir", "ajouter", "modifier", "supprimer", "partager"],
+  trajet: ["voir", "ajouter", "modifier", "supprimer"],
+  depart: ["voir", "ajouter", "modifier", "annuler"],
+  embarquement: ["voir", "scanner", "modifier"],
+  colis: ["voir", "ajouter", "modifier"],
+  clients_agence: ["voir", "ajouter", "modifier"],
+  rapport_agence: ["voir"],
+  // Hôtel / restaurant
+  caisse: ["voir", "ouvrir", "fermer", "encaisser", "modifier"],
+  taux_change: ["voir", "modifier"],
+  sejours: ["voir", "ajouter", "modifier", "supprimer"],
+  restauration: ["voir", "ajouter", "modifier"],
+  cuisine: ["voir", "modifier"],
+  service_stock: ["voir", "ouvrir", "fermer", "modifier"],
+  chambres: ["voir", "ajouter", "modifier"],
+  salles: ["voir", "ajouter", "modifier"],
+  produits_hotel: ["voir", "ajouter", "modifier"],
+  livraison: ["voir", "ajouter", "modifier"],
+  bons_commande: ["voir", "ajouter", "modifier"],
+  depenses: ["voir", "ajouter", "modifier"],
+  partenaires: ["voir", "ajouter", "modifier"],
+  rapport_tableau: ["voir"],
+  rapport_ventes: ["voir"],
+  rapport_achats: ["voir"],
+  rapport_financier: ["voir"],
+  rapport_articles: ["voir"],
+  rapport_mes_commandes: ["voir"],
+  rapport_sejours: ["voir"],
+  // Boutique
+  boutique_pos: ["voir", "ajouter", "modifier"],
+  boutique_produits: ["voir", "ajouter", "modifier", "supprimer"],
+  boutique_stock: ["voir", "ajouter", "modifier"],
+} as const;
+
+/**
+ * Catalogue produit : presets BA org/member/invitation/ac + métier FR.
+ * `team` (défaut BA) est hors catalogue produit.
+ */
+export const organizationProductStatements = {
+  organization: organizationPluginSchemaStatements.organization,
+  member: organizationPluginSchemaStatements.member,
+  invitation: organizationPluginSchemaStatements.invitation,
+  ac: organizationPluginSchemaStatements.ac,
+  ...businessAccessControlStatements,
+} as const;
+
+export type OrganizationProductResource =
+  keyof typeof organizationProductStatements;
+
+export type OrganizationProductAction =
+  (typeof organizationProductStatements)[OrganizationProductResource][number];
+
+/** Entrées ordonnées du catalogue produit. */
+export const ORGANIZATION_PRODUCT_CATALOG = Object.entries(
+  organizationProductStatements,
+) as Array<
+  [OrganizationProductResource, readonly OrganizationProductAction[]]
+>;
+
+export function countOrganizationProductPermissions(): number {
+  return ORGANIZATION_PRODUCT_CATALOG.reduce(
+    (n, [, actions]) => n + actions.length,
+    0,
+  );
+}
+
+/** Owner métier = presets `ownerAc` + catalogue FR entier (UI rôles / DAC). */
+export const ownerOrganizationStatements = {
+  ...ownerAc.statements,
+  ...businessAccessControlStatements,
+} as const;
+
+/**
+ * Statements AC Better Auth — resources métier ASCII + presets plugins.
+ * Ne pas fusionner avec `businessAccessControlStatements` (verbes FR).
+ */
 export const accessControlStatements = {
   ...adminPluginSchemaStatements,
   ...organizationPluginSchemaStatements,

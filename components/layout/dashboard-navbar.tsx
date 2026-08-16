@@ -14,8 +14,8 @@ function formatDateTime(date: Date) {
 }
 
 export type DashboardNavbarProps = {
-  /** Titre principal (marque / org / branche). */
-  title: string;
+  /** Titre principal (marque / org / branche). Vide = icône seule. */
+  title?: string;
   /** Sous-titre optionnel (slug, type…). */
   subtitle?: string;
   /** Lien du logo + titre. */
@@ -38,6 +38,8 @@ export function DashboardNavbar({
 
   const user = session?.user;
   const userName = user?.name?.trim() || user?.email || "Visiteur";
+  const hasTitle = Boolean(title?.trim());
+  const hasSubtitle = Boolean(subtitle?.trim());
 
   useEffect(() => {
     setNow(new Date());
@@ -57,22 +59,30 @@ export function DashboardNavbar({
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-backdrop-filter:bg-card/80">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-backdrop-filter:bg-card/80">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:h-16 sm:px-6 lg:px-8">
-        <Link href={titleHref} className="flex min-w-0 items-center gap-2.5">
+        <Link
+          href={titleHref}
+          className="flex min-w-0 items-center gap-2.5"
+          aria-label="Accueil"
+        >
           <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground sm:size-9">
             <Plane className="size-4" aria-hidden />
           </span>
-          <span className="min-w-0">
-            <span className="block truncate text-base font-bold tracking-tight text-primary sm:text-lg">
-              {title}
+          {hasTitle || hasSubtitle ? (
+            <span className="min-w-0">
+              {hasTitle ? (
+                <span className="block truncate text-base font-bold tracking-tight text-primary sm:text-lg">
+                  {title}
+                </span>
+              ) : null}
+              {hasSubtitle ? (
+                <span className="hidden truncate text-[10px] tracking-wide text-muted-foreground uppercase sm:block">
+                  {subtitle}
+                </span>
+              ) : null}
             </span>
-            {subtitle ? (
-              <span className="hidden truncate text-[10px] tracking-wide text-muted-foreground uppercase sm:block">
-                {subtitle}
-              </span>
-            ) : null}
-          </span>
+          ) : null}
         </Link>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">

@@ -10,6 +10,7 @@ import {
   DashboardMenuCard,
   DashboardSection,
 } from "@/components/ui/dashboard-menu-card";
+import { OrganizationSwitcher } from "@/components/org/organization-switcher";
 
 export default function AdminOrganizationsPage() {
   const { data: session } = authClient.useSession();
@@ -27,7 +28,7 @@ export default function AdminOrganizationsPage() {
             </h2>
             <p className="mt-2 max-w-2xl text-sm text-primary-foreground/85 sm:text-base">
               Sélectionnez une organisation pour gérer branches, membres et
-              modules.
+              modules. Vous ne voyez que les données de l’organisation active.
             </p>
             <p className="mt-3 text-xs text-primary-foreground/70">
               {isPending
@@ -35,16 +36,19 @@ export default function AdminOrganizationsPage() {
                 : `${orgs.length} organisation${orgs.length > 1 ? "s" : ""}`}
             </p>
           </div>
-          {canCreateOrganization ? (
-            <Button
-              variant="secondary"
-              className="gap-1.5 bg-background text-primary hover:bg-background/90"
-              render={<Link href="/admin/organizations/new" />}
-            >
-              <Plus className="size-4" />
-              Créer
-            </Button>
-          ) : null}
+          <div className="flex flex-wrap items-center gap-2">
+            <OrganizationSwitcher className="bg-background/95 text-foreground" />
+            {canCreateOrganization ? (
+              <Button
+                variant="secondary"
+                className="gap-1.5 bg-background text-primary hover:bg-background/90"
+                render={<Link href="/admin/organizations/new" />}
+              >
+                <Plus className="size-4" />
+                Créer
+              </Button>
+            ) : null}
+          </div>
         </div>
       </section>
 
