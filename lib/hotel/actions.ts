@@ -74,6 +74,16 @@ async function ctx(
   return { user: session.user, branch };
 }
 
+async function assertPrivilege(
+  organizationId: string,
+  branchId: string,
+  resource: string,
+  action: "VIEW" | "READ" | "CREATE" | "UPDATE" | "DELETE",
+) {
+  const { assertBranchPrivilege } = await import("@/lib/branch/privileges");
+  await assertBranchPrivilege({ organizationId, branchId, resource, action });
+}
+
 function revalidateHotel(organizationId: string, branchId: string) {
   const base = branchBasePath(organizationId, branchId);
   revalidatePath(`${base}/hotel/sejours`);
@@ -716,6 +726,12 @@ export async function createStayAction(input: {
   idDocumentImageUrl?: string | null;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId, "stays");
+  await assertPrivilege(
+    input.organizationId,
+    input.branchId,
+    "sejours",
+    "CREATE",
+  );
   const checkIn = parseDateOnly(input.checkInDate);
   const checkOut = parseDateOnly(input.checkOutDate);
   const room = await prisma.hotelRoom.findFirst({
@@ -1185,6 +1201,12 @@ export async function checkInStayAction(input: {
   stayId: string;
 }) {
   await ctx(input.organizationId, input.branchId, "stays");
+  await assertPrivilege(
+    input.organizationId,
+    input.branchId,
+    "sejours",
+    "UPDATE",
+  );
   const stay = await prisma.hotelStay.findFirst({
     where: { id: input.stayId, branchId: input.branchId },
   });
@@ -2528,6 +2550,12 @@ export async function createHotelOrderAction(input: {
   items: { menuItemId: string; quantity: number }[];
 }) {
   const { user } = await ctx(input.organizationId, input.branchId, "restaurant");
+  await assertPrivilege(
+    input.organizationId,
+    input.branchId,
+    "restauration",
+    "CREATE",
+  );
   if (!input.items.length) throw new Error("Ajoutez au moins un article.");
 
   const settlementMode: OrderSettlementMode =
@@ -3371,6 +3399,18 @@ export async function createQuickSaleAction(input: {
   settlementMode?: OrderSettlementMode;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId, "restaurant");
+  await assertPrivilege(
+    input.organizationId,
+    input.branchId,
+    "caisse",
+    "CREATE",
+  );
+  await assertPrivilege(
+    input.organizationId,
+    input.branchId,
+    "restauration",
+    "READ",
+  );
   if (!input.items.length) throw new Error("Panier vide.");
 
   const settlementMode: OrderSettlementMode =

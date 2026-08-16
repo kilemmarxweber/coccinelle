@@ -11,7 +11,7 @@ import {
   menuSectionsForBranch,
 } from "@/lib/branch/branch-menus";
 import { branchTypeDetailLabel, isHospitality } from "@/lib/branch/hospitality";
-import { opsRoleLabel, type OpsRole } from "@/lib/branch/ops-roles";
+import { opsRoleLabel, type OpsRole, isLegacyCaissierRole } from "@/lib/branch/ops-roles";
 import { cn } from "@/lib/utils";
 
 const WELCOME_MS = 30_000;
@@ -32,6 +32,8 @@ export type BranchDashboardProps = {
   hasAlimentation: boolean;
   organizationName: string;
   opsRole: OpsRole;
+  /** Cartes VIEW autorisées (DB) ; "ALL" = propriétaire. */
+  allowedCardIds?: string[] | "ALL";
 };
 
 export function BranchDashboard({
@@ -48,6 +50,7 @@ export function BranchDashboard({
   hasShop,
   hasAlimentation,
   opsRole,
+  allowedCardIds,
 }: BranchDashboardProps) {
   const { data: session } = authClient.useSession();
   const [showWelcome, setShowWelcome] = useState(true);
@@ -60,8 +63,14 @@ export function BranchDashboard({
     branchType,
     { hasStays, hasRestaurant },
   );
+  const allowedSet =
+    allowedCardIds === "ALL"
+      ? ("ALL" as const)
+      : allowedCardIds
+        ? new Set(allowedCardIds)
+        : null;
   const sections = isHospitality(branchType)
-    ? filterMenuSectionsForOpsRole(rawSections, opsRole)
+    ? filterMenuSectionsForOpsRole(rawSections, opsRole, allowedSet)
     : rawSections;
   const typeDetail = branchTypeDetailLabel({
     type: branchType,
@@ -98,6 +107,12 @@ export function BranchDashboard({
           <p className="text-xs text-muted-foreground">
             {branchName} · {typeDetail}
           </p>
+          {isLegacyCaissierRole(opsRole) ? (
+            <p className="mt-2 text-xs text-amber-700 dark:text-amber-400">
+              Profil caissier legacy : choisissez « Caissier séjours » ou
+              « Caissier restauration » dans l’équipe.
+            </p>
+          ) : null}
         </div>
       </div>
 

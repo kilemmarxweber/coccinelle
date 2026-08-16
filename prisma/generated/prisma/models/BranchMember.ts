@@ -741,6 +741,9 @@ export type $BranchMemberPayload<ExtArgs extends runtime.Types.Extensions.Intern
     id: string
     branchId: string
     memberId: string
+    /**
+     * Slug BranchRole (ex. serveur, caissier_sejours).
+     */
     role: string
     isPrimary: boolean
     status: $Enums.BranchMemberStatus

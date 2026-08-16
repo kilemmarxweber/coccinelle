@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   ORG_ROLE,
+  normalizeOrgRole,
   organizationRoleStatements,
   organizationRoles,
 } from "./permissions";
@@ -17,25 +18,31 @@ function allows(
   return perms?.includes(action) ?? false;
 }
 
-describe("U04 — grille organizationRoleStatements", () => {
-  it("expose le rôle guichetier dans organizationRoles", () => {
-    assert.ok(organizationRoles[ORG_ROLE.GUICHETIER]);
+describe("Org roles — owner / admin / user", () => {
+  it("expose les 3 rôles dans organizationRoles", () => {
+    assert.ok(organizationRoles[ORG_ROLE.OWNER]);
+    assert.ok(organizationRoles[ORG_ROLE.ADMIN]);
+    assert.ok(organizationRoles[ORG_ROLE.USER]);
   });
 
-  it("guichetier : inscription:create → true", () => {
-    assert.equal(allows(ORG_ROLE.GUICHETIER, "inscription", "create"), true);
+  it("normalizeOrgRole mappe le legacy", () => {
+    assert.equal(normalizeOrgRole("gestionnaire"), ORG_ROLE.ADMIN);
+    assert.equal(normalizeOrgRole("guichetier"), ORG_ROLE.USER);
+    assert.equal(normalizeOrgRole("parent"), ORG_ROLE.USER);
+    assert.equal(normalizeOrgRole("member"), ORG_ROLE.USER);
+    assert.equal(normalizeOrgRole(""), ORG_ROLE.USER);
   });
 
-  it("parent : inscription:create → false", () => {
-    assert.equal(allows(ORG_ROLE.PARENT, "inscription", "create"), false);
+  it("user : inscription:create → true", () => {
+    assert.equal(allows(ORG_ROLE.USER, "inscription", "create"), true);
   });
 
-  it("gestionnaire : trajet + rapport ; pas besoin vente create", () => {
-    assert.equal(allows(ORG_ROLE.GESTIONNAIRE, "trajet", "create"), true);
-    assert.equal(allows(ORG_ROLE.GESTIONNAIRE, "depart", "create"), true);
-    assert.equal(allows(ORG_ROLE.GESTIONNAIRE, "rapport", "read"), true);
-    assert.equal(allows(ORG_ROLE.GESTIONNAIRE, "inscription", "create"), false);
-    assert.equal(allows(ORG_ROLE.GESTIONNAIRE, "inscription", "share"), true);
+  it("admin : trajet + rapport + inscription create", () => {
+    assert.equal(allows(ORG_ROLE.ADMIN, "trajet", "create"), true);
+    assert.equal(allows(ORG_ROLE.ADMIN, "depart", "create"), true);
+    assert.equal(allows(ORG_ROLE.ADMIN, "rapport", "read"), true);
+    assert.equal(allows(ORG_ROLE.ADMIN, "inscription", "create"), true);
+    assert.equal(allows(ORG_ROLE.ADMIN, "inscription", "share"), true);
   });
 
   it("owner : droits métier complets", () => {
@@ -46,10 +53,10 @@ describe("U04 — grille organizationRoleStatements", () => {
     assert.equal(allows(ORG_ROLE.OWNER, "equipe", "manage"), true);
   });
 
-  it("guichetier : pas de rapport:read ni trajet:create", () => {
-    assert.equal(allows(ORG_ROLE.GUICHETIER, "rapport", "read"), false);
-    assert.equal(allows(ORG_ROLE.GUICHETIER, "trajet", "create"), false);
-    assert.equal(allows(ORG_ROLE.GUICHETIER, "equipe", "manage"), false);
-    assert.equal(allows(ORG_ROLE.GUICHETIER, "embarquement", "scan"), true);
+  it("user : pas de rapport:read ni trajet:create", () => {
+    assert.equal(allows(ORG_ROLE.USER, "rapport", "read"), false);
+    assert.equal(allows(ORG_ROLE.USER, "trajet", "create"), false);
+    assert.equal(allows(ORG_ROLE.USER, "equipe", "manage"), false);
+    assert.equal(allows(ORG_ROLE.USER, "embarquement", "scan"), true);
   });
 });

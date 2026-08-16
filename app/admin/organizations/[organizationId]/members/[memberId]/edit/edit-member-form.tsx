@@ -6,13 +6,11 @@ import { useRouter } from "next/navigation";
 import { KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-import { ALL_ORG_ROLE_SLUGS, ORG_ROLE } from "@/lib/permissions";
+import { ALL_ORG_ROLE_SLUGS, ORG_ROLE, normalizeOrgRole } from "@/lib/permissions";
 import { orgRoleLabel } from "@/lib/org-role-labels";
 import {
   OPS_ROLE,
-  OPS_ROLE_SLUGS,
   opsRoleLabel,
-  isAssignableOpsRole,
 } from "@/lib/branch/ops-roles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -35,19 +33,31 @@ type MemberRow = {
   user: { id: string; email: string; name: string };
 };
 
+type OpsRoleOption = { slug: string; label: string };
+
 type Props = {
   organizationId: string;
   memberId: string;
   branches: MemberBranchOption[];
+  opsRoleOptions: OpsRoleOption[];
 };
 
-export function EditMemberForm({ organizationId, memberId, branches }: Props) {
+export function EditMemberForm({
+  organizationId,
+  memberId,
+  branches,
+  opsRoleOptions,
+}: Props) {
   const router = useRouter();
   const [member, setMember] = useState<MemberRow | null | undefined>(undefined);
-  const [role, setRole] = useState<string>(ORG_ROLE.PARENT);
+  const [role, setRole] = useState<string>(ORG_ROLE.USER);
   const [opsRole, setOpsRole] = useState<string>(OPS_ROLE.GERANT);
   const [phone, setPhone] = useState("");
   const [branchIds, setBranchIds] = useState<string[]>([]);
+  const roleOptions =
+    opsRoleOptions.length > 0
+      ? opsRoleOptions
+      : [{ slug: OPS_ROLE.GERANT, label: opsRoleLabel(OPS_ROLE.GERANT) }];
   const [branchError, setBranchError] = useState<string | undefined>();
   const [pending, startTransition] = useTransition();
   const [pendingRemove, startRemove] = useTransition();
@@ -72,10 +82,8 @@ export function EditMemberForm({ organizationId, memberId, branches }: Props) {
       const found = list.find((m) => m.id === memberId) ?? null;
       setMember(found);
       if (found) {
-        const primary = found.role.split(",")[0]?.trim() ?? ORG_ROLE.PARENT;
-        setRole(
-          (ALL_ORG_ROLE_SLUGS as readonly string[]).includes(primary) ? primary : ORG_ROLE.PARENT,
-        );
+        const primary = found.role.split(",")[0]?.trim() ?? ORG_ROLE.USER;
+        setRole(normalizeOrgRole(primary));
         if (contactRes.ok) {
           setPhone(contactRes.phone ?? "");
         }
@@ -85,7 +93,11 @@ export function EditMemberForm({ organizationId, memberId, branches }: Props) {
           const primaryOps =
             assigned.find((b) => b.isPrimary)?.opsRole ??
             assigned[0]?.opsRole;
-          if (primaryOps && isAssignableOpsRole(primaryOps)) {
+          if (
+            primaryOps &&
+            (/^[a-z][a-z0-9_]{1,47}$/.test(primaryOps) ||
+              roleOptions.some((o) => o.slug === primaryOps))
+          ) {
             setOpsRole(primaryOps);
           } else if (primaryOps === "branch_manager") {
             setOpsRole(OPS_ROLE.GERANT);
@@ -239,7 +251,8 @@ export function EditMemberForm({ organizationId, memberId, branches }: Props) {
         <div className="flex flex-col gap-2">
           <Label htmlFor="edit-ops-role">Métier sur la / les branche(s)</Label>
           <p className="text-xs text-muted-foreground">
-            Dashboard filtré : serveur, caissier, réception, gérant / manager…
+            Dashboard filtré : serveur, caissier séjours / resto, réception,
+            gérant / manager…
           </p>
           <Select
             id="edit-ops-role"
@@ -248,9 +261,9 @@ export function EditMemberForm({ organizationId, memberId, branches }: Props) {
             disabled={busy}
             className="h-12 min-h-[48px] text-base touch-manipulation sm:h-11 sm:min-h-0 sm:text-sm"
           >
-            {[...OPS_ROLE_SLUGS].map((slug) => (
-              <option key={slug} value={slug}>
-                {opsRoleLabel(slug)}
+            {[...roleOptions].map((opt) => (
+              <option key={opt.slug} value={opt.slug}>
+                {opt.label}
               </option>
             ))}
           </Select>

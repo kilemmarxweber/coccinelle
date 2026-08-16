@@ -2,11 +2,10 @@
  * Slugs de rôles, presets Better Auth (`adminAc`, `ownerAc`, …),
  * grilles métier pour les rôles d’organisation, et AC partagée pour `betterAuth`.
  *
- * Mapping produit → Better Auth :
- * - Owner → `owner` (crée / supervise l’org)
- * - Gérant → `gestionnaire` (agence ; ne crée pas d’org)
- * - Guichetier → `guichetier` (vente comptoir)
- * - Client → `parent` (self-service)
+ * Couches :
+ * - `User.role` (plateforme) → `admin` | `user` (défaut `user`)
+ * - `Member.role` (organisation) → `owner` | `admin` | `user` (défaut `user`)
+ * - `BranchMember.role` → métier ops (serveur, caissier_*, …)
  */
 
 import { createAccessControl } from "better-auth/plugins/access";
@@ -22,6 +21,7 @@ import {
   memberAc as organizationPluginMemberAc,
 } from "better-auth/plugins/organization/access";
 
+/** Rôles plateforme (`user.role`) — Better Auth admin plugin. */
 export const APP_ROLE = {
   ADMIN: "admin",
   USER: "user",
@@ -31,19 +31,40 @@ export function isAppAdminRole(role: string | null | undefined): boolean {
   return role === APP_ROLE.ADMIN;
 }
 
+/**
+ * Rôles d’organisation (`member.role`).
+ * Legacy acceptés en lecture : gestionnaire → admin, guichetier|parent|member → user.
+ */
 export const ORG_ROLE = {
   OWNER: "owner",
-  GESTIONNAIRE: "gestionnaire",
-  GUICHETIER: "guichetier",
-  PARENT: "parent",
+  ADMIN: "admin",
+  USER: "user",
 } as const;
 
 export const ALL_ORG_ROLE_SLUGS = [
   ORG_ROLE.OWNER,
-  ORG_ROLE.GESTIONNAIRE,
-  ORG_ROLE.GUICHETIER,
-  ORG_ROLE.PARENT,
+  ORG_ROLE.ADMIN,
+  ORG_ROLE.USER,
 ] as const;
+
+/** Normalise un slug org (y compris legacy) vers owner | admin | user. */
+export function normalizeOrgRole(
+  raw: string | null | undefined,
+): (typeof ALL_ORG_ROLE_SLUGS)[number] {
+  const r = (raw ?? "").trim().toLowerCase();
+  if (r === ORG_ROLE.OWNER) return ORG_ROLE.OWNER;
+  if (r === ORG_ROLE.ADMIN || r === "gestionnaire") return ORG_ROLE.ADMIN;
+  if (
+    r === ORG_ROLE.USER ||
+    r === "guichetier" ||
+    r === "parent" ||
+    r === "member" ||
+    r === ""
+  ) {
+    return ORG_ROLE.USER;
+  }
+  return ORG_ROLE.USER;
+}
 
 /** Statements AC — resources métier + presets plugins admin / organization. */
 export const accessControlStatements = {
@@ -76,7 +97,7 @@ export const applicationRoleStatements: Record<string, StatementShape> = {
 };
 
 /**
- * Grille organisation (source de vérité U04).
+ * Grille organisation (source de vérité).
  * La permission décide ; le slug alimente uniquement cette matrice.
  */
 export const organizationRoleStatements: Record<string, StatementShape> = {
@@ -90,24 +111,23 @@ export const organizationRoleStatements: Record<string, StatementShape> = {
     equipe: ["manage", "read"],
     branch: ["create", "update", "delete", "read", "assign"],
   },
-  [ORG_ROLE.GESTIONNAIRE]: {
+  [ORG_ROLE.ADMIN]: {
     ...organizationPluginMemberAc.statements,
     ...organizationPluginAdminAc.statements,
-    // Supervision réservations (pas vente quotidienne → guichetier)
-    inscription: ["share", "update"],
+    inscription: ["share", "update", "create"],
     trajet: ["create", "update", "delete", "read"],
     depart: ["create", "update", "cancel", "read"],
+    embarquement: ["scan", "update", "read"],
     rapport: ["read"],
     equipe: ["manage", "read"],
     branch: ["create", "update", "read", "assign"],
   },
-  [ORG_ROLE.GUICHETIER]: {
+  [ORG_ROLE.USER]: {
     ...organizationPluginMemberAc.statements,
     inscription: ["create", "share", "update"],
     depart: ["read"],
     embarquement: ["scan", "update", "read"],
   },
-  [ORG_ROLE.PARENT]: { ...organizationPluginMemberAc.statements },
 };
 
 const authAccessControl = createAccessControl(accessControlStatements);

@@ -2,13 +2,17 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { listBranchesAction } from "../../branches/actions";
+import { listAssignableOpsRolesAction } from "@/lib/branch/privilege-actions";
 import { CreateMemberForm } from "./create-member-form";
 
 type PageProps = { params: Promise<{ organizationId: string }> };
 
 export default async function NewOrganizationMemberPage({ params }: PageProps) {
   const { organizationId } = await params;
-  const branchesRes = await listBranchesAction(organizationId);
+  const [branchesRes, opsRoles] = await Promise.all([
+    listBranchesAction(organizationId),
+    listAssignableOpsRolesAction(),
+  ]);
   const branches =
     branchesRes.ok
       ? branchesRes.data
@@ -40,7 +44,14 @@ export default async function NewOrganizationMemberPage({ params }: PageProps) {
         </p>
       </div>
 
-      <CreateMemberForm organizationId={organizationId} branches={branches} />
+      <CreateMemberForm
+        organizationId={organizationId}
+        branches={branches}
+        opsRoleOptions={opsRoles.map((r) => ({
+          slug: r.slug,
+          label: r.label,
+        }))}
+      />
     </div>
   );
 }

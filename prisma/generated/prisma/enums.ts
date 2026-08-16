@@ -155,6 +155,17 @@ export const BranchMemberStatus = {
 export type BranchMemberStatus = (typeof BranchMemberStatus)[keyof typeof BranchMemberStatus]
 
 
+export const PrivilegeAction = {
+  CREATE: 'CREATE',
+  READ: 'READ',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE',
+  VIEW: 'VIEW'
+} as const
+
+export type PrivilegeAction = (typeof PrivilegeAction)[keyof typeof PrivilegeAction]
+
+
 export const HotelRoomStatus = {
   AVAILABLE: 'AVAILABLE',
   OCCUPIED: 'OCCUPIED',

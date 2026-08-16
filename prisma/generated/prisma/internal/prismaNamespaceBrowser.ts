@@ -73,6 +73,8 @@ export const ModelName = {
   BranchPartner: 'BranchPartner',
   PartnerBooking: 'PartnerBooking',
   BranchMember: 'BranchMember',
+  BranchRole: 'BranchRole',
+  BranchRolePrivilege: 'BranchRolePrivilege',
   HotelRoomType: 'HotelRoomType',
   HotelRoom: 'HotelRoom',
   ShopCategory: 'ShopCategory',
@@ -487,6 +489,33 @@ export const BranchMemberScalarFieldEnum = {
 } as const
 
 export type BranchMemberScalarFieldEnum = (typeof BranchMemberScalarFieldEnum)[keyof typeof BranchMemberScalarFieldEnum]
+
+
+export const BranchRoleScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  label: 'label',
+  description: 'description',
+  isSystem: 'isSystem',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BranchRoleScalarFieldEnum = (typeof BranchRoleScalarFieldEnum)[keyof typeof BranchRoleScalarFieldEnum]
+
+
+export const BranchRolePrivilegeScalarFieldEnum = {
+  id: 'id',
+  roleId: 'roleId',
+  resource: 'resource',
+  action: 'action',
+  allowed: 'allowed',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BranchRolePrivilegeScalarFieldEnum = (typeof BranchRolePrivilegeScalarFieldEnum)[keyof typeof BranchRolePrivilegeScalarFieldEnum]
 
 
 export const HotelRoomTypeScalarFieldEnum = {

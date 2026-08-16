@@ -154,8 +154,8 @@ async function main() {
     where: { reservationId: reservation.id },
   });
 
-  const parentStatements = organizationRoleStatements[ORG_ROLE.PARENT];
-  const canCreate = parentStatements.inscription?.includes("create") ?? false;
+  const userStatements = organizationRoleStatements[ORG_ROLE.USER];
+  const canCreate = userStatements.inscription?.includes("create") ?? false;
 
   console.log(
     JSON.stringify(

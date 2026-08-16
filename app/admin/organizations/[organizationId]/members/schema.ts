@@ -5,6 +5,11 @@ import { OPS_ROLE_SLUGS } from "@/lib/branch/ops-roles";
 const orgRoleRefine = (role: string) =>
   (ALL_ORG_ROLE_SLUGS as readonly string[]).includes(role);
 
+/** Slugs seed connus OU slug custom BranchRole. */
+const opsRoleRefine = (role: string) =>
+  (OPS_ROLE_SLUGS as readonly string[]).includes(role) ||
+  /^[a-z][a-z0-9_]{1,47}$/.test(role);
+
 export const createOrgMemberSchema = z.object({
   organizationId: z.string().min(1),
   email: z
@@ -24,14 +29,10 @@ export const createOrgMemberSchema = z.object({
     .optional()
     .or(z.literal("")),
   orgRole: z.string().refine(orgRoleRefine, "Rôle d’organisation invalide."),
-  /** Validé via isAssignableOpsRole (string pour RHF). */
   opsRole: z
     .string()
     .min(1, "Métier branche requis.")
-    .refine(
-      (r) => (OPS_ROLE_SLUGS as readonly string[]).includes(r),
-      "Métier branche invalide.",
-    ),
+    .refine(opsRoleRefine, "Métier branche invalide."),
   branchIds: z
     .array(z.string().min(1))
     .min(1, "Sélectionnez au moins une branche."),
@@ -44,10 +45,7 @@ export const updateOrgMemberSchema = z.object({
   opsRole: z
     .string()
     .min(1, "Métier branche requis.")
-    .refine(
-      (r) => (OPS_ROLE_SLUGS as readonly string[]).includes(r),
-      "Métier branche invalide.",
-    ),
+    .refine(opsRoleRefine, "Métier branche invalide."),
   branchIds: z
     .array(z.string().min(1))
     .min(1, "Sélectionnez au moins une branche."),

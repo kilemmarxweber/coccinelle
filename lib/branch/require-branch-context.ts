@@ -13,8 +13,8 @@ import {
   moduleForBranchType,
   type BranchModule,
 } from "@/lib/branch/paths";
-import { canSeeDashCard } from "@/lib/branch/ops-roles";
 import { resolveCurrentBranchOpsRole } from "@/lib/branch/resolve-ops-role";
+import { canSeeDashCardAsync } from "@/lib/branch/privileges";
 import { isHospitality } from "@/lib/branch/hospitality";
 
 type LoadOpts = {
@@ -74,7 +74,7 @@ export async function requireBranchContext(
       opts.organizationId,
       opts.branchId,
     );
-    if (!canSeeDashCard(opsRole, opts.requireDashCard)) {
+    if (!(await canSeeDashCardAsync(opsRole, opts.requireDashCard))) {
       redirect(hub);
     }
   }

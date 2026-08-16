@@ -5,6 +5,9 @@ import { headers } from "next/headers";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { isHospitality } from "@/lib/branch/hospitality";
 import { boutiqueRoutes, hotelRoutes } from "@/lib/branch/paths";
+import { DASH_CARD } from "@/lib/branch/ops-roles";
+import { resolveCurrentBranchOpsRole } from "@/lib/branch/resolve-ops-role";
+import { canPrivilege } from "@/lib/branch/privileges";
 import { auth } from "@/lib/auth";
 import {
   getActiveExchangeRate,
@@ -31,28 +34,40 @@ type PageProps = {
 
 export default async function BranchCaissePage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
-  const branch = await requireBranchContext({ organizationId, branchId });
-  // Hospitalité : filtre métier caissier / owner / …
-  if (isHospitality(branch.type)) {
-    const { canSeeDashCard, DASH_CARD } = await import("@/lib/branch/ops-roles");
-    const { resolveCurrentBranchOpsRole } = await import(
-      "@/lib/branch/resolve-ops-role"
-    );
-    const ops = await resolveCurrentBranchOpsRole(organizationId, branchId);
-    if (!canSeeDashCard(ops, DASH_CARD.CAISSE)) {
-      redirect(`/admin/organizations/${organizationId}/branches/${branchId}`);
-    }
-  }
+  const branch = await requireBranchContext({
+    organizationId,
+    branchId,
+    requireDashCard: DASH_CARD.CAISSE,
+  });
 
   if (branch.type === "BOUTIQUE") {
     redirect(boutiqueRoutes.pos(organizationId, branchId));
   }
 
   const hospitality = isHospitality(branch.type);
-  const hasStays = hospitality && branch.hasStays;
-  const hasRestaurant = hospitality && branch.hasRestaurant;
+  const ops = hospitality
+    ? await resolveCurrentBranchOpsRole(organizationId, branchId)
+    : null;
 
-  if (hasRestaurant) {
+  const canSejoursCash =
+    !hospitality ||
+    (await canPrivilege(ops!, DASH_CARD.SEJOURS, "UPDATE")) ||
+    (await canPrivilege(ops!, DASH_CARD.SEJOURS, "VIEW"));
+  const canRestoCash =
+    !hospitality ||
+    (await canPrivilege(ops!, DASH_CARD.RESTAURATION, "READ")) ||
+    (await canPrivilege(ops!, DASH_CARD.RESTAURATION, "VIEW"));
+  const canQuickSale =
+    !hospitality ||
+    ((await canPrivilege(ops!, DASH_CARD.CAISSE, "CREATE")) &&
+      (await canPrivilege(ops!, DASH_CARD.RESTAURATION, "READ")));
+
+  const hasStays = hospitality && branch.hasStays && canSejoursCash;
+  const hasRestaurant = hospitality && branch.hasRestaurant && canRestoCash;
+  const showQuickSale =
+    hospitality && branch.hasRestaurant && canQuickSale;
+
+  if (showQuickSale || hasRestaurant) {
     await ensureHotelMenuSeedAction(organizationId, branchId);
   }
 
@@ -82,13 +97,13 @@ export default async function BranchCaissePage({ params }: PageProps) {
       ? listReadyOrdersAction(organizationId, branchId)
       : Promise.resolve([]),
     getTodayPaymentsAction(organizationId, branchId),
-    hasRestaurant
+    showQuickSale || hasRestaurant
       ? listMenuItemsAction(organizationId, branchId)
       : Promise.resolve([]),
     hasStays && hasRestaurant
       ? listActiveStaysForChargeAction(organizationId, branchId)
       : Promise.resolve([]),
-    hasRestaurant
+    hasRestaurant || showQuickSale
       ? getServiceStockGateAction(organizationId, branchId)
       : Promise.resolve({
           ready: true as const,
@@ -113,7 +128,7 @@ export default async function BranchCaissePage({ params }: PageProps) {
 
   return (
     <Suspense fallback={null}>
-      {hasRestaurant && !stockGate.ready ? (
+      {(hasRestaurant || showQuickSale) && !stockGate.ready ? (
         <div className="mx-auto max-w-6xl px-4 pt-4">
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm">
             {stockGate.foreignSession ? (
@@ -145,16 +160,17 @@ export default async function BranchCaissePage({ params }: PageProps) {
         folios={folios}
         readyOrders={readyOrders}
         todayPayments={todayPayments}
-        menuItems={menuItems}
+        menuItems={showQuickSale ? menuItems : []}
         activeStays={activeStays}
         hasStays={hasStays}
         hasRestaurant={hasRestaurant}
+        allowQuickSale={showQuickSale}
         currentUserName={
           sessionAuth?.user?.name?.trim() ||
           sessionAuth?.user?.email ||
           "Manager"
         }
-        stockReady={hasRestaurant ? stockGate.ready : false}
+        stockReady={hasRestaurant || showQuickSale ? stockGate.ready : false}
         stockSession={stockGate.session}
         stockForeignSession={stockGate.foreignSession}
         liveSituation={liveSituation}

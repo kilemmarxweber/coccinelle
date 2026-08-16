@@ -77,6 +77,8 @@ export const sharedBranchRoutes = {
     `${branchBasePath(orgId, branchId)}/rapports/mes-commandes`,
   rapportSejours: (orgId: string, branchId: string) =>
     `${branchBasePath(orgId, branchId)}/rapports/sejours`,
+  parametres: (orgId: string, branchId: string) =>
+    `${branchBasePath(orgId, branchId)}/parametres`,
 } as const;
 
 /** Sous-routes AGENCE (voyage). */

@@ -30,18 +30,18 @@ export const ORGANIZATION_BUSINESS_RESOURCES = [
   "branch",
 ] as const satisfies ReadonlyArray<keyof typeof accessControlStatements>;
 
-/** Catalogue complet : un entrée par slug org connu de l’app. */
+/** Catalogue complet : une entrée par slug org connu de l’app. */
 export const ORGANIZATION_ROLE_PERMISSION_CATALOG: OrganizationRoleCatalogEntry[] =
   ALL_ORG_ROLE_SLUGS.map((slug) => ({
     slug,
     label: ORG_ROLE_LABEL[slug],
-    permissions: (organizationRoleStatements[slug] ?? {}) as OrganizationRolePermissionPayload,
+    permissions: (organizationRoleStatements[slug] ??
+      {}) as OrganizationRolePermissionPayload,
   }));
 
-/** Rôles produit principaux (U04). */
+/** Rôles produit principaux. */
 export const PRODUCT_ORG_ROLES = [
   ORG_ROLE.OWNER,
-  ORG_ROLE.GESTIONNAIRE,
-  ORG_ROLE.GUICHETIER,
-  ORG_ROLE.PARENT,
+  ORG_ROLE.ADMIN,
+  ORG_ROLE.USER,
 ] as const;

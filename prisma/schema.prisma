@@ -109,6 +109,15 @@ enum BranchMemberStatus {
   REVOKED
 }
 
+/** Actions RBAC métier branche (cartes hub / modules). */
+enum PrivilegeAction {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  VIEW
+}
+
 enum HotelRoomStatus {
   AVAILABLE
   OCCUPIED
@@ -331,7 +340,7 @@ model Member {
   id             String         @id
   organizationId String
   userId         String
-  role           String         @default("member")
+  role           String         @default("user")
   createdAt      DateTime
   organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -691,6 +700,7 @@ model BranchMember {
   id        String             @id @default(uuid())
   branchId  String
   memberId  String
+  /// Slug BranchRole (ex. serveur, caissier_sejours).
   role      String             @default("branch_manager")
   isPrimary Boolean            @default(false)
   status    BranchMemberStatus @default(ACTIVE)
@@ -702,6 +712,35 @@ model BranchMember {
   @@unique([branchId, memberId])
   @@index([memberId])
   @@index([branchId, status])
+}
+
+/** Catalogue global des métiers branche (seed + édition Paramètres). */
+model BranchRole {
+  id          String                @id @default(uuid())
+  slug        String                @unique
+  label       String
+  description String?
+  isSystem    Boolean               @default(true)
+  sortOrder   Int                   @default(0)
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  privileges  BranchRolePrivilege[]
+}
+
+model BranchRolePrivilege {
+  id        String          @id @default(uuid())
+  roleId    String
+  /// Aligné DASH_CARD (ex. caisse, sejours, parametres).
+  resource  String
+  action    PrivilegeAction
+  allowed   Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  role      BranchRole      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, resource, action])
+  @@index([roleId])
+  @@index([resource])
 }
 
 model HotelRoomType {

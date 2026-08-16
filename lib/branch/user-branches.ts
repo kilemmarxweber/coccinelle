@@ -1,6 +1,6 @@
 /**
  * Accès branches dans une Organization
- * (BranchMember, owner/gestionnaire, ou admin plateforme).
+ * (BranchMember, owner/admin org, ou admin plateforme).
  */
 
 import { getUserOrganizationMembership } from "@/lib/auth/org-membership";
@@ -8,7 +8,7 @@ import {
   branchDashboardPath,
   organizationBranchesPath,
 } from "@/lib/branch/paths";
-import { isAppAdminRole, ORG_ROLE } from "@/lib/permissions";
+import { isAppAdminRole, normalizeOrgRole, ORG_ROLE } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 
 export type AccessibleBranch = {
@@ -80,7 +80,8 @@ function mapBranch(b: {
 }
 
 function isOrgBranchChooser(role: string | null | undefined): boolean {
-  return role === ORG_ROLE.OWNER || role === ORG_ROLE.GESTIONNAIRE;
+  const r = normalizeOrgRole(role);
+  return r === ORG_ROLE.OWNER || r === ORG_ROLE.ADMIN;
 }
 
 /** Branches ACTIVE accessibles (optionnellement filtrées par org). */
@@ -183,7 +184,7 @@ export async function canAccessBranch(
 
 /**
  * Post-login (hors admin plateforme) :
- * - owner / gestionnaire → liste `/admin/organizations/:orgId/branches`
+ * - owner / admin org → liste `/admin/organizations/:orgId/branches`
  * - staff 1 branche → dashboard
  * - staff multi → liste org
  */

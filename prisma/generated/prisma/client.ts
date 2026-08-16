@@ -154,6 +154,16 @@ export type PartnerBooking = Prisma.PartnerBookingModel
  */
 export type BranchMember = Prisma.BranchMemberModel
 /**
+ * Model BranchRole
+ * * Catalogue global des métiers branche (seed + édition Paramètres).
+ */
+export type BranchRole = Prisma.BranchRoleModel
+/**
+ * Model BranchRolePrivilege
+ * 
+ */
+export type BranchRolePrivilege = Prisma.BranchRolePrivilegeModel
+/**
  * Model HotelRoomType
  * 
  */

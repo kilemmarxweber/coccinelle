@@ -3,13 +3,12 @@ import { auth } from "@/lib/auth";
 import { getUserOrganizationMembership } from "@/lib/auth/org-membership";
 import { organizationBranchesPath } from "@/lib/branch/paths";
 import { resolveDefaultBranchPath } from "@/lib/branch/user-branches";
-import { APP_ROLE, ORG_ROLE } from "@/lib/permissions";
-import prisma from "@/lib/prisma";
+import { APP_ROLE, ORG_ROLE, normalizeOrgRole } from "@/lib/permissions";
 
 /**
  * Destination après login.
  * Admin plateforme → /admin.
- * Owner / gestionnaire / staff → liste ou dashboard sous
+ * Owner / admin org / user → liste ou dashboard sous
  * `/admin/organizations/[orgId]/branches…`.
  */
 export async function resolvePostLoginPath(requestHeaders: Headers): Promise<string> {
@@ -41,22 +40,14 @@ export async function resolvePostLoginPath(requestHeaders: Headers): Promise<str
   }
 
   const { organizationId, role } = membership;
+  const orgRole = normalizeOrgRole(role);
 
-  if (role === ORG_ROLE.GUICHETIER) {
+  if (orgRole === ORG_ROLE.USER) {
+    // Staff ops : tenter guichet legacy si pas de branche résolue
     return legacyGuichetPath(organizationId);
   }
 
-  if (role === ORG_ROLE.PARENT) {
-    const org = await prisma.organization.findUnique({
-      where: { id: organizationId },
-      select: { slug: true },
-    });
-    if (org?.slug) {
-      return `/${org.slug}/mes-reservations`;
-    }
-  }
-
-  if (role === ORG_ROLE.OWNER || role === ORG_ROLE.GESTIONNAIRE) {
+  if (orgRole === ORG_ROLE.OWNER || orgRole === ORG_ROLE.ADMIN) {
     return organizationBranchesPath(organizationId);
   }
 

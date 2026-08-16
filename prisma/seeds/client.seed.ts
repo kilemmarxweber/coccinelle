@@ -20,17 +20,17 @@ export async function seedClients() {
       },
     });
 
-    // 🔗 MEMBER (organization) — client = slug Better Auth `parent`
+    // 🔗 MEMBER (organization) — défaut `user`
     await prisma.member.upsert({
       where: {
         id: `${u.id}-member`,
       },
-      update: { role: "parent" },
+      update: { role: "user" },
       create: {
         id: `${u.id}-member`,
         userId: user.id,
         organizationId: "org-1",
-        role: "parent",
+        role: "user",
         createdAt: new Date(),
       },
     });

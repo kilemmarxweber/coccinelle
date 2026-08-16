@@ -20,6 +20,7 @@ import {
   Presentation,
   Receipt,
   ShoppingCart,
+  Settings,
   Truck,
   Users,
   UtensilsCrossed,
@@ -217,15 +218,31 @@ function rapportsSections(
 export function filterMenuSectionsForOpsRole(
   sections: BranchMenuSection[],
   opsRole: OpsRole | string,
+  allowedCardIds?: ReadonlySet<string> | "ALL" | null,
 ): BranchMenuSection[] {
   return sections
     .map((section) => ({
       ...section,
       items: section.items.filter((item) =>
-        canSeeDashCard(opsRole, item.id),
+        canSeeDashCard(opsRole, item.id, allowedCardIds),
       ),
     }))
     .filter((section) => section.items.length > 0);
+}
+
+function parametresCard(
+  organizationId: string,
+  branchId: string,
+): BranchMenuItem {
+  return {
+    id: DASH_CARD.PARAMETRES,
+    title: "Paramètres",
+    description: "Rôles métier et privilèges de la branche.",
+    href: sharedBranchRoutes.parametres(organizationId, branchId),
+    icon: Settings,
+    iconBg: "bg-slate-500/15",
+    iconColor: "text-slate-400",
+  };
 }
 
 /** Menu du hub selon BranchType — métier + taux change + rapports. */
@@ -379,6 +396,13 @@ export function menuSectionsForBranch(
         items: stockItems,
       },
       ...shared,
+      {
+        title: "ADMINISTRATION",
+        titleColor: "text-slate-400",
+        icon: Settings,
+        iconColor: "text-slate-400",
+        items: [parametresCard(organizationId, branchId)],
+      },
     ];
   }
 

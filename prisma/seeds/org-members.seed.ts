@@ -14,26 +14,20 @@ const ORG_MEMBERS = [
     role: ORG_ROLE.OWNER,
   },
   {
-    id: "user-gerant-1",
-    name: "Gérant Agence",
-    email: "gerant@test.com",
-    role: ORG_ROLE.GESTIONNAIRE,
+    id: "user-admin-1",
+    name: "Admin Org",
+    email: "admin-org@test.com",
+    role: ORG_ROLE.ADMIN,
   },
   {
-    id: "user-guichetier-1",
-    name: "Guichetier Comptoir",
-    email: "guichetier@test.com",
-    role: ORG_ROLE.GUICHETIER,
-  },
-  {
-    id: "user-client-1",
-    name: "Client Demo",
-    email: "client@test.com",
-    role: ORG_ROLE.PARENT,
+    id: "user-staff-1",
+    name: "User Staff",
+    email: "user@test.com",
+    role: ORG_ROLE.USER,
   },
 ] as const;
 
-/** Seeds les 4 rôles produit (owner / gérant / guichetier / client) pour org-1. */
+/** Seeds les 3 rôles org (owner / admin / user) pour org-1. */
 export async function seedOrgMembers() {
   const passwordHash = await hashPassword(SEED_PASSWORD);
 
@@ -73,22 +67,9 @@ export async function seedOrgMembers() {
         createdAt: new Date(),
       },
     });
-
-    if (m.role === ORG_ROLE.PARENT) {
-      await prisma.client.upsert({
-        where: { userId: user.id },
-        update: {},
-        create: {
-          id: `client-${user.id}`,
-          userId: user.id,
-          telephone: "+243900000001",
-          societe: null,
-        },
-      });
-    }
   }
 
   console.log(
-    `✅ Org members seeded (password: ${SEED_PASSWORD}) — owner / gerant / guichetier / client @test.com`,
+    `✅ Org members seeded (password: ${SEED_PASSWORD}) — owner / admin-org / user @test.com`,
   );
 }

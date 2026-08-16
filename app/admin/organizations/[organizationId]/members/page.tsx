@@ -18,7 +18,7 @@ import {
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { orgRoleLabel } from "@/lib/org-role-labels";
-import { ORG_ROLE } from "@/lib/permissions";
+import { ORG_ROLE, normalizeOrgRole } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,7 +47,7 @@ type MemberRow = {
 };
 
 function primaryRole(role: string): string {
-  return role.split(",")[0]?.trim() || ORG_ROLE.PARENT;
+  return normalizeOrgRole(role.split(",")[0]?.trim());
 }
 
 function initials(name: string): string {
@@ -58,15 +58,13 @@ function initials(name: string): string {
 }
 
 function roleBadgeClass(role: string): string {
-  switch (role) {
+  switch (normalizeOrgRole(role)) {
     case ORG_ROLE.OWNER:
       return "border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-100";
-    case ORG_ROLE.GESTIONNAIRE:
+    case ORG_ROLE.ADMIN:
       return "border-emerald-500/30 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100";
-    case ORG_ROLE.GUICHETIER:
+    case ORG_ROLE.USER:
       return "border-sky-500/30 bg-sky-500/10 text-sky-900 dark:text-sky-100";
-    case ORG_ROLE.PARENT:
-      return "border-border bg-muted text-muted-foreground";
     default:
       return "border-border bg-muted text-muted-foreground";
   }

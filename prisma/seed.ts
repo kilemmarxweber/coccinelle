@@ -11,10 +11,12 @@ import { seedOrganization } from "./seeds/organization.seed";
 import { seedOrgMembers } from "./seeds/org-members.seed";
 import { seedTrajetProgramme } from "./seeds/trajetProgram.seed";
 import { seedTrajetDepart } from "./seeds/trajetDepart.seed";
+import { seedBranchRoles } from "./seeds/branch-roles.seed";
 async function main() {
   console.log("🚀 START FULL SEED");
   await seedOrganization();
   await seedOrgMembers();
+  await seedBranchRoles();
   await seedTrajets();
   await seedTrajetProgramme();
   await seedTrajetDepart();

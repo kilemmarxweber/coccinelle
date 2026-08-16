@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
-import { isAppAdminRole } from "@/lib/permissions";
+import { isAppAdminRole, normalizeOrgRole, ORG_ROLE } from "@/lib/permissions";
 import { bootstrapBranchByType } from "@/lib/branch/bootstrap-branch";
 import {
   deriveAgencyFlags,
@@ -126,7 +126,8 @@ export async function createBranchWithBootstrapAction(raw: CreateBranchInput) {
   if (
     !isAdmin &&
     membership &&
-    !["owner", "gestionnaire"].includes(membership.role)
+    normalizeOrgRole(membership.role) !== ORG_ROLE.OWNER &&
+    normalizeOrgRole(membership.role) !== ORG_ROLE.ADMIN
   ) {
     return {
       ok: false as const,
@@ -317,7 +318,12 @@ async function assertCanManageBranch(
     return { ok: false, message: "Vous n’appartenez pas à cette organisation." };
   }
   const roles = membership.role.split(",").map((r) => r.trim());
-  if (!roles.some((r) => r === "owner" || r === "gestionnaire")) {
+  if (
+    !roles.some((r) => {
+      const n = normalizeOrgRole(r);
+      return n === ORG_ROLE.OWNER || n === ORG_ROLE.ADMIN;
+    })
+  ) {
     return { ok: false, message: "Permission insuffisante pour gérer les branches." };
   }
   return { ok: true, userId: session.user.id };

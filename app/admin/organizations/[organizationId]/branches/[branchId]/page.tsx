@@ -4,6 +4,8 @@ import { auth } from "@/lib/auth";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { resolveCurrentBranchOpsRole } from "@/lib/branch/resolve-ops-role";
+import { getViewResourcesForRole } from "@/lib/branch/privileges";
+import { isHospitality } from "@/lib/branch/hospitality";
 import { BranchDashboard } from "./branch-dashboard";
 
 type PageProps = {
@@ -36,6 +38,13 @@ export default async function BranchDashboardPage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
   const branch = await requireBranchContext({ organizationId, branchId });
   const opsRole = await resolveCurrentBranchOpsRole(organizationId, branchId);
+  const viewResources = isHospitality(branch.type)
+    ? await getViewResourcesForRole(opsRole)
+    : "ALL";
+  const allowedCardIds =
+    viewResources === "ALL"
+      ? ("ALL" as const)
+      : Array.from(viewResources);
 
   return (
     <BranchDashboard
@@ -54,6 +63,7 @@ export default async function BranchDashboardPage({ params }: PageProps) {
       hasAlimentation={branch.hasAlimentation}
       organizationName={branch.organizationName}
       opsRole={opsRole}
+      allowedCardIds={allowedCardIds}
     />
   );
 }

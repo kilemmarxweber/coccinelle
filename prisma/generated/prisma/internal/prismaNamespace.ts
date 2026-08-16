@@ -406,6 +406,8 @@ export const ModelName = {
   BranchPartner: 'BranchPartner',
   PartnerBooking: 'PartnerBooking',
   BranchMember: 'BranchMember',
+  BranchRole: 'BranchRole',
+  BranchRolePrivilege: 'BranchRolePrivilege',
   HotelRoomType: 'HotelRoomType',
   HotelRoom: 'HotelRoom',
   ShopCategory: 'ShopCategory',
@@ -445,7 +447,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationRole" | "member" | "invitation" | "client" | "trajet" | "trajetProgramme" | "trajetDepart" | "passager" | "reservation" | "colis" | "reservationDraft" | "paiement" | "penalite" | "branch" | "branchPartner" | "partnerBooking" | "branchMember" | "hotelRoomType" | "hotelRoom" | "shopCategory" | "shopProduct" | "shopSale" | "shopSaleItem" | "shopStockMovement" | "exchangeRate" | "cashSession" | "hotelStay" | "folio" | "folioLine" | "payment" | "hotelMenuItem" | "hotelStockMovement" | "serviceStockSession" | "serviceStockLine" | "serviceStockTopUp" | "hotelOrder" | "hotelOrderItem" | "branchNotification" | "purchaseOrder" | "purchaseOrderItem" | "branchExpense"
+    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationRole" | "member" | "invitation" | "client" | "trajet" | "trajetProgramme" | "trajetDepart" | "passager" | "reservation" | "colis" | "reservationDraft" | "paiement" | "penalite" | "branch" | "branchPartner" | "partnerBooking" | "branchMember" | "branchRole" | "branchRolePrivilege" | "hotelRoomType" | "hotelRoom" | "shopCategory" | "shopProduct" | "shopSale" | "shopSaleItem" | "shopStockMovement" | "exchangeRate" | "cashSession" | "hotelStay" | "folio" | "folioLine" | "payment" | "hotelMenuItem" | "hotelStockMovement" | "serviceStockSession" | "serviceStockLine" | "serviceStockTopUp" | "hotelOrder" | "hotelOrderItem" | "branchNotification" | "purchaseOrder" | "purchaseOrderItem" | "branchExpense"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2074,6 +2076,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.BranchMemberCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.BranchMemberCountAggregateOutputType> | number
+        }
+      }
+    }
+    BranchRole: {
+      payload: Prisma.$BranchRolePayload<ExtArgs>
+      fields: Prisma.BranchRoleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BranchRoleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BranchRoleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePayload>
+        }
+        findFirst: {
+          args: Prisma.BranchRoleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BranchRoleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePayload>
+        }
+        findMany: {
+          args: Prisma.BranchRoleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePayload>[]
+        }
+        create: {
+          args: Prisma.BranchRoleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePayload>
+        }
+        createMany: {
+          args: Prisma.BranchRoleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BranchRoleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePayload>[]
+        }
+        delete: {
+          args: Prisma.BranchRoleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePayload>
+        }
+        update: {
+          args: Prisma.BranchRoleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePayload>
+        }
+        deleteMany: {
+          args: Prisma.BranchRoleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BranchRoleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BranchRoleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePayload>[]
+        }
+        upsert: {
+          args: Prisma.BranchRoleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePayload>
+        }
+        aggregate: {
+          args: Prisma.BranchRoleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBranchRole>
+        }
+        groupBy: {
+          args: Prisma.BranchRoleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BranchRoleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BranchRoleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BranchRoleCountAggregateOutputType> | number
+        }
+      }
+    }
+    BranchRolePrivilege: {
+      payload: Prisma.$BranchRolePrivilegePayload<ExtArgs>
+      fields: Prisma.BranchRolePrivilegeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BranchRolePrivilegeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePrivilegePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BranchRolePrivilegeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePrivilegePayload>
+        }
+        findFirst: {
+          args: Prisma.BranchRolePrivilegeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePrivilegePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BranchRolePrivilegeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePrivilegePayload>
+        }
+        findMany: {
+          args: Prisma.BranchRolePrivilegeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePrivilegePayload>[]
+        }
+        create: {
+          args: Prisma.BranchRolePrivilegeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePrivilegePayload>
+        }
+        createMany: {
+          args: Prisma.BranchRolePrivilegeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BranchRolePrivilegeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePrivilegePayload>[]
+        }
+        delete: {
+          args: Prisma.BranchRolePrivilegeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePrivilegePayload>
+        }
+        update: {
+          args: Prisma.BranchRolePrivilegeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePrivilegePayload>
+        }
+        deleteMany: {
+          args: Prisma.BranchRolePrivilegeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BranchRolePrivilegeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BranchRolePrivilegeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePrivilegePayload>[]
+        }
+        upsert: {
+          args: Prisma.BranchRolePrivilegeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchRolePrivilegePayload>
+        }
+        aggregate: {
+          args: Prisma.BranchRolePrivilegeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBranchRolePrivilege>
+        }
+        groupBy: {
+          args: Prisma.BranchRolePrivilegeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BranchRolePrivilegeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BranchRolePrivilegeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BranchRolePrivilegeCountAggregateOutputType> | number
         }
       }
     }
@@ -4266,6 +4416,33 @@ export const BranchMemberScalarFieldEnum = {
 export type BranchMemberScalarFieldEnum = (typeof BranchMemberScalarFieldEnum)[keyof typeof BranchMemberScalarFieldEnum]
 
 
+export const BranchRoleScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  label: 'label',
+  description: 'description',
+  isSystem: 'isSystem',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BranchRoleScalarFieldEnum = (typeof BranchRoleScalarFieldEnum)[keyof typeof BranchRoleScalarFieldEnum]
+
+
+export const BranchRolePrivilegeScalarFieldEnum = {
+  id: 'id',
+  roleId: 'roleId',
+  resource: 'resource',
+  action: 'action',
+  allowed: 'allowed',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BranchRolePrivilegeScalarFieldEnum = (typeof BranchRolePrivilegeScalarFieldEnum)[keyof typeof BranchRolePrivilegeScalarFieldEnum]
+
+
 export const HotelRoomTypeScalarFieldEnum = {
   id: 'id',
   branchId: 'branchId',
@@ -5102,6 +5279,20 @@ export type ListEnumBranchMemberStatusFieldRefInput<$PrismaModel> = FieldRefInpu
 
 
 /**
+ * Reference to a field of type 'PrivilegeAction'
+ */
+export type EnumPrivilegeActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrivilegeAction'>
+    
+
+
+/**
+ * Reference to a field of type 'PrivilegeAction[]'
+ */
+export type ListEnumPrivilegeActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrivilegeAction[]'>
+    
+
+
+/**
  * Reference to a field of type 'HotelSpaceKind'
  */
 export type EnumHotelSpaceKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HotelSpaceKind'>
@@ -5414,6 +5605,8 @@ export type GlobalOmitConfig = {
   branchPartner?: Prisma.BranchPartnerOmit
   partnerBooking?: Prisma.PartnerBookingOmit
   branchMember?: Prisma.BranchMemberOmit
+  branchRole?: Prisma.BranchRoleOmit
+  branchRolePrivilege?: Prisma.BranchRolePrivilegeOmit
   hotelRoomType?: Prisma.HotelRoomTypeOmit
   hotelRoom?: Prisma.HotelRoomOmit
   shopCategory?: Prisma.ShopCategoryOmit

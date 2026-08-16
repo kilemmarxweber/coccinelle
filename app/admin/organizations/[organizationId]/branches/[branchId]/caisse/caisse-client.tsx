@@ -170,6 +170,8 @@ type Props = {
   activeStays?: ActiveStay[];
   hasStays?: boolean;
   hasRestaurant?: boolean;
+  /** Vente rapide POS (caissier resto / owner) — distinct de file F&B. */
+  allowQuickSale?: boolean;
   currentUserName?: string;
   stockReady?: boolean;
   stockSession?: ServiceStockOpsSession | null;
@@ -225,8 +227,13 @@ function printHtml(html: string) {
   }, 200);
 }
 
-function defaultHubTab(hasStays: boolean, hasRestaurant: boolean): HubTab {
+function defaultHubTab(
+  hasStays: boolean,
+  hasRestaurant: boolean,
+  allowQuickSale: boolean,
+): HubTab {
   if (hasRestaurant) return "fnb";
+  if (allowQuickSale) return "vente";
   if (hasStays) return "folios";
   return "paiements";
 }
@@ -235,12 +242,13 @@ function parseHubTab(
   raw: string | null,
   hasStays: boolean,
   hasRestaurant: boolean,
+  allowQuickSale: boolean,
 ): HubTab {
   if (raw === "fnb" && hasRestaurant) return "fnb";
-  if (raw === "vente" && hasRestaurant) return "vente";
+  if (raw === "vente" && allowQuickSale) return "vente";
   if (raw === "folios" && hasStays) return "folios";
   if (raw === "paiements") return "paiements";
-  return defaultHubTab(hasStays, hasRestaurant);
+  return defaultHubTab(hasStays, hasRestaurant, allowQuickSale);
 }
 
 export function CaisseClient(props: Props) {
@@ -253,8 +261,14 @@ export function CaisseClient(props: Props) {
   >("CASH");
   const hasStays = props.hasStays !== false;
   const hasRestaurant = props.hasRestaurant !== false;
+  const allowQuickSale = props.allowQuickSale === true;
   const [tab, setTab] = useState<HubTab>(() =>
-    parseHubTab(searchParams.get("tab"), hasStays, hasRestaurant),
+    parseHubTab(
+      searchParams.get("tab"),
+      hasStays,
+      hasRestaurant,
+      allowQuickSale,
+    ),
   );
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [folioPayId, setFolioPayId] = useState<string | null>(null);
@@ -298,9 +312,11 @@ export function CaisseClient(props: Props) {
   useEffect(() => {
     const fromUrl = searchParams.get("tab");
     if (fromUrl) {
-      setTab(parseHubTab(fromUrl, hasStays, hasRestaurant));
+      setTab(
+        parseHubTab(fromUrl, hasStays, hasRestaurant, allowQuickSale),
+      );
     }
-  }, [searchParams, hasStays, hasRestaurant]);
+  }, [searchParams, hasStays, hasRestaurant, allowQuickSale]);
 
   useEffect(() => {
     // File d’attente check-out : ouvrir l’onglet notes, sans auto-ouvrir le paiement.
@@ -974,7 +990,7 @@ export function CaisseClient(props: Props) {
               hasRestaurant
                 ? (["fnb", `F&B (${props.readyOrders.length})`, CircleDollarSign] as const)
                 : null,
-              hasRestaurant
+              allowQuickSale
                 ? (["vente", "Vente rapide", ShoppingBag] as const)
                 : null,
               hasStays

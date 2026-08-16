@@ -27,6 +27,23 @@ async function ctx(organizationId: string, branchId: string) {
   return { user: session.user, branch };
 }
 
+async function assertCashPrivilege(
+  organizationId: string,
+  branchId: string,
+  action: "VIEW" | "READ" | "CREATE" | "UPDATE" | "DELETE" = "CREATE",
+) {
+  const { branch } = await ctx(organizationId, branchId);
+  const { isHospitality } = await import("@/lib/branch/hospitality");
+  if (!isHospitality(branch.type)) return;
+  const { assertBranchPrivilege } = await import("@/lib/branch/privileges");
+  await assertBranchPrivilege({
+    organizationId,
+    branchId,
+    resource: "caisse",
+    action,
+  });
+}
+
 function revalidateBranch(organizationId: string, branchId: string) {
   const base = branchBasePath(organizationId, branchId);
   revalidatePath(base);
@@ -183,6 +200,7 @@ export async function openCashSessionAction(input: {
   openingFloat?: number;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
+  await assertCashPrivilege(input.organizationId, input.branchId, "CREATE");
   const open = await getOpenCashSession(input.branchId, user.id);
   if (open) throw new Error("Vous avez déjà une session de caisse ouverte.");
   const session = await prisma.cashSession.create({
@@ -241,6 +259,7 @@ export async function createPaymentAction(input: {
   isRefund?: boolean;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
+  await assertCashPrivilege(input.organizationId, input.branchId, "CREATE");
   const isRefund = Boolean(input.isRefund);
   if (isRefund) {
     if (!(input.amountCdf < -0.01)) {

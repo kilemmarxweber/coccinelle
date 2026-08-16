@@ -1,13 +1,13 @@
-import { ALL_ORG_ROLE_SLUGS, ORG_ROLE } from "@/lib/permissions";
+import { ALL_ORG_ROLE_SLUGS, ORG_ROLE, normalizeOrgRole } from "@/lib/permissions";
 
-/** Libellés UI FR pour les slugs de rôle d’organisation (U04). */
+/** Libellés UI FR pour les slugs de rôle d’organisation. */
 export const ORG_ROLE_LABEL: Record<(typeof ALL_ORG_ROLE_SLUGS)[number], string> = {
   [ORG_ROLE.OWNER]: "Owner",
-  [ORG_ROLE.GESTIONNAIRE]: "Gérant",
-  [ORG_ROLE.GUICHETIER]: "Guichetier",
-  [ORG_ROLE.PARENT]: "Client",
+  [ORG_ROLE.ADMIN]: "Admin",
+  [ORG_ROLE.USER]: "User",
 };
 
 export function orgRoleLabel(slug: string): string {
-  return ORG_ROLE_LABEL[slug as keyof typeof ORG_ROLE_LABEL] ?? slug;
+  const normalized = normalizeOrgRole(slug);
+  return ORG_ROLE_LABEL[normalized] ?? slug;
 }

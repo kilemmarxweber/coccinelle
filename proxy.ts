@@ -104,7 +104,7 @@ export async function proxy(request: NextRequest) {
       }
     }
 
-    // Création d’org : admin plateforme uniquement (gestionnaire / guichetier exclus)
+    // Création d’org : admin plateforme uniquement (owner/admin/user org exclus)
     if (!isAppAdminRole(role) && pathname.startsWith("/admin/organizations/new")) {
       const homePath = await resolvePostLoginPath(request.headers);
       return NextResponse.redirect(new URL(homePath, request.url));

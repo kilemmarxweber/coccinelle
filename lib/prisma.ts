@@ -6,7 +6,7 @@ const adapter = new PrismaPg({
 });
 
 /** Incrémenter après tout changement de modèle Prisma pour invalider le singleton HMR. */
-const PRISMA_SCHEMA_REV = 29;
+const PRISMA_SCHEMA_REV = 30;
 
 const globalForPrisma = global as unknown as {
   prisma: PrismaClient | undefined;
@@ -119,6 +119,8 @@ function resolvePrisma(): PrismaClient {
       !modelHasField(existing, "HotelStay", "idDocumentImageUrl") ||
       !modelHasField(existing, "HotelStay", "checkoutReminderSentAt") ||
       !modelHasField(existing, "User", "phone") ||
+      !modelHasField(existing, "BranchRole", "slug") ||
+      !enumHasValue(existing, "PrivilegeAction", "VIEW") ||
       !enumHasValue(existing, "PaymentMethod", "BANK") ||
       !enumHasValue(existing, "IdDocumentType", "CNI"));
 

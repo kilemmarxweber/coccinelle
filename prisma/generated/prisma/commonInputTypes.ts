@@ -677,6 +677,23 @@ export type EnumBranchMemberStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumBranchMemberStatusFilter<$PrismaModel>
 }
 
+export type EnumPrivilegeActionFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivilegeAction | Prisma.EnumPrivilegeActionFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivilegeAction[] | Prisma.ListEnumPrivilegeActionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivilegeAction[] | Prisma.ListEnumPrivilegeActionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivilegeActionFilter<$PrismaModel> | $Enums.PrivilegeAction
+}
+
+export type EnumPrivilegeActionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivilegeAction | Prisma.EnumPrivilegeActionFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivilegeAction[] | Prisma.ListEnumPrivilegeActionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivilegeAction[] | Prisma.ListEnumPrivilegeActionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivilegeActionWithAggregatesFilter<$PrismaModel> | $Enums.PrivilegeAction
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPrivilegeActionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPrivilegeActionFilter<$PrismaModel>
+}
+
 export type EnumHotelSpaceKindFilter<$PrismaModel = never> = {
   equals?: $Enums.HotelSpaceKind | Prisma.EnumHotelSpaceKindFieldRefInput<$PrismaModel>
   in?: $Enums.HotelSpaceKind[] | Prisma.ListEnumHotelSpaceKindFieldRefInput<$PrismaModel>
@@ -1496,6 +1513,23 @@ export type NestedEnumBranchMemberStatusWithAggregatesFilter<$PrismaModel = neve
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumBranchMemberStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumBranchMemberStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumPrivilegeActionFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivilegeAction | Prisma.EnumPrivilegeActionFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivilegeAction[] | Prisma.ListEnumPrivilegeActionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivilegeAction[] | Prisma.ListEnumPrivilegeActionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivilegeActionFilter<$PrismaModel> | $Enums.PrivilegeAction
+}
+
+export type NestedEnumPrivilegeActionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivilegeAction | Prisma.EnumPrivilegeActionFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivilegeAction[] | Prisma.ListEnumPrivilegeActionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivilegeAction[] | Prisma.ListEnumPrivilegeActionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivilegeActionWithAggregatesFilter<$PrismaModel> | $Enums.PrivilegeAction
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPrivilegeActionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPrivilegeActionFilter<$PrismaModel>
 }
 
 export type NestedEnumHotelSpaceKindFilter<$PrismaModel = never> = {
