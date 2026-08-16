@@ -1,4 +1,5 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import { DASH_CARD } from "@/lib/branch/ops-roles";
 import {
   listConsumableItemsAction,
   listStockMovementsAction,
@@ -17,6 +18,7 @@ export default async function HotelLivraisonPage({ params }: PageProps) {
     branchId,
     requireModule: "hotel",
     requireHospitality: "livraison",
+    requireDashCard: DASH_CARD.LIVRAISON,
   });
   const [items, movements, branch] = await Promise.all([
     listConsumableItemsAction(organizationId, branchId),

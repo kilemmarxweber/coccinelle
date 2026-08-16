@@ -32,7 +32,7 @@ const modeTransportSchema = z.enum(["BUS", "AVION"]);
 
 export async function getTrajetsForOrganizationAction(organizationId: string) {
   const perm = await assertOrganizationPermission(organizationId, {
-    depart: ["read"],
+    trajet: ["voir"],
   });
   if (!perm.ok) return { ok: false as const, message: perm.message };
 
@@ -109,7 +109,7 @@ export async function createTrajetAction(input: unknown): Promise<ActionResult<{
   if (!parsed.success) return { ok: false, message: zodFirstMessage(parsed.error) };
 
   const perm = await assertOrganizationPermission(parsed.data.organizationId, {
-    trajet: ["create"],
+    trajet: ["ajouter"],
   });
   if (!perm.ok) return { ok: false, message: perm.message };
 
@@ -144,7 +144,7 @@ export async function createTrajetDepartAction(
   if (!parsed.success) return { ok: false, message: zodFirstMessage(parsed.error) };
 
   const perm = await assertOrganizationPermission(parsed.data.organizationId, {
-    depart: ["create"],
+    depart: ["ajouter"],
   });
   if (!perm.ok) return { ok: false, message: perm.message };
 
@@ -178,7 +178,7 @@ export async function provisionDemoTrajetsAction(
   if (!parsed.success) return { ok: false, message: zodFirstMessage(parsed.error) };
 
   const perm = await assertOrganizationPermission(parsed.data, {
-    trajet: ["create"],
+    trajet: ["ajouter"],
   });
   if (!perm.ok) return { ok: false, message: perm.message };
 

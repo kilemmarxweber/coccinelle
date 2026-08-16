@@ -1,4 +1,5 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
+import { DASH_CARD } from "@/lib/branch/ops-roles";
 import { getActiveExchangeRate } from "@/lib/cash/actions";
 import {
   listRoomTypesAction,
@@ -17,6 +18,7 @@ export default async function SallesReunionPage({ params }: PageProps) {
     branchId,
     requireModule: "hotel",
     requireHospitality: "stays",
+    requireDashCard: DASH_CARD.SALLES,
   });
   const [rooms, roomTypes, rate] = await Promise.all([
     listRoomsWithTypesAction(organizationId, branchId, { kind: "MEETING" }),

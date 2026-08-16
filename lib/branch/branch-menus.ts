@@ -33,11 +33,7 @@ import {
   sharedBranchRoutes,
 } from "@/lib/branch/paths";
 import { isHospitality } from "@/lib/branch/hospitality";
-import {
-  canSeeDashCard,
-  DASH_CARD,
-  type OpsRole,
-} from "@/lib/branch/ops-roles";
+import { DASH_CARD } from "@/lib/branch/ops-roles";
 
 export type BranchMenuFlags = {
   hasStays?: boolean;
@@ -127,6 +123,22 @@ function depensesCard(
   };
 }
 
+function equipeCard(
+  organizationId: string,
+  branchId: string,
+): BranchMenuItem {
+  return {
+    id: DASH_CARD.EQUIPE,
+    title: "Équipe / Rôles",
+    description:
+      "Personnel de cet établissement et rôles org (matrice FR, partagés).",
+    href: sharedBranchRoutes.equipe(organizationId, branchId),
+    icon: Users,
+    iconBg: "bg-amber-500/15",
+    iconColor: "text-amber-500",
+  };
+}
+
 /** Sections communes : analyses & rapports (tous BranchType). */
 function rapportsSections(
   organizationId: string,
@@ -213,19 +225,39 @@ function rapportsSections(
   ];
 }
 
-/** Filtre les sections selon le rôle ops (hospitalité). */
-export function filterMenuSectionsForOpsRole(
+/**
+ * Filtre synchrone par IDs de cartes visibles (sérialisables RSC → client).
+ * Cartes sans `id` restent visibles.
+ */
+export function filterMenuSectionsByVisibleCardIds(
   sections: BranchMenuSection[],
-  opsRole: OpsRole | string,
+  visibleCardIds: ReadonlySet<string> | readonly string[],
 ): BranchMenuSection[] {
+  const allowed =
+    visibleCardIds instanceof Set
+      ? visibleCardIds
+      : new Set(visibleCardIds);
   return sections
     .map((section) => ({
       ...section,
-      items: section.items.filter((item) =>
-        canSeeDashCard(opsRole, item.id),
-      ),
+      items: section.items.filter((item) => {
+        if (!item.id) return true;
+        return allowed.has(item.id);
+      }),
     }))
     .filter((section) => section.items.length > 0);
+}
+
+/**
+ * @deprecated R06 — utiliser `filterMenuSectionsByCatalog` (permissions FR).
+ * Conservé pour imports legacy ; ne plus appeler depuis le hub.
+ */
+export function filterMenuSectionsForOpsRole(
+  sections: BranchMenuSection[],
+  _opsRole?: string,
+): BranchMenuSection[] {
+  void _opsRole;
+  return sections;
 }
 
 /** Menu du hub selon BranchType — métier + taux change + rapports. */
@@ -302,6 +334,7 @@ export function menuSectionsForBranch(
     dailyItems.push(tauxChangeCard(organizationId, branchId));
     dailyItems.push(bonsCommandeCard(organizationId, branchId));
     dailyItems.push(depensesCard(organizationId, branchId));
+    dailyItems.push(equipeCard(organizationId, branchId));
 
     const stockItems: BranchMenuItem[] = [];
     if (hasStays) {
@@ -403,6 +436,7 @@ export function menuSectionsForBranch(
           tauxChangeCard(organizationId, branchId),
           bonsCommandeCard(organizationId, branchId),
           depensesCard(organizationId, branchId),
+          equipeCard(organizationId, branchId),
           {
             id: DASH_CARD.BOUTIQUE_PRODUITS,
             title: "Produits",
@@ -470,6 +504,7 @@ export function menuSectionsForBranch(
         tauxChangeCard(organizationId, branchId),
         bonsCommandeCard(organizationId, branchId),
         depensesCard(organizationId, branchId),
+        equipeCard(organizationId, branchId),
       ],
     },
     {

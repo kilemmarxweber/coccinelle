@@ -9,12 +9,14 @@ import { seedPenalites } from "./seeds/penalite.seed";
 import { seedPassagers } from "./seeds/passages.seed";
 import { seedOrganization } from "./seeds/organization.seed";
 import { seedOrgMembers } from "./seeds/org-members.seed";
+import { seedOrgRoles } from "./seeds/org-roles.seed";
 import { seedTrajetProgramme } from "./seeds/trajetProgram.seed";
 import { seedTrajetDepart } from "./seeds/trajetDepart.seed";
 async function main() {
   console.log("🚀 START FULL SEED");
   await seedOrganization();
   await seedOrgMembers();
+  await seedOrgRoles();
   await seedTrajets();
   await seedTrajetProgramme();
   await seedTrajetDepart();

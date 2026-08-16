@@ -41,7 +41,11 @@ type ReceiptLine = {
 
 export default async function ReceiptPage({ params }: PageProps) {
   const { organizationId, branchId, paymentId } = await params;
-  const branch = await requireBranchContext({ organizationId, branchId });
+  const branch = await requireBranchContext({
+    organizationId,
+    branchId,
+    requireDashCard: "caisse",
+  });
   const payment = await getPaymentByIdAction(
     organizationId,
     branchId,

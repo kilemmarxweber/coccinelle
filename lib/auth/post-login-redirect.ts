@@ -46,7 +46,7 @@ export async function resolvePostLoginPath(requestHeaders: Headers): Promise<str
     return legacyGuichetPath(organizationId);
   }
 
-  if (role === ORG_ROLE.PARENT) {
+  if (role === ORG_ROLE.PARENT || role === ORG_ROLE.CLIENT) {
     const org = await prisma.organization.findUnique({
       where: { id: organizationId },
       select: { slug: true },
@@ -56,7 +56,11 @@ export async function resolvePostLoginPath(requestHeaders: Headers): Promise<str
     }
   }
 
-  if (role === ORG_ROLE.OWNER || role === ORG_ROLE.GESTIONNAIRE) {
+  if (
+    role === ORG_ROLE.OWNER ||
+    role === ORG_ROLE.GESTIONNAIRE ||
+    role === ORG_ROLE.GERANT
+  ) {
     return organizationBranchesPath(organizationId);
   }
 

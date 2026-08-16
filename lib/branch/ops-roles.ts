@@ -41,6 +41,8 @@ export const DASH_CARD = {
   LIVRAISON: "livraison",
   BONS_COMMANDE: "bons_commande",
   DEPENSES: "depenses",
+  /** Personnel de la branche (R04) — visible gérant / propriétaire via GERANT_MATRIX / ALL. */
+  EQUIPE: "equipe",
   RAPPORT_TABLEAU: "rapport_tableau",
   RAPPORT_VENTES: "rapport_ventes",
   RAPPORT_ACHATS: "rapport_achats",
@@ -73,6 +75,12 @@ const GERANT_EXCLUDED = new Set<string>([
   DASH_CARD.RAPPORT_MES_COMMANDES,
 ]);
 
+/**
+ * @deprecated R06 — ne plus utiliser comme source d’autorité.
+ * Remplacé par le catalogue FR via `assertOrganizationPermission` /
+ * `filterMenuSectionsByCatalog` / `requireDashCard` → `voir`.
+ * Conservé uniquement pour compat lecture legacy / tests.
+ */
 const ROLE_CARDS: Record<
   string,
   ReadonlySet<string> | "ALL" | "GERANT_MATRIX"
@@ -150,10 +158,14 @@ export function resolveOpsRole(input: {
   if (branch && (Object.values(OPS_ROLE) as string[]).includes(branch)) {
     return branch as OpsRole;
   }
-  if (org === "gestionnaire") return OPS_ROLE.GERANT;
+  if (org === "gestionnaire" || org === "gerant") return OPS_ROLE.GERANT;
   return OPS_ROLE.GERANT;
 }
 
+/**
+ * @deprecated R06 — utiliser `assertDashCardVoir` / catalogue `service_stock.voir`.
+ * Ne plus traiter comme seule autorité runtime.
+ */
 export function canSeeDashCard(
   opsRole: OpsRole | string,
   cardId: string | undefined | null,
@@ -169,7 +181,10 @@ export function canSeeDashCard(
   return spec.has(cardId);
 }
 
-/** Ouverture / clôture / réassort du float — caissier (et gérant / owner), pas le serveur. */
+/**
+ * @deprecated R06 — utiliser `assertOrganizationPermission` avec
+ * `service_stock: ["ouvrir"|"fermer"|"modifier"]`.
+ */
 export function canOperateServiceStock(opsRole: OpsRole | string): boolean {
   return canSeeDashCard(opsRole, DASH_CARD.SERVICE_STOCK);
 }

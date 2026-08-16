@@ -70,7 +70,7 @@ export function GuichetHome({
               <CardTitle className="text-base">Accès vente refusé</CardTitle>
               <CardDescription>
                 {denyMessage ??
-                  "Permission inscription:create requise (rôle guichetier ou owner)."}
+                  "Permission inscription:ajouter requise (rôle guichetier ou owner)."}
               </CardDescription>
             </CardHeader>
           </Card>

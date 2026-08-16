@@ -230,7 +230,7 @@ export function EmbarquementClient({
             <CardTitle className="text-base">Accès embarquement refusé</CardTitle>
             <CardDescription>
               {denyMessage ??
-                "Permission embarquement:scan requise (guichetier ou owner)."}
+                "Permission embarquement:scanner requise (guichetier ou owner)."}
             </CardDescription>
           </CardHeader>
         </Card>

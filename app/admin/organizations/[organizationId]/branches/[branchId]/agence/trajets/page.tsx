@@ -11,6 +11,7 @@ export default async function AgenceTrajetsPage({ params }: PageProps) {
     organizationId,
     branchId,
     requireModule: "agence",
+    requireDashCard: "trajets",
   });
   return (
     <BranchModulePlaceholder

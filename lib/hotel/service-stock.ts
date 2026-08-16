@@ -3,17 +3,16 @@
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
+import {
+  hasOrganizationPermission,
+  requireOrganizationPermission,
+} from "@/lib/auth/organization-permission";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { assertHospitalityModule } from "@/lib/branch/hospitality";
 import { branchBasePath, hotelRoutes } from "@/lib/branch/paths";
-import {
-  canOperateServiceStock,
-  normalizeOpsRole,
-  OPS_ROLE,
-} from "@/lib/branch/ops-roles";
-import { resolveCurrentBranchOpsRole } from "@/lib/branch/resolve-ops-role";
 import prisma from "@/lib/prisma";
 import type { Prisma } from "@/prisma/generated/prisma/client";
+import { normalizeOpsRole, OPS_ROLE } from "@/lib/branch/ops-roles";
 
 export type StorageZone = "MAGASIN" | "CONGELATEUR";
 
@@ -239,8 +238,9 @@ export async function getServiceStockGateAction(
   };
 
   const confirmed = Boolean(session.openingConfirmedAt) && session.status === "OPEN";
-  const opsRole = await resolveCurrentBranchOpsRole(organizationId, branchId);
-  const operator = canOperateServiceStock(opsRole);
+  const operator = await hasOrganizationPermission(organizationId, {
+    service_stock: ["ouvrir"],
+  });
 
   const floatByItemId: Record<string, number> = {};
   if (confirmed) {
@@ -647,6 +647,9 @@ export async function openServiceStockSessionAction(input: {
   notes?: string | null;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
+  await requireOrganizationPermission(input.organizationId, {
+    service_stock: ["ouvrir"],
+  });
   const vendorUserId = input.vendorUserId.trim();
   if (!vendorUserId) throw new Error("Choisissez l’entrant.");
 
@@ -869,6 +872,9 @@ export async function confirmServiceStockOpeningAction(input: {
   counts: { lineId: string; qtyOpeningCounted: number }[];
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
+  await requireOrganizationPermission(input.organizationId, {
+    service_stock: ["ouvrir"],
+  });
   const session = await prisma.serviceStockSession.findFirst({
     where: {
       id: input.sessionId,
@@ -946,6 +952,9 @@ export async function topUpServiceStockAction(input: {
   note?: string | null;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
+  await requireOrganizationPermission(input.organizationId, {
+    service_stock: ["modifier"],
+  });
   const qty = Math.max(0, Math.round(Number(input.quantity) || 0));
   if (!(qty > 0)) throw new Error("Quantité invalide.");
   const zone = normalizeZone(input.sourceZone);
@@ -1060,6 +1069,9 @@ export async function closeServiceStockSessionAction(input: {
   }[];
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
+  await requireOrganizationPermission(input.organizationId, {
+    service_stock: ["fermer"],
+  });
   const disposition = input.disposition === "RETURN_DEPOT" ? "RETURN_DEPOT" : "HANDOVER";
   const session = await prisma.serviceStockSession.findFirst({
     where: {

@@ -18,7 +18,7 @@ export default async function GerantReservationsPage({
   const sp = await searchParams;
 
   const perm = await assertOrganizationPermission(orgId, {
-    inscription: ["update"],
+    inscription: ["modifier"],
   });
   if (!perm.ok) {
     return (

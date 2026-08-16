@@ -7,10 +7,10 @@ import {
   DashboardSection,
 } from "@/components/ui/dashboard-menu-card";
 import {
-  filterMenuSectionsForOpsRole,
+  filterMenuSectionsByVisibleCardIds,
   menuSectionsForBranch,
 } from "@/lib/branch/branch-menus";
-import { branchTypeDetailLabel, isHospitality } from "@/lib/branch/hospitality";
+import { branchTypeDetailLabel } from "@/lib/branch/hospitality";
 import { opsRoleLabel, type OpsRole } from "@/lib/branch/ops-roles";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +32,8 @@ export type BranchDashboardProps = {
   hasAlimentation: boolean;
   organizationName: string;
   opsRole: OpsRole;
+  /** Cartes hub autorisées (catalogue FR · Voir) — plain IDs only. */
+  visibleCardIds: string[];
 };
 
 export function BranchDashboard({
@@ -48,21 +50,13 @@ export function BranchDashboard({
   hasShop,
   hasAlimentation,
   opsRole,
+  visibleCardIds,
 }: BranchDashboardProps) {
   const { data: session } = authClient.useSession();
   const [showWelcome, setShowWelcome] = useState(true);
 
   const user = session?.user;
   const userName = user?.name?.trim() || user?.email || "Visiteur";
-  const rawSections = menuSectionsForBranch(
-    organizationId,
-    branchId,
-    branchType,
-    { hasStays, hasRestaurant },
-  );
-  const sections = isHospitality(branchType)
-    ? filterMenuSectionsForOpsRole(rawSections, opsRole)
-    : rawSections;
   const typeDetail = branchTypeDetailLabel({
     type: branchType,
     hasStays,
@@ -74,6 +68,14 @@ export function BranchDashboard({
     hasShop,
     hasAlimentation,
   });
+
+  const menuSections = filterMenuSectionsByVisibleCardIds(
+    menuSectionsForBranch(organizationId, branchId, branchType, {
+      hasStays,
+      hasRestaurant,
+    }),
+    visibleCardIds,
+  );
 
   useEffect(() => {
     const t = setTimeout(() => setShowWelcome(false), WELCOME_MS);
@@ -101,7 +103,7 @@ export function BranchDashboard({
         </div>
       </div>
 
-      {sections.map((section) => (
+      {menuSections.map((section) => (
         <DashboardSection
           key={section.title}
           title={section.title}

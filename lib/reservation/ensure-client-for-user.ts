@@ -45,7 +45,7 @@ export async function ensureClientForOnlineUser(input: {
       await auth.api.addMember({
         body: {
           userId: input.userId,
-          role: ORG_ROLE.PARENT as "owner",
+          role: ORG_ROLE.CLIENT as "owner",
           organizationId: input.organizationId,
         },
         headers: h,

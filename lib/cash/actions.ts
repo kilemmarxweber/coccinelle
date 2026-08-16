@@ -3,6 +3,10 @@
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
+import {
+  requireOrganizationPermission,
+  type OrganizationPermissionMap,
+} from "@/lib/auth/organization-permission";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { branchBasePath, hotelRoutes } from "@/lib/branch/paths";
 import prisma from "@/lib/prisma";
@@ -13,7 +17,11 @@ import {
 } from "@/lib/hotel/meeting-deposit";
 import { isNonSalesPaymentNote } from "@/lib/cash/cashier-report";
 
-async function ctx(organizationId: string, branchId: string) {
+async function ctx(
+  organizationId: string,
+  branchId: string,
+  permissions?: OrganizationPermissionMap,
+) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error("Non authentifié.");
   const branch = await canAccessBranch(
@@ -23,6 +31,9 @@ async function ctx(organizationId: string, branchId: string) {
   );
   if (!branch || branch.organizationId !== organizationId) {
     throw new Error("Branche inaccessible.");
+  }
+  if (permissions) {
+    await requireOrganizationPermission(organizationId, permissions);
   }
   return { user: session.user, branch };
 }
@@ -40,6 +51,10 @@ function revalidateBranch(organizationId: string, branchId: string) {
   revalidatePath(`${base}/rapports/tableau-bord`);
 }
 
+/**
+ * Lecture taux pour conversion (actions déjà gated).
+ * Surface catalogue : `listExchangeRatesAction` / `setExchangeRateAction`.
+ */
 export async function getActiveExchangeRate(branchId: string) {
   const row = await prisma.exchangeRate.findFirst({
     where: { branchId },
@@ -48,11 +63,12 @@ export async function getActiveExchangeRate(branchId: string) {
   return normalizeUsdCdfRate(row);
 }
 
+/** Taux de change · Voir */
 export async function listExchangeRatesAction(
   organizationId: string,
   branchId: string,
 ) {
-  await ctx(organizationId, branchId);
+  await ctx(organizationId, branchId, { taux_change: ["voir"] });
   return prisma.exchangeRate.findMany({
     where: { branchId },
     orderBy: { validFrom: "desc" },
@@ -60,6 +76,7 @@ export async function listExchangeRatesAction(
   });
 }
 
+/** Taux de change · Modifier */
 export async function setExchangeRateAction(input: {
   organizationId: string;
   branchId: string;
@@ -67,7 +84,9 @@ export async function setExchangeRateAction(input: {
   toCurrency: string;
   rate: number;
 }) {
-  await ctx(input.organizationId, input.branchId);
+  await ctx(input.organizationId, input.branchId, {
+    taux_change: ["modifier"],
+  });
   const from = input.fromCurrency.trim().toUpperCase() || "USD";
   const to = input.toCurrency.trim().toUpperCase() || "CDF";
   const pairOk =
@@ -182,7 +201,9 @@ export async function openCashSessionAction(input: {
   branchId: string;
   openingFloat?: number;
 }) {
-  const { user } = await ctx(input.organizationId, input.branchId);
+  const { user } = await ctx(input.organizationId, input.branchId, {
+    caisse: ["ouvrir"],
+  });
   const open = await getOpenCashSession(input.branchId, user.id);
   if (open) throw new Error("Vous avez déjà une session de caisse ouverte.");
   const session = await prisma.cashSession.create({
@@ -202,7 +223,9 @@ export async function closeCashSessionAction(input: {
   branchId: string;
   closingCash?: number;
 }) {
-  const { user } = await ctx(input.organizationId, input.branchId);
+  const { user } = await ctx(input.organizationId, input.branchId, {
+    caisse: ["fermer"],
+  });
   const open = await getOpenCashSession(input.branchId, user.id);
   if (!open) {
     throw new Error(
@@ -240,7 +263,9 @@ export async function createPaymentAction(input: {
   /** Remboursement (montants négatifs) — solde note < 0 après départ anticipé */
   isRefund?: boolean;
 }) {
-  const { user } = await ctx(input.organizationId, input.branchId);
+  const { user } = await ctx(input.organizationId, input.branchId, {
+    caisse: ["encaisser"],
+  });
   const isRefund = Boolean(input.isRefund);
   if (isRefund) {
     if (!(input.amountCdf < -0.01)) {
@@ -389,7 +414,7 @@ export async function listOpenFoliosAction(
   organizationId: string,
   branchId: string,
 ) {
-  const { user } = await ctx(organizationId, branchId);
+  const { user } = await ctx(organizationId, branchId, { caisse: ["voir"] });
   const cash = await getOpenCashSession(branchId, user.id);
   if (!cash) return [];
   const folios = await prisma.folio.findMany({
@@ -426,7 +451,7 @@ export async function listReadyOrdersAction(
   organizationId: string,
   branchId: string,
 ) {
-  const { user } = await ctx(organizationId, branchId);
+  const { user } = await ctx(organizationId, branchId, { caisse: ["voir"] });
   const cash = await getOpenCashSession(branchId, user.id);
   if (!cash) return [];
   const orders = await prisma.hotelOrder.findMany({
@@ -475,7 +500,7 @@ export async function getTodayPaymentsAction(
   organizationId: string,
   branchId: string,
 ) {
-  const { user } = await ctx(organizationId, branchId);
+  const { user } = await ctx(organizationId, branchId, { caisse: ["voir"] });
   const cash = await getOpenCashSession(branchId, user.id);
   if (!cash) return [];
   return prisma.payment.findMany({
@@ -503,7 +528,9 @@ export async function getCashierShiftReportAction(
   organizationId: string,
   branchId: string,
 ) {
-  const { user, branch } = await ctx(organizationId, branchId);
+  const { user, branch } = await ctx(organizationId, branchId, {
+    caisse: ["voir"],
+  });
   const cash = await getOpenCashSession(branchId, user.id);
   if (!cash) {
     throw new Error("Aucune session de caisse ouverte pour vous.");
@@ -683,7 +710,7 @@ export async function getPaymentByIdAction(
   branchId: string,
   paymentId: string,
 ) {
-  await ctx(organizationId, branchId);
+  await ctx(organizationId, branchId, { caisse: ["voir"] });
   const payment = await prisma.payment.findFirst({
     where: { id: paymentId, branchId },
     include: {

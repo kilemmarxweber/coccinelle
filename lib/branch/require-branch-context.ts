@@ -13,9 +13,11 @@ import {
   moduleForBranchType,
   type BranchModule,
 } from "@/lib/branch/paths";
-import { canSeeDashCard } from "@/lib/branch/ops-roles";
-import { resolveCurrentBranchOpsRole } from "@/lib/branch/resolve-ops-role";
-import { isHospitality } from "@/lib/branch/hospitality";
+import {
+  assertOrganizationPermission,
+  type OrganizationPermissionMap,
+} from "@/lib/auth/organization-permission";
+import { assertDashCardVoir } from "@/lib/branch/dash-card-permissions";
 
 type LoadOpts = {
   organizationId: string;
@@ -24,12 +26,17 @@ type LoadOpts = {
   requireModule?: BranchModule;
   /** Module hospitalité (stays / restaurant / livraison). */
   requireHospitality?: HospitalityModule;
-  /** Carte hub requise (filtre rôle ops, hospitalité uniquement). */
+  /**
+   * Carte hub requise → permission catalogue `voir` (R06).
+   * Remplace l’ancien filtre ROLE_CARDS / canSeeDashCard.
+   */
   requireDashCard?: string;
+  /** Permission catalogue directe (ex. `{ chambres: ["voir"] }`). */
+  requirePermission?: OrganizationPermissionMap;
 };
 
 /**
- * Charge la branche + vérifie session / accès / type module.
+ * Charge la branche + vérifie session / accès / type module / catalogue.
  * À utiliser dans les pages sous `branches/[branchId]/…`.
  */
 export async function requireBranchContext(
@@ -69,14 +76,20 @@ export async function requireBranchContext(
     if (!ok) redirect(hub);
   }
 
-  if (opts.requireDashCard && isHospitality(branch.type)) {
-    const opsRole = await resolveCurrentBranchOpsRole(
+  if (opts.requirePermission) {
+    const perm = await assertOrganizationPermission(
       opts.organizationId,
-      opts.branchId,
+      opts.requirePermission,
     );
-    if (!canSeeDashCard(opsRole, opts.requireDashCard)) {
-      redirect(hub);
-    }
+    if (!perm.ok) redirect(hub);
+  }
+
+  if (opts.requireDashCard) {
+    const card = await assertDashCardVoir(
+      opts.organizationId,
+      opts.requireDashCard,
+    );
+    if (!card.ok) redirect(hub);
   }
 
   return branch;

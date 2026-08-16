@@ -47,7 +47,7 @@ type MemberRow = {
 };
 
 function primaryRole(role: string): string {
-  return role.split(",")[0]?.trim() || ORG_ROLE.PARENT;
+  return role.split(",")[0]?.trim() || ORG_ROLE.CLIENT;
 }
 
 function initials(name: string): string {
@@ -61,10 +61,12 @@ function roleBadgeClass(role: string): string {
   switch (role) {
     case ORG_ROLE.OWNER:
       return "border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-100";
+    case ORG_ROLE.GERANT:
     case ORG_ROLE.GESTIONNAIRE:
       return "border-emerald-500/30 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100";
     case ORG_ROLE.GUICHETIER:
       return "border-sky-500/30 bg-sky-500/10 text-sky-900 dark:text-sky-100";
+    case ORG_ROLE.CLIENT:
     case ORG_ROLE.PARENT:
       return "border-border bg-muted text-muted-foreground";
     default:

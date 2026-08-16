@@ -4,6 +4,8 @@ import { auth } from "@/lib/auth";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { resolveCurrentBranchOpsRole } from "@/lib/branch/resolve-ops-role";
+import { menuSectionsForBranch } from "@/lib/branch/branch-menus";
+import { resolveVisibleDashCardIds } from "@/lib/branch/dash-card-permissions";
 import { BranchDashboard } from "./branch-dashboard";
 
 type PageProps = {
@@ -37,6 +39,20 @@ export default async function BranchDashboardPage({ params }: PageProps) {
   const branch = await requireBranchContext({ organizationId, branchId });
   const opsRole = await resolveCurrentBranchOpsRole(organizationId, branchId);
 
+  const rawSections = menuSectionsForBranch(
+    organizationId,
+    branchId,
+    branch.type,
+    { hasStays: branch.hasStays, hasRestaurant: branch.hasRestaurant },
+  );
+  const candidateIds = rawSections.flatMap((s) =>
+    s.items.map((i) => i.id).filter((id): id is string => Boolean(id)),
+  );
+  const visibleCardIds = await resolveVisibleDashCardIds(
+    organizationId,
+    candidateIds,
+  );
+
   return (
     <BranchDashboard
       organizationId={branch.organizationId}
@@ -54,6 +70,7 @@ export default async function BranchDashboardPage({ params }: PageProps) {
       hasAlimentation={branch.hasAlimentation}
       organizationName={branch.organizationName}
       opsRole={opsRole}
+      visibleCardIds={visibleCardIds}
     />
   );
 }

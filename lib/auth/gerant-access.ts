@@ -21,51 +21,51 @@ export type GerantNavItem = {
 };
 
 /**
- * Menu métier gérant (matrice U04).
- * Guichetier échoue typiquement sur `rapport:read` / `trajet:create` → shell refusé.
+ * Menu métier gérant (matrice U04 → catalogue FR R01).
+ * Guichetier échoue typiquement sur `rapport_agence:voir` / `trajet:ajouter`.
  */
 export const GERANT_NAV_ITEMS: readonly GerantNavItem[] = [
   {
     key: "overview",
     label: "Vue d’ensemble",
     segment: "",
-    permission: { rapport: ["read"] },
+    permission: { rapport_agence: ["voir"] },
   },
   {
     key: "planning",
     label: "Planning",
     segment: "planning",
-    permission: { depart: ["read"] },
+    permission: { depart: ["voir"] },
   },
   {
     key: "trajets",
     label: "Trajets",
     segment: "trajets",
-    permission: { trajet: ["read"] },
+    permission: { trajet: ["voir"] },
   },
   {
     key: "reservations",
     label: "Réservations",
     segment: "reservations",
-    permission: { inscription: ["update"] },
+    permission: { inscription: ["modifier"] },
   },
   {
     key: "equipe",
     label: "Équipe",
     segment: "equipe",
-    permission: { equipe: ["read"] },
+    permission: { equipe: ["voir"] },
   },
   {
     key: "rapports",
     label: "Rapports",
     segment: "rapports",
-    permission: { rapport: ["read"] },
+    permission: { rapport_agence: ["voir"] },
   },
 ] as const;
 
-/** Ticket d’entrée shell gérant : `rapport:read` (gestionnaire / owner ; pas guichetier). */
+/** Ticket d’entrée shell gérant : `rapport_agence:voir` (gestionnaire / owner ; pas guichetier). */
 export const GERANT_SHELL_PERMISSION: OrganizationPermissionMap = {
-  rapport: ["read"],
+  rapport_agence: ["voir"],
 };
 
 export type GerantNavLink = {

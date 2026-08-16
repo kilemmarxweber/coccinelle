@@ -11,6 +11,7 @@ export default async function AgenceColisPage({ params }: PageProps) {
     organizationId,
     branchId,
     requireModule: "agence",
+    requireDashCard: "colis",
   });
   return (
     <BranchModulePlaceholder

@@ -17,7 +17,7 @@ const ORG_MEMBERS = [
     id: "user-gerant-1",
     name: "Gérant Agence",
     email: "gerant@test.com",
-    role: ORG_ROLE.GESTIONNAIRE,
+    role: ORG_ROLE.GERANT,
   },
   {
     id: "user-guichetier-1",
@@ -29,7 +29,7 @@ const ORG_MEMBERS = [
     id: "user-client-1",
     name: "Client Demo",
     email: "client@test.com",
-    role: ORG_ROLE.PARENT,
+    role: ORG_ROLE.CLIENT,
   },
 ] as const;
 
@@ -74,7 +74,7 @@ export async function seedOrgMembers() {
       },
     });
 
-    if (m.role === ORG_ROLE.PARENT) {
+    if (m.role === ORG_ROLE.CLIENT) {
       await prisma.client.upsert({
         where: { userId: user.id },
         update: {},

@@ -10,7 +10,7 @@ export default async function EmbarquementPage({ params }: PageProps) {
   const { organizationId } = await params;
 
   const perm = await assertOrganizationPermission(organizationId, {
-    embarquement: ["scan"],
+    embarquement: ["scanner"],
   });
 
   const date = todayIsoLocal();

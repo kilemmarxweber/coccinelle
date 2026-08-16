@@ -80,7 +80,11 @@ function mapBranch(b: {
 }
 
 function isOrgBranchChooser(role: string | null | undefined): boolean {
-  return role === ORG_ROLE.OWNER || role === ORG_ROLE.GESTIONNAIRE;
+  return (
+    role === ORG_ROLE.OWNER ||
+    role === ORG_ROLE.GESTIONNAIRE ||
+    role === ORG_ROLE.GERANT
+  );
 }
 
 /** Branches ACTIVE accessibles (optionnellement filtrées par org). */

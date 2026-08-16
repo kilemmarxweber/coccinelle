@@ -80,7 +80,7 @@ export async function searchDepartsAction(
   }
 
   const perm = await assertOrganizationPermission(organizationId, {
-    depart: ["read"],
+    depart: ["voir"],
   });
   if (!perm.ok) return { ok: false, message: perm.message };
 
@@ -129,7 +129,7 @@ export async function listDepartsDuJourAction(
   }
 
   const perm = await assertOrganizationPermission(organizationId, {
-    depart: ["read"],
+    depart: ["voir"],
   });
   if (!perm.ok) return { ok: false, message: perm.message };
 

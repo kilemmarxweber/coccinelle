@@ -3,6 +3,10 @@
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
+import {
+  requireOrganizationPermission,
+  type OrganizationPermissionMap,
+} from "@/lib/auth/organization-permission";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { branchBasePath } from "@/lib/branch/paths";
 import {
@@ -23,7 +27,11 @@ import {
   type ExpenseKind,
 } from "@/lib/expenses/kinds";
 
-async function ctx(organizationId: string, branchId: string) {
+async function ctx(
+  organizationId: string,
+  branchId: string,
+  permissions?: OrganizationPermissionMap,
+) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error("Non authentifié.");
   const branch = await canAccessBranch(
@@ -33,6 +41,9 @@ async function ctx(organizationId: string, branchId: string) {
   );
   if (!branch || branch.organizationId !== organizationId) {
     throw new Error("Branche inaccessible.");
+  }
+  if (permissions) {
+    await requireOrganizationPermission(organizationId, permissions);
   }
   return { user: session.user, branch };
 }
@@ -182,7 +193,7 @@ export async function listCatalogProductsAction(
   organizationId: string,
   branchId: string,
 ) {
-  const { branch } = await ctx(organizationId, branchId);
+  const { branch } = await ctx(organizationId, branchId, { bons_commande: ["voir"] });
   if (branch.type === "BOUTIQUE") {
     const products = await prisma.shopProduct.findMany({
       where: { branchId, active: true },
@@ -235,7 +246,7 @@ export async function listProductCategoriesAction(
   organizationId: string,
   branchId: string,
 ) {
-  const { branch } = await ctx(organizationId, branchId);
+  const { branch } = await ctx(organizationId, branchId, { bons_commande: ["voir"] });
   if (branch.type === "BOUTIQUE") {
     const rows = await prisma.shopCategory.findMany({
       where: { branchId },
@@ -269,7 +280,7 @@ export async function listPurchaseOrdersAction(
   organizationId: string,
   branchId: string,
 ) {
-  await ctx(organizationId, branchId);
+  await ctx(organizationId, branchId, { bons_commande: ["voir"] });
   return prisma.purchaseOrder.findMany({
     where: { branchId },
     include: { items: { orderBy: { createdAt: "asc" } } },
@@ -285,7 +296,7 @@ export async function createPurchaseOrderAction(input: {
   note?: string | null;
   lines: PoLineInput[];
 }) {
-  const { user } = await ctx(input.organizationId, input.branchId);
+  const { user } = await ctx(input.organizationId, input.branchId, { bons_commande: ["ajouter"] });
   const { lines, totalAmountUsd } = normalizeLines(input.lines);
   const number = await nextPurchaseOrderNumber(input.branchId);
   const po = await prisma.purchaseOrder.create({
@@ -324,7 +335,7 @@ export async function releasePurchaseOrderFundsAction(input: {
   purchaseOrderId: string;
   amountUsd?: number;
 }) {
-  const { user } = await ctx(input.organizationId, input.branchId);
+  const { user } = await ctx(input.organizationId, input.branchId, { bons_commande: ["modifier"] });
   const po = await prisma.purchaseOrder.findFirst({
     where: { id: input.purchaseOrderId, branchId: input.branchId },
   });
@@ -370,7 +381,7 @@ export async function validatePurchaseOrderAction(input: {
     lineTotalUsd?: number;
   }>;
 }) {
-  const { user, branch } = await ctx(input.organizationId, input.branchId);
+  const { user, branch } = await ctx(input.organizationId, input.branchId, { bons_commande: ["modifier"] });
   const po = await prisma.purchaseOrder.findFirst({
     where: { id: input.purchaseOrderId, branchId: input.branchId },
     include: { items: true },
@@ -628,7 +639,7 @@ export async function cancelPurchaseOrderAction(input: {
   branchId: string;
   purchaseOrderId: string;
 }) {
-  const { user } = await ctx(input.organizationId, input.branchId);
+  const { user } = await ctx(input.organizationId, input.branchId, { bons_commande: ["modifier"] });
   const po = await prisma.purchaseOrder.findFirst({
     where: { id: input.purchaseOrderId, branchId: input.branchId },
   });
@@ -662,7 +673,7 @@ export async function syncPurchaseOrderCatalogAction(input: {
   branchId: string;
   purchaseOrderId: string;
 }) {
-  const { user, branch } = await ctx(input.organizationId, input.branchId);
+  const { user, branch } = await ctx(input.organizationId, input.branchId, { bons_commande: ["modifier"] });
   const po = await prisma.purchaseOrder.findFirst({
     where: { id: input.purchaseOrderId, branchId: input.branchId },
     include: { items: true },
@@ -850,7 +861,7 @@ export async function listExpensesAction(
   organizationId: string,
   branchId: string,
 ) {
-  await ctx(organizationId, branchId);
+  await ctx(organizationId, branchId, { depenses: ["voir"] });
   return prisma.branchExpense.findMany({
     where: { branchId },
     include: { payment: { select: { id: true, receiptNumber: true } } },
@@ -870,7 +881,7 @@ export async function createExpenseAction(input: {
   note?: string | null;
   method?: "CASH" | "MOBILE_MONEY" | "CARTE" | "BANK";
 }) {
-  const { user } = await ctx(input.organizationId, input.branchId);
+  const { user } = await ctx(input.organizationId, input.branchId, { depenses: ["ajouter"] });
   const kind = normalizeExpenseKind(input.kind);
   const label =
     input.label.trim() ||

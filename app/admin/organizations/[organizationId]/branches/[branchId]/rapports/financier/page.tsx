@@ -14,7 +14,11 @@ export default async function RapportFinancierPage({
 }: PageProps) {
   const { organizationId, branchId } = await params;
   const sp = await searchParams;
-  const branch = await requireBranchContext({ organizationId, branchId });
+  const branch = await requireBranchContext({
+    organizationId,
+    branchId,
+    requireDashCard: "rapport_financier",
+  });
   const fallback = defaultReportRange(30);
   const from = sp.from?.slice(0, 10) || fallback.from;
   const to = sp.to?.slice(0, 10) || fallback.to;

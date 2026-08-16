@@ -15,6 +15,7 @@ export default async function BoutiqueProduitsPage({ params }: PageProps) {
     organizationId,
     branchId,
     requireModule: "boutique",
+    requireDashCard: "boutique_produits",
   });
   const [products, categories] = await Promise.all([
     listShopProductsAction(organizationId, branchId),

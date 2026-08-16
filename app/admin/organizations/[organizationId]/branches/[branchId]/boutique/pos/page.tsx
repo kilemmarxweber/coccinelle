@@ -22,6 +22,7 @@ export default async function BoutiquePosPage({ params }: PageProps) {
     organizationId,
     branchId,
     requireModule: "boutique",
+    requireDashCard: "pos",
   });
   const sessionAuth = await auth.api.getSession({ headers: await headers() });
   const userId = sessionAuth?.user?.id;

@@ -61,6 +61,12 @@ export const sharedBranchRoutes = {
     `${branchBasePath(orgId, branchId)}/bons-commande`,
   depenses: (orgId: string, branchId: string) =>
     `${branchBasePath(orgId, branchId)}/depenses`,
+  /** Personnel de l’établissement (R04). */
+  equipe: (orgId: string, branchId: string) =>
+    `${branchBasePath(orgId, branchId)}/equipe`,
+  /** Rôles org créés / édités depuis la branche (R05) — stockés en OrganizationRole. */
+  equipeRoles: (orgId: string, branchId: string) =>
+    `${branchBasePath(orgId, branchId)}/equipe/roles`,
   rapports: (orgId: string, branchId: string) =>
     `${branchBasePath(orgId, branchId)}/rapports`,
   tableauBord: (orgId: string, branchId: string) =>

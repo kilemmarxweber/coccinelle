@@ -13,10 +13,10 @@ export default async function ColisPage({ params, searchParams }: PageProps) {
   const { statut } = await searchParams;
 
   const readPerm = await assertOrganizationPermission(organizationId, {
-    inscription: ["share"],
+    colis: ["voir"],
   });
   const updatePerm = await assertOrganizationPermission(organizationId, {
-    inscription: ["update"],
+    colis: ["modifier"],
   });
 
   const list = readPerm.ok

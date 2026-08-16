@@ -126,7 +126,7 @@ export async function createBranchWithBootstrapAction(raw: CreateBranchInput) {
   if (
     !isAdmin &&
     membership &&
-    !["owner", "gestionnaire"].includes(membership.role)
+    !["owner", "gestionnaire", "gerant"].includes(membership.role)
   ) {
     return {
       ok: false as const,
@@ -317,7 +317,7 @@ async function assertCanManageBranch(
     return { ok: false, message: "Vous n’appartenez pas à cette organisation." };
   }
   const roles = membership.role.split(",").map((r) => r.trim());
-  if (!roles.some((r) => r === "owner" || r === "gestionnaire")) {
+  if (!roles.some((r) => r === "owner" || r === "gestionnaire" || r === "gerant")) {
     return { ok: false, message: "Permission insuffisante pour gérer les branches." };
   }
   return { ok: true, userId: session.user.id };

@@ -56,8 +56,8 @@ const updateStatutSchema = z.object({
 
 /**
  * Ouvrir / fermer / annuler un départ.
- * - OUVERT / PLANIFIE → `depart:update`
- * - ANNULE → `depart:cancel`
+ * - OUVERT / PLANIFIE → `depart:modifier`
+ * - ANNULE → `depart:annuler`
  */
 export async function updateDepartStatutAction(
   input: unknown,
@@ -67,8 +67,8 @@ export async function updateDepartStatutAction(
 
   const permission =
     parsed.data.statut === "ANNULE"
-      ? ({ depart: ["cancel"] } as const)
-      : ({ depart: ["update"] } as const);
+      ? ({ depart: ["annuler"] } as const)
+      : ({ depart: ["modifier"] } as const);
 
   const perm = await assertOrganizationPermission(
     parsed.data.organizationId,
@@ -125,7 +125,7 @@ export async function updateDepartCapaciteAction(
   if (!parsed.success) return { ok: false, message: zodFirstMessage(parsed.error) };
 
   const perm = await assertOrganizationPermission(parsed.data.organizationId, {
-    depart: ["update"],
+    depart: ["modifier"],
   });
   if (!perm.ok) return { ok: false, message: perm.message };
 
@@ -213,7 +213,7 @@ export async function createPlanningDepartAction(
   if (!parsed.success) return { ok: false, message: zodFirstMessage(parsed.error) };
 
   const perm = await assertOrganizationPermission(parsed.data.organizationId, {
-    depart: ["create"],
+    depart: ["ajouter"],
   });
   if (!perm.ok) return { ok: false, message: perm.message };
 

@@ -155,7 +155,7 @@ async function main() {
   });
 
   const parentStatements = organizationRoleStatements[ORG_ROLE.PARENT];
-  const canCreate = parentStatements.inscription?.includes("create") ?? false;
+  const canCreate = parentStatements.inscription?.includes("ajouter") ?? false;
 
   console.log(
     JSON.stringify(
