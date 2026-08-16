@@ -35,43 +35,82 @@ export async function ensureBranchRolesSeeded(): Promise<void> {
   if (seedPromise) return seedPromise;
   seedPromise = (async () => {
     const count = await prisma.branchRole.count();
-    if (count >= SEED_BRANCH_ROLES.length) return;
+    if (count < SEED_BRANCH_ROLES.length) {
+      for (const def of SEED_BRANCH_ROLES) {
+        const existing = await prisma.branchRole.findUnique({
+          where: { slug: def.slug },
+          select: { id: true },
+        });
+        if (existing) continue;
 
-    for (const def of SEED_BRANCH_ROLES) {
-      const existing = await prisma.branchRole.findUnique({
-        where: { slug: def.slug },
-        select: { id: true },
-      });
-      if (existing) continue;
-
-      const roleId = randomUUID();
-      const now = new Date();
-      await prisma.branchRole.create({
-        data: {
-          id: roleId,
-          slug: def.slug,
-          label: def.label,
-          description: def.description,
-          isSystem: true,
-          sortOrder: def.sortOrder,
-          updatedAt: now,
-          privileges: {
-            create: expandRolePrivileges(def).map((p) => ({
-              id: randomUUID(),
-              resource: p.resource,
-              action: p.action,
-              allowed: true,
-              updatedAt: now,
-            })),
+        const roleId = randomUUID();
+        const now = new Date();
+        await prisma.branchRole.create({
+          data: {
+            id: roleId,
+            slug: def.slug,
+            label: def.label,
+            description: def.description,
+            isSystem: true,
+            sortOrder: def.sortOrder,
+            updatedAt: now,
+            privileges: {
+              create: expandRolePrivileges(def).map((p) => ({
+                id: randomUUID(),
+                resource: p.resource,
+                action: p.action,
+                allowed: true,
+                updatedAt: now,
+              })),
+            },
           },
-        },
-      });
+        });
+      }
     }
+
+    // Ajoute les privilèges seed manquants (ex. nouvelle ressource vente_rapide)
+    // sans écraser les overrides déjà édités en Paramètres.
+    await syncMissingSeedPrivileges();
   })().catch((err) => {
     seedPromise = null;
     throw err;
   });
   return seedPromise;
+}
+
+/** Crée uniquement les lignes seed absentes (ne touche pas `allowed` existant). */
+async function syncMissingSeedPrivileges(): Promise<void> {
+  const now = new Date();
+  for (const def of SEED_BRANCH_ROLES) {
+    const role = await prisma.branchRole.findUnique({
+      where: { slug: def.slug },
+      select: { id: true },
+    });
+    if (!role) continue;
+
+    const rows = expandRolePrivileges(def);
+    for (const p of rows) {
+      await prisma.branchRolePrivilege.upsert({
+        where: {
+          roleId_resource_action: {
+            roleId: role.id,
+            resource: p.resource,
+            action: p.action,
+          },
+        },
+        create: {
+          id: randomUUID(),
+          roleId: role.id,
+          resource: p.resource,
+          action: p.action,
+          allowed: true,
+          updatedAt: now,
+        },
+        update: {},
+      });
+    }
+  }
+  invalidatePrivilegeCache();
 }
 
 async function loadRolePrivileges(slug: string) {

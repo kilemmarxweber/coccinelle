@@ -30,23 +30,30 @@ export async function seedBranchRoles() {
       },
     });
 
-    const privCount = await prisma.branchRolePrivilege.count({
-      where: { roleId: role.id },
-    });
-    if (privCount > 0) continue;
-
     const rows = expandRolePrivileges(def);
     if (!rows.length) continue;
-    await prisma.branchRolePrivilege.createMany({
-      data: rows.map((p) => ({
-        id: randomUUID(),
-        roleId: role.id,
-        resource: p.resource,
-        action: p.action,
-        allowed: true,
-        updatedAt: now,
-      })),
-    });
+
+    const nowPriv = new Date();
+    for (const p of rows) {
+      await prisma.branchRolePrivilege.upsert({
+        where: {
+          roleId_resource_action: {
+            roleId: role.id,
+            resource: p.resource,
+            action: p.action,
+          },
+        },
+        create: {
+          id: randomUUID(),
+          roleId: role.id,
+          resource: p.resource,
+          action: p.action,
+          allowed: true,
+          updatedAt: nowPriv,
+        },
+        update: {},
+      });
+    }
   }
   console.log("✅ BranchRole seed OK");
 }

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Lock, Mail, Plane, User } from "lucide-react";
+import { Eye, EyeOff, KeyRound, Lock, Mail, Plane, User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
@@ -37,7 +37,7 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
 
   const form = useForm<SignUpValues>({
     resolver: zodResolver(signUpSchema),
-    defaultValues: { name: "", email: "", password: "" },
+    defaultValues: { name: "", email: "", password: "", adminCode: "" },
     mode: "onSubmit",
     reValidateMode: "onBlur",
   });
@@ -230,6 +230,34 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
                         <Eye className="size-4" />
                       )}
                     </button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="adminCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-muted-foreground">
+                  Code de validation admin
+                </FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <KeyRound className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      {...field}
+                      type="text"
+                      autoComplete="off"
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      placeholder="Code fourni par l’administrateur"
+                      className={fieldClass}
+                      disabled={isSubmitting}
+                    />
                   </div>
                 </FormControl>
                 <FormMessage />

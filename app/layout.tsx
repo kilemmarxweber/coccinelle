@@ -6,7 +6,7 @@ import { getTheme } from "@teispace/next-themes/server";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
-import { IdleLogout } from "@/lib/idle-logout";
+import { SessionLock } from "@/components/auth/session-lock";
 
 export const metadata: Metadata = {
   title: "Coccinelle",
@@ -31,7 +31,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           storage="local"
           initialTheme={initialTheme ?? "dark"}
         >
-          <IdleLogout />
+          <SessionLock />
           {children}
           <Toaster richColors closeButton />
         </ThemeProvider>

@@ -3402,14 +3402,8 @@ export async function createQuickSaleAction(input: {
   await assertPrivilege(
     input.organizationId,
     input.branchId,
-    "caisse",
+    "vente_rapide",
     "CREATE",
-  );
-  await assertPrivilege(
-    input.organizationId,
-    input.branchId,
-    "restauration",
-    "READ",
   );
   if (!input.items.length) throw new Error("Panier vide.");
 

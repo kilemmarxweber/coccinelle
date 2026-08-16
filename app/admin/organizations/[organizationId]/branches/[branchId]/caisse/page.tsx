@@ -59,8 +59,8 @@ export default async function BranchCaissePage({ params }: PageProps) {
     (await canPrivilege(ops!, DASH_CARD.RESTAURATION, "VIEW"));
   const canQuickSale =
     !hospitality ||
-    ((await canPrivilege(ops!, DASH_CARD.CAISSE, "CREATE")) &&
-      (await canPrivilege(ops!, DASH_CARD.RESTAURATION, "READ")));
+    (await canPrivilege(ops!, "vente_rapide", "VIEW")) ||
+    (await canPrivilege(ops!, "vente_rapide", "CREATE"));
 
   const hasStays = hospitality && branch.hasStays && canSejoursCash;
   const hasRestaurant = hospitality && branch.hasRestaurant && canRestoCash;

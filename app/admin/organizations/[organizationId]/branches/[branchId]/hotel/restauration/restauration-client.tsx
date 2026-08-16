@@ -507,7 +507,7 @@ export function RestaurationClient(props: {
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-5 px-3 py-5 sm:px-5 lg:px-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
+        {/* <div className="flex items-start gap-3">
           <span className="flex size-12 items-center justify-center rounded-2xl bg-violet-500/15 text-violet-500">
             <UtensilsCrossed className="size-6" />
           </span>
@@ -517,7 +517,7 @@ export function RestaurationClient(props: {
               Serveur — commande tactile + suivi avec temps cuisine.
             </p>
           </div>
-        </div>
+        </div> */}
         <div className="flex items-center gap-2">
           {view === "suivi" ? (
             <Button

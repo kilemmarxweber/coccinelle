@@ -16,6 +16,7 @@ export type PrivilegeActionName = (typeof PRIVILEGE_ACTIONS)[number];
 
 const R = {
   CAISSE: "caisse",
+  VENTE_RAPIDE: "vente_rapide",
   TAUX_CHANGE: "taux_change",
   SEJOURS: "sejours",
   RESTAURATION: "restauration",
@@ -41,6 +42,7 @@ const R = {
 /** Ressources éditables dans Paramètres (hospitalité + admin). */
 export const PRIVILEGE_RESOURCES = [
   R.CAISSE,
+  R.VENTE_RAPIDE,
   R.TAUX_CHANGE,
   R.SEJOURS,
   R.RESTAURATION,
@@ -73,6 +75,7 @@ export const PRIVILEGE_RESOURCE_GROUPS: {
     title: "Opérations",
     resources: [
       R.CAISSE,
+      R.VENTE_RAPIDE,
       R.TAUX_CHANGE,
       R.SEJOURS,
       R.RESTAURATION,
@@ -111,7 +114,8 @@ export const PRIVILEGE_RESOURCE_GROUPS: {
 ];
 
 export const PRIVILEGE_RESOURCE_LABELS: Record<string, string> = {
-  [R.CAISSE]: "Caisse & Ventes",
+  [R.CAISSE]: "Caisse",
+  [R.VENTE_RAPIDE]: "Vente rapide",
   [R.TAUX_CHANGE]: "Taux de change",
   [R.SEJOURS]: "Séjours",
   [R.RESTAURATION]: "Restauration",
@@ -178,6 +182,7 @@ const CAISSIER_SEJOURS: RolePrivilegeSpec = {
 
 const CAISSIER_RESTO: RolePrivilegeSpec = {
   [R.CAISSE]: ops(),
+  [R.VENTE_RAPIDE]: ops(),
   [R.TAUX_CHANGE]: { VIEW: true, READ: true, UPDATE: true },
   [R.RESTAURATION]: vr(),
   [R.CUISINE]: { VIEW: true },
