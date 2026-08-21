@@ -62,9 +62,9 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* Coccinelle — light : fond clair + primary orange */
+/* Coccinelle — light : fond Windows (#F3F3F3) + primary orange */
 :root {
-  --background: oklch(0.985 0.005 85);
+  --background: #F3F3F3;
   --foreground: oklch(0.18 0.02 45);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.18 0.02 45);
@@ -89,7 +89,7 @@
   --chart-4: oklch(0.65 0.15 250);
   --chart-5: oklch(0.7 0.18 30);
   --radius: 0.75rem;
-  --sidebar: oklch(0.98 0.005 85);
+  --sidebar: #E5E5E5;
   --sidebar-foreground: oklch(0.2 0.02 45);
   --sidebar-primary: oklch(0.705 0.191 47.6);
   --sidebar-primary-foreground: oklch(0.99 0 0);
@@ -103,39 +103,39 @@
   --warning-foreground: oklch(0.25 0.02 45);
 }
 
-/* Coccinelle — dark : noir / orange */
+/* Coccinelle — dark : même toile #F3F3F3, cartes claires, accent orange */
 .dark {
-  --background: oklch(0.12 0 0);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.16 0 0);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.16 0 0);
-  --popover-foreground: oklch(0.98 0 0);
+  --background: #F3F3F3;
+  --foreground: oklch(0.18 0.02 45);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.02 45);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.02 45);
   --primary: oklch(0.7686 0.1647 70.0804);
   --primary-foreground: oklch(0.15 0.02 45);
-  --secondary: oklch(0.22 0 0);
-  --secondary-foreground: oklch(0.96 0 0);
-  --muted: oklch(0.2 0 0);
-  --muted-foreground: oklch(0.68 0 0);
-  --accent: oklch(0.24 0.04 70);
-  --accent-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.96 0.01 85);
+  --secondary-foreground: oklch(0.28 0.02 45);
+  --muted: #E5E5E5;
+  --muted-foreground: oklch(0.5 0.02 45);
+  --accent: oklch(0.96 0.03 70);
+  --accent-foreground: oklch(0.28 0.05 50);
   --destructive: oklch(0.58 0.22 25);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(0.2 0 0);
+  --border: oklch(0.9 0.01 85);
+  --input: oklch(0.92 0.01 85);
   --ring: oklch(0.7686 0.1647 70.0804);
   --chart-1: oklch(0.7686 0.1647 70.0804);
   --chart-2: oklch(0.75 0.15 85);
   --chart-3: oklch(0.65 0.18 145);
   --chart-4: oklch(0.65 0.15 250);
   --chart-5: oklch(0.7 0.18 30);
-  --sidebar: oklch(0.1 0 0);
-  --sidebar-foreground: oklch(0.96 0 0);
+  --sidebar: #E5E5E5;
+  --sidebar-foreground: oklch(0.2 0.02 45);
   --sidebar-primary: oklch(0.7686 0.1647 70.0804);
   --sidebar-primary-foreground: oklch(0.15 0.02 45);
-  --sidebar-accent: oklch(0.2 0 0);
-  --sidebar-accent-foreground: oklch(0.96 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-accent: oklch(0.95 0.02 70);
+  --sidebar-accent-foreground: oklch(0.25 0.04 50);
+  --sidebar-border: oklch(0.9 0.01 85);
   --sidebar-ring: oklch(0.7686 0.1647 70.0804);
   --success: oklch(0.68 0.17 145);
   --success-foreground: oklch(0.99 0 0);
@@ -170,6 +170,75 @@
 .animate-bell-ring {
   animation: bell-ring 1.4s ease-in-out infinite;
   transform-origin: top center;
+}
+
+@keyframes dash-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dash-orb {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(12px, -10px, 0) scale(1.08);
+  }
+}
+
+@keyframes dash-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
+}
+
+@keyframes dash-card-shift {
+  0%,
+  100% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+}
+
+.dash-fade-up {
+  animation: dash-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.dash-orb {
+  animation: dash-orb 9s ease-in-out infinite;
+}
+
+.dash-pulse {
+  animation: dash-pulse 1.8s ease-in-out infinite;
+}
+
+.dash-card-shift {
+  background-size: 180% 180%;
+  animation: dash-card-shift 9s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-fade-up,
+  .dash-orb,
+  .dash-pulse,
+  .dash-card-shift {
+    animation: none;
+  }
 }
 
 @layer base {

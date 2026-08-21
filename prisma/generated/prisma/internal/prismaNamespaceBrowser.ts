@@ -98,7 +98,20 @@ export const ModelName = {
   BranchNotification: 'BranchNotification',
   PurchaseOrder: 'PurchaseOrder',
   PurchaseOrderItem: 'PurchaseOrderItem',
-  BranchExpense: 'BranchExpense'
+  BranchExpense: 'BranchExpense',
+  WarehouseCategory: 'WarehouseCategory',
+  WarehouseLocation: 'WarehouseLocation',
+  WarehouseProduct: 'WarehouseProduct',
+  WarehouseMovement: 'WarehouseMovement',
+  WarehouseSlip: 'WarehouseSlip',
+  WarehouseSlipItem: 'WarehouseSlipItem',
+  BranchPayrollSettings: 'BranchPayrollSettings',
+  StaffPayrollProfile: 'StaffPayrollProfile',
+  PayrollPeriod: 'PayrollPeriod',
+  StaffAttendanceDay: 'StaffAttendanceDay',
+  StaffLeaveRequest: 'StaffLeaveRequest',
+  StaffSalaryAdvance: 'StaffSalaryAdvance',
+  Payslip: 'Payslip'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -832,6 +845,7 @@ export const ServiceStockLineScalarFieldEnum = {
   id: 'id',
   sessionId: 'sessionId',
   menuItemId: 'menuItemId',
+  shopProductId: 'shopProductId',
   qtyAttributed: 'qtyAttributed',
   qtyOpeningCounted: 'qtyOpeningCounted',
   qtySold: 'qtySold',
@@ -851,6 +865,7 @@ export const ServiceStockTopUpScalarFieldEnum = {
   id: 'id',
   sessionId: 'sessionId',
   menuItemId: 'menuItemId',
+  shopProductId: 'shopProductId',
   quantity: 'quantity',
   sourceZone: 'sourceZone',
   note: 'note',
@@ -968,6 +983,240 @@ export const BranchExpenseScalarFieldEnum = {
 } as const
 
 export type BranchExpenseScalarFieldEnum = (typeof BranchExpenseScalarFieldEnum)[keyof typeof BranchExpenseScalarFieldEnum]
+
+
+export const WarehouseCategoryScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  productType: 'productType',
+  name: 'name',
+  code: 'code',
+  sortOrder: 'sortOrder',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WarehouseCategoryScalarFieldEnum = (typeof WarehouseCategoryScalarFieldEnum)[keyof typeof WarehouseCategoryScalarFieldEnum]
+
+
+export const WarehouseLocationScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  zone: 'zone',
+  floor: 'floor',
+  code: 'code',
+  label: 'label',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WarehouseLocationScalarFieldEnum = (typeof WarehouseLocationScalarFieldEnum)[keyof typeof WarehouseLocationScalarFieldEnum]
+
+
+export const WarehouseProductScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  sku: 'sku',
+  name: 'name',
+  type: 'type',
+  categoryId: 'categoryId',
+  locationId: 'locationId',
+  destLocationId: 'destLocationId',
+  unit: 'unit',
+  stockQty: 'stockQty',
+  minQty: 'minQty',
+  unitCostUsd: 'unitCostUsd',
+  shopProductId: 'shopProductId',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WarehouseProductScalarFieldEnum = (typeof WarehouseProductScalarFieldEnum)[keyof typeof WarehouseProductScalarFieldEnum]
+
+
+export const WarehouseMovementScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  productId: 'productId',
+  kind: 'kind',
+  quantity: 'quantity',
+  stockBefore: 'stockBefore',
+  stockAfter: 'stockAfter',
+  note: 'note',
+  slipId: 'slipId',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt'
+} as const
+
+export type WarehouseMovementScalarFieldEnum = (typeof WarehouseMovementScalarFieldEnum)[keyof typeof WarehouseMovementScalarFieldEnum]
+
+
+export const WarehouseSlipScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  number: 'number',
+  kind: 'kind',
+  status: 'status',
+  destination: 'destination',
+  supplierName: 'supplierName',
+  note: 'note',
+  managerUserId: 'managerUserId',
+  recipientUserId: 'recipientUserId',
+  validatedAt: 'validatedAt',
+  receivedAt: 'receivedAt',
+  receivedByUserId: 'receivedByUserId',
+  recipientSignature: 'recipientSignature',
+  receiveNote: 'receiveNote',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WarehouseSlipScalarFieldEnum = (typeof WarehouseSlipScalarFieldEnum)[keyof typeof WarehouseSlipScalarFieldEnum]
+
+
+export const WarehouseSlipItemScalarFieldEnum = {
+  id: 'id',
+  slipId: 'slipId',
+  productId: 'productId',
+  name: 'name',
+  productType: 'productType',
+  quantity: 'quantity',
+  unitCostUsd: 'unitCostUsd',
+  createProduct: 'createProduct',
+  createdAt: 'createdAt'
+} as const
+
+export type WarehouseSlipItemScalarFieldEnum = (typeof WarehouseSlipItemScalarFieldEnum)[keyof typeof WarehouseSlipItemScalarFieldEnum]
+
+
+export const BranchPayrollSettingsScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  defaultDailyRateUsd: 'defaultDailyRateUsd',
+  workWeek: 'workWeek',
+  notifyBeforeHour: 'notifyBeforeHour',
+  advanceCapPct: 'advanceCapPct',
+  justificationDays: 'justificationDays',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BranchPayrollSettingsScalarFieldEnum = (typeof BranchPayrollSettingsScalarFieldEnum)[keyof typeof BranchPayrollSettingsScalarFieldEnum]
+
+
+export const StaffPayrollProfileScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  branchMemberId: 'branchMemberId',
+  dailyRateUsd: 'dailyRateUsd',
+  payoutMethod: 'payoutMethod',
+  mobileMoneyPhone: 'mobileMoneyPhone',
+  bankName: 'bankName',
+  bankAccount: 'bankAccount',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffPayrollProfileScalarFieldEnum = (typeof StaffPayrollProfileScalarFieldEnum)[keyof typeof StaffPayrollProfileScalarFieldEnum]
+
+
+export const PayrollPeriodScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  year: 'year',
+  month: 'month',
+  status: 'status',
+  exchangeRateUsed: 'exchangeRateUsed',
+  closedAt: 'closedAt',
+  paidAt: 'paidAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PayrollPeriodScalarFieldEnum = (typeof PayrollPeriodScalarFieldEnum)[keyof typeof PayrollPeriodScalarFieldEnum]
+
+
+export const StaffAttendanceDayScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  branchMemberId: 'branchMemberId',
+  periodId: 'periodId',
+  workDate: 'workDate',
+  kind: 'kind',
+  payTreatment: 'payTreatment',
+  dailyRateUsd: 'dailyRateUsd',
+  justificationStatus: 'justificationStatus',
+  justificationNote: 'justificationNote',
+  absenceNoticeSentAt: 'absenceNoticeSentAt',
+  followUpNoticeSentAt: 'followUpNoticeSentAt',
+  source: 'source',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffAttendanceDayScalarFieldEnum = (typeof StaffAttendanceDayScalarFieldEnum)[keyof typeof StaffAttendanceDayScalarFieldEnum]
+
+
+export const StaffLeaveRequestScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  branchMemberId: 'branchMemberId',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  status: 'status',
+  note: 'note',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffLeaveRequestScalarFieldEnum = (typeof StaffLeaveRequestScalarFieldEnum)[keyof typeof StaffLeaveRequestScalarFieldEnum]
+
+
+export const StaffSalaryAdvanceScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  branchMemberId: 'branchMemberId',
+  periodId: 'periodId',
+  amountUsd: 'amountUsd',
+  status: 'status',
+  expenseId: 'expenseId',
+  requestedAt: 'requestedAt',
+  paidAt: 'paidAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffSalaryAdvanceScalarFieldEnum = (typeof StaffSalaryAdvanceScalarFieldEnum)[keyof typeof StaffSalaryAdvanceScalarFieldEnum]
+
+
+export const PayslipScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  branchMemberId: 'branchMemberId',
+  periodId: 'periodId',
+  dailyRateUsd: 'dailyRateUsd',
+  expectedDays: 'expectedDays',
+  unpaidAbsenceDays: 'unpaidAbsenceDays',
+  grossUsd: 'grossUsd',
+  absenceDeductionUsd: 'absenceDeductionUsd',
+  advancesUsd: 'advancesUsd',
+  netUsd: 'netUsd',
+  netCdf: 'netCdf',
+  exchangeRateUsed: 'exchangeRateUsed',
+  lines: 'lines',
+  pdfUrl: 'pdfUrl',
+  expenseId: 'expenseId',
+  sentAt: 'sentAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PayslipScalarFieldEnum = (typeof PayslipScalarFieldEnum)[keyof typeof PayslipScalarFieldEnum]
 
 
 export const SortOrder = {

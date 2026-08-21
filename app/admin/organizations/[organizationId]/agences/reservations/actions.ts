@@ -89,7 +89,7 @@ export async function createGuichetClientAction(
     adresse,
   } = parsed.data;
 
-  const perm = await assertInscriptionPermission(organizationId, "create");
+  const perm = await assertInscriptionPermission(organizationId, "ajouter");
   if (!perm.ok) return { ok: false, message: perm.message };
 
   const h = await headers();
@@ -184,7 +184,7 @@ export async function searchClientsAction(
     dateInscription: string;
   }>
 > {
-  const perm = await assertInscriptionPermission(organizationId, "share");
+  const perm = await assertInscriptionPermission(organizationId, "partager");
   if (!perm.ok) return [];
 
   if (!query?.trim()) return [];
@@ -227,7 +227,7 @@ export async function searchClientsAction(
 export async function getReservationsAction(
   organizationId: string,
 ): Promise<ActionResult<Awaited<ReturnType<typeof listReservations>>>> {
-  const perm = await assertInscriptionPermission(organizationId, "share");
+  const perm = await assertInscriptionPermission(organizationId, "partager");
   if (!perm.ok) return { ok: false, message: perm.message };
 
   try {
@@ -251,7 +251,7 @@ export async function getReservationAction(
   organizationId: string,
   reservationId: string,
 ): Promise<ActionResult<NonNullable<Awaited<ReturnType<typeof findReservationForOrganization>>>>> {
-  const perm = await assertInscriptionPermission(organizationId, "share");
+  const perm = await assertInscriptionPermission(organizationId, "partager");
   if (!perm.ok) return { ok: false, message: perm.message };
 
   const parsed = reservationIdParamsSchema.safeParse({ organizationId, reservationId });
@@ -275,7 +275,7 @@ export async function createReservationAction(
   organizationId: string,
   payload: unknown,
 ): Promise<ActionResult<Awaited<ReturnType<typeof createReservationInDatabase>>>> {
-  const perm = await assertInscriptionPermission(organizationId, "create");
+  const perm = await assertInscriptionPermission(organizationId, "ajouter");
   if (!perm.ok) return { ok: false, message: perm.message };
 
   const parsed = createReservationSchema.safeParse(payload);
@@ -309,7 +309,7 @@ export async function updateReservationAction(
 
   const { organizationId, reservationId, statutPaiement, ...fields } = parsed.data;
 
-  const perm = await assertInscriptionPermission(organizationId, "update");
+  const perm = await assertInscriptionPermission(organizationId, "modifier");
   if (!perm.ok) return { ok: false, message: perm.message };
 
   const existing = await findReservationForOrganization(organizationId, reservationId);
@@ -369,7 +369,7 @@ export async function deleteReservationAction(
 
   const { organizationId, reservationId } = parsed.data;
 
-  const perm = await assertInscriptionPermission(organizationId, "delete");
+  const perm = await assertInscriptionPermission(organizationId, "supprimer");
   if (!perm.ok) return { ok: false, message: perm.message };
 
   const existing = await findReservationForOrganization(organizationId, reservationId);

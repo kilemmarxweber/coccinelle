@@ -2,16 +2,16 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import {
-  businessAccessControlStatements,
+  organizationProductStatements,
   isAppAdminRole,
   organizationRoleStatements,
 } from "@/lib/permissions";
 
-export type OrganizationResource = keyof typeof businessAccessControlStatements;
+export type OrganizationResource = keyof typeof organizationProductStatements;
 
 export type OrganizationPermissionMap = {
   [K in OrganizationResource]?: ReadonlyArray<
-    (typeof businessAccessControlStatements)[K][number]
+    (typeof organizationProductStatements)[K][number]
   >;
 };
 

@@ -208,6 +208,11 @@ export type BranchMemberWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"BranchMember"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
+  payrollProfile?: Prisma.XOR<Prisma.StaffPayrollProfileNullableScalarRelationFilter, Prisma.StaffPayrollProfileWhereInput> | null
+  attendanceDays?: Prisma.StaffAttendanceDayListRelationFilter
+  leaveRequests?: Prisma.StaffLeaveRequestListRelationFilter
+  salaryAdvances?: Prisma.StaffSalaryAdvanceListRelationFilter
+  payslips?: Prisma.PayslipListRelationFilter
 }
 
 export type BranchMemberOrderByWithRelationInput = {
@@ -221,6 +226,11 @@ export type BranchMemberOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   branch?: Prisma.BranchOrderByWithRelationInput
   member?: Prisma.MemberOrderByWithRelationInput
+  payrollProfile?: Prisma.StaffPayrollProfileOrderByWithRelationInput
+  attendanceDays?: Prisma.StaffAttendanceDayOrderByRelationAggregateInput
+  leaveRequests?: Prisma.StaffLeaveRequestOrderByRelationAggregateInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceOrderByRelationAggregateInput
+  payslips?: Prisma.PayslipOrderByRelationAggregateInput
 }
 
 export type BranchMemberWhereUniqueInput = Prisma.AtLeast<{
@@ -238,6 +248,11 @@ export type BranchMemberWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"BranchMember"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
+  payrollProfile?: Prisma.XOR<Prisma.StaffPayrollProfileNullableScalarRelationFilter, Prisma.StaffPayrollProfileWhereInput> | null
+  attendanceDays?: Prisma.StaffAttendanceDayListRelationFilter
+  leaveRequests?: Prisma.StaffLeaveRequestListRelationFilter
+  salaryAdvances?: Prisma.StaffSalaryAdvanceListRelationFilter
+  payslips?: Prisma.PayslipListRelationFilter
 }, "id" | "branchId_memberId">
 
 export type BranchMemberOrderByWithAggregationInput = {
@@ -277,6 +292,11 @@ export type BranchMemberCreateInput = {
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutMembersInput
   member: Prisma.MemberCreateNestedOneWithoutBranchMembersInput
+  payrollProfile?: Prisma.StaffPayrollProfileCreateNestedOneWithoutBranchMemberInput
+  attendanceDays?: Prisma.StaffAttendanceDayCreateNestedManyWithoutBranchMemberInput
+  leaveRequests?: Prisma.StaffLeaveRequestCreateNestedManyWithoutBranchMemberInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceCreateNestedManyWithoutBranchMemberInput
+  payslips?: Prisma.PayslipCreateNestedManyWithoutBranchMemberInput
 }
 
 export type BranchMemberUncheckedCreateInput = {
@@ -288,6 +308,11 @@ export type BranchMemberUncheckedCreateInput = {
   status?: $Enums.BranchMemberStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  payrollProfile?: Prisma.StaffPayrollProfileUncheckedCreateNestedOneWithoutBranchMemberInput
+  attendanceDays?: Prisma.StaffAttendanceDayUncheckedCreateNestedManyWithoutBranchMemberInput
+  leaveRequests?: Prisma.StaffLeaveRequestUncheckedCreateNestedManyWithoutBranchMemberInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUncheckedCreateNestedManyWithoutBranchMemberInput
+  payslips?: Prisma.PayslipUncheckedCreateNestedManyWithoutBranchMemberInput
 }
 
 export type BranchMemberUpdateInput = {
@@ -299,6 +324,11 @@ export type BranchMemberUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutMembersNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutBranchMembersNestedInput
+  payrollProfile?: Prisma.StaffPayrollProfileUpdateOneWithoutBranchMemberNestedInput
+  attendanceDays?: Prisma.StaffAttendanceDayUpdateManyWithoutBranchMemberNestedInput
+  leaveRequests?: Prisma.StaffLeaveRequestUpdateManyWithoutBranchMemberNestedInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUpdateManyWithoutBranchMemberNestedInput
+  payslips?: Prisma.PayslipUpdateManyWithoutBranchMemberNestedInput
 }
 
 export type BranchMemberUncheckedUpdateInput = {
@@ -310,6 +340,11 @@ export type BranchMemberUncheckedUpdateInput = {
   status?: Prisma.EnumBranchMemberStatusFieldUpdateOperationsInput | $Enums.BranchMemberStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payrollProfile?: Prisma.StaffPayrollProfileUncheckedUpdateOneWithoutBranchMemberNestedInput
+  attendanceDays?: Prisma.StaffAttendanceDayUncheckedUpdateManyWithoutBranchMemberNestedInput
+  leaveRequests?: Prisma.StaffLeaveRequestUncheckedUpdateManyWithoutBranchMemberNestedInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUncheckedUpdateManyWithoutBranchMemberNestedInput
+  payslips?: Prisma.PayslipUncheckedUpdateManyWithoutBranchMemberNestedInput
 }
 
 export type BranchMemberCreateManyInput = {
@@ -389,6 +424,11 @@ export type BranchMemberMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type BranchMemberScalarRelationFilter = {
+  is?: Prisma.BranchMemberWhereInput
+  isNot?: Prisma.BranchMemberWhereInput
 }
 
 export type BranchMemberCreateNestedManyWithoutMemberInput = {
@@ -479,6 +519,76 @@ export type EnumBranchMemberStatusFieldUpdateOperationsInput = {
   set?: $Enums.BranchMemberStatus
 }
 
+export type BranchMemberCreateNestedOneWithoutPayrollProfileInput = {
+  create?: Prisma.XOR<Prisma.BranchMemberCreateWithoutPayrollProfileInput, Prisma.BranchMemberUncheckedCreateWithoutPayrollProfileInput>
+  connectOrCreate?: Prisma.BranchMemberCreateOrConnectWithoutPayrollProfileInput
+  connect?: Prisma.BranchMemberWhereUniqueInput
+}
+
+export type BranchMemberUpdateOneRequiredWithoutPayrollProfileNestedInput = {
+  create?: Prisma.XOR<Prisma.BranchMemberCreateWithoutPayrollProfileInput, Prisma.BranchMemberUncheckedCreateWithoutPayrollProfileInput>
+  connectOrCreate?: Prisma.BranchMemberCreateOrConnectWithoutPayrollProfileInput
+  upsert?: Prisma.BranchMemberUpsertWithoutPayrollProfileInput
+  connect?: Prisma.BranchMemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BranchMemberUpdateToOneWithWhereWithoutPayrollProfileInput, Prisma.BranchMemberUpdateWithoutPayrollProfileInput>, Prisma.BranchMemberUncheckedUpdateWithoutPayrollProfileInput>
+}
+
+export type BranchMemberCreateNestedOneWithoutAttendanceDaysInput = {
+  create?: Prisma.XOR<Prisma.BranchMemberCreateWithoutAttendanceDaysInput, Prisma.BranchMemberUncheckedCreateWithoutAttendanceDaysInput>
+  connectOrCreate?: Prisma.BranchMemberCreateOrConnectWithoutAttendanceDaysInput
+  connect?: Prisma.BranchMemberWhereUniqueInput
+}
+
+export type BranchMemberUpdateOneRequiredWithoutAttendanceDaysNestedInput = {
+  create?: Prisma.XOR<Prisma.BranchMemberCreateWithoutAttendanceDaysInput, Prisma.BranchMemberUncheckedCreateWithoutAttendanceDaysInput>
+  connectOrCreate?: Prisma.BranchMemberCreateOrConnectWithoutAttendanceDaysInput
+  upsert?: Prisma.BranchMemberUpsertWithoutAttendanceDaysInput
+  connect?: Prisma.BranchMemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BranchMemberUpdateToOneWithWhereWithoutAttendanceDaysInput, Prisma.BranchMemberUpdateWithoutAttendanceDaysInput>, Prisma.BranchMemberUncheckedUpdateWithoutAttendanceDaysInput>
+}
+
+export type BranchMemberCreateNestedOneWithoutLeaveRequestsInput = {
+  create?: Prisma.XOR<Prisma.BranchMemberCreateWithoutLeaveRequestsInput, Prisma.BranchMemberUncheckedCreateWithoutLeaveRequestsInput>
+  connectOrCreate?: Prisma.BranchMemberCreateOrConnectWithoutLeaveRequestsInput
+  connect?: Prisma.BranchMemberWhereUniqueInput
+}
+
+export type BranchMemberUpdateOneRequiredWithoutLeaveRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.BranchMemberCreateWithoutLeaveRequestsInput, Prisma.BranchMemberUncheckedCreateWithoutLeaveRequestsInput>
+  connectOrCreate?: Prisma.BranchMemberCreateOrConnectWithoutLeaveRequestsInput
+  upsert?: Prisma.BranchMemberUpsertWithoutLeaveRequestsInput
+  connect?: Prisma.BranchMemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BranchMemberUpdateToOneWithWhereWithoutLeaveRequestsInput, Prisma.BranchMemberUpdateWithoutLeaveRequestsInput>, Prisma.BranchMemberUncheckedUpdateWithoutLeaveRequestsInput>
+}
+
+export type BranchMemberCreateNestedOneWithoutSalaryAdvancesInput = {
+  create?: Prisma.XOR<Prisma.BranchMemberCreateWithoutSalaryAdvancesInput, Prisma.BranchMemberUncheckedCreateWithoutSalaryAdvancesInput>
+  connectOrCreate?: Prisma.BranchMemberCreateOrConnectWithoutSalaryAdvancesInput
+  connect?: Prisma.BranchMemberWhereUniqueInput
+}
+
+export type BranchMemberUpdateOneRequiredWithoutSalaryAdvancesNestedInput = {
+  create?: Prisma.XOR<Prisma.BranchMemberCreateWithoutSalaryAdvancesInput, Prisma.BranchMemberUncheckedCreateWithoutSalaryAdvancesInput>
+  connectOrCreate?: Prisma.BranchMemberCreateOrConnectWithoutSalaryAdvancesInput
+  upsert?: Prisma.BranchMemberUpsertWithoutSalaryAdvancesInput
+  connect?: Prisma.BranchMemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BranchMemberUpdateToOneWithWhereWithoutSalaryAdvancesInput, Prisma.BranchMemberUpdateWithoutSalaryAdvancesInput>, Prisma.BranchMemberUncheckedUpdateWithoutSalaryAdvancesInput>
+}
+
+export type BranchMemberCreateNestedOneWithoutPayslipsInput = {
+  create?: Prisma.XOR<Prisma.BranchMemberCreateWithoutPayslipsInput, Prisma.BranchMemberUncheckedCreateWithoutPayslipsInput>
+  connectOrCreate?: Prisma.BranchMemberCreateOrConnectWithoutPayslipsInput
+  connect?: Prisma.BranchMemberWhereUniqueInput
+}
+
+export type BranchMemberUpdateOneRequiredWithoutPayslipsNestedInput = {
+  create?: Prisma.XOR<Prisma.BranchMemberCreateWithoutPayslipsInput, Prisma.BranchMemberUncheckedCreateWithoutPayslipsInput>
+  connectOrCreate?: Prisma.BranchMemberCreateOrConnectWithoutPayslipsInput
+  upsert?: Prisma.BranchMemberUpsertWithoutPayslipsInput
+  connect?: Prisma.BranchMemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BranchMemberUpdateToOneWithWhereWithoutPayslipsInput, Prisma.BranchMemberUpdateWithoutPayslipsInput>, Prisma.BranchMemberUncheckedUpdateWithoutPayslipsInput>
+}
+
 export type BranchMemberCreateWithoutMemberInput = {
   id?: string
   role?: string
@@ -487,6 +597,11 @@ export type BranchMemberCreateWithoutMemberInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutMembersInput
+  payrollProfile?: Prisma.StaffPayrollProfileCreateNestedOneWithoutBranchMemberInput
+  attendanceDays?: Prisma.StaffAttendanceDayCreateNestedManyWithoutBranchMemberInput
+  leaveRequests?: Prisma.StaffLeaveRequestCreateNestedManyWithoutBranchMemberInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceCreateNestedManyWithoutBranchMemberInput
+  payslips?: Prisma.PayslipCreateNestedManyWithoutBranchMemberInput
 }
 
 export type BranchMemberUncheckedCreateWithoutMemberInput = {
@@ -497,6 +612,11 @@ export type BranchMemberUncheckedCreateWithoutMemberInput = {
   status?: $Enums.BranchMemberStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  payrollProfile?: Prisma.StaffPayrollProfileUncheckedCreateNestedOneWithoutBranchMemberInput
+  attendanceDays?: Prisma.StaffAttendanceDayUncheckedCreateNestedManyWithoutBranchMemberInput
+  leaveRequests?: Prisma.StaffLeaveRequestUncheckedCreateNestedManyWithoutBranchMemberInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUncheckedCreateNestedManyWithoutBranchMemberInput
+  payslips?: Prisma.PayslipUncheckedCreateNestedManyWithoutBranchMemberInput
 }
 
 export type BranchMemberCreateOrConnectWithoutMemberInput = {
@@ -547,6 +667,11 @@ export type BranchMemberCreateWithoutBranchInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   member: Prisma.MemberCreateNestedOneWithoutBranchMembersInput
+  payrollProfile?: Prisma.StaffPayrollProfileCreateNestedOneWithoutBranchMemberInput
+  attendanceDays?: Prisma.StaffAttendanceDayCreateNestedManyWithoutBranchMemberInput
+  leaveRequests?: Prisma.StaffLeaveRequestCreateNestedManyWithoutBranchMemberInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceCreateNestedManyWithoutBranchMemberInput
+  payslips?: Prisma.PayslipCreateNestedManyWithoutBranchMemberInput
 }
 
 export type BranchMemberUncheckedCreateWithoutBranchInput = {
@@ -557,6 +682,11 @@ export type BranchMemberUncheckedCreateWithoutBranchInput = {
   status?: $Enums.BranchMemberStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  payrollProfile?: Prisma.StaffPayrollProfileUncheckedCreateNestedOneWithoutBranchMemberInput
+  attendanceDays?: Prisma.StaffAttendanceDayUncheckedCreateNestedManyWithoutBranchMemberInput
+  leaveRequests?: Prisma.StaffLeaveRequestUncheckedCreateNestedManyWithoutBranchMemberInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUncheckedCreateNestedManyWithoutBranchMemberInput
+  payslips?: Prisma.PayslipUncheckedCreateNestedManyWithoutBranchMemberInput
 }
 
 export type BranchMemberCreateOrConnectWithoutBranchInput = {
@@ -585,6 +715,386 @@ export type BranchMemberUpdateManyWithWhereWithoutBranchInput = {
   data: Prisma.XOR<Prisma.BranchMemberUpdateManyMutationInput, Prisma.BranchMemberUncheckedUpdateManyWithoutBranchInput>
 }
 
+export type BranchMemberCreateWithoutPayrollProfileInput = {
+  id?: string
+  role?: string
+  isPrimary?: boolean
+  status?: $Enums.BranchMemberStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutMembersInput
+  member: Prisma.MemberCreateNestedOneWithoutBranchMembersInput
+  attendanceDays?: Prisma.StaffAttendanceDayCreateNestedManyWithoutBranchMemberInput
+  leaveRequests?: Prisma.StaffLeaveRequestCreateNestedManyWithoutBranchMemberInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceCreateNestedManyWithoutBranchMemberInput
+  payslips?: Prisma.PayslipCreateNestedManyWithoutBranchMemberInput
+}
+
+export type BranchMemberUncheckedCreateWithoutPayrollProfileInput = {
+  id?: string
+  branchId: string
+  memberId: string
+  role?: string
+  isPrimary?: boolean
+  status?: $Enums.BranchMemberStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  attendanceDays?: Prisma.StaffAttendanceDayUncheckedCreateNestedManyWithoutBranchMemberInput
+  leaveRequests?: Prisma.StaffLeaveRequestUncheckedCreateNestedManyWithoutBranchMemberInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUncheckedCreateNestedManyWithoutBranchMemberInput
+  payslips?: Prisma.PayslipUncheckedCreateNestedManyWithoutBranchMemberInput
+}
+
+export type BranchMemberCreateOrConnectWithoutPayrollProfileInput = {
+  where: Prisma.BranchMemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.BranchMemberCreateWithoutPayrollProfileInput, Prisma.BranchMemberUncheckedCreateWithoutPayrollProfileInput>
+}
+
+export type BranchMemberUpsertWithoutPayrollProfileInput = {
+  update: Prisma.XOR<Prisma.BranchMemberUpdateWithoutPayrollProfileInput, Prisma.BranchMemberUncheckedUpdateWithoutPayrollProfileInput>
+  create: Prisma.XOR<Prisma.BranchMemberCreateWithoutPayrollProfileInput, Prisma.BranchMemberUncheckedCreateWithoutPayrollProfileInput>
+  where?: Prisma.BranchMemberWhereInput
+}
+
+export type BranchMemberUpdateToOneWithWhereWithoutPayrollProfileInput = {
+  where?: Prisma.BranchMemberWhereInput
+  data: Prisma.XOR<Prisma.BranchMemberUpdateWithoutPayrollProfileInput, Prisma.BranchMemberUncheckedUpdateWithoutPayrollProfileInput>
+}
+
+export type BranchMemberUpdateWithoutPayrollProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumBranchMemberStatusFieldUpdateOperationsInput | $Enums.BranchMemberStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutMembersNestedInput
+  member?: Prisma.MemberUpdateOneRequiredWithoutBranchMembersNestedInput
+  attendanceDays?: Prisma.StaffAttendanceDayUpdateManyWithoutBranchMemberNestedInput
+  leaveRequests?: Prisma.StaffLeaveRequestUpdateManyWithoutBranchMemberNestedInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUpdateManyWithoutBranchMemberNestedInput
+  payslips?: Prisma.PayslipUpdateManyWithoutBranchMemberNestedInput
+}
+
+export type BranchMemberUncheckedUpdateWithoutPayrollProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  memberId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumBranchMemberStatusFieldUpdateOperationsInput | $Enums.BranchMemberStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attendanceDays?: Prisma.StaffAttendanceDayUncheckedUpdateManyWithoutBranchMemberNestedInput
+  leaveRequests?: Prisma.StaffLeaveRequestUncheckedUpdateManyWithoutBranchMemberNestedInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUncheckedUpdateManyWithoutBranchMemberNestedInput
+  payslips?: Prisma.PayslipUncheckedUpdateManyWithoutBranchMemberNestedInput
+}
+
+export type BranchMemberCreateWithoutAttendanceDaysInput = {
+  id?: string
+  role?: string
+  isPrimary?: boolean
+  status?: $Enums.BranchMemberStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutMembersInput
+  member: Prisma.MemberCreateNestedOneWithoutBranchMembersInput
+  payrollProfile?: Prisma.StaffPayrollProfileCreateNestedOneWithoutBranchMemberInput
+  leaveRequests?: Prisma.StaffLeaveRequestCreateNestedManyWithoutBranchMemberInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceCreateNestedManyWithoutBranchMemberInput
+  payslips?: Prisma.PayslipCreateNestedManyWithoutBranchMemberInput
+}
+
+export type BranchMemberUncheckedCreateWithoutAttendanceDaysInput = {
+  id?: string
+  branchId: string
+  memberId: string
+  role?: string
+  isPrimary?: boolean
+  status?: $Enums.BranchMemberStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  payrollProfile?: Prisma.StaffPayrollProfileUncheckedCreateNestedOneWithoutBranchMemberInput
+  leaveRequests?: Prisma.StaffLeaveRequestUncheckedCreateNestedManyWithoutBranchMemberInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUncheckedCreateNestedManyWithoutBranchMemberInput
+  payslips?: Prisma.PayslipUncheckedCreateNestedManyWithoutBranchMemberInput
+}
+
+export type BranchMemberCreateOrConnectWithoutAttendanceDaysInput = {
+  where: Prisma.BranchMemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.BranchMemberCreateWithoutAttendanceDaysInput, Prisma.BranchMemberUncheckedCreateWithoutAttendanceDaysInput>
+}
+
+export type BranchMemberUpsertWithoutAttendanceDaysInput = {
+  update: Prisma.XOR<Prisma.BranchMemberUpdateWithoutAttendanceDaysInput, Prisma.BranchMemberUncheckedUpdateWithoutAttendanceDaysInput>
+  create: Prisma.XOR<Prisma.BranchMemberCreateWithoutAttendanceDaysInput, Prisma.BranchMemberUncheckedCreateWithoutAttendanceDaysInput>
+  where?: Prisma.BranchMemberWhereInput
+}
+
+export type BranchMemberUpdateToOneWithWhereWithoutAttendanceDaysInput = {
+  where?: Prisma.BranchMemberWhereInput
+  data: Prisma.XOR<Prisma.BranchMemberUpdateWithoutAttendanceDaysInput, Prisma.BranchMemberUncheckedUpdateWithoutAttendanceDaysInput>
+}
+
+export type BranchMemberUpdateWithoutAttendanceDaysInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumBranchMemberStatusFieldUpdateOperationsInput | $Enums.BranchMemberStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutMembersNestedInput
+  member?: Prisma.MemberUpdateOneRequiredWithoutBranchMembersNestedInput
+  payrollProfile?: Prisma.StaffPayrollProfileUpdateOneWithoutBranchMemberNestedInput
+  leaveRequests?: Prisma.StaffLeaveRequestUpdateManyWithoutBranchMemberNestedInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUpdateManyWithoutBranchMemberNestedInput
+  payslips?: Prisma.PayslipUpdateManyWithoutBranchMemberNestedInput
+}
+
+export type BranchMemberUncheckedUpdateWithoutAttendanceDaysInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  memberId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumBranchMemberStatusFieldUpdateOperationsInput | $Enums.BranchMemberStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payrollProfile?: Prisma.StaffPayrollProfileUncheckedUpdateOneWithoutBranchMemberNestedInput
+  leaveRequests?: Prisma.StaffLeaveRequestUncheckedUpdateManyWithoutBranchMemberNestedInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUncheckedUpdateManyWithoutBranchMemberNestedInput
+  payslips?: Prisma.PayslipUncheckedUpdateManyWithoutBranchMemberNestedInput
+}
+
+export type BranchMemberCreateWithoutLeaveRequestsInput = {
+  id?: string
+  role?: string
+  isPrimary?: boolean
+  status?: $Enums.BranchMemberStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutMembersInput
+  member: Prisma.MemberCreateNestedOneWithoutBranchMembersInput
+  payrollProfile?: Prisma.StaffPayrollProfileCreateNestedOneWithoutBranchMemberInput
+  attendanceDays?: Prisma.StaffAttendanceDayCreateNestedManyWithoutBranchMemberInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceCreateNestedManyWithoutBranchMemberInput
+  payslips?: Prisma.PayslipCreateNestedManyWithoutBranchMemberInput
+}
+
+export type BranchMemberUncheckedCreateWithoutLeaveRequestsInput = {
+  id?: string
+  branchId: string
+  memberId: string
+  role?: string
+  isPrimary?: boolean
+  status?: $Enums.BranchMemberStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  payrollProfile?: Prisma.StaffPayrollProfileUncheckedCreateNestedOneWithoutBranchMemberInput
+  attendanceDays?: Prisma.StaffAttendanceDayUncheckedCreateNestedManyWithoutBranchMemberInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUncheckedCreateNestedManyWithoutBranchMemberInput
+  payslips?: Prisma.PayslipUncheckedCreateNestedManyWithoutBranchMemberInput
+}
+
+export type BranchMemberCreateOrConnectWithoutLeaveRequestsInput = {
+  where: Prisma.BranchMemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.BranchMemberCreateWithoutLeaveRequestsInput, Prisma.BranchMemberUncheckedCreateWithoutLeaveRequestsInput>
+}
+
+export type BranchMemberUpsertWithoutLeaveRequestsInput = {
+  update: Prisma.XOR<Prisma.BranchMemberUpdateWithoutLeaveRequestsInput, Prisma.BranchMemberUncheckedUpdateWithoutLeaveRequestsInput>
+  create: Prisma.XOR<Prisma.BranchMemberCreateWithoutLeaveRequestsInput, Prisma.BranchMemberUncheckedCreateWithoutLeaveRequestsInput>
+  where?: Prisma.BranchMemberWhereInput
+}
+
+export type BranchMemberUpdateToOneWithWhereWithoutLeaveRequestsInput = {
+  where?: Prisma.BranchMemberWhereInput
+  data: Prisma.XOR<Prisma.BranchMemberUpdateWithoutLeaveRequestsInput, Prisma.BranchMemberUncheckedUpdateWithoutLeaveRequestsInput>
+}
+
+export type BranchMemberUpdateWithoutLeaveRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumBranchMemberStatusFieldUpdateOperationsInput | $Enums.BranchMemberStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutMembersNestedInput
+  member?: Prisma.MemberUpdateOneRequiredWithoutBranchMembersNestedInput
+  payrollProfile?: Prisma.StaffPayrollProfileUpdateOneWithoutBranchMemberNestedInput
+  attendanceDays?: Prisma.StaffAttendanceDayUpdateManyWithoutBranchMemberNestedInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUpdateManyWithoutBranchMemberNestedInput
+  payslips?: Prisma.PayslipUpdateManyWithoutBranchMemberNestedInput
+}
+
+export type BranchMemberUncheckedUpdateWithoutLeaveRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  memberId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumBranchMemberStatusFieldUpdateOperationsInput | $Enums.BranchMemberStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payrollProfile?: Prisma.StaffPayrollProfileUncheckedUpdateOneWithoutBranchMemberNestedInput
+  attendanceDays?: Prisma.StaffAttendanceDayUncheckedUpdateManyWithoutBranchMemberNestedInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUncheckedUpdateManyWithoutBranchMemberNestedInput
+  payslips?: Prisma.PayslipUncheckedUpdateManyWithoutBranchMemberNestedInput
+}
+
+export type BranchMemberCreateWithoutSalaryAdvancesInput = {
+  id?: string
+  role?: string
+  isPrimary?: boolean
+  status?: $Enums.BranchMemberStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutMembersInput
+  member: Prisma.MemberCreateNestedOneWithoutBranchMembersInput
+  payrollProfile?: Prisma.StaffPayrollProfileCreateNestedOneWithoutBranchMemberInput
+  attendanceDays?: Prisma.StaffAttendanceDayCreateNestedManyWithoutBranchMemberInput
+  leaveRequests?: Prisma.StaffLeaveRequestCreateNestedManyWithoutBranchMemberInput
+  payslips?: Prisma.PayslipCreateNestedManyWithoutBranchMemberInput
+}
+
+export type BranchMemberUncheckedCreateWithoutSalaryAdvancesInput = {
+  id?: string
+  branchId: string
+  memberId: string
+  role?: string
+  isPrimary?: boolean
+  status?: $Enums.BranchMemberStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  payrollProfile?: Prisma.StaffPayrollProfileUncheckedCreateNestedOneWithoutBranchMemberInput
+  attendanceDays?: Prisma.StaffAttendanceDayUncheckedCreateNestedManyWithoutBranchMemberInput
+  leaveRequests?: Prisma.StaffLeaveRequestUncheckedCreateNestedManyWithoutBranchMemberInput
+  payslips?: Prisma.PayslipUncheckedCreateNestedManyWithoutBranchMemberInput
+}
+
+export type BranchMemberCreateOrConnectWithoutSalaryAdvancesInput = {
+  where: Prisma.BranchMemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.BranchMemberCreateWithoutSalaryAdvancesInput, Prisma.BranchMemberUncheckedCreateWithoutSalaryAdvancesInput>
+}
+
+export type BranchMemberUpsertWithoutSalaryAdvancesInput = {
+  update: Prisma.XOR<Prisma.BranchMemberUpdateWithoutSalaryAdvancesInput, Prisma.BranchMemberUncheckedUpdateWithoutSalaryAdvancesInput>
+  create: Prisma.XOR<Prisma.BranchMemberCreateWithoutSalaryAdvancesInput, Prisma.BranchMemberUncheckedCreateWithoutSalaryAdvancesInput>
+  where?: Prisma.BranchMemberWhereInput
+}
+
+export type BranchMemberUpdateToOneWithWhereWithoutSalaryAdvancesInput = {
+  where?: Prisma.BranchMemberWhereInput
+  data: Prisma.XOR<Prisma.BranchMemberUpdateWithoutSalaryAdvancesInput, Prisma.BranchMemberUncheckedUpdateWithoutSalaryAdvancesInput>
+}
+
+export type BranchMemberUpdateWithoutSalaryAdvancesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumBranchMemberStatusFieldUpdateOperationsInput | $Enums.BranchMemberStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutMembersNestedInput
+  member?: Prisma.MemberUpdateOneRequiredWithoutBranchMembersNestedInput
+  payrollProfile?: Prisma.StaffPayrollProfileUpdateOneWithoutBranchMemberNestedInput
+  attendanceDays?: Prisma.StaffAttendanceDayUpdateManyWithoutBranchMemberNestedInput
+  leaveRequests?: Prisma.StaffLeaveRequestUpdateManyWithoutBranchMemberNestedInput
+  payslips?: Prisma.PayslipUpdateManyWithoutBranchMemberNestedInput
+}
+
+export type BranchMemberUncheckedUpdateWithoutSalaryAdvancesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  memberId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumBranchMemberStatusFieldUpdateOperationsInput | $Enums.BranchMemberStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payrollProfile?: Prisma.StaffPayrollProfileUncheckedUpdateOneWithoutBranchMemberNestedInput
+  attendanceDays?: Prisma.StaffAttendanceDayUncheckedUpdateManyWithoutBranchMemberNestedInput
+  leaveRequests?: Prisma.StaffLeaveRequestUncheckedUpdateManyWithoutBranchMemberNestedInput
+  payslips?: Prisma.PayslipUncheckedUpdateManyWithoutBranchMemberNestedInput
+}
+
+export type BranchMemberCreateWithoutPayslipsInput = {
+  id?: string
+  role?: string
+  isPrimary?: boolean
+  status?: $Enums.BranchMemberStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutMembersInput
+  member: Prisma.MemberCreateNestedOneWithoutBranchMembersInput
+  payrollProfile?: Prisma.StaffPayrollProfileCreateNestedOneWithoutBranchMemberInput
+  attendanceDays?: Prisma.StaffAttendanceDayCreateNestedManyWithoutBranchMemberInput
+  leaveRequests?: Prisma.StaffLeaveRequestCreateNestedManyWithoutBranchMemberInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceCreateNestedManyWithoutBranchMemberInput
+}
+
+export type BranchMemberUncheckedCreateWithoutPayslipsInput = {
+  id?: string
+  branchId: string
+  memberId: string
+  role?: string
+  isPrimary?: boolean
+  status?: $Enums.BranchMemberStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  payrollProfile?: Prisma.StaffPayrollProfileUncheckedCreateNestedOneWithoutBranchMemberInput
+  attendanceDays?: Prisma.StaffAttendanceDayUncheckedCreateNestedManyWithoutBranchMemberInput
+  leaveRequests?: Prisma.StaffLeaveRequestUncheckedCreateNestedManyWithoutBranchMemberInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUncheckedCreateNestedManyWithoutBranchMemberInput
+}
+
+export type BranchMemberCreateOrConnectWithoutPayslipsInput = {
+  where: Prisma.BranchMemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.BranchMemberCreateWithoutPayslipsInput, Prisma.BranchMemberUncheckedCreateWithoutPayslipsInput>
+}
+
+export type BranchMemberUpsertWithoutPayslipsInput = {
+  update: Prisma.XOR<Prisma.BranchMemberUpdateWithoutPayslipsInput, Prisma.BranchMemberUncheckedUpdateWithoutPayslipsInput>
+  create: Prisma.XOR<Prisma.BranchMemberCreateWithoutPayslipsInput, Prisma.BranchMemberUncheckedCreateWithoutPayslipsInput>
+  where?: Prisma.BranchMemberWhereInput
+}
+
+export type BranchMemberUpdateToOneWithWhereWithoutPayslipsInput = {
+  where?: Prisma.BranchMemberWhereInput
+  data: Prisma.XOR<Prisma.BranchMemberUpdateWithoutPayslipsInput, Prisma.BranchMemberUncheckedUpdateWithoutPayslipsInput>
+}
+
+export type BranchMemberUpdateWithoutPayslipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumBranchMemberStatusFieldUpdateOperationsInput | $Enums.BranchMemberStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutMembersNestedInput
+  member?: Prisma.MemberUpdateOneRequiredWithoutBranchMembersNestedInput
+  payrollProfile?: Prisma.StaffPayrollProfileUpdateOneWithoutBranchMemberNestedInput
+  attendanceDays?: Prisma.StaffAttendanceDayUpdateManyWithoutBranchMemberNestedInput
+  leaveRequests?: Prisma.StaffLeaveRequestUpdateManyWithoutBranchMemberNestedInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUpdateManyWithoutBranchMemberNestedInput
+}
+
+export type BranchMemberUncheckedUpdateWithoutPayslipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  memberId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isPrimary?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumBranchMemberStatusFieldUpdateOperationsInput | $Enums.BranchMemberStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payrollProfile?: Prisma.StaffPayrollProfileUncheckedUpdateOneWithoutBranchMemberNestedInput
+  attendanceDays?: Prisma.StaffAttendanceDayUncheckedUpdateManyWithoutBranchMemberNestedInput
+  leaveRequests?: Prisma.StaffLeaveRequestUncheckedUpdateManyWithoutBranchMemberNestedInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUncheckedUpdateManyWithoutBranchMemberNestedInput
+}
+
 export type BranchMemberCreateManyMemberInput = {
   id?: string
   branchId: string
@@ -603,6 +1113,11 @@ export type BranchMemberUpdateWithoutMemberInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutMembersNestedInput
+  payrollProfile?: Prisma.StaffPayrollProfileUpdateOneWithoutBranchMemberNestedInput
+  attendanceDays?: Prisma.StaffAttendanceDayUpdateManyWithoutBranchMemberNestedInput
+  leaveRequests?: Prisma.StaffLeaveRequestUpdateManyWithoutBranchMemberNestedInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUpdateManyWithoutBranchMemberNestedInput
+  payslips?: Prisma.PayslipUpdateManyWithoutBranchMemberNestedInput
 }
 
 export type BranchMemberUncheckedUpdateWithoutMemberInput = {
@@ -613,6 +1128,11 @@ export type BranchMemberUncheckedUpdateWithoutMemberInput = {
   status?: Prisma.EnumBranchMemberStatusFieldUpdateOperationsInput | $Enums.BranchMemberStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payrollProfile?: Prisma.StaffPayrollProfileUncheckedUpdateOneWithoutBranchMemberNestedInput
+  attendanceDays?: Prisma.StaffAttendanceDayUncheckedUpdateManyWithoutBranchMemberNestedInput
+  leaveRequests?: Prisma.StaffLeaveRequestUncheckedUpdateManyWithoutBranchMemberNestedInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUncheckedUpdateManyWithoutBranchMemberNestedInput
+  payslips?: Prisma.PayslipUncheckedUpdateManyWithoutBranchMemberNestedInput
 }
 
 export type BranchMemberUncheckedUpdateManyWithoutMemberInput = {
@@ -643,6 +1163,11 @@ export type BranchMemberUpdateWithoutBranchInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   member?: Prisma.MemberUpdateOneRequiredWithoutBranchMembersNestedInput
+  payrollProfile?: Prisma.StaffPayrollProfileUpdateOneWithoutBranchMemberNestedInput
+  attendanceDays?: Prisma.StaffAttendanceDayUpdateManyWithoutBranchMemberNestedInput
+  leaveRequests?: Prisma.StaffLeaveRequestUpdateManyWithoutBranchMemberNestedInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUpdateManyWithoutBranchMemberNestedInput
+  payslips?: Prisma.PayslipUpdateManyWithoutBranchMemberNestedInput
 }
 
 export type BranchMemberUncheckedUpdateWithoutBranchInput = {
@@ -653,6 +1178,11 @@ export type BranchMemberUncheckedUpdateWithoutBranchInput = {
   status?: Prisma.EnumBranchMemberStatusFieldUpdateOperationsInput | $Enums.BranchMemberStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payrollProfile?: Prisma.StaffPayrollProfileUncheckedUpdateOneWithoutBranchMemberNestedInput
+  attendanceDays?: Prisma.StaffAttendanceDayUncheckedUpdateManyWithoutBranchMemberNestedInput
+  leaveRequests?: Prisma.StaffLeaveRequestUncheckedUpdateManyWithoutBranchMemberNestedInput
+  salaryAdvances?: Prisma.StaffSalaryAdvanceUncheckedUpdateManyWithoutBranchMemberNestedInput
+  payslips?: Prisma.PayslipUncheckedUpdateManyWithoutBranchMemberNestedInput
 }
 
 export type BranchMemberUncheckedUpdateManyWithoutBranchInput = {
@@ -666,6 +1196,62 @@ export type BranchMemberUncheckedUpdateManyWithoutBranchInput = {
 }
 
 
+/**
+ * Count Type BranchMemberCountOutputType
+ */
+
+export type BranchMemberCountOutputType = {
+  attendanceDays: number
+  leaveRequests: number
+  salaryAdvances: number
+  payslips: number
+}
+
+export type BranchMemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  attendanceDays?: boolean | BranchMemberCountOutputTypeCountAttendanceDaysArgs
+  leaveRequests?: boolean | BranchMemberCountOutputTypeCountLeaveRequestsArgs
+  salaryAdvances?: boolean | BranchMemberCountOutputTypeCountSalaryAdvancesArgs
+  payslips?: boolean | BranchMemberCountOutputTypeCountPayslipsArgs
+}
+
+/**
+ * BranchMemberCountOutputType without action
+ */
+export type BranchMemberCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BranchMemberCountOutputType
+   */
+  select?: Prisma.BranchMemberCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * BranchMemberCountOutputType without action
+ */
+export type BranchMemberCountOutputTypeCountAttendanceDaysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StaffAttendanceDayWhereInput
+}
+
+/**
+ * BranchMemberCountOutputType without action
+ */
+export type BranchMemberCountOutputTypeCountLeaveRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StaffLeaveRequestWhereInput
+}
+
+/**
+ * BranchMemberCountOutputType without action
+ */
+export type BranchMemberCountOutputTypeCountSalaryAdvancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StaffSalaryAdvanceWhereInput
+}
+
+/**
+ * BranchMemberCountOutputType without action
+ */
+export type BranchMemberCountOutputTypeCountPayslipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PayslipWhereInput
+}
+
 
 export type BranchMemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -678,6 +1264,12 @@ export type BranchMemberSelect<ExtArgs extends runtime.Types.Extensions.Internal
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
+  payrollProfile?: boolean | Prisma.BranchMember$payrollProfileArgs<ExtArgs>
+  attendanceDays?: boolean | Prisma.BranchMember$attendanceDaysArgs<ExtArgs>
+  leaveRequests?: boolean | Prisma.BranchMember$leaveRequestsArgs<ExtArgs>
+  salaryAdvances?: boolean | Prisma.BranchMember$salaryAdvancesArgs<ExtArgs>
+  payslips?: boolean | Prisma.BranchMember$payslipsArgs<ExtArgs>
+  _count?: boolean | Prisma.BranchMemberCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["branchMember"]>
 
 export type BranchMemberSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -721,6 +1313,12 @@ export type BranchMemberOmit<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type BranchMemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
+  payrollProfile?: boolean | Prisma.BranchMember$payrollProfileArgs<ExtArgs>
+  attendanceDays?: boolean | Prisma.BranchMember$attendanceDaysArgs<ExtArgs>
+  leaveRequests?: boolean | Prisma.BranchMember$leaveRequestsArgs<ExtArgs>
+  salaryAdvances?: boolean | Prisma.BranchMember$salaryAdvancesArgs<ExtArgs>
+  payslips?: boolean | Prisma.BranchMember$payslipsArgs<ExtArgs>
+  _count?: boolean | Prisma.BranchMemberCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type BranchMemberIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -736,6 +1334,11 @@ export type $BranchMemberPayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     branch: Prisma.$BranchPayload<ExtArgs>
     member: Prisma.$MemberPayload<ExtArgs>
+    payrollProfile: Prisma.$StaffPayrollProfilePayload<ExtArgs> | null
+    attendanceDays: Prisma.$StaffAttendanceDayPayload<ExtArgs>[]
+    leaveRequests: Prisma.$StaffLeaveRequestPayload<ExtArgs>[]
+    salaryAdvances: Prisma.$StaffSalaryAdvancePayload<ExtArgs>[]
+    payslips: Prisma.$PayslipPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1145,6 +1748,11 @@ export interface Prisma__BranchMemberClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   member<T extends Prisma.MemberDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MemberDefaultArgs<ExtArgs>>): Prisma.Prisma__MemberClient<runtime.Types.Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  payrollProfile<T extends Prisma.BranchMember$payrollProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchMember$payrollProfileArgs<ExtArgs>>): Prisma.Prisma__StaffPayrollProfileClient<runtime.Types.Result.GetResult<Prisma.$StaffPayrollProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  attendanceDays<T extends Prisma.BranchMember$attendanceDaysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchMember$attendanceDaysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffAttendanceDayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  leaveRequests<T extends Prisma.BranchMember$leaveRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchMember$leaveRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffLeaveRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  salaryAdvances<T extends Prisma.BranchMember$salaryAdvancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchMember$salaryAdvancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffSalaryAdvancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  payslips<T extends Prisma.BranchMember$payslipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchMember$payslipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PayslipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1580,6 +2188,121 @@ export type BranchMemberDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many BranchMembers to delete.
    */
   limit?: number
+}
+
+/**
+ * BranchMember.payrollProfile
+ */
+export type BranchMember$payrollProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StaffPayrollProfile
+   */
+  select?: Prisma.StaffPayrollProfileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StaffPayrollProfile
+   */
+  omit?: Prisma.StaffPayrollProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StaffPayrollProfileInclude<ExtArgs> | null
+  where?: Prisma.StaffPayrollProfileWhereInput
+}
+
+/**
+ * BranchMember.attendanceDays
+ */
+export type BranchMember$attendanceDaysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StaffAttendanceDay
+   */
+  select?: Prisma.StaffAttendanceDaySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StaffAttendanceDay
+   */
+  omit?: Prisma.StaffAttendanceDayOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StaffAttendanceDayInclude<ExtArgs> | null
+  where?: Prisma.StaffAttendanceDayWhereInput
+  orderBy?: Prisma.StaffAttendanceDayOrderByWithRelationInput | Prisma.StaffAttendanceDayOrderByWithRelationInput[]
+  cursor?: Prisma.StaffAttendanceDayWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StaffAttendanceDayScalarFieldEnum | Prisma.StaffAttendanceDayScalarFieldEnum[]
+}
+
+/**
+ * BranchMember.leaveRequests
+ */
+export type BranchMember$leaveRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StaffLeaveRequest
+   */
+  select?: Prisma.StaffLeaveRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StaffLeaveRequest
+   */
+  omit?: Prisma.StaffLeaveRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StaffLeaveRequestInclude<ExtArgs> | null
+  where?: Prisma.StaffLeaveRequestWhereInput
+  orderBy?: Prisma.StaffLeaveRequestOrderByWithRelationInput | Prisma.StaffLeaveRequestOrderByWithRelationInput[]
+  cursor?: Prisma.StaffLeaveRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StaffLeaveRequestScalarFieldEnum | Prisma.StaffLeaveRequestScalarFieldEnum[]
+}
+
+/**
+ * BranchMember.salaryAdvances
+ */
+export type BranchMember$salaryAdvancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StaffSalaryAdvance
+   */
+  select?: Prisma.StaffSalaryAdvanceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StaffSalaryAdvance
+   */
+  omit?: Prisma.StaffSalaryAdvanceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StaffSalaryAdvanceInclude<ExtArgs> | null
+  where?: Prisma.StaffSalaryAdvanceWhereInput
+  orderBy?: Prisma.StaffSalaryAdvanceOrderByWithRelationInput | Prisma.StaffSalaryAdvanceOrderByWithRelationInput[]
+  cursor?: Prisma.StaffSalaryAdvanceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StaffSalaryAdvanceScalarFieldEnum | Prisma.StaffSalaryAdvanceScalarFieldEnum[]
+}
+
+/**
+ * BranchMember.payslips
+ */
+export type BranchMember$payslipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Payslip
+   */
+  select?: Prisma.PayslipSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Payslip
+   */
+  omit?: Prisma.PayslipOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PayslipInclude<ExtArgs> | null
+  where?: Prisma.PayslipWhereInput
+  orderBy?: Prisma.PayslipOrderByWithRelationInput | Prisma.PayslipOrderByWithRelationInput[]
+  cursor?: Prisma.PayslipWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PayslipScalarFieldEnum | Prisma.PayslipScalarFieldEnum[]
 }
 
 /**

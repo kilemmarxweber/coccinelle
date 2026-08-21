@@ -453,51 +453,96 @@ export function BonsCommandeClient(props: {
   }, [validateTarget, recv, props.rate]);
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-6">
+    <div
+      className="min-h-svh"
+      style={{
+        background: `radial-gradient(1200px 400px at 10% -10%, #dcfce7 0%, transparent 55%), #F3F3F3`,
+      }}
+    >
+    <div className="mx-auto flex max-w-5xl flex-col gap-5 px-4 py-6">
+      <header
+        className="rounded-3xl border border-[#d1ddd4] bg-white/90 px-4 py-4 shadow-sm sm:px-5"
+      >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <Link
             href={branchDashboardPath(props.organizationId, props.branchId)}
-            className="mb-2 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+            className="mb-2 inline-flex items-center gap-1 text-xs text-slate-500 hover:text-emerald-800"
           >
             <ArrowLeft className="size-3.5" /> Dashboard
           </Link>
-          <h1 className="text-xl font-semibold tracking-tight">
+          <p className="text-[11px] font-semibold tracking-[0.14em] text-emerald-700 uppercase">
+            Approvisionnement
+          </p>
+          <h1 className="text-xl font-bold tracking-tight text-emerald-950 sm:text-2xl">
             Bons de commande
           </h1>
-          <p className="text-sm text-muted-foreground">
-            {props.branchName} · catalogue de cette branche uniquement · à la
-            validation : crée ou met à jour le stock des produits ici
+          <p className="mt-1 text-sm text-slate-500">
+            {props.branchName} · alimente le stock{" "}
+            {props.branchType === "BOUTIQUE" ? "auxiliaire (POS)" : "catalogue"}{" "}
+            à la validation
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
+            className="rounded-full"
             render={<Link href={productsHref} />}
           >
             Produits branche
           </Button>
+          {props.branchType === "BOUTIQUE" ? (
+            <Button
+              variant="outline"
+              className="rounded-full"
+              render={
+                <Link
+                  href={boutiqueRoutes.stock(
+                    props.organizationId,
+                    props.branchId,
+                  )}
+                />
+              }
+            >
+              Stock principal
+            </Button>
+          ) : null}
           {!props.hasOpenCashSession ? (
-            <Button variant="outline" render={<Link href={branchCaissePath(props.organizationId, props.branchId)} />}>
+            <Button
+              variant="outline"
+              className="rounded-full"
+              render={
+                <Link
+                  href={branchCaissePath(
+                    props.organizationId,
+                    props.branchId,
+                  )}
+                />
+              }
+            >
               Ouvrir la caisse
             </Button>
           ) : null}
-          <Button onClick={() => setCreateOpen(true)}>
+          <Button
+            className="rounded-full bg-emerald-700 text-white hover:bg-emerald-700/90"
+            onClick={() => setCreateOpen(true)}
+          >
             <Plus className="mr-1.5 size-4" /> Nouveau bon
           </Button>
         </div>
       </div>
+      </header>
 
       <ul className="space-y-3">
         {props.orders.length === 0 ? (
-          <li className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+          <li className="rounded-3xl border border-dashed border-[#d1ddd4] bg-white/70 p-10 text-center text-sm text-slate-500">
             Aucun bon de commande.
           </li>
         ) : (
           props.orders.map((po) => (
             <li
               key={po.id}
-              className="rounded-xl border border-border bg-card p-4 shadow-sm"
+              className="rounded-3xl border border-[#d1ddd4] bg-white p-4 shadow-sm"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
@@ -1069,6 +1114,7 @@ export function BonsCommandeClient(props: {
           ) : null}
         </DialogContent>
       </Dialog>
+    </div>
     </div>
   );
 }

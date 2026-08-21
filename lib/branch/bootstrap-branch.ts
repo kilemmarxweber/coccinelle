@@ -6,6 +6,11 @@ import type { PrismaClient, BranchType } from "../../prisma/generated/prisma/cli
 import { DEFAULT_HOTEL_MENU } from "@/lib/hotel/default-menu";
 import { isHospitality } from "@/lib/branch/hospitality";
 import type { AgencyFlags, ShopFlags } from "@/lib/branch/agency-shop";
+import {
+  ensureBranchPayrollSettings,
+  ensureStaffPayrollProfile,
+  isCommerceBranchType,
+} from "@/lib/payroll/bootstrap";
 
 type Db = PrismaClient | Parameters<Parameters<PrismaClient["$transaction"]>[0]>[0];
 
@@ -53,7 +58,7 @@ export async function bootstrapBranchByType(
   };
 
   if (input.creatorMemberId) {
-    await db.branchMember.create({
+    const createdMember = await db.branchMember.create({
       data: {
         branchId: input.branchId,
         memberId: input.creatorMemberId,
@@ -63,6 +68,12 @@ export async function bootstrapBranchByType(
       },
     });
     result.branchMembersCreated = 1;
+    if (isCommerceBranchType(input.type)) {
+      await ensureStaffPayrollProfile(db, {
+        branchId: input.branchId,
+        branchMemberId: createdMember.id,
+      });
+    }
   }
 
   const agency: AgencyFlags = {
@@ -82,6 +93,9 @@ export async function bootstrapBranchByType(
     (input.type === "HOTEL" || input.type === "RESTAURANT");
 
   if (!seedDemo) {
+    if (isCommerceBranchType(input.type)) {
+      await ensureBranchPayrollSettings(db, input.branchId);
+    }
     await db.branch.update({
       where: { id: input.branchId },
       data: {
@@ -381,6 +395,7 @@ export async function bootstrapBranchByType(
 
     result.categoriesCreated = categoriesCreated;
     result.productsCreated = productsCreated;
+    await ensureBranchPayrollSettings(db, input.branchId);
   }
 
   await db.branch.update({

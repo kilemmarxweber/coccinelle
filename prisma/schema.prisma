@@ -143,6 +143,46 @@ enum ShopStockMovementKind {
   AJUSTEMENT
 }
 
+/** Catalogue stock principal boutique (entrepôt). */
+enum WarehouseProductType {
+  BOUTIQUE
+  DIVERS
+}
+
+enum WarehouseMovementKind {
+  ENTREE
+  SORTIE
+  AJUSTEMENT
+  TRANSFERT
+}
+
+enum WarehouseSlipKind {
+  COMMANDE
+  SORTIE
+}
+
+enum WarehouseSlipStatus {
+  BROUILLON
+  /// Sortie débitée — en attente de réception POS / auxiliaire.
+  ENVOYE
+  /// Bon commande validé, ou sortie sans étape de réception.
+  VALIDE
+  /// Destination a vérifié et signé la réception.
+  RECU
+  ANNULE
+}
+
+enum WarehouseDestination {
+  BOUTIQUE
+  FOURNISSEUR
+}
+
+/** Zone physique (entrepôt vs point de vente). */
+enum WarehouseLocationZone {
+  STOCK
+  BOUTIQUE
+}
+
 enum CashSessionStatus {
   OPEN
   CLOSED
@@ -629,6 +669,18 @@ model Branch {
   serviceStockSessions ServiceStockSession[]
   partners             BranchPartner[]
   partnerBookings      PartnerBooking[]
+  warehouseProducts    WarehouseProduct[]
+  warehouseMovements   WarehouseMovement[]
+  warehouseSlips       WarehouseSlip[]
+  warehouseCategories  WarehouseCategory[]
+  warehouseLocations   WarehouseLocation[]
+  payrollSettings      BranchPayrollSettings?
+  payrollProfiles      StaffPayrollProfile[]
+  payrollPeriods       PayrollPeriod[]
+  staffAttendanceDays  StaffAttendanceDay[]
+  staffLeaveRequests   StaffLeaveRequest[]
+  staffSalaryAdvances  StaffSalaryAdvance[]
+  payslips             Payslip[]
 
   @@unique([organizationId, code])
   @@index([organizationId, type])
@@ -708,6 +760,11 @@ model BranchMember {
   updatedAt DateTime           @updatedAt
   branch    Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
   member    Member             @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  payrollProfile    StaffPayrollProfile?
+  attendanceDays    StaffAttendanceDay[]
+  leaveRequests     StaffLeaveRequest[]
+  salaryAdvances    StaffSalaryAdvance[]
+  payslips          Payslip[]
 
   @@unique([branchId, memberId])
   @@index([memberId])
@@ -818,6 +875,8 @@ model ShopProduct {
   category     ShopCategory    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   saleItems    ShopSaleItem[]
   stockMovements ShopStockMovement[]
+  serviceStockLines ServiceStockLine[]
+  serviceStockTopUps ServiceStockTopUp[]
 
   @@unique([categoryId, sku])
   @@unique([branchId, barcode])
@@ -1162,7 +1221,10 @@ model ServiceStockSession {
 model ServiceStockLine {
   id                 String              @id @default(uuid())
   sessionId          String
-  menuItemId         String
+  /// F&B hôtel — exclusif avec shopProductId.
+  menuItemId         String?
+  /// Catalogue POS commerce — exclusif avec menuItemId.
+  shopProductId      String?
   qtyAttributed      Int                 @default(0)
   qtyOpeningCounted  Int?
   qtySold            Int                 @default(0)
@@ -1175,16 +1237,20 @@ model ServiceStockLine {
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
   session            ServiceStockSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  menuItem           HotelMenuItem       @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+  menuItem           HotelMenuItem?      @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+  shopProduct        ShopProduct?        @relation(fields: [shopProductId], references: [id], onDelete: Restrict)
 
   @@unique([sessionId, menuItemId])
+  @@unique([sessionId, shopProductId])
   @@index([menuItemId])
+  @@index([shopProductId])
 }
 
 model ServiceStockTopUp {
   id              String              @id @default(uuid())
   sessionId       String
-  menuItemId      String
+  menuItemId      String?
+  shopProductId   String?
   quantity        Int
   /// MAGASIN | CONGELATEUR
   sourceZone      String              @default("MAGASIN")
@@ -1192,10 +1258,12 @@ model ServiceStockTopUp {
   createdByUserId String
   createdAt       DateTime            @default(now())
   session         ServiceStockSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  menuItem        HotelMenuItem       @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+  menuItem        HotelMenuItem?      @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+  shopProduct     ShopProduct?        @relation(fields: [shopProductId], references: [id], onDelete: Restrict)
 
   @@index([sessionId, createdAt])
   @@index([menuItemId])
+  @@index([shopProductId])
 }
 
 model HotelOrder {
@@ -1338,5 +1406,347 @@ model BranchExpense {
   @@unique([branchId, number])
   @@index([branchId, createdAt])
   @@index([branchId, kind])
+}
+
+/** Catégorie métier sous un type (ex. Boutique → Alimentaire / Hygiène). */
+model WarehouseCategory {
+  id          String               @id @default(uuid())
+  branchId    String
+  productType WarehouseProductType
+  name        String
+  code        String?
+  sortOrder   Int                  @default(0)
+  active      Boolean              @default(true)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  branch      Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  products    WarehouseProduct[]
+
+  @@unique([branchId, productType, name])
+  @@index([branchId, productType, active])
+}
+
+/**
+ * Emplacement physique pour préparation / livraison.
+ * zone STOCK = entrepôt principal ; BOUTIQUE = rayon / POS auxiliaire.
+ */
+model WarehouseLocation {
+  id         String                @id @default(uuid())
+  branchId   String
+  zone       WarehouseLocationZone @default(STOCK)
+  floor      String                @default("RDC")
+  code       String
+  label      String?
+  active     Boolean               @default(true)
+  createdAt  DateTime              @default(now())
+  updatedAt  DateTime              @updatedAt
+  branch     Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  productsAt WarehouseProduct[]    @relation("ProductStockLocation")
+  productsTo WarehouseProduct[]    @relation("ProductDestLocation")
+
+  @@unique([branchId, zone, floor, code])
+  @@index([branchId, zone, floor])
+}
+
+/** Catalogue stock principal (entrepôt boutique). */
+model WarehouseProduct {
+  id             String               @id @default(uuid())
+  branchId       String
+  sku            String
+  name           String
+  type           WarehouseProductType @default(BOUTIQUE)
+  categoryId     String?
+  /// Emplacement au stock principal (picking).
+  locationId     String?
+  /// Emplacement typique au point de vente (rangement / livraison).
+  destLocationId String?
+  unit           String               @default("pcs")
+  stockQty       Int                  @default(0)
+  minQty         Int                  @default(5)
+  unitCostUsd    Float                @default(0)
+  /// Lien optionnel vers catalogue POS (stock auxiliaire ShopProduct).
+  shopProductId  String?
+  active         Boolean              @default(true)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  branch         Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  category       WarehouseCategory?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  location       WarehouseLocation?   @relation("ProductStockLocation", fields: [locationId], references: [id], onDelete: SetNull)
+  destLocation   WarehouseLocation?   @relation("ProductDestLocation", fields: [destLocationId], references: [id], onDelete: SetNull)
+  movements      WarehouseMovement[]
+  slipItems      WarehouseSlipItem[]
+
+  @@unique([branchId, sku])
+  @@index([branchId, type, active])
+  @@index([branchId, stockQty])
+  @@index([categoryId])
+  @@index([locationId])
+  @@index([destLocationId])
+  @@index([shopProductId])
+}
+
+model WarehouseMovement {
+  id              String                @id @default(uuid())
+  branchId        String
+  productId       String
+  kind            WarehouseMovementKind
+  quantity        Int
+  stockBefore     Int
+  stockAfter      Int
+  note            String?
+  slipId          String?
+  createdByUserId String
+  createdAt       DateTime              @default(now())
+  branch          Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  product         WarehouseProduct      @relation(fields: [productId], references: [id], onDelete: Restrict)
+  slip            WarehouseSlip?        @relation(fields: [slipId], references: [id], onDelete: SetNull)
+
+  @@index([branchId, createdAt])
+  @@index([productId, createdAt])
+  @@index([slipId])
+}
+
+/** Bon de commande (entrée fournisseur) ou bon de sortie (vers stock auxiliaire / POS). */
+model WarehouseSlip {
+  id                 String              @id @default(uuid())
+  branchId           String
+  number             String
+  kind               WarehouseSlipKind
+  status             WarehouseSlipStatus @default(BROUILLON)
+  destination        WarehouseDestination?
+  supplierName       String?
+  note               String?
+  managerUserId      String
+  recipientUserId    String?
+  validatedAt        DateTime?
+  /// Réception physique côté destination (POS auxiliaire).
+  receivedAt         DateTime?
+  receivedByUserId   String?
+  /// Nom tapé = signature de réception.
+  recipientSignature String?
+  receiveNote        String?
+  createdByUserId    String
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  branch             Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  items              WarehouseSlipItem[]
+  movements          WarehouseMovement[]
+
+  @@unique([branchId, number])
+  @@index([branchId, kind, status])
+  @@index([branchId, destination, status])
+  @@index([branchId, createdAt])
+}
+
+model WarehouseSlipItem {
+  id            String               @id @default(uuid())
+  slipId        String
+  productId     String?
+  name          String
+  productType   WarehouseProductType @default(BOUTIQUE)
+  quantity      Int                  @default(1)
+  unitCostUsd   Float                @default(0)
+  /// Créer le produit au stock principal s’il n’existe pas.
+  createProduct Boolean              @default(true)
+  createdAt     DateTime             @default(now())
+  slip          WarehouseSlip        @relation(fields: [slipId], references: [id], onDelete: Cascade)
+  product       WarehouseProduct?    @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([slipId])
+  @@index([productId])
+}
+
+enum PayrollPeriodStatus {
+  OPEN
+  REVIEW
+  LOCKED
+  PAID
+}
+
+enum AttendanceKind {
+  PRESENT
+  ABSENT
+  ABSENT_NOTIFIED
+  LEAVE
+  REST
+}
+
+enum PayTreatment {
+  PAID
+  UNPAID
+  NONE
+}
+
+enum JustificationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum AdvanceStatus {
+  REQUESTED
+  APPROVED
+  PAID
+  REJECTED
+  CANCELLED
+}
+
+enum StaffPayoutMethod {
+  MOBILE_MONEY
+  BANK
+  CASH
+}
+
+enum LeaveRequestStatus {
+  REQUESTED
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+/// Réglages paie d’une branche commerce (BOUTIQUE / alimentation / pharmacie).
+model BranchPayrollSettings {
+  id                   String   @id @default(uuid())
+  branchId             String   @unique
+  defaultDailyRateUsd  Float    @default(10)
+  /// Ex. ["MON","TUE","WED","THU","FRI","SAT"]
+  workWeek             Json
+  notifyBeforeHour     Int      @default(18)
+  advanceCapPct        Float    @default(0.5)
+  /// Délai (jours) pour justifier avant confirmation UNPAID
+  justificationDays    Int      @default(3)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  branch               Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+}
+
+/// Contrat journalier + coordonnées de versement (1 par BranchMember).
+model StaffPayrollProfile {
+  id               String            @id @default(uuid())
+  branchId         String
+  branchMemberId   String            @unique
+  dailyRateUsd     Float?
+  payoutMethod     StaffPayoutMethod @default(MOBILE_MONEY)
+  mobileMoneyPhone String?
+  bankName         String?
+  bankAccount      String?
+  active           Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  branch           Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branchMember     BranchMember      @relation(fields: [branchMemberId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, active])
+}
+
+model PayrollPeriod {
+  id               String              @id @default(uuid())
+  branchId         String
+  year             Int
+  month            Int
+  status           PayrollPeriodStatus @default(OPEN)
+  exchangeRateUsed Float?
+  closedAt         DateTime?
+  paidAt           DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  branch           Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  attendanceDays   StaffAttendanceDay[]
+  advances         StaffSalaryAdvance[]
+  payslips         Payslip[]
+
+  @@unique([branchId, year, month])
+  @@index([branchId, status])
+}
+
+/// Un jour × un agent. Jamais supprimé.
+model StaffAttendanceDay {
+  id                   String               @id @default(uuid())
+  branchId             String
+  branchMemberId       String
+  periodId             String
+  workDate             DateTime             @db.Date
+  kind                 AttendanceKind
+  payTreatment         PayTreatment
+  dailyRateUsd         Float
+  justificationStatus  JustificationStatus?
+  justificationNote    String?
+  absenceNoticeSentAt  DateTime?
+  followUpNoticeSentAt DateTime?
+  source               String
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  branch               Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branchMember         BranchMember         @relation(fields: [branchMemberId], references: [id], onDelete: Cascade)
+  period               PayrollPeriod        @relation(fields: [periodId], references: [id], onDelete: Cascade)
+
+  @@unique([branchMemberId, workDate])
+  @@index([branchId, workDate])
+  @@index([periodId])
+}
+
+model StaffLeaveRequest {
+  id             String             @id @default(uuid())
+  branchId       String
+  branchMemberId String
+  startDate      DateTime           @db.Date
+  endDate        DateTime           @db.Date
+  status         LeaveRequestStatus @default(REQUESTED)
+  note           String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  branch         Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branchMember   BranchMember       @relation(fields: [branchMemberId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, status])
+  @@index([branchMemberId, startDate])
+}
+
+model StaffSalaryAdvance {
+  id             String        @id @default(uuid())
+  branchId       String
+  branchMemberId String
+  periodId       String
+  amountUsd      Float
+  status         AdvanceStatus @default(REQUESTED)
+  expenseId      String?       @unique
+  requestedAt    DateTime      @default(now())
+  paidAt         DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  branch         Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branchMember   BranchMember  @relation(fields: [branchMemberId], references: [id], onDelete: Cascade)
+  period         PayrollPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, periodId])
+  @@index([branchMemberId, status])
+}
+
+model Payslip {
+  id                  String        @id @default(uuid())
+  branchId            String
+  branchMemberId      String
+  periodId            String
+  dailyRateUsd        Float
+  expectedDays        Int
+  unpaidAbsenceDays   Int
+  grossUsd            Float
+  absenceDeductionUsd Float
+  advancesUsd         Float
+  netUsd              Float
+  netCdf              Float
+  exchangeRateUsed    Float
+  lines               Json
+  pdfUrl              String?
+  expenseId           String?       @unique
+  sentAt              DateTime?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  branch              Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branchMember        BranchMember  @relation(fields: [branchMemberId], references: [id], onDelete: Cascade)
+  period              PayrollPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
+
+  @@unique([periodId, branchMemberId])
+  @@index([branchId, periodId])
 }
 

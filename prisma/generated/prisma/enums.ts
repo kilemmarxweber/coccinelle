@@ -203,6 +203,59 @@ export const ShopStockMovementKind = {
 export type ShopStockMovementKind = (typeof ShopStockMovementKind)[keyof typeof ShopStockMovementKind]
 
 
+export const WarehouseProductType = {
+  BOUTIQUE: 'BOUTIQUE',
+  DIVERS: 'DIVERS'
+} as const
+
+export type WarehouseProductType = (typeof WarehouseProductType)[keyof typeof WarehouseProductType]
+
+
+export const WarehouseMovementKind = {
+  ENTREE: 'ENTREE',
+  SORTIE: 'SORTIE',
+  AJUSTEMENT: 'AJUSTEMENT',
+  TRANSFERT: 'TRANSFERT'
+} as const
+
+export type WarehouseMovementKind = (typeof WarehouseMovementKind)[keyof typeof WarehouseMovementKind]
+
+
+export const WarehouseSlipKind = {
+  COMMANDE: 'COMMANDE',
+  SORTIE: 'SORTIE'
+} as const
+
+export type WarehouseSlipKind = (typeof WarehouseSlipKind)[keyof typeof WarehouseSlipKind]
+
+
+export const WarehouseSlipStatus = {
+  BROUILLON: 'BROUILLON',
+  ENVOYE: 'ENVOYE',
+  VALIDE: 'VALIDE',
+  RECU: 'RECU',
+  ANNULE: 'ANNULE'
+} as const
+
+export type WarehouseSlipStatus = (typeof WarehouseSlipStatus)[keyof typeof WarehouseSlipStatus]
+
+
+export const WarehouseDestination = {
+  BOUTIQUE: 'BOUTIQUE',
+  FOURNISSEUR: 'FOURNISSEUR'
+} as const
+
+export type WarehouseDestination = (typeof WarehouseDestination)[keyof typeof WarehouseDestination]
+
+
+export const WarehouseLocationZone = {
+  STOCK: 'STOCK',
+  BOUTIQUE: 'BOUTIQUE'
+} as const
+
+export type WarehouseLocationZone = (typeof WarehouseLocationZone)[keyof typeof WarehouseLocationZone]
+
+
 export const CashSessionStatus = {
   OPEN: 'OPEN',
   CLOSED: 'CLOSED'
@@ -322,3 +375,72 @@ export const PurchaseOrderStatus = {
 } as const
 
 export type PurchaseOrderStatus = (typeof PurchaseOrderStatus)[keyof typeof PurchaseOrderStatus]
+
+
+export const PayrollPeriodStatus = {
+  OPEN: 'OPEN',
+  REVIEW: 'REVIEW',
+  LOCKED: 'LOCKED',
+  PAID: 'PAID'
+} as const
+
+export type PayrollPeriodStatus = (typeof PayrollPeriodStatus)[keyof typeof PayrollPeriodStatus]
+
+
+export const AttendanceKind = {
+  PRESENT: 'PRESENT',
+  ABSENT: 'ABSENT',
+  ABSENT_NOTIFIED: 'ABSENT_NOTIFIED',
+  LEAVE: 'LEAVE',
+  REST: 'REST'
+} as const
+
+export type AttendanceKind = (typeof AttendanceKind)[keyof typeof AttendanceKind]
+
+
+export const PayTreatment = {
+  PAID: 'PAID',
+  UNPAID: 'UNPAID',
+  NONE: 'NONE'
+} as const
+
+export type PayTreatment = (typeof PayTreatment)[keyof typeof PayTreatment]
+
+
+export const JustificationStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type JustificationStatus = (typeof JustificationStatus)[keyof typeof JustificationStatus]
+
+
+export const AdvanceStatus = {
+  REQUESTED: 'REQUESTED',
+  APPROVED: 'APPROVED',
+  PAID: 'PAID',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type AdvanceStatus = (typeof AdvanceStatus)[keyof typeof AdvanceStatus]
+
+
+export const StaffPayoutMethod = {
+  MOBILE_MONEY: 'MOBILE_MONEY',
+  BANK: 'BANK',
+  CASH: 'CASH'
+} as const
+
+export type StaffPayoutMethod = (typeof StaffPayoutMethod)[keyof typeof StaffPayoutMethod]
+
+
+export const LeaveRequestStatus = {
+  REQUESTED: 'REQUESTED',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type LeaveRequestStatus = (typeof LeaveRequestStatus)[keyof typeof LeaveRequestStatus]

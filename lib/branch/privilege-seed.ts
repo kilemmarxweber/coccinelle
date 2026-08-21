@@ -37,6 +37,9 @@ const R = {
   RAPPORT_MES_COMMANDES: "rapport_mes_commandes",
   RAPPORT_SEJOURS: "rapport_sejours",
   PARAMETRES: "parametres",
+  PAIE: "paie",
+  PAIE_PRESENCES: "paie_presences",
+  PAIE_MOI: "paie_moi",
 } as const;
 
 /** Ressources éditables dans Paramètres (hospitalité + admin). */
@@ -63,6 +66,9 @@ export const PRIVILEGE_RESOURCES = [
   R.RAPPORT_MES_COMMANDES,
   R.RAPPORT_SEJOURS,
   R.PARAMETRES,
+  R.PAIE,
+  R.PAIE_PRESENCES,
+  R.PAIE_MOI,
 ] as const;
 
 export type PrivilegeResourceId = (typeof PRIVILEGE_RESOURCES)[number];
@@ -109,7 +115,7 @@ export const PRIVILEGE_RESOURCE_GROUPS: {
   },
   {
     title: "Administration",
-    resources: [R.PARAMETRES],
+    resources: [R.PARAMETRES, R.PAIE, R.PAIE_PRESENCES, R.PAIE_MOI],
   },
 ];
 
@@ -136,6 +142,9 @@ export const PRIVILEGE_RESOURCE_LABELS: Record<string, string> = {
   [R.RAPPORT_MES_COMMANDES]: "Mes commandes",
   [R.RAPPORT_SEJOURS]: "Rapport séjours",
   [R.PARAMETRES]: "Paramètres (rôles)",
+  [R.PAIE]: "Paie du mois",
+  [R.PAIE_PRESENCES]: "Présences",
+  [R.PAIE_MOI]: "Mes jours",
 };
 
 type ActionsMap = Partial<Record<PrivilegeActionName, true>>;
@@ -178,6 +187,8 @@ const CAISSIER_SEJOURS: RolePrivilegeSpec = {
   [R.RAPPORT_TABLEAU]: vr(),
   [R.RAPPORT_VENTES]: vr(),
   [R.RAPPORT_SEJOURS]: vr(),
+  [R.PAIE_PRESENCES]: ops(),
+  [R.PAIE_MOI]: vr(),
 };
 
 const CAISSIER_RESTO: RolePrivilegeSpec = {
@@ -189,6 +200,8 @@ const CAISSIER_RESTO: RolePrivilegeSpec = {
   [R.SERVICE_STOCK]: ops(),
   [R.RAPPORT_TABLEAU]: vr(),
   [R.RAPPORT_VENTES]: vr(),
+  [R.PAIE_PRESENCES]: ops(),
+  [R.PAIE_MOI]: vr(),
 };
 
 const CAISSIER_LEGACY: RolePrivilegeSpec = {
@@ -215,6 +228,9 @@ const GERANT_SPEC: RolePrivilegeSpec = {
   [R.RAPPORT_ARTICLES]: vr(),
   [R.RAPPORT_SEJOURS]: vr(),
   [R.PARAMETRES]: { VIEW: true, READ: true, UPDATE: true },
+  [R.PAIE]: full(),
+  [R.PAIE_PRESENCES]: ops(),
+  [R.PAIE_MOI]: vr(),
 };
 
 export const SEED_BRANCH_ROLES: SeedRoleDef[] = [
@@ -226,6 +242,7 @@ export const SEED_BRANCH_ROLES: SeedRoleDef[] = [
     privileges: {
       [R.RESTAURATION]: ops({ DELETE: true }),
       [R.RAPPORT_MES_COMMANDES]: vr(),
+      [R.PAIE_MOI]: vr(),
     },
   },
   {

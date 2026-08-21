@@ -61,6 +61,10 @@ export const DASH_CARD = {
   RAPPORT_SEJOURS: "rapport_sejours",
   CLIENTS_PARTENAIRES: "clients_partenaires",
   PARAMETRES: "parametres",
+  EQUIPE: "equipe",
+  PAIE: "paie",
+  PAIE_PRESENCES: "paie_presences",
+  PAIE_MOI: "paie_moi",
   /** Boutique / agence — non filtrés en hospitalité */
   POS: "pos",
   BOUTIQUE_PRODUITS: "boutique_produits",

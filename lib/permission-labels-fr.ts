@@ -48,6 +48,7 @@ export const RESOURCE_LABEL_FR: Record<OrganizationProductResource, string> = {
   rapport_articles: "Rapport articles",
   rapport_mes_commandes: "Rapport mes commandes",
   rapport_sejours: "Rapport séjours",
+  paie: "Paie",
   boutique_pos: "Boutique POS",
   boutique_produits: "Boutique produits",
   boutique_stock: "Boutique stock",
@@ -71,6 +72,8 @@ export const ACTION_LABEL_FR: Record<string, string> = {
   ouvrir: "Ouvrir",
   fermer: "Fermer",
   encaisser: "Encaisser",
+  pointer: "Pointer",
+  verser: "Verser",
   // Actions Better Auth (plugin organization) → libellés FR
   create: "Ajouter",
   read: "Voir",
@@ -85,7 +88,7 @@ export type CatalogPermissionEntry = {
   label: string;
 };
 
-/** Les 99 permissions produit : `Ressource · Action`. */
+/** Permissions produit : `Ressource · Action`. */
 export const CATALOG_PERMISSIONS_FR: readonly CatalogPermissionEntry[] =
   ORGANIZATION_PRODUCT_CATALOG.flatMap(([resource, actions]) =>
     actions.map((action) => ({

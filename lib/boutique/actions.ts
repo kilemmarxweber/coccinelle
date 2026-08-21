@@ -11,6 +11,7 @@ import {
   parseBarcodeInput,
 } from "@/lib/hotel/barcode";
 import prisma from "@/lib/prisma";
+import { consumeShopServiceFloatInTx } from "@/lib/hotel/service-stock";
 import {
   effectivePrice,
   generateAnonymousCode,
@@ -44,6 +45,7 @@ function revalidateBoutique(organizationId: string, branchId: string) {
   revalidatePath(`${base}/boutique/pos`);
   revalidatePath(`${base}/boutique/produits`);
   revalidatePath(`${base}/boutique/stock`);
+  revalidatePath(`${base}/boutique/service-stock`);
   revalidatePath(`${base}/rapports/tableau-bord`);
 }
 
@@ -72,6 +74,8 @@ export type ShopProductDto = {
   promoStartsAt: Date | null;
   promoEndsAt: Date | null;
   stockQty: number;
+  /** Quantité déjà réservée par des tickets en attente. */
+  heldQty: number;
   /** Stock affiché POS = stock − holds */
   availableQty: number;
   barcode: string | null;
@@ -80,6 +84,36 @@ export type ShopProductDto = {
   effectivePrice: number;
   promoLive: boolean;
 };
+
+function remainingFloat(line: {
+  qtyAttributed: number;
+  qtySold: number;
+  qtyLoss: number;
+}) {
+  return Math.max(0, line.qtyAttributed - line.qtySold - line.qtyLoss);
+}
+
+async function shopFloatRemainingByProduct(branchId: string) {
+  const session = await prisma.serviceStockSession.findFirst({
+    where: {
+      branchId,
+      status: "OPEN",
+      openingConfirmedAt: { not: null },
+    },
+    include: { lines: true },
+  });
+  if (!session) {
+    throw new Error(
+      "Ouvrez et confirmez le service stock avant de vendre au point de vente.",
+    );
+  }
+  const map = new Map<string, number>();
+  for (const line of session.lines) {
+    if (!line.shopProductId) continue;
+    map.set(line.shopProductId, remainingFloat(line));
+  }
+  return map;
+}
 
 async function heldQtyByProduct(branchId: string): Promise<Map<string, number>> {
   const holds = await prisma.shopSale.findMany({
@@ -135,6 +169,7 @@ function toDto(
     promoStartsAt: p.promoStartsAt,
     promoEndsAt: p.promoEndsAt,
     stockQty: p.stockQty,
+    heldQty,
     availableQty: Math.max(0, p.stockQty - heldQty),
     barcode: p.barcode,
     imageUrl: p.imageUrl,
@@ -376,14 +411,18 @@ export async function holdShopSaleAction(input: {
   }
   const byId = new Map(products.map((p) => [p.id, p]));
   const held = await heldQtyByProduct(input.branchId);
+  const floatById = await shopFloatRemainingByProduct(input.branchId);
 
   let total = 0;
   const lines = input.items.map((line) => {
     const p = byId.get(line.productId)!;
     if (!(line.quantity > 0)) throw new Error("Quantité invalide.");
-    const available = p.stockQty - (held.get(p.id) ?? 0);
+    const available =
+      (floatById.get(p.id) ?? 0) - (held.get(p.id) ?? 0);
     if (line.quantity > available) {
-      throw new Error(`Stock insuffisant pour « ${p.name} » (dispo ${available}).`);
+      throw new Error(
+        `Float insuffisant pour « ${p.name} » (dispo ${Math.max(0, available)}).`,
+      );
     }
     const unit = effectivePrice(p);
     const promoLive = isPromoCurrentlyActive(p);
@@ -533,30 +572,10 @@ export async function checkoutShopSaleAction(input: {
         throw new Error("Produit introuvable ou inactif.");
       }
       const byId = new Map(products.map((p) => [p.id, p]));
-      const otherHolds = await tx.shopSale.findMany({
-        where: { branchId: input.branchId, status: "EN_ATTENTE" },
-        include: { items: true },
-      });
-      const heldMap = new Map<string, number>();
-      for (const s of otherHolds) {
-        for (const it of s.items) {
-          if (!it.productId) continue;
-          heldMap.set(
-            it.productId,
-            (heldMap.get(it.productId) ?? 0) + it.quantity,
-          );
-        }
-      }
 
       lines = input.items.map((line) => {
         const p = byId.get(line.productId)!;
         if (!(line.quantity > 0)) throw new Error("Quantité invalide.");
-        const available = p.stockQty - (heldMap.get(p.id) ?? 0);
-        if (line.quantity > available) {
-          throw new Error(
-            `Stock insuffisant pour « ${p.name} » (dispo ${available}).`,
-          );
-        }
         const unit = effectivePrice(p);
         const promoLive = isPromoCurrentlyActive(p);
         return {
@@ -574,40 +593,18 @@ export async function checkoutShopSaleAction(input: {
     const total = lines.reduce((s, l) => s + l.unitPrice * l.quantity, 0);
     if (!(total > 0)) throw new Error("Montant invalide.");
 
-    // Soft-reserve des autres holds hors ce ticket
-    const excludeSaleId = saleId;
-    const otherHolds = await tx.shopSale.findMany({
-      where: {
-        branchId: input.branchId,
-        status: "EN_ATTENTE",
-        ...(excludeSaleId ? { id: { not: excludeSaleId } } : {}),
-      },
-      include: { items: true },
-    });
-    const heldMap = new Map<string, number>();
-    for (const s of otherHolds) {
-      for (const it of s.items) {
-        if (!it.productId) continue;
-        heldMap.set(
-          it.productId,
-          (heldMap.get(it.productId) ?? 0) + it.quantity,
-        );
-      }
-    }
-
-    for (const line of lines) {
-      if (!line.productId) continue;
-      const p = await tx.shopProduct.findFirst({
-        where: { id: line.productId, branchId: input.branchId },
-      });
-      if (!p) throw new Error(`Produit manquant : ${line.name}`);
-      const available = p.stockQty - (heldMap.get(p.id) ?? 0);
-      if (line.quantity > available) {
-        throw new Error(
-          `Stock insuffisant pour « ${p.name} » (dispo ${available}).`,
-        );
-      }
-    }
+    await consumeShopServiceFloatInTx(
+      tx,
+      input.branchId,
+      lines
+        .filter((l): l is typeof l & { productId: string } => Boolean(l.productId))
+        .map((l) => ({
+          productId: l.productId,
+          quantity: l.quantity,
+          name: l.name,
+        })),
+      { excludeSaleId: saleId },
+    );
 
     let sale;
     if (saleId) {
@@ -655,25 +652,6 @@ export async function checkoutShopSaleAction(input: {
       });
     }
 
-    for (const line of lines) {
-      if (!line.productId) continue;
-      await tx.shopProduct.update({
-        where: { id: line.productId },
-        data: { stockQty: { decrement: line.quantity } },
-      });
-      await tx.shopStockMovement.create({
-        data: {
-          branchId: input.branchId,
-          productId: line.productId,
-          saleId: sale.id,
-          kind: "SORTIE",
-          quantity: line.quantity,
-          note: `Vente ${sale.ticketNumber}`,
-          createdByUserId: user.id,
-        },
-      });
-    }
-
     const payment = await tx.payment.create({
       data: {
         branchId: input.branchId,
@@ -698,6 +676,11 @@ export async function checkoutShopSaleAction(input: {
   });
 
   revalidateBoutique(input.organizationId, input.branchId);
+  const { autoMarkPresentFromActivity } = await import("@/lib/payroll/service");
+  await autoMarkPresentFromActivity({
+    branchId: input.branchId,
+    userId: user.id,
+  });
   return result;
 }
 

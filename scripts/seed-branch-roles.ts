@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { seedBranchRoles } from "../prisma/seeds/branch-roles.seed.ts";
+import { seedBranchRoles } from "../prisma/seeds/branch-roles.seed";
 
 seedBranchRoles()
   .then(() => process.exit(0))

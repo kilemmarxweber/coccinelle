@@ -4,11 +4,11 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  ArrowLeft,
   BadgePercent,
   ChevronLeft,
   ChevronRight,
   ImagePlus,
+  Package,
   Pencil,
   Plus,
   Search,
@@ -35,7 +35,13 @@ import {
   updateShopProductAction,
   type ShopProductDto,
 } from "@/lib/boutique/actions";
-import { branchDashboardPath } from "@/lib/branch/paths";
+import { branchDashboardPath, boutiqueRoutes } from "@/lib/branch/paths";
+import {
+  BoutiqueHero,
+  BoutiquePage,
+  boutiqueOutlineBtn,
+  boutiquePrimaryBtn,
+} from "@/components/boutique/boutique-shell";
 import { cn } from "@/lib/utils";
 
 /** 2 lignes × 3 colonnes (grille lg). */
@@ -261,33 +267,47 @@ export function BoutiqueProduitsClient(props: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5 px-4 py-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="-ml-2 mb-1"
-            render={
-              <Link
-                href={branchDashboardPath(
-                  props.organizationId,
-                  props.branchId,
-                )}
-              />
-            }
-          >
-            <ArrowLeft className="size-4" />
-            Dashboard
-          </Button>
-          <h1 className="text-2xl font-bold tracking-tight">Produits</h1>
-          <p className="text-sm text-muted-foreground">{props.branchName}</p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus className="size-4" />
-          Nouveau produit
-        </Button>
-      </div>
+    <BoutiquePage>
+      <BoutiqueHero
+        kicker={`${props.branchName} · catalogue`}
+        title="Produits"
+        subtitle="Fiches POS — le stock se remplit par réception depuis l’entrepôt."
+        icon={Package}
+        backHref={branchDashboardPath(props.organizationId, props.branchId)}
+        actions={
+          <>
+            <Button
+              variant="outline"
+              className={boutiqueOutlineBtn()}
+              render={
+                <Link
+                  href={boutiqueRoutes.stock(
+                    props.organizationId,
+                    props.branchId,
+                  )}
+                />
+              }
+            >
+              Stock
+            </Button>
+            <Button
+              variant="outline"
+              className={boutiqueOutlineBtn()}
+              render={
+                <Link
+                  href={boutiqueRoutes.pos(props.organizationId, props.branchId)}
+                />
+              }
+            >
+              POS
+            </Button>
+            <Button className={boutiquePrimaryBtn()} onClick={openCreate}>
+              <Plus className="size-4" />
+              Nouveau produit
+            </Button>
+          </>
+        }
+      />
 
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative min-w-[200px] flex-1">
@@ -318,14 +338,21 @@ export function BoutiqueProduitsClient(props: Props) {
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {pageItems.map((p) => (
-          <button
+          <div
             key={p.id}
-            type="button"
+            role="button"
+            tabIndex={0}
             onClick={() => openEdit(p)}
-            className="rounded-2xl border border-border bg-card p-4 text-left shadow-sm transition hover:border-primary/40"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                openEdit(p);
+              }
+            }}
+            className="cursor-pointer rounded-[1.35rem] border border-[#e4ddd0] bg-white/90 p-4 text-left shadow-[0_18px_40px_-24px_rgba(15,61,46,0.22)] transition hover:-translate-y-0.5 hover:border-[#c4a574]/50"
           >
             <div className="flex items-start gap-3">
-              <div className="relative size-14 shrink-0 overflow-hidden rounded-xl border border-border bg-muted/40">
+              <div className="relative size-16 shrink-0 overflow-hidden rounded-2xl border border-[#eee8dc] bg-[#faf8f4]">
                 {p.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -376,7 +403,8 @@ export function BoutiqueProduitsClient(props: Props) {
                   variant="outline"
                   className="h-7 text-xs"
                   disabled={pending}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     start(async () => {
                       try {
                         const res = await notifyShopProductPromoWhatsAppAction({
@@ -387,9 +415,11 @@ export function BoutiqueProduitsClient(props: Props) {
                         toast.success(
                           `WhatsApp promo : ${res.sent}/${res.total} envoyé(s)`,
                         );
-                      } catch (e) {
+                      } catch (err) {
                         toast.error(
-                          e instanceof Error ? e.message : "Envoi impossible",
+                          err instanceof Error
+                            ? err.message
+                            : "Envoi impossible",
                         );
                       }
                     });
@@ -418,7 +448,7 @@ export function BoutiqueProduitsClient(props: Props) {
                 Stock {p.stockQty}
               </p>
             </div>
-          </button>
+          </div>
         ))}
       </div>
 
@@ -732,6 +762,6 @@ export function BoutiqueProduitsClient(props: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </BoutiquePage>
   );
 }

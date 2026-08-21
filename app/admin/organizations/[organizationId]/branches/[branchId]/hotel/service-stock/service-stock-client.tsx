@@ -180,6 +180,11 @@ export function ServiceStockClient(props: {
   currentUserId?: string;
   currentUserName: string;
   autoOpen?: boolean;
+  /** Lien vente (resto ou POS). */
+  sellHref?: string;
+  sellLabel?: string;
+  subtitle?: string;
+  depotEmptyHint?: string;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -517,8 +522,7 @@ export function ServiceStockClient(props: {
             Service stock
           </h1>
           <p className="text-sm text-muted-foreground">
-            {props.branchName} · float hors cuisine · ouverture / clôture
-            signées
+            {props.branchName} · {props.subtitle ?? "float hors cuisine · ouverture / clôture signées"}
             {props.rate ? (
               <>
                 {" · "}
@@ -971,7 +975,7 @@ export function ServiceStockClient(props: {
               </Label>
               {props.depotItems.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  Aucun produit hors cuisine actif.
+                  {props.depotEmptyHint ?? "Aucun produit hors cuisine actif."}
                 </p>
               ) : (
                 props.depotItems.map((item) => (
@@ -1162,13 +1166,16 @@ export function ServiceStockClient(props: {
       </Dialog>
 
       <p className={cn("text-xs text-muted-foreground")}>
-        Restauration / vente rapide hors cuisine exigent une session{" "}
+        {props.sellLabel ?? "Restauration / vente rapide hors cuisine"} exigent une session{" "}
         <Link
           className="underline"
-          href={hotelRoutes.restauration(
-            props.organizationId,
-            props.branchId,
-          )}
+          href={
+            props.sellHref ??
+            hotelRoutes.restauration(
+              props.organizationId,
+              props.branchId,
+            )
+          }
         >
           confirmée
         </Link>

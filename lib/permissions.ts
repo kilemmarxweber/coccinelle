@@ -103,6 +103,7 @@ export const businessAccessControlStatements = {
   rapport_articles: ["voir"],
   rapport_mes_commandes: ["voir"],
   rapport_sejours: ["voir"],
+  paie: ["voir", "pointer", "gerer", "verser"],
   // Boutique
   boutique_pos: ["voir", "ajouter", "modifier"],
   boutique_produits: ["voir", "ajouter", "modifier", "supprimer"],

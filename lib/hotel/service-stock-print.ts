@@ -29,6 +29,15 @@ export type ServiceStockDocLine = {
   unitPriceUsd: number;
 };
 
+/** Float restant = attribué − vendu − perte. */
+export function remainingFloat(line: {
+  qtyAttributed: number;
+  qtySold: number;
+  qtyLoss: number;
+}) {
+  return Math.max(0, line.qtyAttributed - line.qtySold - line.qtyLoss);
+}
+
 /** Qté de référence pour la valeur à recouvrir (état des lieux si confirmé). */
 export function qtyForRecover(line: ServiceStockDocLine) {
   if (line.qtyOpeningCounted != null && line.qtyOpeningCounted >= 0) {

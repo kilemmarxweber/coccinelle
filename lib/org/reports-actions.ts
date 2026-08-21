@@ -92,6 +92,10 @@ function expenseKindReportLabel(kind: string) {
       return "Dépôt à la banque";
     case "REMISE_PROPRIETAIRE":
       return "Remise au propriétaire";
+    case "SALAIRE":
+      return "Salaire";
+    case "AVANCE_SALAIRE":
+      return "Avance sur salaire";
     default:
       return "Dépense";
   }

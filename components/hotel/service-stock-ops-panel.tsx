@@ -245,6 +245,7 @@ export function ServiceStockOpsPanel(props: {
   foreignSession?: ServiceStockOpsSession | null;
   liveSituation?: LiveShiftSituation | null;
   title?: string;
+  serviceStockHref?: string;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -293,10 +294,9 @@ export function ServiceStockOpsPanel(props: {
   const session = props.session;
   const foreignSession = props.foreignSession ?? null;
   const closeTarget = session ?? foreignSession;
-  const stockHref = hotelRoutes.serviceStock(
-    props.organizationId,
-    props.branchId,
-  );
+  const stockHref =
+    props.serviceStockHref ??
+    hotelRoutes.serviceStock(props.organizationId, props.branchId);
   const openMineHref = `${stockHref}?ouvrir=1`;
 
   const summary = useMemo(() => {

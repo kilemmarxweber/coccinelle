@@ -7,9 +7,11 @@
 import type { ComponentType } from "react";
 import {
   ArrowLeftRight,
+  Banknote,
   BedDouble,
   Box,
   ChefHat,
+  CalendarDays,
   ClipboardList,
   FileBarChart,
   FileText,
@@ -22,6 +24,7 @@ import {
   ShoppingCart,
   Settings,
   Truck,
+  UserRound,
   Users,
   UtensilsCrossed,
   Wallet,
@@ -212,6 +215,70 @@ function rapportsSections(
       items,
     },
   ];
+}
+
+/** Filtre hub par ids de cartes visibles (catalogue org). */
+export function filterMenuSectionsByVisibleCardIds(
+  sections: BranchMenuSection[],
+  visibleCardIds: readonly string[],
+): BranchMenuSection[] {
+  const set = new Set(visibleCardIds);
+  return sections
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => !item.id || set.has(item.id)),
+    }))
+    .filter((section) => section.items.length > 0);
+}
+
+function personnelPaieSection(
+  organizationId: string,
+  branchId: string,
+): BranchMenuSection {
+  return {
+    title: "PERSONNEL & PAIE",
+    titleColor: "text-amber-500",
+    icon: Users,
+    iconColor: "text-amber-500",
+    items: [
+      {
+        id: DASH_CARD.EQUIPE,
+        title: "Équipe",
+        description: "Agents de la branche, rôles et fiches.",
+        href: sharedBranchRoutes.equipe(organizationId, branchId),
+        icon: Users,
+        iconBg: "bg-violet-500/15",
+        iconColor: "text-violet-400",
+      },
+      {
+        id: DASH_CARD.PAIE_PRESENCES,
+        title: "Présences",
+        description: "Grille du jour : présent, absent, congé.",
+        href: boutiqueRoutes.paiePresences(organizationId, branchId),
+        icon: CalendarDays,
+        iconBg: "bg-emerald-500/15",
+        iconColor: "text-emerald-400",
+      },
+      {
+        id: DASH_CARD.PAIE,
+        title: "Paie du mois",
+        description: "Bulletins, clôture et versement.",
+        href: boutiqueRoutes.paie(organizationId, branchId),
+        icon: Banknote,
+        iconBg: "bg-amber-500/15",
+        iconColor: "text-amber-500",
+      },
+      {
+        id: DASH_CARD.PAIE_MOI,
+        title: "Mes jours",
+        description: "Vos présences, justificatifs, congés et avances.",
+        href: boutiqueRoutes.paieMoi(organizationId, branchId),
+        icon: UserRound,
+        iconBg: "bg-sky-500/15",
+        iconColor: "text-sky-400",
+      },
+    ],
+  };
 }
 
 /** Filtre les sections selon le rôle ops (hospitalité). */
@@ -438,15 +505,25 @@ export function menuSectionsForBranch(
           },
           {
             id: DASH_CARD.BOUTIQUE_STOCK,
-            title: "Stock",
-            description: "Niveaux et mouvements.",
+            title: "Stock principal",
+            description: "Entrepôt, ravitaillement POS, documents d’envoi / réception.",
             href: boutiqueRoutes.stock(organizationId, branchId),
             icon: Package,
             iconBg: "bg-sky-500/15",
             iconColor: "text-sky-400",
           },
+          {
+            id: DASH_CARD.SERVICE_STOCK,
+            title: "Service stock",
+            description: "Float vendeur POS — ouverture, réassort, clôture signée.",
+            href: boutiqueRoutes.serviceStock(organizationId, branchId),
+            icon: ClipboardList,
+            iconBg: "bg-amber-500/15",
+            iconColor: "text-amber-500",
+          },
         ],
       },
+      personnelPaieSection(organizationId, branchId),
       ...rapportsSections(organizationId, branchId),
     ];
   }

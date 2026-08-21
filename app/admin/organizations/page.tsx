@@ -20,17 +20,26 @@ export default function AdminOrganizationsPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-4 py-6 sm:px-6 lg:px-8">
-      <section className="relative overflow-hidden rounded-2xl bg-primary px-6 py-7 shadow-sm shadow-primary/20 sm:px-8">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+      <section className="dash-fade-up relative overflow-hidden rounded-3xl bg-primary px-6 py-7 text-primary-foreground shadow-lg sm:px-8">
+        <div className="dash-orb pointer-events-none absolute -top-16 -right-10 size-56 rounded-full bg-white/15 blur-2xl" />
+        <div
+          className="dash-orb pointer-events-none absolute -bottom-20 left-8 size-44 rounded-full bg-black/20 blur-2xl"
+          style={{ animationDelay: "1.4s" }}
+        />
+        <div className="relative z-10 flex flex-wrap items-end justify-between gap-4">
           <div className="pr-4">
-            <h2 className="text-2xl font-bold text-primary-foreground sm:text-3xl">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-[11px] font-medium tracking-wide uppercase">
+              <span className="dash-pulse size-1.5 rounded-full bg-emerald-300" />
+              Console
+            </div>
+            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
               Organisations
             </h2>
-            <p className="mt-2 max-w-2xl text-sm text-primary-foreground/85 sm:text-base">
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/85 sm:text-base">
               Sélectionnez une organisation pour gérer branches, membres et
-              modules. Vous ne voyez que les données de l’organisation active.
+              modules.
             </p>
-            <p className="mt-3 text-xs text-primary-foreground/70">
+            <p className="mt-3 text-xs text-white/70">
               {isPending
                 ? "Chargement…"
                 : `${orgs.length} organisation${orgs.length > 1 ? "s" : ""}`}

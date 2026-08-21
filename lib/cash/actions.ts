@@ -211,6 +211,11 @@ export async function openCashSessionAction(input: {
       status: "OPEN",
     },
   });
+  const { autoMarkPresentFromActivity } = await import("@/lib/payroll/service");
+  await autoMarkPresentFromActivity({
+    branchId: input.branchId,
+    userId: user.id,
+  });
   revalidateBranch(input.organizationId, input.branchId);
   return session;
 }

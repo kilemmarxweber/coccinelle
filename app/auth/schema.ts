@@ -44,8 +44,13 @@ export const signUpSchema = z.object({
     .string()
     .trim()
     .min(1, "Le code de validation est requis.")
-    .refine((value) => value === SIGN_UP_ADMIN_CODE, {
-      message: SIGN_UP_ADMIN_CODE_ERROR,
+    .superRefine((value, ctx) => {
+      if (value !== SIGN_UP_ADMIN_CODE) {
+        ctx.addIssue({
+          code: "custom",
+          message: SIGN_UP_ADMIN_CODE_ERROR,
+        });
+      }
     }),
 });
 

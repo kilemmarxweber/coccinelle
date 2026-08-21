@@ -25,11 +25,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <body className="min-h-svh font-sans antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem={false}
           disableTransitionOnChange
           storage="local"
-          initialTheme={initialTheme ?? "dark"}
+          initialTheme={initialTheme ?? "light"}
         >
           <SessionLock />
           {children}

@@ -44,6 +44,7 @@ const GERANT_PERMISSIONS: OrgRolePermissionMap = {
   livraison: [...B.livraison],
   bons_commande: [...B.bons_commande],
   depenses: [...B.depenses],
+  paie: [...B.paie],
   partenaires: [...B.partenaires],
   rapport_tableau: [...B.rapport_tableau],
   rapport_ventes: [...B.rapport_ventes],
@@ -71,10 +72,12 @@ export const ORG_ROLE_PRESET_PERMISSIONS: Record<
     service_stock: [...B.service_stock],
     rapport_tableau: [...B.rapport_tableau],
     rapport_ventes: [...B.rapport_ventes],
+    paie: ["voir", "pointer"],
   },
   [ORG_ROLE_PRESET.SERVEUR]: {
     restauration: [...B.restauration],
     rapport_mes_commandes: [...B.rapport_mes_commandes],
+    paie: ["voir"],
   },
   [ORG_ROLE_PRESET.RECEPTIONNISTE]: {
     sejours: [...B.sejours],

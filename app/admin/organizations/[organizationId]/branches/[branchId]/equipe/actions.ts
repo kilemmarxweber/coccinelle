@@ -27,6 +27,7 @@ import { sharedBranchRoutes } from "@/lib/branch/paths";
 import { generateSecurePassword } from "@/lib/generate-password";
 import { orgRoleLabel } from "@/lib/org-role-labels";
 import { isAppAdminRole, ORG_ROLE } from "@/lib/permissions";
+import { ORG_ROLE_PRESET } from "@/lib/org/role-presets";
 import prisma from "@/lib/prisma";
 import {
   createBranchStaffSchema,
@@ -36,6 +37,10 @@ import {
   type RemoveBranchStaffInput,
   type UpdateBranchStaffRoleInput,
 } from "./schema";
+import {
+  ensureStaffPayrollProfile,
+  isCommerceBranchType,
+} from "@/lib/payroll/bootstrap";
 
 export type BranchStaffMember = {
   branchMemberId: string;
@@ -87,7 +92,7 @@ function deriveOpsRole(orgRole: string): string {
   const slug = orgRole.trim().toLowerCase();
   if (slug === ORG_ROLE.OWNER) return OPS_ROLE.PROPRIETAIRE;
   if (isAssignableOpsRole(slug)) return slug;
-  if (slug === ORG_ROLE.GUICHETIER) return OPS_ROLE.CAISSIER;
+  if (slug === ORG_ROLE_PRESET.GUICHETIER) return OPS_ROLE.CAISSIER;
   return OPS_ROLE.GERANT;
 }
 
@@ -411,6 +416,24 @@ export async function createBranchStaffAction(
         where: { id: user.id },
         data: { phone: phoneValue },
       });
+    }
+
+    const commerceBranch = await prisma.branch.findUnique({
+      where: { id: branchId },
+      select: { type: true },
+    });
+    if (commerceBranch && isCommerceBranchType(commerceBranch.type)) {
+      const bm = await prisma.branchMember.findUnique({
+        where: { branchId_memberId: { branchId, memberId: member.id } },
+        select: { id: true },
+      });
+      if (bm) {
+        await ensureStaffPayrollProfile(prisma, {
+          branchId,
+          branchMemberId: bm.id,
+          phone: phoneValue,
+        });
+      }
     }
 
     revalidatePath(equipePath(organizationId, branchId));

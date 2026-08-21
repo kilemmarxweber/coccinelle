@@ -17,7 +17,7 @@ export default async function OrgPwaLayout({
   if (!org) notFound();
 
   return (
-    <div className="min-h-svh bg-gradient-to-b from-primary/8 via-background to-background">
+    <div className="min-h-svh bg-background">
       <OrgBrandHeader org={org} />
       <div className="mx-auto w-full max-w-lg px-4 pb-10 pt-6">{children}</div>
     </div>

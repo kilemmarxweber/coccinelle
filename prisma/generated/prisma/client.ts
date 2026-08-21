@@ -283,3 +283,70 @@ export type PurchaseOrderItem = Prisma.PurchaseOrderItemModel
  * * Sortie / entrée de caisse (dépense, banque, remise ou prêt propriétaire).
  */
 export type BranchExpense = Prisma.BranchExpenseModel
+/**
+ * Model WarehouseCategory
+ * * Catégorie métier sous un type (ex. Boutique → Alimentaire / Hygiène).
+ */
+export type WarehouseCategory = Prisma.WarehouseCategoryModel
+/**
+ * Model WarehouseLocation
+ * *
+ *  * Emplacement physique pour préparation / livraison.
+ *  * zone STOCK = entrepôt principal ; BOUTIQUE = rayon / POS auxiliaire.
+ */
+export type WarehouseLocation = Prisma.WarehouseLocationModel
+/**
+ * Model WarehouseProduct
+ * * Catalogue stock principal (entrepôt boutique).
+ */
+export type WarehouseProduct = Prisma.WarehouseProductModel
+/**
+ * Model WarehouseMovement
+ * 
+ */
+export type WarehouseMovement = Prisma.WarehouseMovementModel
+/**
+ * Model WarehouseSlip
+ * * Bon de commande (entrée fournisseur) ou bon de sortie (vers stock auxiliaire / POS).
+ */
+export type WarehouseSlip = Prisma.WarehouseSlipModel
+/**
+ * Model WarehouseSlipItem
+ * 
+ */
+export type WarehouseSlipItem = Prisma.WarehouseSlipItemModel
+/**
+ * Model BranchPayrollSettings
+ * Réglages paie d’une branche commerce (BOUTIQUE / alimentation / pharmacie).
+ */
+export type BranchPayrollSettings = Prisma.BranchPayrollSettingsModel
+/**
+ * Model StaffPayrollProfile
+ * Contrat journalier + coordonnées de versement (1 par BranchMember).
+ */
+export type StaffPayrollProfile = Prisma.StaffPayrollProfileModel
+/**
+ * Model PayrollPeriod
+ * 
+ */
+export type PayrollPeriod = Prisma.PayrollPeriodModel
+/**
+ * Model StaffAttendanceDay
+ * Un jour × un agent. Jamais supprimé.
+ */
+export type StaffAttendanceDay = Prisma.StaffAttendanceDayModel
+/**
+ * Model StaffLeaveRequest
+ * 
+ */
+export type StaffLeaveRequest = Prisma.StaffLeaveRequestModel
+/**
+ * Model StaffSalaryAdvance
+ * 
+ */
+export type StaffSalaryAdvance = Prisma.StaffSalaryAdvanceModel
+/**
+ * Model Payslip
+ * 
+ */
+export type Payslip = Prisma.PayslipModel

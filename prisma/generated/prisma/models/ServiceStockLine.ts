@@ -50,6 +50,7 @@ export type ServiceStockLineMinAggregateOutputType = {
   id: string | null
   sessionId: string | null
   menuItemId: string | null
+  shopProductId: string | null
   qtyAttributed: number | null
   qtyOpeningCounted: number | null
   qtySold: number | null
@@ -66,6 +67,7 @@ export type ServiceStockLineMaxAggregateOutputType = {
   id: string | null
   sessionId: string | null
   menuItemId: string | null
+  shopProductId: string | null
   qtyAttributed: number | null
   qtyOpeningCounted: number | null
   qtySold: number | null
@@ -82,6 +84,7 @@ export type ServiceStockLineCountAggregateOutputType = {
   id: number
   sessionId: number
   menuItemId: number
+  shopProductId: number
   qtyAttributed: number
   qtyOpeningCounted: number
   qtySold: number
@@ -120,6 +123,7 @@ export type ServiceStockLineMinAggregateInputType = {
   id?: true
   sessionId?: true
   menuItemId?: true
+  shopProductId?: true
   qtyAttributed?: true
   qtyOpeningCounted?: true
   qtySold?: true
@@ -136,6 +140,7 @@ export type ServiceStockLineMaxAggregateInputType = {
   id?: true
   sessionId?: true
   menuItemId?: true
+  shopProductId?: true
   qtyAttributed?: true
   qtyOpeningCounted?: true
   qtySold?: true
@@ -152,6 +157,7 @@ export type ServiceStockLineCountAggregateInputType = {
   id?: true
   sessionId?: true
   menuItemId?: true
+  shopProductId?: true
   qtyAttributed?: true
   qtyOpeningCounted?: true
   qtySold?: true
@@ -254,7 +260,8 @@ export type ServiceStockLineGroupByArgs<ExtArgs extends runtime.Types.Extensions
 export type ServiceStockLineGroupByOutputType = {
   id: string
   sessionId: string
-  menuItemId: string
+  menuItemId: string | null
+  shopProductId: string | null
   qtyAttributed: number
   qtyOpeningCounted: number | null
   qtySold: number
@@ -293,7 +300,8 @@ export type ServiceStockLineWhereInput = {
   NOT?: Prisma.ServiceStockLineWhereInput | Prisma.ServiceStockLineWhereInput[]
   id?: Prisma.StringFilter<"ServiceStockLine"> | string
   sessionId?: Prisma.StringFilter<"ServiceStockLine"> | string
-  menuItemId?: Prisma.StringFilter<"ServiceStockLine"> | string
+  menuItemId?: Prisma.StringNullableFilter<"ServiceStockLine"> | string | null
+  shopProductId?: Prisma.StringNullableFilter<"ServiceStockLine"> | string | null
   qtyAttributed?: Prisma.IntFilter<"ServiceStockLine"> | number
   qtyOpeningCounted?: Prisma.IntNullableFilter<"ServiceStockLine"> | number | null
   qtySold?: Prisma.IntFilter<"ServiceStockLine"> | number
@@ -305,13 +313,15 @@ export type ServiceStockLineWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"ServiceStockLine"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ServiceStockLine"> | Date | string
   session?: Prisma.XOR<Prisma.ServiceStockSessionScalarRelationFilter, Prisma.ServiceStockSessionWhereInput>
-  menuItem?: Prisma.XOR<Prisma.HotelMenuItemScalarRelationFilter, Prisma.HotelMenuItemWhereInput>
+  menuItem?: Prisma.XOR<Prisma.HotelMenuItemNullableScalarRelationFilter, Prisma.HotelMenuItemWhereInput> | null
+  shopProduct?: Prisma.XOR<Prisma.ShopProductNullableScalarRelationFilter, Prisma.ShopProductWhereInput> | null
 }
 
 export type ServiceStockLineOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
-  menuItemId?: Prisma.SortOrder
+  menuItemId?: Prisma.SortOrderInput | Prisma.SortOrder
+  shopProductId?: Prisma.SortOrderInput | Prisma.SortOrder
   qtyAttributed?: Prisma.SortOrder
   qtyOpeningCounted?: Prisma.SortOrderInput | Prisma.SortOrder
   qtySold?: Prisma.SortOrder
@@ -324,16 +334,19 @@ export type ServiceStockLineOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   session?: Prisma.ServiceStockSessionOrderByWithRelationInput
   menuItem?: Prisma.HotelMenuItemOrderByWithRelationInput
+  shopProduct?: Prisma.ShopProductOrderByWithRelationInput
 }
 
 export type ServiceStockLineWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   sessionId_menuItemId?: Prisma.ServiceStockLineSessionIdMenuItemIdCompoundUniqueInput
+  sessionId_shopProductId?: Prisma.ServiceStockLineSessionIdShopProductIdCompoundUniqueInput
   AND?: Prisma.ServiceStockLineWhereInput | Prisma.ServiceStockLineWhereInput[]
   OR?: Prisma.ServiceStockLineWhereInput[]
   NOT?: Prisma.ServiceStockLineWhereInput | Prisma.ServiceStockLineWhereInput[]
   sessionId?: Prisma.StringFilter<"ServiceStockLine"> | string
-  menuItemId?: Prisma.StringFilter<"ServiceStockLine"> | string
+  menuItemId?: Prisma.StringNullableFilter<"ServiceStockLine"> | string | null
+  shopProductId?: Prisma.StringNullableFilter<"ServiceStockLine"> | string | null
   qtyAttributed?: Prisma.IntFilter<"ServiceStockLine"> | number
   qtyOpeningCounted?: Prisma.IntNullableFilter<"ServiceStockLine"> | number | null
   qtySold?: Prisma.IntFilter<"ServiceStockLine"> | number
@@ -345,13 +358,15 @@ export type ServiceStockLineWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"ServiceStockLine"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ServiceStockLine"> | Date | string
   session?: Prisma.XOR<Prisma.ServiceStockSessionScalarRelationFilter, Prisma.ServiceStockSessionWhereInput>
-  menuItem?: Prisma.XOR<Prisma.HotelMenuItemScalarRelationFilter, Prisma.HotelMenuItemWhereInput>
-}, "id" | "sessionId_menuItemId">
+  menuItem?: Prisma.XOR<Prisma.HotelMenuItemNullableScalarRelationFilter, Prisma.HotelMenuItemWhereInput> | null
+  shopProduct?: Prisma.XOR<Prisma.ShopProductNullableScalarRelationFilter, Prisma.ShopProductWhereInput> | null
+}, "id" | "sessionId_menuItemId" | "sessionId_shopProductId">
 
 export type ServiceStockLineOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
-  menuItemId?: Prisma.SortOrder
+  menuItemId?: Prisma.SortOrderInput | Prisma.SortOrder
+  shopProductId?: Prisma.SortOrderInput | Prisma.SortOrder
   qtyAttributed?: Prisma.SortOrder
   qtyOpeningCounted?: Prisma.SortOrderInput | Prisma.SortOrder
   qtySold?: Prisma.SortOrder
@@ -375,7 +390,8 @@ export type ServiceStockLineScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ServiceStockLineScalarWhereWithAggregatesInput | Prisma.ServiceStockLineScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ServiceStockLine"> | string
   sessionId?: Prisma.StringWithAggregatesFilter<"ServiceStockLine"> | string
-  menuItemId?: Prisma.StringWithAggregatesFilter<"ServiceStockLine"> | string
+  menuItemId?: Prisma.StringNullableWithAggregatesFilter<"ServiceStockLine"> | string | null
+  shopProductId?: Prisma.StringNullableWithAggregatesFilter<"ServiceStockLine"> | string | null
   qtyAttributed?: Prisma.IntWithAggregatesFilter<"ServiceStockLine"> | number
   qtyOpeningCounted?: Prisma.IntNullableWithAggregatesFilter<"ServiceStockLine"> | number | null
   qtySold?: Prisma.IntWithAggregatesFilter<"ServiceStockLine"> | number
@@ -401,13 +417,15 @@ export type ServiceStockLineCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   session: Prisma.ServiceStockSessionCreateNestedOneWithoutLinesInput
-  menuItem: Prisma.HotelMenuItemCreateNestedOneWithoutServiceStockLinesInput
+  menuItem?: Prisma.HotelMenuItemCreateNestedOneWithoutServiceStockLinesInput
+  shopProduct?: Prisma.ShopProductCreateNestedOneWithoutServiceStockLinesInput
 }
 
 export type ServiceStockLineUncheckedCreateInput = {
   id?: string
   sessionId: string
-  menuItemId: string
+  menuItemId?: string | null
+  shopProductId?: string | null
   qtyAttributed?: number
   qtyOpeningCounted?: number | null
   qtySold?: number
@@ -433,13 +451,15 @@ export type ServiceStockLineUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   session?: Prisma.ServiceStockSessionUpdateOneRequiredWithoutLinesNestedInput
-  menuItem?: Prisma.HotelMenuItemUpdateOneRequiredWithoutServiceStockLinesNestedInput
+  menuItem?: Prisma.HotelMenuItemUpdateOneWithoutServiceStockLinesNestedInput
+  shopProduct?: Prisma.ShopProductUpdateOneWithoutServiceStockLinesNestedInput
 }
 
 export type ServiceStockLineUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
-  menuItemId?: Prisma.StringFieldUpdateOperationsInput | string
+  menuItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qtyAttributed?: Prisma.IntFieldUpdateOperationsInput | number
   qtyOpeningCounted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   qtySold?: Prisma.IntFieldUpdateOperationsInput | number
@@ -455,7 +475,8 @@ export type ServiceStockLineUncheckedUpdateInput = {
 export type ServiceStockLineCreateManyInput = {
   id?: string
   sessionId: string
-  menuItemId: string
+  menuItemId?: string | null
+  shopProductId?: string | null
   qtyAttributed?: number
   qtyOpeningCounted?: number | null
   qtySold?: number
@@ -485,7 +506,8 @@ export type ServiceStockLineUpdateManyMutationInput = {
 export type ServiceStockLineUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
-  menuItemId?: Prisma.StringFieldUpdateOperationsInput | string
+  menuItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qtyAttributed?: Prisma.IntFieldUpdateOperationsInput | number
   qtyOpeningCounted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   qtySold?: Prisma.IntFieldUpdateOperationsInput | number
@@ -513,10 +535,16 @@ export type ServiceStockLineSessionIdMenuItemIdCompoundUniqueInput = {
   menuItemId: string
 }
 
+export type ServiceStockLineSessionIdShopProductIdCompoundUniqueInput = {
+  sessionId: string
+  shopProductId: string
+}
+
 export type ServiceStockLineCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
   menuItemId?: Prisma.SortOrder
+  shopProductId?: Prisma.SortOrder
   qtyAttributed?: Prisma.SortOrder
   qtyOpeningCounted?: Prisma.SortOrder
   qtySold?: Prisma.SortOrder
@@ -543,6 +571,7 @@ export type ServiceStockLineMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
   menuItemId?: Prisma.SortOrder
+  shopProductId?: Prisma.SortOrder
   qtyAttributed?: Prisma.SortOrder
   qtyOpeningCounted?: Prisma.SortOrder
   qtySold?: Prisma.SortOrder
@@ -559,6 +588,7 @@ export type ServiceStockLineMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
   menuItemId?: Prisma.SortOrder
+  shopProductId?: Prisma.SortOrder
   qtyAttributed?: Prisma.SortOrder
   qtyOpeningCounted?: Prisma.SortOrder
   qtySold?: Prisma.SortOrder
@@ -579,6 +609,48 @@ export type ServiceStockLineSumOrderByAggregateInput = {
   qtyReturnedToDepot?: Prisma.SortOrder
   qtyLoss?: Prisma.SortOrder
   unitPriceUsd?: Prisma.SortOrder
+}
+
+export type ServiceStockLineCreateNestedManyWithoutShopProductInput = {
+  create?: Prisma.XOR<Prisma.ServiceStockLineCreateWithoutShopProductInput, Prisma.ServiceStockLineUncheckedCreateWithoutShopProductInput> | Prisma.ServiceStockLineCreateWithoutShopProductInput[] | Prisma.ServiceStockLineUncheckedCreateWithoutShopProductInput[]
+  connectOrCreate?: Prisma.ServiceStockLineCreateOrConnectWithoutShopProductInput | Prisma.ServiceStockLineCreateOrConnectWithoutShopProductInput[]
+  createMany?: Prisma.ServiceStockLineCreateManyShopProductInputEnvelope
+  connect?: Prisma.ServiceStockLineWhereUniqueInput | Prisma.ServiceStockLineWhereUniqueInput[]
+}
+
+export type ServiceStockLineUncheckedCreateNestedManyWithoutShopProductInput = {
+  create?: Prisma.XOR<Prisma.ServiceStockLineCreateWithoutShopProductInput, Prisma.ServiceStockLineUncheckedCreateWithoutShopProductInput> | Prisma.ServiceStockLineCreateWithoutShopProductInput[] | Prisma.ServiceStockLineUncheckedCreateWithoutShopProductInput[]
+  connectOrCreate?: Prisma.ServiceStockLineCreateOrConnectWithoutShopProductInput | Prisma.ServiceStockLineCreateOrConnectWithoutShopProductInput[]
+  createMany?: Prisma.ServiceStockLineCreateManyShopProductInputEnvelope
+  connect?: Prisma.ServiceStockLineWhereUniqueInput | Prisma.ServiceStockLineWhereUniqueInput[]
+}
+
+export type ServiceStockLineUpdateManyWithoutShopProductNestedInput = {
+  create?: Prisma.XOR<Prisma.ServiceStockLineCreateWithoutShopProductInput, Prisma.ServiceStockLineUncheckedCreateWithoutShopProductInput> | Prisma.ServiceStockLineCreateWithoutShopProductInput[] | Prisma.ServiceStockLineUncheckedCreateWithoutShopProductInput[]
+  connectOrCreate?: Prisma.ServiceStockLineCreateOrConnectWithoutShopProductInput | Prisma.ServiceStockLineCreateOrConnectWithoutShopProductInput[]
+  upsert?: Prisma.ServiceStockLineUpsertWithWhereUniqueWithoutShopProductInput | Prisma.ServiceStockLineUpsertWithWhereUniqueWithoutShopProductInput[]
+  createMany?: Prisma.ServiceStockLineCreateManyShopProductInputEnvelope
+  set?: Prisma.ServiceStockLineWhereUniqueInput | Prisma.ServiceStockLineWhereUniqueInput[]
+  disconnect?: Prisma.ServiceStockLineWhereUniqueInput | Prisma.ServiceStockLineWhereUniqueInput[]
+  delete?: Prisma.ServiceStockLineWhereUniqueInput | Prisma.ServiceStockLineWhereUniqueInput[]
+  connect?: Prisma.ServiceStockLineWhereUniqueInput | Prisma.ServiceStockLineWhereUniqueInput[]
+  update?: Prisma.ServiceStockLineUpdateWithWhereUniqueWithoutShopProductInput | Prisma.ServiceStockLineUpdateWithWhereUniqueWithoutShopProductInput[]
+  updateMany?: Prisma.ServiceStockLineUpdateManyWithWhereWithoutShopProductInput | Prisma.ServiceStockLineUpdateManyWithWhereWithoutShopProductInput[]
+  deleteMany?: Prisma.ServiceStockLineScalarWhereInput | Prisma.ServiceStockLineScalarWhereInput[]
+}
+
+export type ServiceStockLineUncheckedUpdateManyWithoutShopProductNestedInput = {
+  create?: Prisma.XOR<Prisma.ServiceStockLineCreateWithoutShopProductInput, Prisma.ServiceStockLineUncheckedCreateWithoutShopProductInput> | Prisma.ServiceStockLineCreateWithoutShopProductInput[] | Prisma.ServiceStockLineUncheckedCreateWithoutShopProductInput[]
+  connectOrCreate?: Prisma.ServiceStockLineCreateOrConnectWithoutShopProductInput | Prisma.ServiceStockLineCreateOrConnectWithoutShopProductInput[]
+  upsert?: Prisma.ServiceStockLineUpsertWithWhereUniqueWithoutShopProductInput | Prisma.ServiceStockLineUpsertWithWhereUniqueWithoutShopProductInput[]
+  createMany?: Prisma.ServiceStockLineCreateManyShopProductInputEnvelope
+  set?: Prisma.ServiceStockLineWhereUniqueInput | Prisma.ServiceStockLineWhereUniqueInput[]
+  disconnect?: Prisma.ServiceStockLineWhereUniqueInput | Prisma.ServiceStockLineWhereUniqueInput[]
+  delete?: Prisma.ServiceStockLineWhereUniqueInput | Prisma.ServiceStockLineWhereUniqueInput[]
+  connect?: Prisma.ServiceStockLineWhereUniqueInput | Prisma.ServiceStockLineWhereUniqueInput[]
+  update?: Prisma.ServiceStockLineUpdateWithWhereUniqueWithoutShopProductInput | Prisma.ServiceStockLineUpdateWithWhereUniqueWithoutShopProductInput[]
+  updateMany?: Prisma.ServiceStockLineUpdateManyWithWhereWithoutShopProductInput | Prisma.ServiceStockLineUpdateManyWithWhereWithoutShopProductInput[]
+  deleteMany?: Prisma.ServiceStockLineScalarWhereInput | Prisma.ServiceStockLineScalarWhereInput[]
 }
 
 export type ServiceStockLineCreateNestedManyWithoutMenuItemInput = {
@@ -665,6 +737,84 @@ export type ServiceStockLineUncheckedUpdateManyWithoutSessionNestedInput = {
   deleteMany?: Prisma.ServiceStockLineScalarWhereInput | Prisma.ServiceStockLineScalarWhereInput[]
 }
 
+export type ServiceStockLineCreateWithoutShopProductInput = {
+  id?: string
+  qtyAttributed?: number
+  qtyOpeningCounted?: number | null
+  qtySold?: number
+  qtyClosingCounted?: number | null
+  qtyReturnedToDepot?: number
+  qtyLoss?: number
+  unitPriceUsd?: number
+  sourceZone?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  session: Prisma.ServiceStockSessionCreateNestedOneWithoutLinesInput
+  menuItem?: Prisma.HotelMenuItemCreateNestedOneWithoutServiceStockLinesInput
+}
+
+export type ServiceStockLineUncheckedCreateWithoutShopProductInput = {
+  id?: string
+  sessionId: string
+  menuItemId?: string | null
+  qtyAttributed?: number
+  qtyOpeningCounted?: number | null
+  qtySold?: number
+  qtyClosingCounted?: number | null
+  qtyReturnedToDepot?: number
+  qtyLoss?: number
+  unitPriceUsd?: number
+  sourceZone?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ServiceStockLineCreateOrConnectWithoutShopProductInput = {
+  where: Prisma.ServiceStockLineWhereUniqueInput
+  create: Prisma.XOR<Prisma.ServiceStockLineCreateWithoutShopProductInput, Prisma.ServiceStockLineUncheckedCreateWithoutShopProductInput>
+}
+
+export type ServiceStockLineCreateManyShopProductInputEnvelope = {
+  data: Prisma.ServiceStockLineCreateManyShopProductInput | Prisma.ServiceStockLineCreateManyShopProductInput[]
+  skipDuplicates?: boolean
+}
+
+export type ServiceStockLineUpsertWithWhereUniqueWithoutShopProductInput = {
+  where: Prisma.ServiceStockLineWhereUniqueInput
+  update: Prisma.XOR<Prisma.ServiceStockLineUpdateWithoutShopProductInput, Prisma.ServiceStockLineUncheckedUpdateWithoutShopProductInput>
+  create: Prisma.XOR<Prisma.ServiceStockLineCreateWithoutShopProductInput, Prisma.ServiceStockLineUncheckedCreateWithoutShopProductInput>
+}
+
+export type ServiceStockLineUpdateWithWhereUniqueWithoutShopProductInput = {
+  where: Prisma.ServiceStockLineWhereUniqueInput
+  data: Prisma.XOR<Prisma.ServiceStockLineUpdateWithoutShopProductInput, Prisma.ServiceStockLineUncheckedUpdateWithoutShopProductInput>
+}
+
+export type ServiceStockLineUpdateManyWithWhereWithoutShopProductInput = {
+  where: Prisma.ServiceStockLineScalarWhereInput
+  data: Prisma.XOR<Prisma.ServiceStockLineUpdateManyMutationInput, Prisma.ServiceStockLineUncheckedUpdateManyWithoutShopProductInput>
+}
+
+export type ServiceStockLineScalarWhereInput = {
+  AND?: Prisma.ServiceStockLineScalarWhereInput | Prisma.ServiceStockLineScalarWhereInput[]
+  OR?: Prisma.ServiceStockLineScalarWhereInput[]
+  NOT?: Prisma.ServiceStockLineScalarWhereInput | Prisma.ServiceStockLineScalarWhereInput[]
+  id?: Prisma.StringFilter<"ServiceStockLine"> | string
+  sessionId?: Prisma.StringFilter<"ServiceStockLine"> | string
+  menuItemId?: Prisma.StringNullableFilter<"ServiceStockLine"> | string | null
+  shopProductId?: Prisma.StringNullableFilter<"ServiceStockLine"> | string | null
+  qtyAttributed?: Prisma.IntFilter<"ServiceStockLine"> | number
+  qtyOpeningCounted?: Prisma.IntNullableFilter<"ServiceStockLine"> | number | null
+  qtySold?: Prisma.IntFilter<"ServiceStockLine"> | number
+  qtyClosingCounted?: Prisma.IntNullableFilter<"ServiceStockLine"> | number | null
+  qtyReturnedToDepot?: Prisma.IntFilter<"ServiceStockLine"> | number
+  qtyLoss?: Prisma.IntFilter<"ServiceStockLine"> | number
+  unitPriceUsd?: Prisma.FloatFilter<"ServiceStockLine"> | number
+  sourceZone?: Prisma.StringFilter<"ServiceStockLine"> | string
+  createdAt?: Prisma.DateTimeFilter<"ServiceStockLine"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"ServiceStockLine"> | Date | string
+}
+
 export type ServiceStockLineCreateWithoutMenuItemInput = {
   id?: string
   qtyAttributed?: number
@@ -678,11 +828,13 @@ export type ServiceStockLineCreateWithoutMenuItemInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   session: Prisma.ServiceStockSessionCreateNestedOneWithoutLinesInput
+  shopProduct?: Prisma.ShopProductCreateNestedOneWithoutServiceStockLinesInput
 }
 
 export type ServiceStockLineUncheckedCreateWithoutMenuItemInput = {
   id?: string
   sessionId: string
+  shopProductId?: string | null
   qtyAttributed?: number
   qtyOpeningCounted?: number | null
   qtySold?: number
@@ -721,25 +873,6 @@ export type ServiceStockLineUpdateManyWithWhereWithoutMenuItemInput = {
   data: Prisma.XOR<Prisma.ServiceStockLineUpdateManyMutationInput, Prisma.ServiceStockLineUncheckedUpdateManyWithoutMenuItemInput>
 }
 
-export type ServiceStockLineScalarWhereInput = {
-  AND?: Prisma.ServiceStockLineScalarWhereInput | Prisma.ServiceStockLineScalarWhereInput[]
-  OR?: Prisma.ServiceStockLineScalarWhereInput[]
-  NOT?: Prisma.ServiceStockLineScalarWhereInput | Prisma.ServiceStockLineScalarWhereInput[]
-  id?: Prisma.StringFilter<"ServiceStockLine"> | string
-  sessionId?: Prisma.StringFilter<"ServiceStockLine"> | string
-  menuItemId?: Prisma.StringFilter<"ServiceStockLine"> | string
-  qtyAttributed?: Prisma.IntFilter<"ServiceStockLine"> | number
-  qtyOpeningCounted?: Prisma.IntNullableFilter<"ServiceStockLine"> | number | null
-  qtySold?: Prisma.IntFilter<"ServiceStockLine"> | number
-  qtyClosingCounted?: Prisma.IntNullableFilter<"ServiceStockLine"> | number | null
-  qtyReturnedToDepot?: Prisma.IntFilter<"ServiceStockLine"> | number
-  qtyLoss?: Prisma.IntFilter<"ServiceStockLine"> | number
-  unitPriceUsd?: Prisma.FloatFilter<"ServiceStockLine"> | number
-  sourceZone?: Prisma.StringFilter<"ServiceStockLine"> | string
-  createdAt?: Prisma.DateTimeFilter<"ServiceStockLine"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"ServiceStockLine"> | Date | string
-}
-
 export type ServiceStockLineCreateWithoutSessionInput = {
   id?: string
   qtyAttributed?: number
@@ -752,12 +885,14 @@ export type ServiceStockLineCreateWithoutSessionInput = {
   sourceZone?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  menuItem: Prisma.HotelMenuItemCreateNestedOneWithoutServiceStockLinesInput
+  menuItem?: Prisma.HotelMenuItemCreateNestedOneWithoutServiceStockLinesInput
+  shopProduct?: Prisma.ShopProductCreateNestedOneWithoutServiceStockLinesInput
 }
 
 export type ServiceStockLineUncheckedCreateWithoutSessionInput = {
   id?: string
-  menuItemId: string
+  menuItemId?: string | null
+  shopProductId?: string | null
   qtyAttributed?: number
   qtyOpeningCounted?: number | null
   qtySold?: number
@@ -796,9 +931,74 @@ export type ServiceStockLineUpdateManyWithWhereWithoutSessionInput = {
   data: Prisma.XOR<Prisma.ServiceStockLineUpdateManyMutationInput, Prisma.ServiceStockLineUncheckedUpdateManyWithoutSessionInput>
 }
 
+export type ServiceStockLineCreateManyShopProductInput = {
+  id?: string
+  sessionId: string
+  menuItemId?: string | null
+  qtyAttributed?: number
+  qtyOpeningCounted?: number | null
+  qtySold?: number
+  qtyClosingCounted?: number | null
+  qtyReturnedToDepot?: number
+  qtyLoss?: number
+  unitPriceUsd?: number
+  sourceZone?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ServiceStockLineUpdateWithoutShopProductInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  qtyAttributed?: Prisma.IntFieldUpdateOperationsInput | number
+  qtyOpeningCounted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  qtySold?: Prisma.IntFieldUpdateOperationsInput | number
+  qtyClosingCounted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  qtyReturnedToDepot?: Prisma.IntFieldUpdateOperationsInput | number
+  qtyLoss?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPriceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  sourceZone?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  session?: Prisma.ServiceStockSessionUpdateOneRequiredWithoutLinesNestedInput
+  menuItem?: Prisma.HotelMenuItemUpdateOneWithoutServiceStockLinesNestedInput
+}
+
+export type ServiceStockLineUncheckedUpdateWithoutShopProductInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
+  menuItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qtyAttributed?: Prisma.IntFieldUpdateOperationsInput | number
+  qtyOpeningCounted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  qtySold?: Prisma.IntFieldUpdateOperationsInput | number
+  qtyClosingCounted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  qtyReturnedToDepot?: Prisma.IntFieldUpdateOperationsInput | number
+  qtyLoss?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPriceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  sourceZone?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ServiceStockLineUncheckedUpdateManyWithoutShopProductInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
+  menuItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qtyAttributed?: Prisma.IntFieldUpdateOperationsInput | number
+  qtyOpeningCounted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  qtySold?: Prisma.IntFieldUpdateOperationsInput | number
+  qtyClosingCounted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  qtyReturnedToDepot?: Prisma.IntFieldUpdateOperationsInput | number
+  qtyLoss?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPriceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  sourceZone?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ServiceStockLineCreateManyMenuItemInput = {
   id?: string
   sessionId: string
+  shopProductId?: string | null
   qtyAttributed?: number
   qtyOpeningCounted?: number | null
   qtySold?: number
@@ -824,11 +1024,13 @@ export type ServiceStockLineUpdateWithoutMenuItemInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   session?: Prisma.ServiceStockSessionUpdateOneRequiredWithoutLinesNestedInput
+  shopProduct?: Prisma.ShopProductUpdateOneWithoutServiceStockLinesNestedInput
 }
 
 export type ServiceStockLineUncheckedUpdateWithoutMenuItemInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
+  shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qtyAttributed?: Prisma.IntFieldUpdateOperationsInput | number
   qtyOpeningCounted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   qtySold?: Prisma.IntFieldUpdateOperationsInput | number
@@ -844,6 +1046,7 @@ export type ServiceStockLineUncheckedUpdateWithoutMenuItemInput = {
 export type ServiceStockLineUncheckedUpdateManyWithoutMenuItemInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
+  shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qtyAttributed?: Prisma.IntFieldUpdateOperationsInput | number
   qtyOpeningCounted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   qtySold?: Prisma.IntFieldUpdateOperationsInput | number
@@ -858,7 +1061,8 @@ export type ServiceStockLineUncheckedUpdateManyWithoutMenuItemInput = {
 
 export type ServiceStockLineCreateManySessionInput = {
   id?: string
-  menuItemId: string
+  menuItemId?: string | null
+  shopProductId?: string | null
   qtyAttributed?: number
   qtyOpeningCounted?: number | null
   qtySold?: number
@@ -883,12 +1087,14 @@ export type ServiceStockLineUpdateWithoutSessionInput = {
   sourceZone?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  menuItem?: Prisma.HotelMenuItemUpdateOneRequiredWithoutServiceStockLinesNestedInput
+  menuItem?: Prisma.HotelMenuItemUpdateOneWithoutServiceStockLinesNestedInput
+  shopProduct?: Prisma.ShopProductUpdateOneWithoutServiceStockLinesNestedInput
 }
 
 export type ServiceStockLineUncheckedUpdateWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  menuItemId?: Prisma.StringFieldUpdateOperationsInput | string
+  menuItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qtyAttributed?: Prisma.IntFieldUpdateOperationsInput | number
   qtyOpeningCounted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   qtySold?: Prisma.IntFieldUpdateOperationsInput | number
@@ -903,7 +1109,8 @@ export type ServiceStockLineUncheckedUpdateWithoutSessionInput = {
 
 export type ServiceStockLineUncheckedUpdateManyWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  menuItemId?: Prisma.StringFieldUpdateOperationsInput | string
+  menuItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qtyAttributed?: Prisma.IntFieldUpdateOperationsInput | number
   qtyOpeningCounted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   qtySold?: Prisma.IntFieldUpdateOperationsInput | number
@@ -922,6 +1129,7 @@ export type ServiceStockLineSelect<ExtArgs extends runtime.Types.Extensions.Inte
   id?: boolean
   sessionId?: boolean
   menuItemId?: boolean
+  shopProductId?: boolean
   qtyAttributed?: boolean
   qtyOpeningCounted?: boolean
   qtySold?: boolean
@@ -933,13 +1141,15 @@ export type ServiceStockLineSelect<ExtArgs extends runtime.Types.Extensions.Inte
   createdAt?: boolean
   updatedAt?: boolean
   session?: boolean | Prisma.ServiceStockSessionDefaultArgs<ExtArgs>
-  menuItem?: boolean | Prisma.HotelMenuItemDefaultArgs<ExtArgs>
+  menuItem?: boolean | Prisma.ServiceStockLine$menuItemArgs<ExtArgs>
+  shopProduct?: boolean | Prisma.ServiceStockLine$shopProductArgs<ExtArgs>
 }, ExtArgs["result"]["serviceStockLine"]>
 
 export type ServiceStockLineSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   sessionId?: boolean
   menuItemId?: boolean
+  shopProductId?: boolean
   qtyAttributed?: boolean
   qtyOpeningCounted?: boolean
   qtySold?: boolean
@@ -951,13 +1161,15 @@ export type ServiceStockLineSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   createdAt?: boolean
   updatedAt?: boolean
   session?: boolean | Prisma.ServiceStockSessionDefaultArgs<ExtArgs>
-  menuItem?: boolean | Prisma.HotelMenuItemDefaultArgs<ExtArgs>
+  menuItem?: boolean | Prisma.ServiceStockLine$menuItemArgs<ExtArgs>
+  shopProduct?: boolean | Prisma.ServiceStockLine$shopProductArgs<ExtArgs>
 }, ExtArgs["result"]["serviceStockLine"]>
 
 export type ServiceStockLineSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   sessionId?: boolean
   menuItemId?: boolean
+  shopProductId?: boolean
   qtyAttributed?: boolean
   qtyOpeningCounted?: boolean
   qtySold?: boolean
@@ -969,13 +1181,15 @@ export type ServiceStockLineSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   createdAt?: boolean
   updatedAt?: boolean
   session?: boolean | Prisma.ServiceStockSessionDefaultArgs<ExtArgs>
-  menuItem?: boolean | Prisma.HotelMenuItemDefaultArgs<ExtArgs>
+  menuItem?: boolean | Prisma.ServiceStockLine$menuItemArgs<ExtArgs>
+  shopProduct?: boolean | Prisma.ServiceStockLine$shopProductArgs<ExtArgs>
 }, ExtArgs["result"]["serviceStockLine"]>
 
 export type ServiceStockLineSelectScalar = {
   id?: boolean
   sessionId?: boolean
   menuItemId?: boolean
+  shopProductId?: boolean
   qtyAttributed?: boolean
   qtyOpeningCounted?: boolean
   qtySold?: boolean
@@ -988,30 +1202,41 @@ export type ServiceStockLineSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ServiceStockLineOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "menuItemId" | "qtyAttributed" | "qtyOpeningCounted" | "qtySold" | "qtyClosingCounted" | "qtyReturnedToDepot" | "qtyLoss" | "unitPriceUsd" | "sourceZone" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceStockLine"]>
+export type ServiceStockLineOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "menuItemId" | "shopProductId" | "qtyAttributed" | "qtyOpeningCounted" | "qtySold" | "qtyClosingCounted" | "qtyReturnedToDepot" | "qtyLoss" | "unitPriceUsd" | "sourceZone" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceStockLine"]>
 export type ServiceStockLineInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   session?: boolean | Prisma.ServiceStockSessionDefaultArgs<ExtArgs>
-  menuItem?: boolean | Prisma.HotelMenuItemDefaultArgs<ExtArgs>
+  menuItem?: boolean | Prisma.ServiceStockLine$menuItemArgs<ExtArgs>
+  shopProduct?: boolean | Prisma.ServiceStockLine$shopProductArgs<ExtArgs>
 }
 export type ServiceStockLineIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   session?: boolean | Prisma.ServiceStockSessionDefaultArgs<ExtArgs>
-  menuItem?: boolean | Prisma.HotelMenuItemDefaultArgs<ExtArgs>
+  menuItem?: boolean | Prisma.ServiceStockLine$menuItemArgs<ExtArgs>
+  shopProduct?: boolean | Prisma.ServiceStockLine$shopProductArgs<ExtArgs>
 }
 export type ServiceStockLineIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   session?: boolean | Prisma.ServiceStockSessionDefaultArgs<ExtArgs>
-  menuItem?: boolean | Prisma.HotelMenuItemDefaultArgs<ExtArgs>
+  menuItem?: boolean | Prisma.ServiceStockLine$menuItemArgs<ExtArgs>
+  shopProduct?: boolean | Prisma.ServiceStockLine$shopProductArgs<ExtArgs>
 }
 
 export type $ServiceStockLinePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ServiceStockLine"
   objects: {
     session: Prisma.$ServiceStockSessionPayload<ExtArgs>
-    menuItem: Prisma.$HotelMenuItemPayload<ExtArgs>
+    menuItem: Prisma.$HotelMenuItemPayload<ExtArgs> | null
+    shopProduct: Prisma.$ShopProductPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     sessionId: string
-    menuItemId: string
+    /**
+     * F&B hôtel — exclusif avec shopProductId.
+     */
+    menuItemId: string | null
+    /**
+     * Catalogue POS commerce — exclusif avec menuItemId.
+     */
+    shopProductId: string | null
     qtyAttributed: number
     qtyOpeningCounted: number | null
     qtySold: number
@@ -1420,7 +1645,8 @@ readonly fields: ServiceStockLineFieldRefs;
 export interface Prisma__ServiceStockLineClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   session<T extends Prisma.ServiceStockSessionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceStockSessionDefaultArgs<ExtArgs>>): Prisma.Prisma__ServiceStockSessionClient<runtime.Types.Result.GetResult<Prisma.$ServiceStockSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  menuItem<T extends Prisma.HotelMenuItemDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.HotelMenuItemDefaultArgs<ExtArgs>>): Prisma.Prisma__HotelMenuItemClient<runtime.Types.Result.GetResult<Prisma.$HotelMenuItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  menuItem<T extends Prisma.ServiceStockLine$menuItemArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceStockLine$menuItemArgs<ExtArgs>>): Prisma.Prisma__HotelMenuItemClient<runtime.Types.Result.GetResult<Prisma.$HotelMenuItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  shopProduct<T extends Prisma.ServiceStockLine$shopProductArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceStockLine$shopProductArgs<ExtArgs>>): Prisma.Prisma__ShopProductClient<runtime.Types.Result.GetResult<Prisma.$ShopProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1453,6 +1679,7 @@ export interface ServiceStockLineFieldRefs {
   readonly id: Prisma.FieldRef<"ServiceStockLine", 'String'>
   readonly sessionId: Prisma.FieldRef<"ServiceStockLine", 'String'>
   readonly menuItemId: Prisma.FieldRef<"ServiceStockLine", 'String'>
+  readonly shopProductId: Prisma.FieldRef<"ServiceStockLine", 'String'>
   readonly qtyAttributed: Prisma.FieldRef<"ServiceStockLine", 'Int'>
   readonly qtyOpeningCounted: Prisma.FieldRef<"ServiceStockLine", 'Int'>
   readonly qtySold: Prisma.FieldRef<"ServiceStockLine", 'Int'>
@@ -1861,6 +2088,44 @@ export type ServiceStockLineDeleteManyArgs<ExtArgs extends runtime.Types.Extensi
    * Limit how many ServiceStockLines to delete.
    */
   limit?: number
+}
+
+/**
+ * ServiceStockLine.menuItem
+ */
+export type ServiceStockLine$menuItemArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HotelMenuItem
+   */
+  select?: Prisma.HotelMenuItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HotelMenuItem
+   */
+  omit?: Prisma.HotelMenuItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HotelMenuItemInclude<ExtArgs> | null
+  where?: Prisma.HotelMenuItemWhereInput
+}
+
+/**
+ * ServiceStockLine.shopProduct
+ */
+export type ServiceStockLine$shopProductArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ShopProduct
+   */
+  select?: Prisma.ShopProductSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ShopProduct
+   */
+  omit?: Prisma.ShopProductOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ShopProductInclude<ExtArgs> | null
+  where?: Prisma.ShopProductWhereInput
 }
 
 /**

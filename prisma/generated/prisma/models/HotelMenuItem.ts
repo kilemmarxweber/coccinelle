@@ -737,10 +737,12 @@ export type HotelMenuItemCreateNestedOneWithoutServiceStockLinesInput = {
   connect?: Prisma.HotelMenuItemWhereUniqueInput
 }
 
-export type HotelMenuItemUpdateOneRequiredWithoutServiceStockLinesNestedInput = {
+export type HotelMenuItemUpdateOneWithoutServiceStockLinesNestedInput = {
   create?: Prisma.XOR<Prisma.HotelMenuItemCreateWithoutServiceStockLinesInput, Prisma.HotelMenuItemUncheckedCreateWithoutServiceStockLinesInput>
   connectOrCreate?: Prisma.HotelMenuItemCreateOrConnectWithoutServiceStockLinesInput
   upsert?: Prisma.HotelMenuItemUpsertWithoutServiceStockLinesInput
+  disconnect?: Prisma.HotelMenuItemWhereInput | boolean
+  delete?: Prisma.HotelMenuItemWhereInput | boolean
   connect?: Prisma.HotelMenuItemWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.HotelMenuItemUpdateToOneWithWhereWithoutServiceStockLinesInput, Prisma.HotelMenuItemUpdateWithoutServiceStockLinesInput>, Prisma.HotelMenuItemUncheckedUpdateWithoutServiceStockLinesInput>
 }
@@ -751,10 +753,12 @@ export type HotelMenuItemCreateNestedOneWithoutServiceStockTopUpsInput = {
   connect?: Prisma.HotelMenuItemWhereUniqueInput
 }
 
-export type HotelMenuItemUpdateOneRequiredWithoutServiceStockTopUpsNestedInput = {
+export type HotelMenuItemUpdateOneWithoutServiceStockTopUpsNestedInput = {
   create?: Prisma.XOR<Prisma.HotelMenuItemCreateWithoutServiceStockTopUpsInput, Prisma.HotelMenuItemUncheckedCreateWithoutServiceStockTopUpsInput>
   connectOrCreate?: Prisma.HotelMenuItemCreateOrConnectWithoutServiceStockTopUpsInput
   upsert?: Prisma.HotelMenuItemUpsertWithoutServiceStockTopUpsInput
+  disconnect?: Prisma.HotelMenuItemWhereInput | boolean
+  delete?: Prisma.HotelMenuItemWhereInput | boolean
   connect?: Prisma.HotelMenuItemWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.HotelMenuItemUpdateToOneWithWhereWithoutServiceStockTopUpsInput, Prisma.HotelMenuItemUpdateWithoutServiceStockTopUpsInput>, Prisma.HotelMenuItemUncheckedUpdateWithoutServiceStockTopUpsInput>
 }

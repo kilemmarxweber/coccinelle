@@ -97,7 +97,7 @@ export async function inviteOrganizationMemberAction(input: {
     await auth.api.createInvitation({
       body: {
         email,
-        role,
+        role: role === ORG_ROLE.USER ? "member" : role,
         organizationId: input.organizationId,
         resend: true,
       },

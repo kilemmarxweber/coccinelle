@@ -15,7 +15,7 @@ export default async function BranchEquipePage({ params }: PageProps) {
 
   const branch = await prisma.branch.findFirst({
     where: { id: branchId, organizationId },
-    select: { id: true, name: true },
+    select: { id: true, name: true, type: true },
   });
   if (!branch) notFound();
 
@@ -32,6 +32,7 @@ export default async function BranchEquipePage({ params }: PageProps) {
       initialStaff={staffRes.ok ? staffRes.staff : []}
       initialCapabilities={staffRes.capabilities}
       initialRoles={rolesRes.ok ? rolesRes.roles : []}
+      isCommerce={branch.type === "BOUTIQUE"}
     />
   );
 }

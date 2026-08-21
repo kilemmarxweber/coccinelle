@@ -1,36 +1,19 @@
 import "dotenv/config";
 
-import { seedTrajets } from "./seeds/trajet.seed";
-import { seedClients } from "./seeds/client.seed";
-import { seedReservations } from "./seeds/reservation.seed";
-import { seedColis } from "./seeds/colis.seed";
-import { seedPaiements } from "./seeds/paiement.seed";
-import { seedPenalites } from "./seeds/penalite.seed";
-import { seedPassagers } from "./seeds/passages.seed";
-import { seedOrganization } from "./seeds/organization.seed";
-import { seedOrgMembers } from "./seeds/org-members.seed";
-import { seedTrajetProgramme } from "./seeds/trajetProgram.seed";
-import { seedTrajetDepart } from "./seeds/trajetDepart.seed";
-import { seedBranchRoles } from "./seeds/branch-roles.seed";
-async function main() {
-  console.log("🚀 START FULL SEED");
-  await seedOrganization();
-  await seedOrgMembers();
-  await seedBranchRoles();
-  await seedTrajets();
-  await seedTrajetProgramme();
-  await seedTrajetDepart();
-  await seedClients();
-  await seedReservations();
-  await seedPassagers();
-  await seedColis();
-  await seedPaiements();
-  await seedPenalites();
+import { seedRootAdmin } from "./seeds/admin.seed";
+import prisma from "@/lib/prisma";
 
-  console.log("🎉 ALL SEEDS COMPLETED");
+async function main() {
+  console.log("🚀 START SEED");
+  await seedRootAdmin();
+  console.log("🎉 SEED COMPLETED");
 }
 
-main().catch((e) => {
-  console.error("❌ SEED ERROR:", e);
-  process.exit(1);
-});
+main()
+  .catch((e) => {
+    console.error("❌ SEED ERROR:", e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

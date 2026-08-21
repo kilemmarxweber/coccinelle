@@ -6,7 +6,7 @@ const adapter = new PrismaPg({
 });
 
 /** Incrémenter après tout changement de modèle Prisma pour invalider le singleton HMR. */
-const PRISMA_SCHEMA_REV = 30;
+const PRISMA_SCHEMA_REV = 35;
 
 const globalForPrisma = global as unknown as {
   prisma: PrismaClient | undefined;
@@ -83,6 +83,18 @@ function resolvePrisma(): PrismaClient {
       "undefined" ||
       typeof (existing as { shopSale?: unknown }).shopSale === "undefined" ||
       typeof (existing as { shopProduct?: unknown }).shopProduct ===
+        "undefined" ||
+      typeof (existing as { warehouseCategory?: unknown }).warehouseCategory ===
+        "undefined" ||
+      typeof (existing as { warehouseProduct?: unknown }).warehouseProduct ===
+        "undefined" ||
+      typeof (existing as { warehouseSlip?: unknown }).warehouseSlip ===
+        "undefined" ||
+      typeof (existing as { branchPayrollSettings?: unknown })
+        .branchPayrollSettings === "undefined" ||
+      typeof (existing as { staffPayrollProfile?: unknown })
+        .staffPayrollProfile === "undefined" ||
+      typeof (existing as { payrollPeriod?: unknown }).payrollPeriod ===
         "undefined");
 
   const staleFields =

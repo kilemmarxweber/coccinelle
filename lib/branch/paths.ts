@@ -141,8 +141,25 @@ export const boutiqueRoutes = {
     branchModulePath(orgId, branchId, "boutique"),
   produits: (orgId: string, branchId: string) =>
     `${branchModulePath(orgId, branchId, "boutique")}/produits`,
+  /** Stock dual : principal (entrepôt) + auxiliaire (POS). */
   stock: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "boutique")}/stock`,
+  /** Alias explicite — même page que `stock`. */
+  stockPrincipal: (orgId: string, branchId: string) =>
     `${branchModulePath(orgId, branchId, "boutique")}/stock`,
   pos: (orgId: string, branchId: string) =>
     `${branchModulePath(orgId, branchId, "boutique")}/pos`,
+  /** Float vendeur POS — ouverture / clôture (même moteur que l’hôtel). */
+  serviceStock: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "boutique")}/service-stock`,
+  paie: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "boutique")}/paie`,
+  paiePresences: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "boutique")}/paie/presences`,
+  paieMoi: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "boutique")}/paie/moi`,
+  paieParametres: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "boutique")}/paie/parametres`,
+  paieBulletin: (orgId: string, branchId: string, payslipId: string) =>
+    `${branchModulePath(orgId, branchId, "boutique")}/paie/bulletin/${payslipId}`,
 } as const;

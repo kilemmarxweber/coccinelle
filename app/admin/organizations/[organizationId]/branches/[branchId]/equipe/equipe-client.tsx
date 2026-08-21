@@ -13,11 +13,13 @@ import {
   RefreshCw,
   UserMinus,
   Users,
+  Wallet,
 } from "lucide-react";
 import { toast } from "sonner";
 import { orgRoleLabel } from "@/lib/org-role-labels";
 import { branchDashboardPath } from "@/lib/branch/paths";
 import { ORG_ROLE } from "@/lib/permissions";
+import { ORG_ROLE_PRESET } from "@/lib/org/role-presets";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -63,6 +65,7 @@ import {
   type CreateBranchStaffInput,
 } from "./schema";
 import { EquipeSectionNav } from "./equipe-section-nav";
+import { EquipePayrollDialog } from "./equipe-payroll-dialog";
 
 type Props = {
   organizationId: string;
@@ -71,6 +74,7 @@ type Props = {
   initialStaff: BranchStaffMember[];
   initialCapabilities: EquipeCapabilities;
   initialRoles: AssignableOrgRoleOption[];
+  isCommerce?: boolean;
 };
 
 function initials(name: string): string {
@@ -84,10 +88,10 @@ function roleBadgeClass(role: string): string {
   if (role === ORG_ROLE.OWNER) {
     return "border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-100";
   }
-  if (role === ORG_ROLE.GERANT) {
+  if (role === ORG_ROLE_PRESET.GERANT) {
     return "border-emerald-500/30 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100";
   }
-  if (role === ORG_ROLE.CAISSIER || role === ORG_ROLE.GUICHETIER) {
+  if (role === ORG_ROLE_PRESET.CAISSIER || role === ORG_ROLE_PRESET.GUICHETIER) {
     return "border-sky-500/30 bg-sky-500/10 text-sky-900 dark:text-sky-100";
   }
   return "border-border bg-muted text-muted-foreground";
@@ -100,6 +104,7 @@ export function EquipeClient({
   initialStaff,
   initialCapabilities,
   initialRoles,
+  isCommerce = false,
 }: Props) {
   const router = useRouter();
   const [staff, setStaff] = useState(initialStaff);
@@ -115,9 +120,10 @@ export function EquipeClient({
   const [pendingRemove, startRemove] = useTransition();
   const [pendingReset, startReset] = useTransition();
   const [busyMemberId, setBusyMemberId] = useState<string | null>(null);
+  const [payrollMember, setPayrollMember] = useState<BranchStaffMember | null>(null);
 
   const defaultRole =
-    roles.find((r) => r.role === ORG_ROLE.CAISSIER)?.role ??
+    roles.find((r) => r.role === ORG_ROLE_PRESET.CAISSIER)?.role ??
     roles.find((r) => !r.isOwner)?.role ??
     roles[0]?.role ??
     "";
@@ -463,6 +469,12 @@ export function EquipeClient({
                       >
                         Modifier le rôle
                       </DropdownMenuItem>
+                      {isCommerce ? (
+                        <DropdownMenuItem onClick={() => setPayrollMember(m)}>
+                          <Wallet className="size-4" />
+                          Paie & versement
+                        </DropdownMenuItem>
+                      ) : null}
                       <DropdownMenuItem
                         disabled={busy && pendingReset}
                         onClick={() => onResetPassword(m)}
@@ -658,6 +670,16 @@ export function EquipeClient({
           </div>
         </DialogContent>
       </Dialog>
+
+      {isCommerce ? (
+        <EquipePayrollDialog
+          organizationId={organizationId}
+          branchId={branchId}
+          branchMemberId={payrollMember?.branchMemberId ?? null}
+          agentName={payrollMember?.name ?? ""}
+          onClose={() => setPayrollMember(null)}
+        />
+      ) : null}
     </div>
   );
 }

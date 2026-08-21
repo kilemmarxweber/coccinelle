@@ -65,20 +65,27 @@ export default function AdminOrganizationHomePage() {
               <ArrowLeft className="size-4" />
               Toutes les organisations
             </Button>
-            <section className="relative overflow-hidden rounded-2xl bg-primary px-6 py-7 shadow-sm shadow-primary/20 sm:px-8">
-              <div className="pr-16">
-                <h2 className="text-2xl font-bold text-primary-foreground sm:text-3xl">
-                  Bonjour, {userName} 👋
+            <section className="dash-fade-up relative overflow-hidden rounded-3xl bg-primary px-6 py-7 text-primary-foreground shadow-lg sm:px-8">
+              <div className="dash-orb pointer-events-none absolute -top-16 -right-10 size-56 rounded-full bg-white/15 blur-2xl" />
+              <div
+                className="dash-orb pointer-events-none absolute -bottom-20 left-8 size-44 rounded-full bg-black/20 blur-2xl"
+                style={{ animationDelay: "1.4s" }}
+              />
+              <div className="relative z-10 pr-16">
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-[11px] font-medium tracking-wide uppercase">
+                  <span className="dash-pulse size-1.5 rounded-full bg-emerald-300" />
+                  Organisation
+                </div>
+                <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Bonjour, {userName}
                 </h2>
-                <p className="mt-2 max-w-2xl text-sm text-primary-foreground/85 sm:text-base">
-                  Espace organisation « {org?.name} ». Choisissez une option pour
-                  continuer.
+                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/85 sm:text-base">
+                  Espace « {org?.name} ». Branches, membres et rapports au même
+                  endroit.
                 </p>
-                <p className="mt-3 text-xs text-primary-foreground/70">
-                  Slug · {org?.slug}
-                </p>
+                <p className="mt-3 text-xs text-white/70">Slug · {org?.slug}</p>
               </div>
-              <div className="absolute top-5 right-5 rounded-full bg-background/95 px-3.5 py-1.5 text-xs font-semibold text-primary shadow-sm sm:top-6 sm:right-6">
+              <div className="absolute top-5 right-5 z-10 rounded-full bg-background/95 px-3.5 py-1.5 text-xs font-semibold text-primary shadow-sm sm:top-6 sm:right-6">
                 Droit : {role}
               </div>
             </section>

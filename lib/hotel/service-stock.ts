@@ -9,15 +9,24 @@ import {
 } from "@/lib/auth/organization-permission";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { assertHospitalityModule } from "@/lib/branch/hospitality";
-import { branchBasePath, hotelRoutes } from "@/lib/branch/paths";
+import {
+  boutiqueRoutes,
+  branchBasePath,
+  hotelRoutes,
+} from "@/lib/branch/paths";
 import prisma from "@/lib/prisma";
 import type { Prisma } from "@/prisma/generated/prisma/client";
 import { normalizeOpsRole, OPS_ROLE } from "@/lib/branch/ops-roles";
+import { remainingFloat } from "@/lib/hotel/service-stock-print";
 
 export type StorageZone = "MAGASIN" | "CONGELATEUR";
 
 function normalizeZone(value: string | null | undefined): StorageZone {
   return value?.toUpperCase() === "CONGELATEUR" ? "CONGELATEUR" : "MAGASIN";
+}
+
+function isCommerceStockBranch(type: string) {
+  return type === "BOUTIQUE";
 }
 
 async function ctx(organizationId: string, branchId: string) {
@@ -31,7 +40,9 @@ async function ctx(organizationId: string, branchId: string) {
   if (!branch || branch.organizationId !== organizationId) {
     throw new Error("Branche inaccessible.");
   }
-  assertHospitalityModule(branch, "restaurant");
+  if (!isCommerceStockBranch(branch.type)) {
+    assertHospitalityModule(branch, "restaurant");
+  }
   return { user: session.user, branch };
 }
 
@@ -41,6 +52,9 @@ function revalidateServiceStock(organizationId: string, branchId: string) {
   revalidatePath(hotelRoutes.serviceStock(organizationId, branchId), "page");
   revalidatePath(hotelRoutes.restauration(organizationId, branchId), "page");
   revalidatePath(hotelRoutes.produits(organizationId, branchId), "page");
+  revalidatePath(boutiqueRoutes.serviceStock(organizationId, branchId), "page");
+  revalidatePath(boutiqueRoutes.pos(organizationId, branchId), "page");
+  revalidatePath(boutiqueRoutes.stock(organizationId, branchId), "page");
   revalidatePath(`${base}/caisse`, "page");
 }
 
@@ -49,12 +63,99 @@ async function nextSessionNumber(branchId: string) {
   return `SS-${String(count + 1).padStart(5, "0")}`;
 }
 
-function remainingFloat(line: {
-  qtyAttributed: number;
-  qtySold: number;
-  qtyLoss: number;
+const sessionLineInclude = {
+  menuItem: {
+    select: {
+      id: true,
+      name: true,
+      category: true,
+      price: true,
+      stockQty: true,
+      storageZone: true,
+      needsKitchen: true,
+    },
+  },
+  shopProduct: {
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      stockQty: true,
+      category: { select: { name: true } },
+    },
+  },
+} as const;
+
+type SessionLineRecord = {
+  menuItemId: string | null;
+  shopProductId: string | null;
+  menuItem: {
+    id: string;
+    name: string;
+    category?: string;
+    price?: number;
+    stockQty?: number;
+    storageZone?: string;
+    needsKitchen?: boolean;
+  } | null;
+  shopProduct: {
+    id: string;
+    name: string;
+    price?: number;
+    stockQty?: number;
+    category: { name: string };
+  } | null;
+};
+
+function clientItemId(line: {
+  menuItemId: string | null;
+  shopProductId: string | null;
 }) {
-  return Math.max(0, line.qtyAttributed - line.qtySold - line.qtyLoss);
+  return line.shopProductId ?? line.menuItemId ?? "";
+}
+
+function clientMenuItem(line: SessionLineRecord) {
+  if (line.shopProduct) {
+    return {
+      id: line.shopProduct.id,
+      name: line.shopProduct.name,
+      category: line.shopProduct.category.name,
+      price: line.shopProduct.price ?? 0,
+      stockQty: line.shopProduct.stockQty ?? 0,
+      storageZone: "MAGASIN",
+      needsKitchen: false,
+    };
+  }
+  const item = line.menuItem;
+  if (!item) {
+    return {
+      id: "",
+      name: "Produit",
+      category: "",
+      price: 0,
+      stockQty: 0,
+      storageZone: "MAGASIN",
+      needsKitchen: false,
+    };
+  }
+  return {
+    id: item.id,
+    name: item.name,
+    category: item.category ?? "",
+    price: item.price ?? 0,
+    stockQty: item.stockQty ?? 0,
+    storageZone: item.storageZone ?? "MAGASIN",
+    needsKitchen: Boolean(item.needsKitchen),
+  };
+}
+
+function mapClientLine<T extends SessionLineRecord>(line: T) {
+  const menuItem = clientMenuItem(line);
+  return {
+    ...line,
+    menuItemId: menuItem.id,
+    menuItem,
+  };
 }
 
 export async function listBranchStaffForServiceStockAction(
@@ -80,7 +181,23 @@ export async function listDepotSellableItemsAction(
   organizationId: string,
   branchId: string,
 ) {
-  await ctx(organizationId, branchId);
+  const { branch } = await ctx(organizationId, branchId);
+  if (isCommerceStockBranch(branch.type)) {
+    const rows = await prisma.shopProduct.findMany({
+      where: { branchId, active: true },
+      include: { category: { select: { name: true } } },
+      orderBy: [{ category: { name: "asc" } }, { name: "asc" }],
+    });
+    return rows.map((p) => ({
+      id: p.id,
+      name: p.name,
+      category: p.category.name,
+      price: p.price,
+      stockQty: p.stockQty,
+      storageZone: "MAGASIN",
+      barcode: p.barcode,
+    }));
+  }
   return prisma.hotelMenuItem.findMany({
     where: {
       branchId,
@@ -108,18 +225,7 @@ export async function getOpenServiceStockSessionAction(
   const { user } = await ctx(organizationId, branchId);
   const include = {
     lines: {
-      include: {
-        menuItem: {
-          select: {
-            id: true,
-            name: true,
-            category: true,
-            price: true,
-            stockQty: true,
-            storageZone: true,
-          },
-        },
-      },
+      include: sessionLineInclude,
       orderBy: { createdAt: "asc" as const },
     },
     topUps: {
@@ -141,14 +247,19 @@ export async function getOpenServiceStockSessionAction(
     return { session: null, foreignSession: null, proposedFloat: null };
   }
 
+  const mapped = {
+    ...active,
+    lines: active.lines.map(mapClientLine),
+  };
+
   const isMine =
     active.vendorUserId === user.id || active.openedByUserId === user.id;
 
   if (isMine) {
-    return { session: active, foreignSession: null, proposedFloat: null };
+    return { session: mapped, foreignSession: null, proposedFloat: null };
   }
 
-  const proposedFloat = active.lines
+  const proposedFloat = mapped.lines
     .map((l) => ({
       menuItemId: l.menuItemId,
       name: l.menuItem.name,
@@ -162,7 +273,7 @@ export async function getOpenServiceStockSessionAction(
   return {
     /** Pas la vôtre — ne pas opérer (réassort / ventes) ; clôture transmission possible. */
     session: null,
-    foreignSession: active,
+    foreignSession: mapped,
     proposedFloat:
       proposedFloat.length > 0
         ? {
@@ -191,6 +302,7 @@ export async function getServiceStockGateAction(
         select: {
           id: true,
           menuItemId: true,
+          shopProductId: true,
           qtyAttributed: true,
           qtyOpeningCounted: true,
           qtySold: true,
@@ -199,6 +311,15 @@ export async function getServiceStockGateAction(
           sourceZone: true,
           menuItem: {
             select: { id: true, name: true, needsKitchen: true },
+          },
+          shopProduct: {
+            select: {
+              id: true,
+              name: true,
+              price: true,
+              stockQty: true,
+              category: { select: { name: true } },
+            },
           },
         },
         orderBy: { createdAt: "asc" },
@@ -219,7 +340,16 @@ export async function getServiceStockGateAction(
   const isMine =
     session.vendorUserId === user.id || session.openedByUserId === user.id;
 
-  const proposedLines = session.lines
+  const mappedLines = session.lines.map((l) => {
+    const item = clientMenuItem(l);
+    return {
+      ...l,
+      menuItemId: item.id,
+      menuItem: { id: item.id, name: item.name, needsKitchen: item.needsKitchen },
+    };
+  });
+
+  const proposedLines = mappedLines
     .map((l) => ({
       menuItemId: l.menuItemId,
       name: l.menuItem.name,
@@ -234,7 +364,7 @@ export async function getServiceStockGateAction(
     vendorDisplayName: session.vendorDisplayName,
     openedAt: session.openedAt,
     openingConfirmedAt: session.openingConfirmedAt,
-    lines: session.lines,
+    lines: mappedLines,
   };
 
   const confirmed = Boolean(session.openingConfirmedAt) && session.status === "OPEN";
@@ -245,7 +375,8 @@ export async function getServiceStockGateAction(
   const floatByItemId: Record<string, number> = {};
   if (confirmed) {
     for (const line of session.lines) {
-      floatByItemId[line.menuItemId] = remainingFloat(line);
+      const id = clientItemId(line);
+      if (id) floatByItemId[id] = remainingFloat(line);
     }
   }
 
@@ -349,7 +480,7 @@ export async function getLiveShiftSituationAction(
   organizationId: string,
   branchId: string,
 ): Promise<LiveShiftSituation> {
-  await ctx(organizationId, branchId);
+  const { branch } = await ctx(organizationId, branchId);
 
   const stock = await prisma.serviceStockSession.findFirst({
     where: {
@@ -358,7 +489,10 @@ export async function getLiveShiftSituationAction(
     },
     include: {
       lines: {
-        include: { menuItem: { select: { name: true } } },
+        include: {
+          menuItem: { select: { name: true } },
+          shopProduct: { select: { name: true } },
+        },
         orderBy: { createdAt: "asc" },
       },
     },
@@ -430,55 +564,89 @@ export async function getLiveShiftSituationAction(
   );
   const waitersConnected = connectedIds.size > 0;
 
-  const orders = await prisma.hotelOrder.findMany({
-    where: {
-      branchId,
-      status: { notIn: ["ANNULEE", "BROUILLON"] },
-      OR: [
-        { sentAt: { gte: since } },
-        { AND: [{ sentAt: null }, { createdAt: { gte: since } }] },
-      ],
-    },
-    select: {
-      createdByUserId: true,
-      items: {
-        select: {
-          name: true,
-          quantity: true,
-          amount: true,
-          needsKitchen: true,
-          menuItemId: true,
-        },
-      },
-    },
-  });
-
   const soldByUser = new Map<string, { qty: number; amountUsd: number }>();
   const soldByProduct = new Map<string, { qty: number; amountUsd: number }>();
   const attributedByName = new Map(
-    stock.lines.map((l) => [l.menuItem.name, l.qtyAttributed]),
+    stock.lines.map((l) => [
+      l.shopProduct?.name ?? l.menuItem?.name ?? "Produit",
+      l.qtyAttributed,
+    ]),
   );
 
-  for (const order of orders) {
-    const isWaiter = waiterById.has(order.createdByUserId);
-    const isCashier = order.createdByUserId === stock.openedByUserId;
-    if (!isWaiter && !isCashier) continue;
-    for (const item of order.items) {
-      if (item.needsKitchen) continue;
-      const qty = Math.max(0, item.quantity);
-      const amount = Number(item.amount) || 0;
-      const cur = soldByUser.get(order.createdByUserId) ?? {
-        qty: 0,
-        amountUsd: 0,
-      };
-      cur.qty += qty;
-      cur.amountUsd += amount;
-      soldByUser.set(order.createdByUserId, cur);
-      const pname = item.name;
-      const p = soldByProduct.get(pname) ?? { qty: 0, amountUsd: 0 };
-      p.qty += qty;
-      p.amountUsd += amount;
-      soldByProduct.set(pname, p);
+  if (isCommerceStockBranch(branch.type)) {
+    const sales = await prisma.shopSale.findMany({
+      where: {
+        branchId,
+        status: "ENCAISSEE",
+        paidAt: { gte: since },
+      },
+      select: {
+        cashierUserId: true,
+        items: {
+          select: { name: true, quantity: true, unitPrice: true },
+        },
+      },
+    });
+    for (const sale of sales) {
+      const uid = sale.cashierUserId ?? stock.openedByUserId;
+      for (const item of sale.items) {
+        const qty = Math.max(0, item.quantity);
+        const amount = qty * (Number(item.unitPrice) || 0);
+        const cur = soldByUser.get(uid) ?? { qty: 0, amountUsd: 0 };
+        cur.qty += qty;
+        cur.amountUsd += amount;
+        soldByUser.set(uid, cur);
+        const p = soldByProduct.get(item.name) ?? { qty: 0, amountUsd: 0 };
+        p.qty += qty;
+        p.amountUsd += amount;
+        soldByProduct.set(item.name, p);
+      }
+    }
+  } else {
+    const orders = await prisma.hotelOrder.findMany({
+      where: {
+        branchId,
+        status: { notIn: ["ANNULEE", "BROUILLON"] },
+        OR: [
+          { sentAt: { gte: since } },
+          { AND: [{ sentAt: null }, { createdAt: { gte: since } }] },
+        ],
+      },
+      select: {
+        createdByUserId: true,
+        items: {
+          select: {
+            name: true,
+            quantity: true,
+            amount: true,
+            needsKitchen: true,
+            menuItemId: true,
+          },
+        },
+      },
+    });
+
+    for (const order of orders) {
+      const isWaiter = waiterById.has(order.createdByUserId);
+      const isCashier = order.createdByUserId === stock.openedByUserId;
+      if (!isWaiter && !isCashier) continue;
+      for (const item of order.items) {
+        if (item.needsKitchen) continue;
+        const qty = Math.max(0, item.quantity);
+        const amount = Number(item.amount) || 0;
+        const cur = soldByUser.get(order.createdByUserId) ?? {
+          qty: 0,
+          amountUsd: 0,
+        };
+        cur.qty += qty;
+        cur.amountUsd += amount;
+        soldByUser.set(order.createdByUserId, cur);
+        const pname = item.name;
+        const p = soldByProduct.get(pname) ?? { qty: 0, amountUsd: 0 };
+        p.qty += qty;
+        p.amountUsd += amount;
+        soldByProduct.set(pname, p);
+      }
     }
   }
 
@@ -513,7 +681,9 @@ export async function getLiveShiftSituationAction(
   }
 
   const productNames = new Set([
-    ...stock.lines.map((l) => l.menuItem.name),
+    ...stock.lines.map(
+      (l) => l.shopProduct?.name ?? l.menuItem?.name ?? "Produit",
+    ),
     ...soldByProduct.keys(),
   ]);
   const products = [...productNames].map((name) => {
@@ -608,21 +778,33 @@ export async function getPendingHandoverFloatAction(
               storageZone: true,
             },
           },
+          shopProduct: {
+            select: {
+              id: true,
+              name: true,
+              price: true,
+              stockQty: true,
+              category: { select: { name: true } },
+            },
+          },
         },
       },
     },
   });
   if (!session) return null;
   const lines = session.lines
-    .map((l) => ({
-      menuItemId: l.menuItemId,
-      name: l.menuItem.name,
-      quantity: l.qtyClosingCounted ?? 0,
-      unitPriceUsd: l.unitPriceUsd,
-      sourceZone: l.sourceZone,
-      storageZone: l.menuItem.storageZone,
-    }))
-    .filter((l) => l.quantity > 0);
+    .map((l) => {
+      const item = clientMenuItem(l);
+      return {
+        menuItemId: item.id,
+        name: item.name,
+        quantity: l.qtyClosingCounted ?? 0,
+        unitPriceUsd: l.unitPriceUsd,
+        sourceZone: l.sourceZone,
+        storageZone: item.storageZone,
+      };
+    })
+    .filter((l) => l.quantity > 0 && l.menuItemId);
   if (lines.length === 0) return null;
   return {
     sessionId: session.id,
@@ -646,7 +828,8 @@ export async function openServiceStockSessionAction(input: {
   inheritHandover?: boolean;
   notes?: string | null;
 }) {
-  const { user } = await ctx(input.organizationId, input.branchId);
+  const { user, branch } = await ctx(input.organizationId, input.branchId);
+  const commerce = isCommerceStockBranch(branch.type);
   await requireOrganizationPermission(input.organizationId, {
     service_stock: ["ouvrir"],
   });
@@ -705,6 +888,15 @@ export async function openServiceStockSessionAction(input: {
                   needsKitchen: true,
                 },
               },
+              shopProduct: {
+                select: {
+                  id: true,
+                  name: true,
+                  price: true,
+                  active: true,
+                  category: { select: { name: true } },
+                },
+              },
             },
           },
         },
@@ -713,14 +905,17 @@ export async function openServiceStockSessionAction(input: {
 
   const inheritLines =
     handover?.lines
-      .map((l) => ({
-        menuItemId: l.menuItemId,
-        quantity: Math.max(0, Math.round(l.qtyClosingCounted ?? 0)),
-        sourceZone: normalizeZone(l.sourceZone),
-        unitPriceUsd: l.unitPriceUsd || l.menuItem.price,
-        name: l.menuItem.name,
-      }))
-      .filter((l) => l.quantity > 0) ?? [];
+      .map((l) => {
+        const item = clientMenuItem(l);
+        return {
+          menuItemId: item.id,
+          quantity: Math.max(0, Math.round(l.qtyClosingCounted ?? 0)),
+          sourceZone: normalizeZone(l.sourceZone),
+          unitPriceUsd: l.unitPriceUsd || item.price,
+          name: item.name,
+        };
+      })
+      .filter((l) => l.quantity > 0 && l.menuItemId) ?? [];
 
   const cleaned = input.lines
     .map((l) => ({
@@ -732,26 +927,45 @@ export async function openServiceStockSessionAction(input: {
 
   if (inheritLines.length === 0 && cleaned.length === 0) {
     throw new Error(
-      "Attribuez au moins un produit hors cuisine, ou héritez du float transmis.",
+      "Attribuez au moins un produit, ou héritez du float transmis.",
     );
   }
 
   const depotIds = [...new Set(cleaned.map((l) => l.menuItemId))];
-  const items =
-    depotIds.length > 0
-      ? await prisma.hotelMenuItem.findMany({
-          where: {
-            branchId: input.branchId,
-            id: { in: depotIds },
-            active: true,
-            isConsumable: false,
-            needsKitchen: false,
-          },
-        })
-      : [];
+  type DepotItem = {
+    id: string;
+    name: string;
+    price: number;
+    stockQty: number;
+    storageZone?: string | null;
+  };
+  let items: DepotItem[] = [];
+  if (depotIds.length > 0) {
+    if (commerce) {
+      items = await prisma.shopProduct.findMany({
+        where: {
+          branchId: input.branchId,
+          id: { in: depotIds },
+          active: true,
+        },
+      });
+    } else {
+      items = await prisma.hotelMenuItem.findMany({
+        where: {
+          branchId: input.branchId,
+          id: { in: depotIds },
+          active: true,
+          isConsumable: false,
+          needsKitchen: false,
+        },
+      });
+    }
+  }
   if (items.length !== depotIds.length) {
     throw new Error(
-      "Un ou plusieurs articles sont invalides (hors cuisine / actifs uniquement).",
+      commerce
+        ? "Un ou plusieurs articles POS sont invalides (actifs uniquement)."
+        : "Un ou plusieurs articles sont invalides (hors cuisine / actifs uniquement).",
     );
   }
   const byId = new Map(items.map((i) => [i.id, i]));
@@ -808,22 +1022,39 @@ export async function openServiceStockSessionAction(input: {
       const item = byId.get(line.menuItemId)!;
       const stockBefore = item.stockQty;
       const stockAfter = stockBefore - line.quantity;
-      await tx.hotelMenuItem.update({
-        where: { id: item.id },
-        data: { stockQty: stockAfter },
-      });
-      await tx.hotelStockMovement.create({
-        data: {
-          branchId: input.branchId,
-          menuItemId: item.id,
-          kind: "SORTIE",
-          quantity: line.quantity,
-          stockBefore,
-          stockAfter,
-          note: `Service ${number} · SORTIE_DEPOT · ouverture`,
-          createdByUserId: user.id,
-        },
-      });
+      if (commerce) {
+        await tx.shopProduct.update({
+          where: { id: item.id },
+          data: { stockQty: stockAfter },
+        });
+        await tx.shopStockMovement.create({
+          data: {
+            branchId: input.branchId,
+            productId: item.id,
+            kind: "SORTIE",
+            quantity: line.quantity,
+            note: `Service ${number} · SORTIE_DEPOT · ouverture`,
+            createdByUserId: user.id,
+          },
+        });
+      } else {
+        await tx.hotelMenuItem.update({
+          where: { id: item.id },
+          data: { stockQty: stockAfter },
+        });
+        await tx.hotelStockMovement.create({
+          data: {
+            branchId: input.branchId,
+            menuItemId: item.id,
+            kind: "SORTIE",
+            quantity: line.quantity,
+            stockBefore,
+            stockAfter,
+            note: `Service ${number} · SORTIE_DEPOT · ouverture`,
+            createdByUserId: user.id,
+          },
+        });
+      }
       item.stockQty = stockAfter;
       const cur = attributed.get(line.menuItemId);
       if (cur) {
@@ -839,15 +1070,23 @@ export async function openServiceStockSessionAction(input: {
       }
     }
 
-    for (const [menuItemId, row] of attributed) {
+    for (const [itemId, row] of attributed) {
       await tx.serviceStockLine.create({
-        data: {
-          sessionId: created.id,
-          menuItemId,
-          qtyAttributed: row.qty,
-          unitPriceUsd: row.unitPriceUsd,
-          sourceZone: row.sourceZone,
-        },
+        data: commerce
+          ? {
+              sessionId: created.id,
+              shopProductId: itemId,
+              qtyAttributed: row.qty,
+              unitPriceUsd: row.unitPriceUsd,
+              sourceZone: row.sourceZone,
+            }
+          : {
+              sessionId: created.id,
+              menuItemId: itemId,
+              qtyAttributed: row.qty,
+              unitPriceUsd: row.unitPriceUsd,
+              sourceZone: row.sourceZone,
+            },
       });
     }
 
@@ -951,7 +1190,8 @@ export async function topUpServiceStockAction(input: {
   sourceZone?: string;
   note?: string | null;
 }) {
-  const { user } = await ctx(input.organizationId, input.branchId);
+  const { user, branch } = await ctx(input.organizationId, input.branchId);
+  const commerce = isCommerceStockBranch(branch.type);
   await requireOrganizationPermission(input.organizationId, {
     service_stock: ["modifier"],
   });
@@ -977,15 +1217,23 @@ export async function topUpServiceStockAction(input: {
     );
   }
 
-  const item = await prisma.hotelMenuItem.findFirst({
-    where: {
-      id: input.menuItemId,
-      branchId: input.branchId,
-      active: true,
-      isConsumable: false,
-      needsKitchen: false,
-    },
-  });
+  const item = commerce
+    ? await prisma.shopProduct.findFirst({
+        where: {
+          id: input.menuItemId,
+          branchId: input.branchId,
+          active: true,
+        },
+      })
+    : await prisma.hotelMenuItem.findFirst({
+        where: {
+          id: input.menuItemId,
+          branchId: input.branchId,
+          active: true,
+          isConsumable: false,
+          needsKitchen: false,
+        },
+      });
   if (!item) throw new Error("Article invalide.");
   if (item.stockQty < qty) {
     throw new Error(
@@ -996,59 +1244,114 @@ export async function topUpServiceStockAction(input: {
   await prisma.$transaction(async (tx) => {
     const stockBefore = item.stockQty;
     const stockAfter = stockBefore - qty;
-    await tx.hotelMenuItem.update({
-      where: { id: item.id },
-      data: { stockQty: stockAfter },
-    });
-    await tx.hotelStockMovement.create({
-      data: {
-        branchId: input.branchId,
-        menuItemId: item.id,
-        kind: "SORTIE",
-        quantity: qty,
-        stockBefore,
-        stockAfter,
-        note: `Service ${session.number} · SORTIE_DEPOT · réassort`,
-        createdByUserId: user.id,
-      },
-    });
-    await tx.serviceStockTopUp.create({
-      data: {
-        sessionId: session.id,
-        menuItemId: item.id,
-        quantity: qty,
-        sourceZone: zone,
-        note: input.note?.trim() || null,
-        createdByUserId: user.id,
-      },
-    });
-    const existing = await tx.serviceStockLine.findUnique({
-      where: {
-        sessionId_menuItemId: {
-          sessionId: session.id,
-          menuItemId: item.id,
-        },
-      },
-    });
-    if (existing) {
-      await tx.serviceStockLine.update({
-        where: { id: existing.id },
+    if (commerce) {
+      await tx.shopProduct.update({
+        where: { id: item.id },
+        data: { stockQty: stockAfter },
+      });
+      await tx.shopStockMovement.create({
         data: {
-          qtyAttributed: existing.qtyAttributed + qty,
-          sourceZone: zone,
+          branchId: input.branchId,
+          productId: item.id,
+          kind: "SORTIE",
+          quantity: qty,
+          note: `Service ${session.number} · SORTIE_DEPOT · réassort`,
+          createdByUserId: user.id,
         },
       });
+      await tx.serviceStockTopUp.create({
+        data: {
+          sessionId: session.id,
+          shopProductId: item.id,
+          quantity: qty,
+          sourceZone: zone,
+          note: input.note?.trim() || null,
+          createdByUserId: user.id,
+        },
+      });
+      const existing = await tx.serviceStockLine.findUnique({
+        where: {
+          sessionId_shopProductId: {
+            sessionId: session.id,
+            shopProductId: item.id,
+          },
+        },
+      });
+      if (existing) {
+        await tx.serviceStockLine.update({
+          where: { id: existing.id },
+          data: {
+            qtyAttributed: existing.qtyAttributed + qty,
+            sourceZone: zone,
+          },
+        });
+      } else {
+        await tx.serviceStockLine.create({
+          data: {
+            sessionId: session.id,
+            shopProductId: item.id,
+            qtyAttributed: qty,
+            qtyOpeningCounted: qty,
+            unitPriceUsd: item.price,
+            sourceZone: zone,
+          },
+        });
+      }
     } else {
-      await tx.serviceStockLine.create({
+      await tx.hotelMenuItem.update({
+        where: { id: item.id },
+        data: { stockQty: stockAfter },
+      });
+      await tx.hotelStockMovement.create({
+        data: {
+          branchId: input.branchId,
+          menuItemId: item.id,
+          kind: "SORTIE",
+          quantity: qty,
+          stockBefore,
+          stockAfter,
+          note: `Service ${session.number} · SORTIE_DEPOT · réassort`,
+          createdByUserId: user.id,
+        },
+      });
+      await tx.serviceStockTopUp.create({
         data: {
           sessionId: session.id,
           menuItemId: item.id,
-          qtyAttributed: qty,
-          qtyOpeningCounted: qty,
-          unitPriceUsd: item.price,
+          quantity: qty,
           sourceZone: zone,
+          note: input.note?.trim() || null,
+          createdByUserId: user.id,
         },
       });
+      const existing = await tx.serviceStockLine.findUnique({
+        where: {
+          sessionId_menuItemId: {
+            sessionId: session.id,
+            menuItemId: item.id,
+          },
+        },
+      });
+      if (existing) {
+        await tx.serviceStockLine.update({
+          where: { id: existing.id },
+          data: {
+            qtyAttributed: existing.qtyAttributed + qty,
+            sourceZone: zone,
+          },
+        });
+      } else {
+        await tx.serviceStockLine.create({
+          data: {
+            sessionId: session.id,
+            menuItemId: item.id,
+            qtyAttributed: qty,
+            qtyOpeningCounted: qty,
+            unitPriceUsd: item.price,
+            sourceZone: zone,
+          },
+        });
+      }
     }
   });
 
@@ -1079,7 +1382,7 @@ export async function closeServiceStockSessionAction(input: {
       branchId: input.branchId,
       status: { in: ["DRAFT", "OPEN", "CLOSING"] },
     },
-    include: { lines: { include: { menuItem: true } } },
+    include: { lines: { include: { menuItem: true, shopProduct: true } } },
   });
   if (!session) throw new Error("Session ouverte introuvable.");
 
@@ -1111,25 +1414,47 @@ export async function closeServiceStockSessionAction(input: {
           ? Math.min(counted, theoretical)
           : 0;
       if (toReturn > 0) {
-        const stockBefore = line.menuItem.stockQty;
-        const stockAfter = stockBefore + toReturn;
-        await tx.hotelMenuItem.update({
-          where: { id: line.menuItemId },
-          data: { stockQty: stockAfter },
-        });
-        await tx.hotelStockMovement.create({
-          data: {
-            branchId: input.branchId,
-            menuItemId: line.menuItemId,
-            kind: "ENTREE",
-            quantity: toReturn,
-            stockBefore,
-            stockAfter,
-            note: `Service ${session.number} · RETOUR_DEPOT · clôture`,
-            createdByUserId: user.id,
-          },
-        });
-        line.menuItem.stockQty = stockAfter;
+        if (line.shopProductId && line.shopProduct) {
+          const stockBefore = line.shopProduct.stockQty;
+          const stockAfter = stockBefore + toReturn;
+          await tx.shopProduct.update({
+            where: { id: line.shopProductId },
+            data: { stockQty: stockAfter },
+          });
+          await tx.shopStockMovement.create({
+            data: {
+              branchId: input.branchId,
+              productId: line.shopProductId,
+              kind: "ENTREE",
+              quantity: toReturn,
+              note: `Service ${session.number} · RETOUR_DEPOT · clôture`,
+              createdByUserId: user.id,
+            },
+          });
+          line.shopProduct.stockQty = stockAfter;
+        } else if (line.menuItemId && line.menuItem) {
+          const stockBefore = line.menuItem.stockQty;
+          const stockAfter = stockBefore + toReturn;
+          await tx.hotelMenuItem.update({
+            where: { id: line.menuItemId },
+            data: { stockQty: stockAfter },
+          });
+          await tx.hotelStockMovement.create({
+            data: {
+              branchId: input.branchId,
+              menuItemId: line.menuItemId,
+              kind: "ENTREE",
+              quantity: toReturn,
+              stockBefore,
+              stockAfter,
+              note: `Service ${session.number} · RETOUR_DEPOT · clôture`,
+              createdByUserId: user.id,
+            },
+          });
+          line.menuItem.stockQty = stockAfter;
+        } else {
+          throw new Error("Ligne stock invalide.");
+        }
       }
       await tx.serviceStockLine.update({
         where: { id: line.id },
@@ -1186,7 +1511,9 @@ export async function consumeServiceFloatInTx(
   }
 
   const floatLines = new Map(
-    session.lines.map((l) => [l.menuItemId, l]),
+    session.lines
+      .filter((l) => l.menuItemId && l.menuItem)
+      .map((l) => [l.menuItemId as string, l]),
   );
   const needed = new Map<string, number>();
   for (const line of lines) {
@@ -1198,7 +1525,7 @@ export async function consumeServiceFloatInTx(
 
   for (const [menuItemId, qty] of needed) {
     const fl = floatLines.get(menuItemId);
-    if (!fl || fl.menuItem.needsKitchen) {
+    if (!fl?.menuItem || fl.menuItem.needsKitchen) {
       throw new Error(
         "Article hors float service — attribuez-le via Service stock ou utilisez un produit cuisine.",
       );
@@ -1222,7 +1549,95 @@ export async function consumeServiceFloatInTx(
   return session.id;
 }
 
-/** Remet le float après annulation / modification d’une commande non livrée. */
+/** Décrémente le float POS commerce dans une transaction vente. */
+export async function consumeShopServiceFloatInTx(
+  tx: Prisma.TransactionClient,
+  branchId: string,
+  lines: { productId: string; quantity: number; name?: string }[],
+  opts?: { excludeSaleId?: string },
+) {
+  const session = await tx.serviceStockSession.findFirst({
+    where: {
+      branchId,
+      status: "OPEN",
+      openingConfirmedAt: { not: null },
+    },
+    include: {
+      lines: {
+        include: {
+          shopProduct: { select: { id: true, name: true } },
+        },
+      },
+    },
+  });
+  if (!session) {
+    throw new Error(
+      "Ouvrez et confirmez le service stock avant de vendre au point de vente.",
+    );
+  }
+
+  const holds = await tx.shopSale.findMany({
+    where: {
+      branchId,
+      status: "EN_ATTENTE",
+      ...(opts?.excludeSaleId ? { id: { not: opts.excludeSaleId } } : {}),
+    },
+    include: { items: true },
+  });
+  const heldMap = new Map<string, number>();
+  for (const sale of holds) {
+    for (const item of sale.items) {
+      if (!item.productId) continue;
+      heldMap.set(
+        item.productId,
+        (heldMap.get(item.productId) ?? 0) + item.quantity,
+      );
+    }
+  }
+
+  const floatLines = new Map(
+    session.lines
+      .filter((l) => l.shopProductId)
+      .map((l) => [l.shopProductId as string, l]),
+  );
+  const needed = new Map<string, number>();
+  for (const line of lines) {
+    if (!line.productId) continue;
+    needed.set(
+      line.productId,
+      (needed.get(line.productId) ?? 0) + Math.max(1, line.quantity),
+    );
+  }
+
+  for (const [productId, qty] of needed) {
+    const fl = floatLines.get(productId);
+    const name =
+      fl?.shopProduct?.name ??
+      lines.find((l) => l.productId === productId)?.name ??
+      "article";
+    if (!fl) {
+      throw new Error(
+        `« ${name} » n’est pas sur le float — attribuez-le via Service stock.`,
+      );
+    }
+    const rem = remainingFloat(fl) - (heldMap.get(productId) ?? 0);
+    if (rem < qty) {
+      throw new Error(
+        `Float insuffisant pour « ${name} » (restant ${Math.max(0, rem)}). Demandez un réassort.`,
+      );
+    }
+  }
+
+  for (const [productId, qty] of needed) {
+    const fl = floatLines.get(productId)!;
+    await tx.serviceStockLine.update({
+      where: { id: fl.id },
+      data: { qtySold: fl.qtySold + qty },
+    });
+  }
+
+  return session.id;
+}
 export async function restoreServiceFloatInTx(
   tx: Prisma.TransactionClient,
   branchId: string,
@@ -1239,7 +1654,11 @@ export async function restoreServiceFloatInTx(
   });
   if (!session) return null;
 
-  const floatLines = new Map(session.lines.map((l) => [l.menuItemId, l]));
+  const floatLines = new Map(
+    session.lines
+      .filter((l) => l.menuItemId)
+      .map((l) => [l.menuItemId as string, l]),
+  );
   const needed = new Map<string, number>();
   for (const line of lines) {
     needed.set(
