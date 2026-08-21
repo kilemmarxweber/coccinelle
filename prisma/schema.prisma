@@ -280,6 +280,8 @@ model User {
   image         String?
   /// Téléphone WhatsApp (création membre / notifs)
   phone         String?
+  /// Compte créé par un admin : mot de passe temporaire à changer.
+  mustChangePassword Boolean @default(false)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   role          String?

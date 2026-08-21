@@ -54,5 +54,19 @@ export const signUpSchema = z.object({
     }),
 });
 
+/** Première connexion : aucun critère de complexité, tous caractères acceptés. */
+export const firstLoginPasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "L’ancien mot de passe est requis."),
+    newPassword: z.string().min(1, "Le nouveau mot de passe est requis."),
+    confirmPassword: z.string().min(1, "Confirmez le nouveau mot de passe."),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Les mots de passe ne correspondent pas.",
+    path: ["confirmPassword"],
+  });
+
 export type SignInValues = z.infer<typeof signInSchema>;
 export type SignUpValues = z.infer<typeof signUpSchema>;
+export type FirstLoginPasswordValues = z.infer<typeof firstLoginPasswordSchema>;
+

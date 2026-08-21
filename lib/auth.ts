@@ -29,11 +29,21 @@ const authOptions = {
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
+    minPasswordLength: 1,
+    maxPasswordLength: 256,
   },
   trustedOrigins: [process.env.BETTER_AUTH_URL || "http://localhost:3000"],
   user: {
     changeEmail: {
       enabled: true,
+    },
+    additionalFields: {
+      mustChangePassword: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false,
+      },
     },
   },
   emailVerification: {
@@ -55,14 +65,17 @@ const authOptions = {
           const stash = consumeAdminCreatedUserStash(user.email);
           if (!stash?.password) return;
           try {
-            if (stash.phone?.trim()) {
-              await prisma.user
-                .update({
-                  where: { id: user.id },
-                  data: { phone: stash.phone.trim() },
-                })
-                .catch(() => undefined);
-            }
+            await prisma.user
+              .update({
+                where: { id: user.id },
+                data: {
+                  mustChangePassword: true,
+                  ...(stash.phone?.trim()
+                    ? { phone: stash.phone.trim() }
+                    : {}),
+                },
+              })
+              .catch(() => undefined);
             const branch = await resolveNotificationBranch({
               branchId: stash.branchId,
             });
@@ -135,13 +148,22 @@ export const auth = betterAuth({
   plugins: [
     ...(authOptions.plugins ?? []),
     customSession(async ({ user, session }) => {
-      const organization = await getSessionOrganizationContext(
-        user.id,
-        session.activeOrganizationId,
-      );
+      const [organization, flags] = await Promise.all([
+        getSessionOrganizationContext(
+          user.id,
+          session.activeOrganizationId,
+        ),
+        prisma.user.findUnique({
+          where: { id: user.id },
+          select: { mustChangePassword: true },
+        }),
+      ]);
 
       return {
-        user,
+        user: {
+          ...user,
+          mustChangePassword: flags?.mustChangePassword === true,
+        },
         session,
         organization,
       };

@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 import { getUserOrganizationMembership } from "@/lib/auth/org-membership";
 import { resolvePostLoginPath } from "@/lib/auth/post-login-redirect";
+import { sessionMustChangePassword } from "@/lib/auth/must-change-password";
 import { APP_ROLE, isAppAdminRole } from "@/lib/permissions";
 
 const SIGN_IN_PATH = "/auth/sign-in";
@@ -61,6 +62,12 @@ export async function proxy(request: NextRequest) {
   }
 
   if (isAuthPage(pathname) && isAuthenticated) {
+    if (sessionMustChangePassword(session)) {
+      if (pathname.startsWith(SIGN_IN_PATH)) {
+        return NextResponse.next();
+      }
+      return NextResponse.redirect(new URL(SIGN_IN_PATH, request.url));
+    }
     const destination = await resolvePostLoginPath(request.headers);
     return NextResponse.redirect(new URL(destination, request.url));
   }
@@ -72,6 +79,9 @@ export async function proxy(request: NextRequest) {
   }
 
   if (isProtectedPage(pathname) && isAuthenticated && session?.user) {
+    if (sessionMustChangePassword(session)) {
+      return NextResponse.redirect(new URL(SIGN_IN_PATH, request.url));
+    }
     const role = session.user.role;
 
     if (role === APP_ROLE.USER) {

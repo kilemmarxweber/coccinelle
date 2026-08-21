@@ -368,6 +368,10 @@ export async function resetOrganizationMemberPasswordAction(
   const temporaryPassword = generateSecurePassword(16);
   try {
     await setCredentialPassword(member.userId, temporaryPassword);
+    await prisma.user.update({
+      where: { id: member.userId },
+      data: { mustChangePassword: true },
+    });
     const primary = member.branchMembers[0]?.branch;
     await sendPasswordResetCredentialsEmail({
       to: member.user.email,

@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { AuthShell } from "@/components/layout/auth-shell";
+import { appName } from "@/lib/app-name";
 import { safeAuthCallbackUrl } from "@/lib/auth/safe-callback-url";
 import { SignInForm } from "./components/sign-in-form";
 
 export const metadata: Metadata = {
-  title: "Connexion — Coccinelle",
-  description: "Connectez-vous à Coccinelle Voyage.",
+  title: `Connexion — ${appName()}`,
+  description: `Connectez-vous à ${appName()}.`,
 };
 
 type PageProps = {
@@ -18,7 +19,10 @@ export default async function SignInPage({ searchParams }: PageProps) {
 
   return (
     <AuthShell mode="sign-in">
-      <SignInForm callbackUrl={callbackUrl || undefined} />
+      <SignInForm
+        callbackUrl={callbackUrl || undefined}
+        appName={appName()}
+      />
     </AuthShell>
   );
 }
