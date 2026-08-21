@@ -237,16 +237,24 @@ export async function listOrgRolesAction(
   });
 
   const custom: OrgRoleListItem[] = rows
-    .filter((r) => r.role !== ORG_ROLE.OWNER)
-    .map((r) => ({
-      id: r.id,
-      role: r.role,
-      permission: parsePermissionJson(r.permission),
-      isSystem: false,
-      memberCount: counts.get(r.role) ?? 0,
-      createdAt: r.createdAt.toISOString(),
-      updatedAt: r.updatedAt?.toISOString() ?? null,
-    }));
+    .filter((r: { role: string }) => r.role !== ORG_ROLE.OWNER)
+    .map(
+      (r: {
+        id: string;
+        role: string;
+        permission: string;
+        createdAt: Date;
+        updatedAt: Date | null;
+      }) => ({
+        id: r.id,
+        role: r.role,
+        permission: parsePermissionJson(r.permission),
+        isSystem: false,
+        memberCount: counts.get(r.role) ?? 0,
+        createdAt: r.createdAt.toISOString(),
+        updatedAt: r.updatedAt?.toISOString() ?? null,
+      }),
+    );
 
   const owner: OrgRoleListItem = {
     id: null,

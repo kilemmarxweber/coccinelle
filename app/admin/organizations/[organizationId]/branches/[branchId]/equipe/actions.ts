@@ -209,7 +209,7 @@ export async function listAssignableOrgRolesAction(
     orderBy: { role: "asc" },
   });
 
-  const roles: AssignableOrgRoleOption[] = rows.map((r) => ({
+  const roles: AssignableOrgRoleOption[] = rows.map((r: { role: string }) => ({
     role: r.role,
     label: orgRoleLabel(r.role),
     isOwner: false,

@@ -38,7 +38,7 @@ export async function seedOrganizationRolePresets(
     },
     select: { role: true },
   });
-  const have = new Set(existing.map((r) => r.role));
+  const have = new Set(existing.map((r: { role: string }) => r.role));
 
   const created: OrgRolePresetSlug[] = [];
   const skipped: OrgRolePresetSlug[] = [];
