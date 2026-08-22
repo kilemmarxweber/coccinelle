@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Plane } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { appName } from "@/lib/app-name";
 
 type AuthMode = "sign-in" | "sign-up";
 
@@ -10,6 +8,8 @@ interface AuthShellProps {
   mode: AuthMode;
   children: ReactNode;
   className?: string;
+  /** Nom produit (`APP_NAME` dans `.env`), fourni par la page serveur. */
+  appName: string;
 }
 
 const panelCopy: Record<
@@ -23,9 +23,9 @@ const panelCopy: Record<
   }
 > = {
   "sign-in": {
-    title: "Nouveau dans l'équipe ?",
+    title: "Bienvenue dans l'équipe",
     description:
-      "Créez votre compte opérateur et gérez réservations, caisse et équipes depuis un seul espace.",
+      "Connectez-vous pour gérer réservations, caisse et équipes depuis un seul espace.",
     ctaLabel: "Créer un compte",
     ctaHref: "/auth/sign-up",
     quote: "Voyager loin, c’est commencer ici.",
@@ -41,9 +41,9 @@ const panelCopy: Record<
 };
 
 /** Écran auth split : formulaire + panneau accent (même logique que HK+). */
-export function AuthShell({ mode, children, className }: AuthShellProps) {
+export function AuthShell({ mode, children, className, appName }: AuthShellProps) {
   const panel = panelCopy[mode];
-  const badge = appName().toUpperCase();
+  const badge = appName.trim();
 
   return (
     <div
@@ -86,7 +86,7 @@ export function AuthShell({ mode, children, className }: AuthShellProps) {
             </div>
 
             <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide backdrop-blur-sm">
-              <Plane className="size-3.5" aria-hidden />
+              <img src="/favicon.ico" alt="" className="size-3.5" />
               {badge}
             </div>
 
@@ -99,12 +99,14 @@ export function AuthShell({ mode, children, className }: AuthShellProps) {
               </p>
             </div>
 
-            <Link
-              href={panel.ctaHref}
-              className="inline-flex h-10 items-center justify-center rounded-xl border border-white/80 bg-transparent px-4 text-sm font-semibold text-white transition hover:bg-white/10"
-            >
-              {panel.ctaLabel}
-            </Link>
+            {mode !== "sign-in" ? (
+              <Link
+                href={panel.ctaHref}
+                className="inline-flex h-10 items-center justify-center rounded-xl border border-white/80 bg-transparent px-4 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                {panel.ctaLabel}
+              </Link>
+            ) : null}
           </div>
 
           <p className="relative mt-6 text-sm text-white/80 italic">

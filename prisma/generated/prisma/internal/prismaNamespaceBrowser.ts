@@ -111,7 +111,17 @@ export const ModelName = {
   StaffAttendanceDay: 'StaffAttendanceDay',
   StaffLeaveRequest: 'StaffLeaveRequest',
   StaffSalaryAdvance: 'StaffSalaryAdvance',
-  Payslip: 'Payslip'
+  Payslip: 'Payslip',
+  BranchSupplier: 'BranchSupplier',
+  FactoryCustomer: 'FactoryCustomer',
+  FactoryCredit: 'FactoryCredit',
+  FactoryCreditLine: 'FactoryCreditLine',
+  FactoryCreditExtension: 'FactoryCreditExtension',
+  FactoryRecipe: 'FactoryRecipe',
+  FactoryRecipeLine: 'FactoryRecipeLine',
+  FactoryBatch: 'FactoryBatch',
+  FactoryReservation: 'FactoryReservation',
+  FactoryReservationLine: 'FactoryReservationLine'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -432,6 +442,8 @@ export const BranchScalarFieldEnum = {
   hasPharmacie: 'hasPharmacie',
   hasShop: 'hasShop',
   hasAlimentation: 'hasAlimentation',
+  hasEau: 'hasEau',
+  hasVin: 'hasVin',
   imageUrl: 'imageUrl',
   address: 'address',
   city: 'city',
@@ -439,6 +451,9 @@ export const BranchScalarFieldEnum = {
   email: 'email',
   timezone: 'timezone',
   settings: 'settings',
+  customerUiPrimary: 'customerUiPrimary',
+  customerUiBackground: 'customerUiBackground',
+  customerUiCard: 'customerUiCard',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -580,6 +595,8 @@ export const ShopProductScalarFieldEnum = {
   name: 'name',
   sku: 'sku',
   kind: 'kind',
+  productKind: 'productKind',
+  finishedFamily: 'finishedFamily',
   price: 'price',
   promoPrice: 'promoPrice',
   promoActive: 'promoActive',
@@ -762,6 +779,8 @@ export const PaymentScalarFieldEnum = {
   expenseId: 'expenseId',
   partnerId: 'partnerId',
   partnerBookingId: 'partnerBookingId',
+  factoryCreditId: 'factoryCreditId',
+  installmentKind: 'installmentKind',
   receiptNumber: 'receiptNumber',
   method: 'method',
   amountCdf: 'amountCdf',
@@ -936,6 +955,7 @@ export const PurchaseOrderScalarFieldEnum = {
   number: 'number',
   status: 'status',
   supplierName: 'supplierName',
+  supplierId: 'supplierId',
   note: 'note',
   totalAmountUsd: 'totalAmountUsd',
   fundsReleasedUsd: 'fundsReleasedUsd',
@@ -1218,6 +1238,158 @@ export const PayslipScalarFieldEnum = {
 } as const
 
 export type PayslipScalarFieldEnum = (typeof PayslipScalarFieldEnum)[keyof typeof PayslipScalarFieldEnum]
+
+
+export const BranchSupplierScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  name: 'name',
+  phone: 'phone',
+  contactName: 'contactName',
+  address: 'address',
+  notes: 'notes',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BranchSupplierScalarFieldEnum = (typeof BranchSupplierScalarFieldEnum)[keyof typeof BranchSupplierScalarFieldEnum]
+
+
+export const FactoryCustomerScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  name: 'name',
+  phone: 'phone',
+  contactName: 'contactName',
+  companyName: 'companyName',
+  email: 'email',
+  notes: 'notes',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FactoryCustomerScalarFieldEnum = (typeof FactoryCustomerScalarFieldEnum)[keyof typeof FactoryCustomerScalarFieldEnum]
+
+
+export const FactoryCreditScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  number: 'number',
+  customerId: 'customerId',
+  marketerUserId: 'marketerUserId',
+  marketerDisplayName: 'marketerDisplayName',
+  status: 'status',
+  dueAt: 'dueAt',
+  originalDueAt: 'originalDueAt',
+  totalUsd: 'totalUsd',
+  paidUsd: 'paidUsd',
+  fxUsdToCdf: 'fxUsdToCdf',
+  documentIssuedAt: 'documentIssuedAt',
+  signedAt: 'signedAt',
+  reminderSentAt: 'reminderSentAt',
+  dueDayReminderSentAt: 'dueDayReminderSentAt',
+  cancelReason: 'cancelReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FactoryCreditScalarFieldEnum = (typeof FactoryCreditScalarFieldEnum)[keyof typeof FactoryCreditScalarFieldEnum]
+
+
+export const FactoryCreditLineScalarFieldEnum = {
+  id: 'id',
+  creditId: 'creditId',
+  shopProductId: 'shopProductId',
+  nameSnapshot: 'nameSnapshot',
+  qty: 'qty',
+  unitPriceUsd: 'unitPriceUsd',
+  lineTotalUsd: 'lineTotalUsd'
+} as const
+
+export type FactoryCreditLineScalarFieldEnum = (typeof FactoryCreditLineScalarFieldEnum)[keyof typeof FactoryCreditLineScalarFieldEnum]
+
+
+export const FactoryCreditExtensionScalarFieldEnum = {
+  id: 'id',
+  creditId: 'creditId',
+  previousDueAt: 'previousDueAt',
+  newDueAt: 'newDueAt',
+  reason: 'reason',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt'
+} as const
+
+export type FactoryCreditExtensionScalarFieldEnum = (typeof FactoryCreditExtensionScalarFieldEnum)[keyof typeof FactoryCreditExtensionScalarFieldEnum]
+
+
+export const FactoryRecipeScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  shopProductId: 'shopProductId',
+  outputQty: 'outputQty',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FactoryRecipeScalarFieldEnum = (typeof FactoryRecipeScalarFieldEnum)[keyof typeof FactoryRecipeScalarFieldEnum]
+
+
+export const FactoryRecipeLineScalarFieldEnum = {
+  id: 'id',
+  recipeId: 'recipeId',
+  consumableProductId: 'consumableProductId',
+  qtyPerBatch: 'qtyPerBatch'
+} as const
+
+export type FactoryRecipeLineScalarFieldEnum = (typeof FactoryRecipeLineScalarFieldEnum)[keyof typeof FactoryRecipeLineScalarFieldEnum]
+
+
+export const FactoryBatchScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  number: 'number',
+  status: 'status',
+  recipeId: 'recipeId',
+  multiplier: 'multiplier',
+  outputProductId: 'outputProductId',
+  outputQty: 'outputQty',
+  notes: 'notes',
+  producedAt: 'producedAt',
+  validatedByUserId: 'validatedByUserId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FactoryBatchScalarFieldEnum = (typeof FactoryBatchScalarFieldEnum)[keyof typeof FactoryBatchScalarFieldEnum]
+
+
+export const FactoryReservationScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  customerId: 'customerId',
+  marketerUserId: 'marketerUserId',
+  marketerDisplayName: 'marketerDisplayName',
+  status: 'status',
+  holdUntil: 'holdUntil',
+  creditId: 'creditId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FactoryReservationScalarFieldEnum = (typeof FactoryReservationScalarFieldEnum)[keyof typeof FactoryReservationScalarFieldEnum]
+
+
+export const FactoryReservationLineScalarFieldEnum = {
+  id: 'id',
+  reservationId: 'reservationId',
+  shopProductId: 'shopProductId',
+  qty: 'qty'
+} as const
+
+export type FactoryReservationLineScalarFieldEnum = (typeof FactoryReservationLineScalarFieldEnum)[keyof typeof FactoryReservationLineScalarFieldEnum]
 
 
 export const SortOrder = {

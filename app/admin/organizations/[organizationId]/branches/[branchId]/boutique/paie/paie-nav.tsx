@@ -61,7 +61,7 @@ export function PaieSectionNav({
 
   return (
     <nav
-      className="flex flex-wrap gap-1 rounded-2xl bg-[#0f3d2e]/6 p-1"
+      className="flex flex-wrap gap-1 rounded-xl bg-muted p-1"
       aria-label="Section paie"
     >
       {items.map((item) => {
@@ -72,10 +72,10 @@ export function PaieSectionNav({
             href={item.href}
             aria-current={on ? "page" : undefined}
             className={cn(
-              "inline-flex h-10 items-center gap-1.5 rounded-xl px-3.5 text-sm font-semibold transition",
+              "inline-flex h-10 items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium transition",
               on
-                ? "bg-[#0f3d2e] text-[#f4efe4] shadow-sm"
-                : "text-[#4a453e] hover:bg-white/80",
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:bg-background/80 hover:text-foreground",
             )}
           >
             <item.icon className="size-3.5" />

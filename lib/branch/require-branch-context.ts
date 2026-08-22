@@ -7,6 +7,7 @@ import {
   canAccessLivraison,
   type HospitalityModule,
 } from "@/lib/branch/hospitality";
+import { isHospitality } from "@/lib/branch/hospitality";
 import { canAccessBranch, type AccessibleBranch } from "@/lib/branch/user-branches";
 import {
   branchDashboardPath,
@@ -15,13 +16,15 @@ import {
 } from "@/lib/branch/paths";
 import { resolveCurrentBranchOpsRole } from "@/lib/branch/resolve-ops-role";
 import { canSeeDashCardAsync } from "@/lib/branch/privileges";
-import { isHospitality } from "@/lib/branch/hospitality";
+import { isCommerceBranchType } from "@/lib/payroll/bootstrap";
 
 type LoadOpts = {
   organizationId: string;
   branchId: string;
   /** Si défini, refuse l’accès si le type de branche ne matche pas. */
   requireModule?: BranchModule;
+  /** Famille commerce (BOUTIQUE | USINE) — paie partagée. */
+  requireCommerce?: boolean;
   /** Module hospitalité (stays / restaurant / livraison). */
   requireHospitality?: HospitalityModule;
   /** Carte hub requise (filtre rôle ops, hospitalité uniquement). */
@@ -59,6 +62,10 @@ export async function requireBranchContext(
     }
   }
 
+  if (opts.requireCommerce && !isCommerceBranchType(branch.type)) {
+    redirect(hub);
+  }
+
   if (opts.requireHospitality) {
     const ok =
       opts.requireHospitality === "stays"
@@ -69,7 +76,7 @@ export async function requireBranchContext(
     if (!ok) redirect(hub);
   }
 
-  if (opts.requireDashCard && isHospitality(branch.type)) {
+  if (opts.requireDashCard && (isHospitality(branch.type) || branch.type === "USINE")) {
     const opsRole = await resolveCurrentBranchOpsRole(
       opts.organizationId,
       opts.branchId,

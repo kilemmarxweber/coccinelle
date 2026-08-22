@@ -15,7 +15,7 @@ export default async function BulletinPage({ params }: PageProps) {
   await requireBranchContext({
     organizationId,
     branchId,
-    requireModule: "boutique",
+    requireCommerce: true,
   });
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) redirect("/auth/sign-in");

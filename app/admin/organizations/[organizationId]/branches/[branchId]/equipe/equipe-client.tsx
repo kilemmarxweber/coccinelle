@@ -17,11 +17,10 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { orgRoleLabel } from "@/lib/org-role-labels";
+import { opsRoleLabel } from "@/lib/branch/ops-roles";
 import { branchDashboardPath } from "@/lib/branch/paths";
 import { ORG_ROLE } from "@/lib/permissions";
-import { ORG_ROLE_PRESET } from "@/lib/org/role-presets";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -41,6 +40,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -48,11 +48,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { SearchInput } from "@/components/ui/search-input";
-import { Select } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { choiceBtnClass, ParametresPanel } from "../parametres/parametres-section-nav";
 import { resetOrganizationMemberPasswordAction } from "@/app/admin/organizations/[organizationId]/members/actions";
+import { listAssignableOpsRolesAction } from "@/lib/branch/privilege-actions";
+import { suggestMemberEmail } from "@/lib/slug";
 import {
   createBranchStaffAction,
-  listAssignableOrgRolesAction,
   listBranchStaffAction,
   removeBranchStaffAction,
   updateBranchStaffRoleAction,
@@ -67,54 +69,143 @@ import {
 import { EquipeSectionNav } from "./equipe-section-nav";
 import { EquipePayrollDialog } from "./equipe-payroll-dialog";
 
+type OpsRoleOption = { slug: string; label: string };
+
 type Props = {
   organizationId: string;
+  organizationSlug: string;
   branchId: string;
   branchName: string;
   initialStaff: BranchStaffMember[];
   initialCapabilities: EquipeCapabilities;
   initialRoles: AssignableOrgRoleOption[];
+  initialOpsRoles?: OpsRoleOption[];
   isCommerce?: boolean;
+  hideSectionNav?: boolean;
+  embedded?: boolean;
 };
 
-function initials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "?";
-  if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
-  return `${parts[0]![0] ?? ""}${parts[1]![0] ?? ""}`.toUpperCase();
+const BRANCH_ORG_ROLES = [
+  { role: ORG_ROLE.ADMIN, label: "Admin" },
+  { role: ORG_ROLE.USER, label: "User" },
+] as const;
+
+function OrgRoleButtons({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: string;
+  onChange: (role: typeof ORG_ROLE.ADMIN | typeof ORG_ROLE.USER) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      {BRANCH_ORG_ROLES.map((opt) => {
+        const active = value === opt.role;
+        return (
+          <button
+            key={opt.role}
+            type="button"
+            disabled={disabled}
+            onClick={() => onChange(opt.role)}
+            className={choiceBtnClass(active)}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
+  );
 }
 
-function roleBadgeClass(role: string): string {
-  if (role === ORG_ROLE.OWNER) {
-    return "border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-100";
-  }
-  if (role === ORG_ROLE_PRESET.GERANT) {
-    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100";
-  }
-  if (role === ORG_ROLE_PRESET.CAISSIER || role === ORG_ROLE_PRESET.GUICHETIER) {
-    return "border-sky-500/30 bg-sky-500/10 text-sky-900 dark:text-sky-100";
-  }
-  return "border-border bg-muted text-muted-foreground";
+function toBranchOrgRole(role: string): typeof ORG_ROLE.ADMIN | typeof ORG_ROLE.USER {
+  return role === ORG_ROLE.ADMIN ? ORG_ROLE.ADMIN : ORG_ROLE.USER;
+}
+
+function UserActionsMenu({
+  m,
+  busy,
+  pendingCreate,
+  pendingReset,
+  pendingRemove,
+  isCommerce,
+  onEdit,
+  onPayroll,
+  onReset,
+  onRemove,
+}: {
+  m: BranchStaffMember;
+  busy: boolean;
+  pendingCreate: boolean;
+  pendingReset: boolean;
+  pendingRemove: boolean;
+  isCommerce: boolean;
+  onEdit: () => void;
+  onPayroll: () => void;
+  onReset: () => void;
+  onRemove: () => void;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        className="inline-flex size-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        aria-label={`Actions pour ${m.name}`}
+        disabled={busy || pendingCreate}
+      >
+        <MoreHorizontal className="size-5" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-52">
+        <DropdownMenuItem onClick={onEdit}>Modifier le rôle</DropdownMenuItem>
+        {isCommerce ? (
+          <DropdownMenuItem onClick={onPayroll}>
+            <Wallet className="size-4" />
+            Paie & versement
+          </DropdownMenuItem>
+        ) : null}
+        <DropdownMenuItem disabled={busy && pendingReset} onClick={onReset}>
+          <KeyRound className="size-4" />
+          Réinitialiser le mot de passe
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          variant="destructive"
+          disabled={busy && pendingRemove}
+          onClick={onRemove}
+        >
+          <UserMinus className="size-4" />
+          Retirer de la branche
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }
 
 export function EquipeClient({
   organizationId,
+  organizationSlug,
   branchId,
   branchName,
   initialStaff,
   initialCapabilities,
-  initialRoles,
+  initialRoles: _initialRoles,
+  initialOpsRoles = [],
   isCommerce = false,
+  hideSectionNav = false,
+  embedded = false,
 }: Props) {
   const router = useRouter();
   const [staff, setStaff] = useState(initialStaff);
   const [capabilities, setCapabilities] = useState(initialCapabilities);
-  const [roles, setRoles] = useState(initialRoles);
+  const [opsRoles, setOpsRoles] = useState(initialOpsRoles);
   const [loading, setLoading] = useState(false);
   const [q, setQ] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
   const [editMember, setEditMember] = useState<BranchStaffMember | null>(null);
-  const [editRole, setEditRole] = useState("");
+  const [editRole, setEditRole] = useState<
+    typeof ORG_ROLE.ADMIN | typeof ORG_ROLE.USER
+  >(ORG_ROLE.USER);
+  const [editOpsRole, setEditOpsRole] = useState("");
   const [pendingCreate, startCreate] = useTransition();
   const [pendingEdit, startEdit] = useTransition();
   const [pendingRemove, startRemove] = useTransition();
@@ -122,10 +213,12 @@ export function EquipeClient({
   const [busyMemberId, setBusyMemberId] = useState<string | null>(null);
   const [payrollMember, setPayrollMember] = useState<BranchStaffMember | null>(null);
 
-  const defaultRole =
-    roles.find((r) => r.role === ORG_ROLE_PRESET.CAISSIER)?.role ??
-    roles.find((r) => !r.isOwner)?.role ??
-    roles[0]?.role ??
+  const defaultRole = ORG_ROLE.USER;
+
+  const defaultOpsRole =
+    opsRoles.find((r) => r.slug === "gerant")?.slug ??
+    opsRoles.find((r) => r.slug === "caissier")?.slug ??
+    opsRoles[0]?.slug ??
     "";
 
   const form = useForm<CreateBranchStaffInput>({
@@ -137,6 +230,7 @@ export function EquipeClient({
       name: "",
       phone: "",
       orgRole: defaultRole,
+      opsRole: defaultOpsRole,
     },
     mode: "onSubmit",
   });
@@ -144,9 +238,9 @@ export function EquipeClient({
   const reload = useCallback(async () => {
     setLoading(true);
     try {
-      const [staffRes, rolesRes] = await Promise.all([
+      const [staffRes, opsRes] = await Promise.all([
         listBranchStaffAction(organizationId, branchId),
-        listAssignableOrgRolesAction(organizationId),
+        listAssignableOpsRolesAction(),
       ]);
       setCapabilities(staffRes.capabilities);
       if (staffRes.ok) {
@@ -155,11 +249,14 @@ export function EquipeClient({
         toast.error(staffRes.message);
         setStaff([]);
       }
-      if (rolesRes.ok) {
-        setRoles(rolesRes.roles);
-      }
+      setOpsRoles(
+        opsRes.map((r) => ({
+          slug: r.slug,
+          label: r.label,
+        })),
+      );
     } catch {
-      toast.error("Erreur réseau lors du chargement de l’équipe.");
+      toast.error("Erreur réseau lors du chargement des utilisateurs.");
     } finally {
       setLoading(false);
     }
@@ -174,28 +271,44 @@ export function EquipeClient({
         name: "",
         phone: "",
         orgRole: defaultRole,
+        opsRole: defaultOpsRole,
       });
     }
-  }, [createOpen, organizationId, branchId, defaultRole, form]);
+  }, [createOpen, organizationId, branchId, defaultRole, defaultOpsRole, form]);
 
   const filtered = useMemo(() => {
+    const visible = staff.filter((m) => m.orgRole !== ORG_ROLE.OWNER);
     const query = q.trim().toLowerCase();
-    if (!query) return staff;
-    return staff.filter((m) => {
+    if (!query) return visible;
+    return visible.filter((m) => {
       const label = orgRoleLabel(m.orgRole).toLowerCase();
+      const métier = opsRoleLabel(m.opsRole).toLowerCase();
       return (
         m.name.toLowerCase().includes(query) ||
         m.email.toLowerCase().includes(query) ||
         m.orgRole.toLowerCase().includes(query) ||
-        label.includes(query)
+        m.opsRole.toLowerCase().includes(query) ||
+        label.includes(query) ||
+        métier.includes(query)
       );
     });
   }, [staff, q]);
 
+  function fillEmailIfEmpty(name: string) {
+    if (form.getValues("email").trim()) return;
+    const generated = suggestMemberEmail(name, organizationSlug);
+    if (generated) {
+      form.setValue("email", generated, { shouldValidate: true });
+    }
+  }
+
   function onCreate(values: CreateBranchStaffInput) {
+    fillEmailIfEmpty(values.name);
+    const email = form.getValues("email").trim() || values.email;
     startCreate(async () => {
       const res = await createBranchStaffAction({
         ...values,
+        email,
         organizationId,
         branchId,
       });
@@ -204,7 +317,7 @@ export function EquipeClient({
         return;
       }
       toast.success(
-        "Membre créé et rattaché à cet établissement. Mot de passe envoyé par email.",
+        "Utilisateur créé. Mot de passe envoyé par email et WhatsApp (si numéro renseigné).",
       );
       setCreateOpen(false);
       router.refresh();
@@ -213,7 +326,7 @@ export function EquipeClient({
   }
 
   function onSaveRole() {
-    if (!editMember || !editRole) return;
+    if (!editMember || !editRole || !editOpsRole) return;
     setBusyMemberId(editMember.memberId);
     startEdit(async () => {
       const res = await updateBranchStaffRoleAction({
@@ -221,6 +334,7 @@ export function EquipeClient({
         branchId,
         memberId: editMember.memberId,
         orgRole: editRole,
+        opsRole: editOpsRole,
       });
       setBusyMemberId(null);
       if (!res.ok) {
@@ -263,7 +377,7 @@ export function EquipeClient({
   function onResetPassword(m: BranchStaffMember) {
     if (
       !window.confirm(
-        `Réinitialiser le mot de passe de ${m.name} ? Un mot de passe temporaire sera envoyé par email.`,
+        `Réinitialiser le mot de passe de ${m.name} ? Un mot de passe temporaire sera envoyé par email et WhatsApp (si numéro renseigné).`,
       )
     ) {
       return;
@@ -279,18 +393,22 @@ export function EquipeClient({
         toast.error(res.message);
         return;
       }
-      toast.success("Mot de passe réinitialisé. Email envoyé (ou journalisé en dev).");
+      toast.success(
+        "Mot de passe réinitialisé. Envoyé par email et WhatsApp (si numéro renseigné).",
+      );
     });
   }
 
   if (!capabilities.canView) {
     return (
       <div className="mx-auto max-w-3xl flex flex-col gap-4 px-4 py-10 sm:px-6">
-        <EquipeSectionNav
-          organizationId={organizationId}
-          branchId={branchId}
-          active="personnel"
-        />
+        {hideSectionNav ? null : (
+          <EquipeSectionNav
+            organizationId={organizationId}
+            branchId={branchId}
+            active="personnel"
+          />
+        )}
         <div className="rounded-2xl border border-dashed border-border px-6 py-12 text-center">
           <Users className="mx-auto size-8 text-muted-foreground/60" />
           <p className="mt-3 text-sm font-medium">Accès refusé</p>
@@ -313,209 +431,159 @@ export function EquipeClient({
   }
 
   return (
-    <div className="mx-auto max-w-7xl flex flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <EquipeSectionNav
-        organizationId={organizationId}
-        branchId={branchId}
-        active="personnel"
-      />
+    <div className="space-y-4">
+      {embedded || hideSectionNav ? null : (
+        <EquipeSectionNav
+          organizationId={organizationId}
+          branchId={branchId}
+          active="personnel"
+        />
+      )}
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Users className="size-4" />
-            <span className="text-xs font-semibold uppercase tracking-wide">
-              Équipe
-            </span>
-          </div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Personnel — {branchName}
+      {embedded ? null : (
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">
+            Utilisateurs — {branchName}
           </h1>
-          <p className="max-w-xl text-sm text-muted-foreground">
-            Membres rattachés à cet établissement uniquement. La vue globale
-            multi-branches reste sur{" "}
-            <Link
-              href={`/admin/organizations/${organizationId}/members`}
-              className="underline underline-offset-2"
-            >
-              Membres (org)
-            </Link>
-            .
+          <p className="mt-1 text-sm text-muted-foreground">
+            Admin ou User uniquement.
           </p>
-          {!capabilities.canAssignOwner ? (
-            <p className="max-w-xl text-xs text-muted-foreground">
-              Le rôle owner n’est assignable que par un admin plateforme ou le
-              propriétaire de l’organisation.
-            </p>
-          ) : null}
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+      )}
+
+      <ParametresPanel
+        title="Comptes de la branche"
+        description={`${filtered.length} utilisateur${filtered.length === 1 ? "" : "s"}${q.trim() ? " (filtre)" : ""}.`}
+        icon={Users}
+        actions={
+          capabilities.canManage ? (
+            <Button type="button" size="sm" onClick={() => setCreateOpen(true)}>
+              <Plus className="size-4" />
+              Créer
+            </Button>
+          ) : undefined
+        }
+      >
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <SearchInput
+            value={q}
+            onChange={setQ}
+            placeholder="Rechercher…"
+            className="w-full sm:max-w-xs"
+          />
           <Button
             type="button"
             variant="outline"
-            className="h-11 touch-manipulation"
+            size="sm"
             onClick={() => void reload()}
             disabled={loading}
           >
             <RefreshCw className={cn("size-4", loading && "animate-spin")} />
             Actualiser
           </Button>
-          {capabilities.canManage ? (
-            <Button
-              className="h-11 touch-manipulation"
-              type="button"
-              onClick={() => setCreateOpen(true)}
-              disabled={roles.filter((r) => !r.isOwner).length === 0 && !capabilities.canAssignOwner}
-            >
-              <Plus className="size-4" />
-              Créer un membre
-            </Button>
-          ) : null}
         </div>
-      </div>
 
-      <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card/40 p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-4">
-        <SearchInput
-          value={q}
-          onChange={setQ}
-          placeholder="Rechercher par nom, email ou rôle…"
-          className="w-full sm:max-w-md"
-        />
-        <p className="text-xs text-muted-foreground tabular-nums sm:text-sm">
-          {loading
-            ? "Chargement…"
-            : `${filtered.length} membre${filtered.length === 1 ? "" : "s"}`}
-        </p>
-      </div>
-
-      {loading && staff.length === 0 ? (
-        <div className="space-y-2">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-[4.5rem] animate-pulse rounded-2xl border border-border bg-muted/40"
-            />
-          ))}
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border px-6 py-14 text-center">
-          <Users className="mx-auto size-8 text-muted-foreground/60" />
-          <p className="mt-3 text-sm font-medium">
-            {staff.length === 0
-              ? "Aucun personnel sur cet établissement."
-              : "Aucun résultat pour cette recherche."}
+        {loading && staff.length === 0 ? (
+          <p className="py-8 text-center text-sm text-muted-foreground">
+            Chargement…
           </p>
-          {staff.length === 0 && capabilities.canManage ? (
-            <Button className="mt-4 h-11" type="button" onClick={() => setCreateOpen(true)}>
-              <Plus className="size-4" />
-              Créer le premier membre
-            </Button>
-          ) : null}
-        </div>
-      ) : (
-        <ul
-          className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
-          role="list"
-        >
-          {filtered.map((m, index) => {
-            const busy = busyMemberId === m.memberId;
-            return (
-              <li
-                key={m.branchMemberId}
-                className={cn(
-                  "flex items-center gap-3 px-4 py-3.5 sm:gap-4 sm:px-5",
-                  index > 0 && "border-t border-border",
-                )}
-              >
-                <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-                  {initials(m.name || m.email)}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="truncate font-medium leading-snug">
-                      {m.name || "Sans nom"}
-                    </p>
-                    <Badge
-                      variant="outline"
-                      className={cn("font-medium", roleBadgeClass(m.orgRole))}
-                    >
-                      {orgRoleLabel(m.orgRole)}
-                    </Badge>
-                  </div>
-                  <p className="mt-0.5 truncate text-sm text-muted-foreground">
-                    {m.email}
-                  </p>
-                  {m.phone ? (
-                    <p className="mt-0.5 text-xs text-muted-foreground tabular-nums">
-                      {m.phone}
-                    </p>
-                  ) : null}
-                </div>
-                {capabilities.canManage ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger
-                      className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring touch-manipulation"
-                      aria-label={`Actions pour ${m.name}`}
-                      disabled={busy || pendingCreate}
-                    >
-                      <MoreHorizontal className="size-5" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="min-w-52">
-                      <DropdownMenuItem
-                        onClick={() => {
-                          setEditMember(m);
-                          setEditRole(m.orgRole);
-                        }}
-                      >
-                        Modifier le rôle
-                      </DropdownMenuItem>
-                      {isCommerce ? (
-                        <DropdownMenuItem onClick={() => setPayrollMember(m)}>
-                          <Wallet className="size-4" />
-                          Paie & versement
-                        </DropdownMenuItem>
-                      ) : null}
-                      <DropdownMenuItem
-                        disabled={busy && pendingReset}
-                        onClick={() => onResetPassword(m)}
-                      >
-                        <KeyRound className="size-4" />
-                        Réinitialiser le mot de passe
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        variant="destructive"
-                        disabled={busy && pendingRemove}
-                        onClick={() => onRemove(m)}
-                      >
-                        <UserMinus className="size-4" />
-                        Retirer de la branche
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : null}
-              </li>
-            );
-          })}
-        </ul>
-      )}
+        ) : filtered.length === 0 ? (
+          <div className="py-8 text-center">
+            <p className="text-sm text-muted-foreground">
+              {q.trim()
+                ? "Aucun résultat."
+                : "Aucun utilisateur sur cette branche."}
+            </p>
+            {!q.trim() && capabilities.canManage ? (
+              <Button className="mt-3" type="button" onClick={() => setCreateOpen(true)}>
+                <Plus className="size-4" />
+                Créer un utilisateur
+              </Button>
+            ) : null}
+          </div>
+        ) : (
+          <div className="-mx-1 overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b text-left text-muted-foreground">
+                  <th className="py-2 pr-3 font-medium">Nom</th>
+                  <th className="py-2 pr-3 font-medium">Rôle</th>
+                  <th className="hidden py-2 pr-3 font-medium sm:table-cell">
+                    Métier
+                  </th>
+                  <th className="hidden py-2 pr-3 font-medium md:table-cell">
+                    Contact
+                  </th>
+                  <th className="py-2 text-right font-medium"> </th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((m) => {
+                  const busy = busyMemberId === m.memberId;
+                  return (
+                    <tr key={m.branchMemberId} className="border-b last:border-0">
+                      <td className="py-2.5 pr-3">
+                        <p className="font-medium">{m.name || "Sans nom"}</p>
+                        <p className="text-xs text-muted-foreground">{m.email}</p>
+                      </td>
+                      <td className="py-2.5 pr-3">
+                        <Badge variant="outline">
+                          {orgRoleLabel(toBranchOrgRole(m.orgRole))}
+                        </Badge>
+                      </td>
+                      <td className="hidden py-2.5 pr-3 sm:table-cell">
+                        {opsRoleLabel(m.opsRole)}
+                      </td>
+                      <td className="hidden py-2.5 pr-3 tabular-nums text-muted-foreground md:table-cell">
+                        {m.phone ?? "—"}
+                      </td>
+                      <td className="py-2.5 text-right">
+                        {capabilities.canManage ? (
+                          <UserActionsMenu
+                            m={m}
+                            busy={busy}
+                            pendingCreate={pendingCreate}
+                            pendingReset={pendingReset}
+                            pendingRemove={pendingRemove}
+                            isCommerce={isCommerce}
+                            onEdit={() => {
+                              setEditMember(m);
+                              setEditRole(toBranchOrgRole(m.orgRole));
+                              setEditOpsRole(m.opsRole);
+                            }}
+                            onPayroll={() => setPayrollMember(m)}
+                            onReset={() => onResetPassword(m)}
+                            onRemove={() => onRemove(m)}
+                          />
+                        ) : null}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </ParametresPanel>
 
-      <Button
-        variant="ghost"
-        className="h-11 touch-manipulation"
-        render={<Link href={branchDashboardPath(organizationId, branchId)} />}
-      >
-        <ArrowLeft className="size-4" />
-        Retour au hub
-      </Button>
+      {embedded ? null : (
+        <Button
+          variant="ghost"
+          size="sm"
+          render={<Link href={branchDashboardPath(organizationId, branchId)} />}
+        >
+          <ArrowLeft className="size-4" />
+          Retour au hub
+        </Button>
+      )}
 
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Nouveau membre — {branchName}</DialogTitle>
+            <DialogTitle>Nouvel utilisateur — {branchName}</DialogTitle>
             <DialogDescription>
-              Compte créé avec un mot de passe temporaire envoyé par email, et
-              rattaché automatiquement à cet établissement.
+              Compte créé avec un mot de passe temporaire envoyé par email et
+              WhatsApp (si numéro renseigné), rattaché à cette branche.
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -523,6 +591,23 @@ export function EquipeClient({
               className="flex flex-col gap-4"
               onSubmit={form.handleSubmit(onCreate)}
             >
+              <FormField
+                control={form.control}
+                name="orgRole"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Rôle</FormLabel>
+                    <FormControl>
+                      <OrgRoleButtons
+                        value={field.value}
+                        disabled={pendingCreate}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="name"
@@ -535,6 +620,10 @@ export function EquipeClient({
                         autoComplete="name"
                         disabled={pendingCreate}
                         className="h-11"
+                        onBlur={(e) => {
+                          field.onBlur();
+                          fillEmailIfEmpty(e.target.value);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -552,10 +641,14 @@ export function EquipeClient({
                         {...field}
                         type="email"
                         autoComplete="email"
+                        placeholder="Généré à partir du nom si vide"
                         disabled={pendingCreate}
                         className="h-11"
                       />
                     </FormControl>
+                    <FormDescription>
+                      Obligatoire. Si vide, généré automatiquement à partir du nom (comme un slug).
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -565,7 +658,7 @@ export function EquipeClient({
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Téléphone</FormLabel>
+                    <FormLabel>Téléphone WhatsApp</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -581,23 +674,30 @@ export function EquipeClient({
               />
               <FormField
                 control={form.control}
-                name="orgRole"
+                name="opsRole"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Rôle</FormLabel>
+                    <FormLabel>Métier sur la branche</FormLabel>
+                    <p className="text-xs text-muted-foreground">
+                      Détermine le dashboard et les privilèges.
+                    </p>
                     <FormControl>
-                      <Select
-                        {...field}
-                        disabled={pendingCreate || roles.length === 0}
-                        className="h-11 w-full"
-                      >
-                        {roles.map((r) => (
-                          <option key={r.role} value={r.role}>
-                            {r.label}
-                            {r.isOwner ? " (système)" : ""}
-                          </option>
-                        ))}
-                      </Select>
+                      <div className="flex flex-wrap gap-1.5">
+                        {opsRoles.map((r) => {
+                          const active = field.value === r.slug;
+                          return (
+                            <button
+                              key={r.slug}
+                              type="button"
+                              disabled={pendingCreate}
+                              onClick={() => field.onChange(r.slug)}
+                              className={choiceBtnClass(active)}
+                            >
+                              {r.label}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -612,8 +712,11 @@ export function EquipeClient({
                 >
                   Annuler
                 </Button>
-                <Button type="submit" disabled={pendingCreate || roles.length === 0}>
-                  {pendingCreate ? "Création…" : "Créer"}
+                <Button
+                  type="submit"
+                  disabled={pendingCreate || opsRoles.length === 0}
+                >
+                  {pendingCreate ? "Création…" : "Créer l’utilisateur"}
                 </Button>
               </DialogFooter>
             </form>
@@ -629,27 +732,41 @@ export function EquipeClient({
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Modifier le rôle</DialogTitle>
+            <DialogTitle>Modifier rôles et métier</DialogTitle>
             <DialogDescription>
               {editMember
-                ? `Met à jour le rôle d’organisation de ${editMember.name} (Member.role).`
+                ? `Met à jour le rôle d’organisation et le métier de ${editMember.name}.`
                 : null}
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4">
-            <Select
-              value={editRole}
-              onChange={(e) => setEditRole(e.target.value)}
-              disabled={pendingEdit || roles.length === 0}
-              className="h-11 w-full"
-            >
-              {roles.map((r) => (
-                <option key={r.role} value={r.role}>
-                  {r.label}
-                  {r.isOwner ? " (système)" : ""}
-                </option>
-              ))}
-            </Select>
+            <div className="grid gap-1.5">
+              <p className="text-sm font-medium">Rôle</p>
+              <OrgRoleButtons
+                value={editRole}
+                disabled={pendingEdit}
+                onChange={setEditRole}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <p className="text-sm font-medium">Métier sur la branche</p>
+              <div className="flex flex-wrap gap-1.5">
+                {opsRoles.map((r) => {
+                  const active = editOpsRole === r.slug;
+                  return (
+                    <button
+                      key={r.slug}
+                      type="button"
+                      disabled={pendingEdit}
+                      onClick={() => setEditOpsRole(r.slug)}
+                      className={choiceBtnClass(active)}
+                    >
+                      {r.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
             <DialogFooter>
               <Button
                 type="button"
@@ -661,7 +778,7 @@ export function EquipeClient({
               </Button>
               <Button
                 type="button"
-                disabled={pendingEdit || !editRole}
+                disabled={pendingEdit || !editRole || !editOpsRole}
                 onClick={onSaveRole}
               >
                 {pendingEdit ? "Enregistrement…" : "Enregistrer"}

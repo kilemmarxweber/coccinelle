@@ -113,7 +113,7 @@ export function MoiClient({
               <div
                 key={ymd}
                 className={cn(
-                  "rounded-xl border border-[#e4ddd0] bg-white p-2.5 text-xs",
+                  "rounded-xl border border-border bg-card p-2.5 text-xs",
                   day?.payTreatment === "UNPAID" && "border-rose-300 bg-rose-50",
                   day?.kind === "PRESENT" && "border-emerald-300 bg-emerald-50",
                 )}
@@ -235,7 +235,7 @@ export function MoiClient({
           >
             Demander une avance
           </Button>
-          <ul className="text-xs text-[#6f675c]">
+          <ul className="text-xs text-muted-foreground">
             {data.advances.map((a) => (
               <li key={a.id}>
                 {a.amountUsd.toFixed(2)} USD · {a.status}
@@ -249,12 +249,12 @@ export function MoiClient({
       <BoutiquePanel title="Bulletins" eyebrow="Documents">
         <div className="p-4">
         {data.payslips.length === 0 ? (
-          <p className="text-sm text-[#6f675c]">Aucun bulletin pour l’instant.</p>
+          <p className="text-sm text-muted-foreground">Aucun bulletin pour l’instant.</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {data.payslips.map((p) => (
               <li key={p.id} className="flex items-center justify-between gap-2">
-                <span className="text-sm text-[#0f3d2e]">
+                <span className="text-sm text-foreground">
                   {p.periodLabel} · {p.netUsd.toFixed(2)} USD
                 </span>
                 <Button

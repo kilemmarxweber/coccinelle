@@ -17,11 +17,13 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { suggestMemberEmail } from "@/lib/slug";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { createOrganizationMemberAction } from "../actions";
@@ -32,12 +34,14 @@ type OpsRoleOption = { slug: string; label: string };
 
 type Props = {
   organizationId: string;
+  organizationSlug: string;
   branches: MemberBranchOption[];
   opsRoleOptions: OpsRoleOption[];
 };
 
 export function CreateMemberForm({
   organizationId,
+  organizationSlug,
   branches,
   opsRoleOptions,
 }: Props) {
@@ -62,10 +66,21 @@ export function CreateMemberForm({
     mode: "onSubmit",
   });
 
+  function fillEmailIfEmpty(name: string) {
+    if (form.getValues("email").trim()) return;
+    const generated = suggestMemberEmail(name, organizationSlug);
+    if (generated) {
+      form.setValue("email", generated, { shouldValidate: true });
+    }
+  }
+
   function onSubmit(values: CreateOrgMemberInput) {
+    fillEmailIfEmpty(values.name);
+    const email = form.getValues("email").trim() || values.email;
     startTransition(async () => {
       const res = await createOrganizationMemberAction({
         ...values,
+        email,
         organizationId,
       });
       if (!res.ok) {
@@ -95,6 +110,10 @@ export function CreateMemberForm({
                   autoComplete="name"
                   className="h-12 min-h-[48px] text-base sm:h-11 sm:min-h-0 sm:text-sm"
                   disabled={pending}
+                  onBlur={(e) => {
+                    field.onBlur();
+                    fillEmailIfEmpty(e.target.value);
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -115,10 +134,14 @@ export function CreateMemberForm({
                   autoCapitalize="none"
                   autoCorrect="off"
                   autoComplete="email"
+                  placeholder="Généré à partir du nom si vide"
                   className="h-12 min-h-[48px] text-base sm:h-11 sm:min-h-0 sm:text-sm"
                   disabled={pending}
                 />
               </FormControl>
+              <FormDescription>
+                Obligatoire. Si vide, généré automatiquement à partir du nom (comme un slug).
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

@@ -81,7 +81,9 @@ export function EditBranchForm({ organizationId, branch }: Props) {
     ? hasStays || hasRestaurant
     : branch.type === "AGENCE"
       ? hasAvion || hasBus || hasBateau
-      : hasPharmacie || hasShop || hasAlimentation;
+      : branch.type === "USINE"
+        ? true
+        : hasPharmacie || hasShop || hasAlimentation;
 
   async function onPickImage(file: File | null) {
     if (!file) return;
@@ -146,11 +148,20 @@ export function EditBranchForm({ organizationId, branch }: Props) {
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Type</CardTitle>
           <CardDescription>
-            Type verrouillé · {branchTypeLabel(branch.type)}. Vous pouvez ajuster
-            les modules ci-dessous.
+            Type verrouillé · {branchTypeLabel(branch.type)}
+            {branch.type === "USINE"
+              ? ". Catalogue libre : tous les types de produits."
+              : ". Vous pouvez ajuster les modules ci-dessous."}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3">
+          {branch.type === "USINE" ? (
+            <p className="text-sm text-muted-foreground">
+              Pas de filière imposée : créez eau, vins ou tout autre produit
+              dans le catalogue.
+            </p>
+          ) : null}
+
           {hospitality ? (
             <div className="grid gap-3 sm:grid-cols-2">
               {(

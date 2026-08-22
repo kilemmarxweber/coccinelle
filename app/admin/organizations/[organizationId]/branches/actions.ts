@@ -11,13 +11,14 @@ import {
   deriveShopFlags,
 } from "@/lib/branch/agency-shop";
 import { deriveHospitalityBranch } from "@/lib/branch/hospitality";
+import { deriveFactoryFlags } from "@/lib/branch/usine";
 import prisma from "@/lib/prisma";
 
 const createBranchSchema = z
   .object({
     organizationId: z.string().min(1),
     /** Type choisi dans le formulaire (HOTEL = hospitalité). */
-    type: z.enum(["AGENCE", "HOTEL", "BOUTIQUE"]),
+    type: z.enum(["AGENCE", "HOTEL", "BOUTIQUE", "USINE"]),
     hasStays: z.boolean().optional(),
     hasRestaurant: z.boolean().optional(),
     hasAvion: z.boolean().optional(),
@@ -26,6 +27,8 @@ const createBranchSchema = z
     hasPharmacie: z.boolean().optional(),
     hasShop: z.boolean().optional(),
     hasAlimentation: z.boolean().optional(),
+    hasEau: z.boolean().optional(),
+    hasVin: z.boolean().optional(),
     name: z.string().trim().min(2).max(120),
     code: z
       .string()
@@ -153,7 +156,12 @@ export async function createBranchWithBootstrapAction(raw: CreateBranchInput) {
     return { ok: false as const, message: "Ce code de branche existe déjà." };
   }
 
-  let branchType = input.type as "AGENCE" | "HOTEL" | "BOUTIQUE" | "RESTAURANT";
+  let branchType = input.type as
+    | "AGENCE"
+    | "HOTEL"
+    | "BOUTIQUE"
+    | "RESTAURANT"
+    | "USINE";
   let hasStays = false;
   let hasRestaurant = false;
   let hasAvion = false;
@@ -162,6 +170,8 @@ export async function createBranchWithBootstrapAction(raw: CreateBranchInput) {
   let hasPharmacie = false;
   let hasShop = false;
   let hasAlimentation = false;
+  let hasEau = false;
+  let hasVin = false;
 
   try {
     if (input.type === "HOTEL") {
@@ -190,6 +200,10 @@ export async function createBranchWithBootstrapAction(raw: CreateBranchInput) {
       hasPharmacie = derived.hasPharmacie;
       hasShop = derived.hasShop;
       hasAlimentation = derived.hasAlimentation;
+    } else if (input.type === "USINE") {
+      const derived = deriveFactoryFlags();
+      hasEau = derived.hasEau;
+      hasVin = derived.hasVin;
     }
 
     const created = await prisma.$transaction(async (tx) => {
@@ -207,6 +221,8 @@ export async function createBranchWithBootstrapAction(raw: CreateBranchInput) {
           hasPharmacie,
           hasShop,
           hasAlimentation,
+          hasEau,
+          hasVin,
           city: input.city?.trim() || null,
           address: input.address?.trim() || null,
           phone: input.phone?.trim() || null,
@@ -228,6 +244,8 @@ export async function createBranchWithBootstrapAction(raw: CreateBranchInput) {
         hasPharmacie,
         hasShop,
         hasAlimentation,
+        hasEau,
+        hasVin,
         seedDemo: input.seedDemo,
         creatorMemberId: membership?.id ?? null,
       });
@@ -365,6 +383,8 @@ const updateBranchSchema = z
     hasPharmacie: z.boolean().optional(),
     hasShop: z.boolean().optional(),
     hasAlimentation: z.boolean().optional(),
+    hasEau: z.boolean().optional(),
+    hasVin: z.boolean().optional(),
   });
 
 export type UpdateBranchInput = z.infer<typeof updateBranchSchema>;
@@ -394,6 +414,8 @@ export async function getBranchAction(organizationId: string, branchId: string) 
       hasPharmacie: true,
       hasShop: true,
       hasAlimentation: true,
+      hasEau: true,
+      hasVin: true,
     },
   });
   if (!branch) {
@@ -446,6 +468,8 @@ export async function updateBranchAction(raw: UpdateBranchInput) {
   let hasPharmacie = existing.hasPharmacie;
   let hasShop = existing.hasShop;
   let hasAlimentation = existing.hasAlimentation;
+  let hasEau = existing.hasEau;
+  let hasVin = existing.hasVin;
 
   try {
     if (existing.type === "HOTEL" || existing.type === "RESTAURANT") {
@@ -491,6 +515,10 @@ export async function updateBranchAction(raw: UpdateBranchInput) {
       hasPharmacie = derived.hasPharmacie;
       hasShop = derived.hasShop;
       hasAlimentation = derived.hasAlimentation;
+    } else if (existing.type === "USINE") {
+      const derived = deriveFactoryFlags();
+      hasEau = derived.hasEau;
+      hasVin = derived.hasVin;
     }
 
     await prisma.branch.update({
@@ -508,6 +536,8 @@ export async function updateBranchAction(raw: UpdateBranchInput) {
         hasPharmacie,
         hasShop,
         hasAlimentation,
+        hasEau,
+        hasVin,
         city: input.city?.trim() || null,
         address: input.address?.trim() || null,
         phone: input.phone?.trim() || null,

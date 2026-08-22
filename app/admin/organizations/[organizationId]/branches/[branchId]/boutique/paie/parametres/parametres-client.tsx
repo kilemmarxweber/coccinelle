@@ -74,7 +74,6 @@ export function PaieSettingsClient({
       <BoutiqueHero
         kicker={`${branchName} · règles`}
         title="Paramètres paie"
-        subtitle="Taux journalier, semaine ouvrée, cutoff préavis et plafond d’avance."
         icon={Settings}
         backHref={branchDashboardPath(organizationId, branchId)}
         nav={
@@ -113,8 +112,8 @@ export function PaieSettingsClient({
                 className={cn(
                   "rounded-full border px-3 py-1.5 text-sm",
                   week.includes(d)
-                    ? "border-[#0f3d2e] bg-[#0f3d2e] text-[#f4efe4]"
-                    : "border-[#d9d0c3] text-[#6f675c] bg-white",
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card text-muted-foreground",
                 )}
               >
                 {WEEKDAY_LABEL_FR[d]}

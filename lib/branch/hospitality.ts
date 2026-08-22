@@ -37,6 +37,7 @@ export function branchTypeLabel(type: BranchTypeLike): string {
   if (type === "HOTEL") return "Hôtel";
   if (type === "BOUTIQUE") return "Boutique";
   if (type === "RESTAURANT") return "Restaurant";
+  if (type === "USINE") return "Usine";
   return type;
 }
 
@@ -51,6 +52,8 @@ export function branchTypeDetailLabel(branch: {
   hasPharmacie?: boolean;
   hasShop?: boolean;
   hasAlimentation?: boolean;
+  hasEau?: boolean;
+  hasVin?: boolean;
 }): string {
   const base = branchTypeLabel(branch.type);
   if (branch.type === "HOTEL" || branch.type === "RESTAURANT") {
@@ -72,6 +75,9 @@ export function branchTypeDetailLabel(branch: {
     if (branch.hasShop) parts.push("Boutique");
     if (branch.hasAlimentation) parts.push("Alimentation");
     return parts.length ? parts.join(" · ") : base;
+  }
+  if (branch.type === "USINE") {
+    return base;
   }
   return base;
 }

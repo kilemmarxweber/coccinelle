@@ -148,7 +148,7 @@ export function PresencesClient({
               type="date"
               value={ymd}
               onChange={(e) => e.target.value && goDay(e.target.value)}
-              className="h-10 w-auto rounded-full border-[#d9d0c3] bg-white"
+              className="h-10 w-auto rounded-full border-border bg-card"
             />
             <Button
               type="button"
@@ -179,12 +179,12 @@ export function PresencesClient({
               key={a.branchMemberId}
               className={cn(
                 "flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between",
-                i > 0 && "border-t border-[#eee8dc]",
+                i > 0 && "border-t border-border",
               )}
             >
               <div className="min-w-0">
-                <p className="font-semibold text-[#0f3d2e]">{a.name}</p>
-                <p className="text-xs text-[#6f675c]">
+                <p className="font-semibold text-foreground">{a.name}</p>
+                <p className="text-xs text-muted-foreground">
                   {a.profile.effectiveDailyRateUsd.toFixed(2)} USD / jour
                 </p>
               </div>

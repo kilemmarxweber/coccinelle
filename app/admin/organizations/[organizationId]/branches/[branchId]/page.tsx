@@ -3,10 +3,9 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
-import { resolveCurrentBranchOpsRole } from "@/lib/branch/resolve-ops-role";
-import { getViewResourcesForRole } from "@/lib/branch/privileges";
-import { isHospitality } from "@/lib/branch/hospitality";
+import { getBranchRoleDashboardAction } from "@/lib/branch/dashboard-actions";
 import { BranchDashboard } from "./branch-dashboard";
+import { UsineDashboard } from "./usine-dashboard";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
@@ -36,34 +35,34 @@ export async function generateMetadata({
 
 export default async function BranchDashboardPage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
-  const branch = await requireBranchContext({ organizationId, branchId });
-  const opsRole = await resolveCurrentBranchOpsRole(organizationId, branchId);
-  const viewResources = isHospitality(branch.type)
-    ? await getViewResourcesForRole(opsRole)
-    : "ALL";
-  const allowedCardIds =
-    viewResources === "ALL"
-      ? ("ALL" as const)
-      : Array.from(viewResources);
+  await requireBranchContext({ organizationId, branchId });
+  const data = await getBranchRoleDashboardAction(organizationId, branchId);
+  const firstName = data.userName.split(/\s+/)[0] ?? data.userName;
+  const now = new Date();
+  const hour = now.getHours();
+  const greetingText =
+    hour < 12
+      ? `Bonjour, ${firstName}`
+      : hour < 18
+        ? `Bon après-midi, ${firstName}`
+        : `Bonsoir, ${firstName}`;
+  const dateText = now.toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
 
-  return (
-    <BranchDashboard
-      organizationId={branch.organizationId}
-      branchId={branch.id}
-      branchName={branch.name}
-      branchCode={branch.code}
-      branchType={branch.type}
-      hasStays={branch.hasStays}
-      hasRestaurant={branch.hasRestaurant}
-      hasAvion={branch.hasAvion}
-      hasBus={branch.hasBus}
-      hasBateau={branch.hasBateau}
-      hasPharmacie={branch.hasPharmacie}
-      hasShop={branch.hasShop}
-      hasAlimentation={branch.hasAlimentation}
-      organizationName={branch.organizationName}
-      opsRole={opsRole}
-      allowedCardIds={allowedCardIds}
-    />
-  );
+  const dashProps = {
+    organizationId,
+    branchId,
+    data,
+    greetingText,
+    dateText,
+  };
+
+  if (data.branchType === "USINE") {
+    return <UsineDashboard {...dashProps} />;
+  }
+
+  return <BranchDashboard {...dashProps} />;
 }

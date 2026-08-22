@@ -85,12 +85,13 @@ type ShopMovement = {
 type Tab = "vue" | "principal" | "auxiliaire" | "bons" | "mouvements";
 
 const S = {
-  ink: "#0f3d2e",
-  inkMid: "#1a5c43",
-  accent: "#9a7040",
-  paper: "#f4f1ea",
-  line: "#e4ddd0",
-  muted: "#6f675c",
+  ink: "var(--foreground)",
+  inkMid: "var(--primary)",
+  accent: "var(--primary)",
+  paper: "var(--muted)",
+  line: "var(--border)",
+  muted: "var(--muted-foreground)",
+  brand: "var(--primary)",
 } as const;
 
 export function BoutiqueStockClient(props: {
@@ -357,12 +358,12 @@ export function BoutiqueStockClient(props: {
       {tab === "vue" ? (
         <div className="grid gap-4 lg:grid-cols-2">
           <section
-            className="overflow-hidden rounded-3xl border bg-white shadow-sm"
+            className="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
             style={{ borderColor: S.line }}
           >
             <div
               className="flex items-center gap-2 border-b px-4 py-3"
-              style={{ borderColor: S.line, background: "#faf8f4" }}
+              style={{ borderColor: S.line, background: "var(--muted)" }}
             >
               <AlertTriangle className="size-4 text-amber-600" />
               <p className="text-sm font-bold" style={{ color: S.ink }}>
@@ -404,12 +405,12 @@ export function BoutiqueStockClient(props: {
           </section>
 
           <section
-            className="overflow-hidden rounded-3xl border bg-white shadow-sm"
+            className="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
             style={{ borderColor: S.line }}
           >
             <div
               className="flex items-center gap-2 border-b px-4 py-3"
-              style={{ borderColor: S.line, background: "#faf8f4" }}
+              style={{ borderColor: S.line, background: "var(--muted)" }}
             >
               <Package className="size-4 text-emerald-700" />
               <p className="text-sm font-bold" style={{ color: S.ink }}>
@@ -456,12 +457,12 @@ export function BoutiqueStockClient(props: {
       {tab === "principal" ? (
         <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
           <section
-            className="overflow-hidden rounded-3xl border bg-white shadow-sm"
+            className="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
             style={{ borderColor: S.line }}
           >
             <div
               className="flex flex-wrap items-center justify-between gap-2 border-b p-3"
-              style={{ borderColor: S.line, background: "#faf8f4" }}
+              style={{ borderColor: S.line, background: "var(--muted)" }}
             >
               <div className="relative min-w-[200px] flex-1">
                 <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-emerald-700/50" />
@@ -504,7 +505,7 @@ export function BoutiqueStockClient(props: {
                 type="button"
                 size="sm"
                 className="h-10 rounded-xl text-white"
-                style={{ background: S.ink }}
+                style={{ background: S.brand }}
                 onClick={() => {
                   setShipQtys({});
                   setShipNote("");
@@ -593,7 +594,7 @@ export function BoutiqueStockClient(props: {
                   size="sm"
                   disabled={pending || !catForm.name.trim()}
                   className="rounded-xl text-white"
-                  style={{ background: S.ink }}
+                  style={{ background: S.brand }}
                   onClick={() =>
                     run(
                       () =>
@@ -661,7 +662,7 @@ export function BoutiqueStockClient(props: {
                   size="sm"
                   disabled={pending || !locForm.code.trim()}
                   className="rounded-xl text-white"
-                  style={{ background: S.ink }}
+                  style={{ background: S.brand }}
                   onClick={() =>
                     run(
                       () =>
@@ -684,7 +685,7 @@ export function BoutiqueStockClient(props: {
           </section>
 
           <aside
-            className="rounded-3xl border bg-white p-4 shadow-sm"
+            className="rounded-xl border border-border bg-card p-4 shadow-sm"
             style={{ borderColor: S.line }}
           >
             <p
@@ -799,7 +800,7 @@ export function BoutiqueStockClient(props: {
                 type="button"
                 disabled={pending || !productForm.name.trim()}
                 className="w-full rounded-xl text-white"
-                style={{ background: S.ink }}
+                style={{ background: S.brand }}
                 onClick={() =>
                   run(
                     () =>
@@ -910,20 +911,20 @@ export function BoutiqueStockClient(props: {
             <Button
               onClick={() => setAuxDialog(true)}
               className="rounded-xl text-white"
-              style={{ background: S.ink }}
+              style={{ background: S.brand }}
             >
               <PackagePlus className="size-4" />
               Entrée / ajustement POS
             </Button>
           </div>
           <div
-            className="overflow-hidden rounded-3xl border bg-white shadow-sm"
+            className="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
             style={{ borderColor: S.line }}
           >
             <table className="w-full text-sm">
               <thead
                 className="text-left text-xs"
-                style={{ background: "#faf8f4", color: S.muted }}
+                style={{ background: "var(--muted)", color: S.muted }}
               >
                 <tr>
                   <th className="px-3 py-2 font-medium">Produit</th>
@@ -1017,7 +1018,7 @@ export function BoutiqueStockClient(props: {
 
       {tab === "mouvements" ? (
         <section
-          className="overflow-hidden rounded-3xl border bg-white shadow-sm"
+          className="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
           style={{ borderColor: S.line }}
         >
           <ul className="divide-y" style={{ borderColor: S.line }}>
@@ -1062,7 +1063,7 @@ export function BoutiqueStockClient(props: {
       {tab === "bons" ? (
         <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
           <section
-            className="rounded-3xl border bg-white p-4 shadow-sm"
+            className="rounded-xl border border-border bg-card p-4 shadow-sm"
             style={{ borderColor: S.line }}
           >
             <div className="mb-3 flex flex-wrap gap-2">
@@ -1074,7 +1075,7 @@ export function BoutiqueStockClient(props: {
                     ? "text-white"
                     : "bg-emerald-50 text-emerald-900",
                 )}
-                style={slipKind === "SORTIE" ? { background: S.ink } : undefined}
+                style={slipKind === "SORTIE" ? { background: S.brand } : undefined}
                 onClick={() => setSlipKind("SORTIE")}
               >
                 Bon de sortie → POS
@@ -1088,7 +1089,7 @@ export function BoutiqueStockClient(props: {
                     : "bg-emerald-50 text-emerald-900",
                 )}
                 style={
-                  slipKind === "COMMANDE" ? { background: S.ink } : undefined
+                  slipKind === "COMMANDE" ? { background: S.brand } : undefined
                 }
                 onClick={() => setSlipKind("COMMANDE")}
               >
@@ -1316,7 +1317,7 @@ export function BoutiqueStockClient(props: {
               type="button"
               disabled={pending}
               className="mt-4 w-full rounded-xl text-white"
-              style={{ background: S.ink }}
+              style={{ background: S.brand }}
               onClick={() =>
                 run(async () => {
                   await createWarehouseSlipAction({
@@ -1353,12 +1354,12 @@ export function BoutiqueStockClient(props: {
           </section>
 
           <section
-            className="overflow-hidden rounded-3xl border bg-white shadow-sm"
+            className="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
             style={{ borderColor: S.line }}
           >
             <div
               className="border-b px-4 py-3"
-              style={{ borderColor: S.line, background: "#faf8f4" }}
+              style={{ borderColor: S.line, background: "var(--muted)" }}
             >
               <p className="text-sm font-bold" style={{ color: S.ink }}>
                 Documents récents

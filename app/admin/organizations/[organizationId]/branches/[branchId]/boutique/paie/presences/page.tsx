@@ -17,7 +17,7 @@ export default async function PaiePresencesPage({ params, searchParams }: PagePr
   const branch = await requireBranchContext({
     organizationId,
     branchId,
-    requireModule: "boutique",
+    requireCommerce: true,
   });
   const opsRole = await resolveCurrentBranchOpsRole(organizationId, branchId);
   const caps = capabilitiesFromOpsRole(opsRole);

@@ -25,6 +25,7 @@ import {
 } from "@/lib/branch/ops-roles";
 import { sharedBranchRoutes } from "@/lib/branch/paths";
 import { generateSecurePassword } from "@/lib/generate-password";
+import { resolveMemberEmail } from "@/lib/member-email";
 import { orgRoleLabel } from "@/lib/org-role-labels";
 import { isAppAdminRole, ORG_ROLE } from "@/lib/permissions";
 import { ORG_ROLE_PRESET } from "@/lib/org/role-presets";
@@ -84,7 +85,7 @@ function zodFirstMessage(err: ZodError): string {
 }
 
 function equipePath(organizationId: string, branchId: string) {
-  return sharedBranchRoutes.equipe(organizationId, branchId);
+  return sharedBranchRoutes.parametresUsers(organizationId, branchId);
 }
 
 /** BranchMember.role dérivé du rôle org (presets ops alignés). */
@@ -136,41 +137,36 @@ async function assertBranchInOrg(
 }
 
 /**
- * Valide le slug : custom DAC de l’org, ou `owner` si autorisé.
+ * Depuis une branche : Admin ou User uniquement. Owner interdit.
  */
-async function resolveAssignableOrgRole(
-  organizationId: string,
+function resolveBranchOrgRole(
   orgRole: string,
-  allowOwner: boolean,
-): Promise<
-  | { ok: true; role: string; opsRole: string }
-  | { ok: false; message: string }
-> {
+): { ok: true; role: string; opsRole: string } | { ok: false; message: string } {
   const role = orgRole.trim().toLowerCase();
-  if (!role) return { ok: false, message: "Rôle requis." };
-
   if (role === ORG_ROLE.OWNER) {
-    if (!allowOwner) {
-      return {
-        ok: false,
-        message:
-          "Seul un admin plateforme ou le propriétaire de l’organisation peut assigner le rôle owner.",
-      };
-    }
-    return { ok: true, role: ORG_ROLE.OWNER, opsRole: OPS_ROLE.PROPRIETAIRE };
-  }
-
-  const row = await prisma.organizationRole.findFirst({
-    where: { organizationId, role },
-    select: { role: true },
-  });
-  if (!row) {
     return {
       ok: false,
-      message: "Rôle inconnu pour cette organisation. Créez-le d’abord dans Rôles.",
+      message: "Le rôle owner n’est pas assignable depuis une branche.",
     };
   }
-  return { ok: true, role: row.role, opsRole: deriveOpsRole(row.role) };
+  if (role === ORG_ROLE.ADMIN || role === ORG_ROLE.USER) {
+    return { ok: true, role, opsRole: deriveOpsRole(role) };
+  }
+  return { ok: false, message: "Choisissez Admin ou User." };
+}
+
+async function resolveOpsRoleSlug(
+  slug: string,
+  fallback: string,
+): Promise<{ ok: true; opsRole: string } | { ok: false; message: string }> {
+  const candidate = (slug.trim() || fallback).toLowerCase();
+  const row = await prisma.branchRole.findUnique({
+    where: { slug: candidate },
+    select: { slug: true },
+  });
+  if (row) return { ok: true, opsRole: row.slug };
+  if (isAssignableOpsRole(candidate)) return { ok: true, opsRole: candidate };
+  return { ok: false, message: "Métier branche invalide." };
 }
 
 export async function getEquipeCapabilitiesAction(
@@ -199,31 +195,22 @@ export async function listAssignableOrgRolesAction(
   });
   if (!gate.ok) return gate;
 
-  const canAssignOwner = await canAssignOwnerRole(organizationId);
-  const rows = await prisma.organizationRole.findMany({
-    where: {
-      organizationId,
-      NOT: { role: ORG_ROLE.OWNER },
-    },
-    select: { role: true },
-    orderBy: { role: "asc" },
-  });
-
-  const roles: AssignableOrgRoleOption[] = rows.map((r: { role: string }) => ({
-    role: r.role,
-    label: orgRoleLabel(r.role),
-    isOwner: false,
-  }));
-
-  if (canAssignOwner) {
-    roles.unshift({
-      role: ORG_ROLE.OWNER,
-      label: orgRoleLabel(ORG_ROLE.OWNER),
-      isOwner: true,
-    });
-  }
-
-  return { ok: true, roles, canAssignOwner };
+  return {
+    ok: true,
+    roles: [
+      {
+        role: ORG_ROLE.ADMIN,
+        label: orgRoleLabel(ORG_ROLE.ADMIN),
+        isOwner: false,
+      },
+      {
+        role: ORG_ROLE.USER,
+        label: orgRoleLabel(ORG_ROLE.USER),
+        isOwner: false,
+      },
+    ],
+    canAssignOwner: false,
+  };
 }
 
 export async function listBranchStaffAction(
@@ -276,18 +263,20 @@ export async function listBranchStaffAction(
     orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
   });
 
-  const staff: BranchStaffMember[] = rows.map((row) => ({
-    branchMemberId: row.id,
-    memberId: row.member.id,
-    userId: row.member.userId,
-    name: row.member.user.name,
-    email: row.member.user.email,
-    phone: row.member.user.phone,
-    orgRole: row.member.role.split(",")[0]?.trim() || row.member.role,
-    opsRole: row.role,
-    isPrimary: row.isPrimary,
-    createdAt: row.createdAt.toISOString(),
-  }));
+  const staff: BranchStaffMember[] = rows
+    .map((row) => ({
+      branchMemberId: row.id,
+      memberId: row.member.id,
+      userId: row.member.userId,
+      name: row.member.user.name,
+      email: row.member.user.email,
+      phone: row.member.user.phone,
+      orgRole: row.member.role.split(",")[0]?.trim() || row.member.role,
+      opsRole: row.role,
+      isPrimary: row.isPrimary,
+      createdAt: row.createdAt.toISOString(),
+    }))
+    .filter((member) => member.orgRole !== ORG_ROLE.OWNER);
 
   staff.sort((a, b) =>
     (a.name || a.email).localeCompare(b.name || b.email, "fr"),
@@ -338,7 +327,8 @@ export async function createBranchStaffAction(
   if (!parsed.success) {
     return { ok: false, message: zodFirstMessage(parsed.error) };
   }
-  const { organizationId, branchId, email, name, phone, orgRole } = parsed.data;
+  const { organizationId, branchId, email, name, phone, orgRole, opsRole } =
+    parsed.data;
 
   const gate = await assertOrganizationPermission(organizationId, {
     equipe: ["gerer"],
@@ -348,27 +338,32 @@ export async function createBranchStaffAction(
   const branchOk = await assertBranchInOrg(organizationId, branchId);
   if (!branchOk.ok) return branchOk;
 
-  const allowOwner = await canAssignOwnerRole(organizationId);
-  const resolved = await resolveAssignableOrgRole(
-    organizationId,
-    orgRole,
-    allowOwner,
-  );
+  const resolved = resolveBranchOrgRole(orgRole);
   if (!resolved.ok) return resolved;
+
+  const opsResolved = await resolveOpsRoleSlug(opsRole, resolved.opsRole);
+  if (!opsResolved.ok) return opsResolved;
 
   const org = await prisma.organization.findUnique({
     where: { id: organizationId },
-    select: { name: true },
+    select: { name: true, slug: true },
   });
 
+  const resolvedEmail = await resolveMemberEmail({
+    email,
+    name,
+    organizationSlug: org?.slug ?? "org",
+  });
+  if (!resolvedEmail.ok) return resolvedEmail;
+
   const h = await headers();
-  const emailLower = email.toLowerCase();
+  const emailLower = resolvedEmail.email;
   const password = generateSecurePassword(16);
   stashAdminCreatedUserPlainPassword(emailLower, password, {
     phone: phone?.trim() || null,
     branchId,
     organizationName: org?.name ?? null,
-    role: resolved.opsRole,
+    role: opsResolved.opsRole,
   });
 
   let userId: string | null = null;
@@ -408,7 +403,7 @@ export async function createBranchStaffAction(
       throw new Error("Membre créé mais introuvable pour le rattachement branche.");
     }
 
-    await ensureBranchMember(member.id, branchId, resolved.opsRole);
+    await ensureBranchMember(member.id, branchId, opsResolved.opsRole);
 
     const phoneValue = phone?.trim() || null;
     if (phoneValue) {
@@ -455,7 +450,7 @@ export async function updateBranchStaffRoleAction(
   if (!parsed.success) {
     return { ok: false, message: zodFirstMessage(parsed.error) };
   }
-  const { organizationId, branchId, memberId, orgRole } = parsed.data;
+  const { organizationId, branchId, memberId, orgRole, opsRole } = parsed.data;
 
   const gate = await assertOrganizationPermission(organizationId, {
     equipe: ["gerer"],
@@ -481,13 +476,11 @@ export async function updateBranchStaffRoleAction(
     };
   }
 
-  const allowOwner = await canAssignOwnerRole(organizationId);
-  const resolved = await resolveAssignableOrgRole(
-    organizationId,
-    orgRole,
-    allowOwner,
-  );
+  const resolved = resolveBranchOrgRole(orgRole);
   if (!resolved.ok) return resolved;
+
+  const opsResolved = await resolveOpsRoleSlug(opsRole, resolved.opsRole);
+  if (!opsResolved.ok) return opsResolved;
 
   const h = await headers();
   try {
@@ -502,7 +495,7 @@ export async function updateBranchStaffRoleAction(
 
     await prisma.branchMember.update({
       where: { id: branchMember.id },
-      data: { role: resolved.opsRole },
+      data: { role: opsResolved.opsRole },
     });
 
     revalidatePath(equipePath(organizationId, branchId));

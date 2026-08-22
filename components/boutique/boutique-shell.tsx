@@ -4,17 +4,17 @@ import { ArrowLeft, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-/** Surfaces commerce + paie : fond Windows (#F3F3F3), encre forêt, filet or. */
+/** Surfaces commerce + paie : mêmes couleurs de carte que Paramètres. */
 export const BQ = {
-  page: "relative min-h-svh bg-background text-[#1c1917]",
+  page: "relative min-h-svh bg-background text-foreground",
   wash:
-    "pointer-events-none absolute inset-0 bg-[radial-gradient(1100px_480px_at_-8%_-12%,rgba(15,61,46,0.06),transparent_58%),radial-gradient(720px_340px_at_108%_0%,rgba(180,122,46,0.04),transparent_46%)]",
-  ink: "text-[#0f3d2e]",
-  muted: "text-[#6f675c]",
-  gold: "text-[#9a7040]",
-  line: "border-[#e4ddd0]",
+    "pointer-events-none absolute inset-0 bg-[radial-gradient(1100px_480px_at_-8%_-12%,color-mix(in_oklab,var(--primary)_10%,transparent),transparent_58%),radial-gradient(720px_340px_at_108%_0%,color-mix(in_oklab,var(--primary)_6%,transparent),transparent_46%)]",
+  ink: "text-foreground",
+  muted: "text-muted-foreground",
+  gold: "text-primary",
+  line: "border-border",
   surface:
-    "rounded-[1.35rem] border border-[#e4ddd0] bg-white/90 shadow-[0_1px_0_rgba(15,61,46,0.04),0_18px_40px_-24px_rgba(15,61,46,0.28)]",
+    "rounded-xl bg-card text-card-foreground shadow-sm ring-1 ring-foreground/10",
 } as const;
 
 export function BoutiquePage({
@@ -62,7 +62,7 @@ export function BoutiqueHero({
 }) {
   return (
     <header className={cn(BQ.surface, "overflow-hidden")}>
-      <div className="h-1 w-full bg-gradient-to-r from-[#0f3d2e] via-[#c4a574] to-[#0f3d2e]" />
+      <div className="h-1 w-full bg-primary" />
       <div className="flex flex-col gap-5 px-4 py-5 sm:px-6 sm:py-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">
@@ -70,7 +70,7 @@ export function BoutiqueHero({
               <Button
                 variant="ghost"
                 size="sm"
-                className="-ml-2 mb-2 h-8 rounded-full text-[#6f675c] hover:bg-[#0f3d2e]/6 hover:text-[#0f3d2e]"
+                className="-ml-2 mb-2 h-8 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
                 render={<Link href={backHref} />}
               >
                 <ArrowLeft className="size-4" />
@@ -79,19 +79,19 @@ export function BoutiqueHero({
             ) : null}
             <div className="flex items-start gap-3">
               {Icon ? (
-                <span className="mt-0.5 flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[#0f3d2e] text-[#f4efe4] shadow-sm">
+                <span className="mt-0.5 flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary shadow-sm">
                   <Icon className="size-5" />
                 </span>
               ) : null}
               <div className="min-w-0">
-                <p className="text-[11px] font-semibold tracking-[0.18em] text-[#9a7040] uppercase">
+                <p className="text-[11px] font-semibold tracking-[0.18em] text-primary uppercase">
                   {kicker}
                 </p>
-                <h1 className="font-serif text-2xl font-semibold tracking-tight text-[#0f3d2e] sm:text-[1.85rem]">
+                <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.85rem]">
                   {title}
                 </h1>
                 {subtitle ? (
-                  <p className="mt-1 max-w-2xl text-sm leading-relaxed text-[#6f675c]">
+                  <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
                     {subtitle}
                   </p>
                 ) : null}
@@ -137,25 +137,28 @@ export function BoutiqueKpis({
           className={cn(
             BQ.surface,
             "px-4 py-3.5",
-            item.tone === "money" && "bg-[#0f3d2e] text-[#f4efe4] border-[#0f3d2e]",
+            item.tone === "money" &&
+              "bg-primary text-primary-foreground ring-primary",
           )}
         >
           <p
             className={cn(
               "text-[10px] font-semibold tracking-[0.14em] uppercase",
-              item.tone === "money" ? "text-[#c4a574]" : "text-[#9a7040]",
+              item.tone === "money"
+                ? "text-primary-foreground/80"
+                : "text-primary",
             )}
           >
             {item.label}
           </p>
           <p
             className={cn(
-              "mt-1 font-serif text-2xl font-semibold tabular-nums tracking-tight",
-              item.tone === "danger" && "text-rose-700",
+              "mt-1 text-2xl font-semibold tabular-nums tracking-tight",
+              item.tone === "danger" && "text-destructive",
               item.tone === "warn" && "text-amber-800",
               item.tone === "ok" && "text-emerald-800",
-              item.tone === "money" && "text-[#f4efe4]",
-              !item.tone || item.tone === "default" ? "text-[#0f3d2e]" : null,
+              item.tone === "money" && "text-primary-foreground",
+              !item.tone || item.tone === "default" ? "text-foreground" : null,
             )}
           >
             {item.value}
@@ -164,7 +167,9 @@ export function BoutiqueKpis({
             <p
               className={cn(
                 "mt-0.5 text-[11px]",
-                item.tone === "money" ? "text-white/55" : "text-[#6f675c]",
+                item.tone === "money"
+                  ? "text-primary-foreground/70"
+                  : "text-muted-foreground",
               )}
             >
               {item.hint}
@@ -186,7 +191,7 @@ export function BoutiqueTabs<T extends string>({
   onChange: (id: T) => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-1.5 rounded-2xl bg-[#0f3d2e]/5 p-1.5">
+    <div className="flex flex-wrap gap-1 rounded-xl bg-muted p-1">
       {items.map((item) => {
         const active = value === item.id;
         return (
@@ -195,10 +200,10 @@ export function BoutiqueTabs<T extends string>({
             type="button"
             onClick={() => onChange(item.id)}
             className={cn(
-              "rounded-xl px-3.5 py-2 text-sm font-semibold transition",
+              "rounded-lg px-3.5 py-2 text-sm font-medium transition",
               active
-                ? "bg-[#0f3d2e] text-[#f4efe4] shadow-sm"
-                : "text-[#4a453e] hover:bg-white/80",
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:bg-background/80 hover:text-foreground",
             )}
           >
             {item.label}
@@ -206,7 +211,9 @@ export function BoutiqueTabs<T extends string>({
               <span
                 className={cn(
                   "ml-1.5 rounded-md px-1.5 py-0.5 text-[10px] font-bold tabular-nums",
-                  active ? "bg-white/15" : "bg-white text-[#0f3d2e]/70",
+                  active
+                    ? "bg-primary-foreground/15"
+                    : "bg-background text-muted-foreground",
                 )}
               >
                 {item.count}
@@ -240,30 +247,34 @@ export function BoutiquePanel({
 }) {
   const head =
     tint === "mint"
-      ? "bg-[#eef6f1]"
+      ? "bg-primary/5"
       : tint === "amber"
-        ? "bg-[#f8f1e4]"
+        ? "bg-amber-500/10"
         : tint === "rose"
-          ? "bg-[#f8ecec]"
-          : "bg-[#faf8f4]";
+          ? "bg-destructive/5"
+          : "bg-muted/30";
   return (
     <section className={cn(BQ.surface, "overflow-hidden", className)}>
       {title ? (
         <div
           className={cn(
-            "flex flex-wrap items-center justify-between gap-2 border-b border-[#e4ddd0] px-4 py-3",
+            "flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3",
             head,
           )}
         >
           <div className="flex min-w-0 items-center gap-2">
-            {Icon ? <Icon className="size-4 shrink-0 text-[#9a7040]" /> : null}
+            {Icon ? (
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
+                <Icon className="size-4" />
+              </span>
+            ) : null}
             <div>
               {eyebrow ? (
-                <p className="text-[10px] font-semibold tracking-[0.14em] text-[#9a7040] uppercase">
+                <p className="text-[10px] font-semibold tracking-[0.14em] text-primary uppercase">
                   {eyebrow}
                 </p>
               ) : null}
-              <p className="text-sm font-semibold text-[#0f3d2e]">{title}</p>
+              <p className="text-sm font-semibold text-foreground">{title}</p>
             </div>
           </div>
           {actions}
@@ -287,10 +298,10 @@ export function BoutiqueStatus({
         "inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold tracking-wide",
         tone === "ok" && "bg-emerald-700/12 text-emerald-900",
         tone === "warn" && "bg-amber-500/18 text-amber-950",
-        tone === "danger" && "bg-rose-500/12 text-rose-800",
+        tone === "danger" && "bg-destructive/10 text-destructive",
         tone === "info" && "bg-sky-500/12 text-sky-900",
-        tone === "gold" && "bg-[#c4a574]/25 text-[#6b4e24]",
-        tone === "neutral" && "bg-[#0f3d2e]/8 text-[#0f3d2e]",
+        tone === "gold" && "bg-primary/15 text-primary",
+        tone === "neutral" && "bg-primary/10 text-primary",
       )}
     >
       {children}
@@ -300,14 +311,14 @@ export function BoutiqueStatus({
 
 export function boutiquePrimaryBtn(className?: string) {
   return cn(
-    "rounded-full bg-[#0f3d2e] text-[#f4efe4] hover:bg-[#0f3d2e]/90",
+    "rounded-full bg-primary text-primary-foreground hover:bg-primary/90",
     className,
   );
 }
 
 export function boutiqueOutlineBtn(className?: string) {
   return cn(
-    "rounded-full border-[#d9d0c3] bg-white text-[#0f3d2e] hover:bg-[#F3F3F3]",
+    "rounded-full border-border bg-card text-foreground hover:bg-muted",
     className,
   );
 }

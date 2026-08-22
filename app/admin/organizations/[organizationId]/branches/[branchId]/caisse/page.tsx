@@ -4,7 +4,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { isHospitality } from "@/lib/branch/hospitality";
-import { boutiqueRoutes, hotelRoutes } from "@/lib/branch/paths";
+import { boutiqueRoutes, hotelRoutes, usineRoutes } from "@/lib/branch/paths";
 import { DASH_CARD } from "@/lib/branch/ops-roles";
 import { resolveCurrentBranchOpsRole } from "@/lib/branch/resolve-ops-role";
 import { canPrivilege } from "@/lib/branch/privileges";
@@ -42,6 +42,9 @@ export default async function BranchCaissePage({ params }: PageProps) {
 
   if (branch.type === "BOUTIQUE") {
     redirect(boutiqueRoutes.pos(organizationId, branchId));
+  }
+  if (branch.type === "USINE") {
+    redirect(usineRoutes.pos(organizationId, branchId));
   }
 
   const hospitality = isHospitality(branch.type);

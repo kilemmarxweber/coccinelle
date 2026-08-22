@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Status** | `todo` — plan lisible, pas encore implémenté |
-| **Périmètre V1** | Branche `BranchType = BOUTIQUE` (commerce) · agents `BranchMember` ACTIVE |
+| **Périmètre V1** | Branche `BranchType = BOUTIQUE` **ou `USINE`** (famille commerce, `isCommerceBranchType`) · agents `BranchMember` ACTIVE |
 | **Modèle** | Taux **journalier en USD** (défaut **10 $**) · conversion au **taux actif de la branche** · **versement une fois par mois** sur le compte de l’agent |
 | **UX** | Dashboard-first (cartes hub BOUTIQUE) · même pattern que POS / Dépenses / Équipe |
 | **Notifs** | Email SMTP + WhatsApp Zindua · branding `Branch.name` ([`plan-notifications-email-whatsapp.md`](./plan-notifications-email-whatsapp.md)) |

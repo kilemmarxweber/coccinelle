@@ -15,8 +15,11 @@ import {
 import type { PrivilegeActionName } from "@/lib/branch/privilege-seed";
 
 function revalidateParametres(organizationId: string, branchId: string) {
-  revalidatePath(branchBasePath(organizationId, branchId));
-  revalidatePath(`${branchBasePath(organizationId, branchId)}/parametres`);
+  const base = branchBasePath(organizationId, branchId);
+  revalidatePath(base);
+  revalidatePath(`${base}/parametres`);
+  revalidatePath(`${base}/parametres/users`);
+  revalidatePath(`${base}/parametres/apparence`);
 }
 
 export async function listRolesForParametresAction(

@@ -7,6 +7,7 @@ import { getPaymentByIdAction } from "@/lib/cash/actions";
 import {
   branchCaissePath,
   boutiqueRoutes,
+  usineRoutes,
 } from "@/lib/branch/paths";
 import { FOLIO_SECTION_LABEL } from "@/lib/hotel/folio-note";
 import { paymentAmountUsd } from "@/lib/hotel/money";
@@ -171,7 +172,9 @@ export default async function ReceiptPage({ params }: PageProps) {
   const backHref =
     branch.type === "BOUTIQUE"
       ? boutiqueRoutes.pos(organizationId, branchId)
-      : branchCaissePath(organizationId, branchId);
+      : branch.type === "USINE"
+        ? usineRoutes.pos(organizationId, branchId)
+        : branchCaissePath(organizationId, branchId);
 
   function formatLineMoney(line: ReceiptLine) {
     if (isHospitalityBranch && !isShopReceipt) {
@@ -245,7 +248,9 @@ export default async function ReceiptPage({ params }: PageProps) {
       <div className="mb-4 flex gap-2 print:hidden">
         <PrintButton />
         <Button variant="outline" render={<Link href={backHref} />}>
-          {branch.type === "BOUTIQUE" ? "Retour POS" : "Retour caisse"}
+          {branch.type === "BOUTIQUE" || branch.type === "USINE"
+            ? "Retour POS"
+            : "Retour caisse"}
         </Button>
       </div>
 

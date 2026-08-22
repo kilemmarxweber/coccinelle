@@ -143,6 +143,18 @@
   --warning-foreground: oklch(0.2 0 0);
 }
 
+/* Sidebar branche (orange) — après .dark pour garder la couleur en thème sombre */
+.branch-shell {
+  --sidebar: var(--primary);
+  --sidebar-foreground: var(--primary-foreground);
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: var(--primary);
+  --sidebar-accent: rgb(255 255 255 / 0.14);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(255 255 255 / 0.16);
+  --sidebar-ring: #ffffff;
+}
+
 @supports (padding: max(0px)) {
   .safe-area-bottom {
     padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
@@ -232,11 +244,27 @@
   animation: dash-card-shift 9s ease-in-out infinite;
 }
 
+@keyframes usine-flow-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.usine-flow-step {
+  animation: usine-flow-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .dash-fade-up,
   .dash-orb,
   .dash-pulse,
-  .dash-card-shift {
+  .dash-card-shift,
+  .usine-flow-step {
     animation: none;
   }
 }

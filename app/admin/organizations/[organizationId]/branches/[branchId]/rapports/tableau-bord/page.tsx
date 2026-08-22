@@ -14,6 +14,7 @@ import {
   formatConfiguredRateLabel,
 } from "@/lib/cash/exchange";
 import { getBoutiqueDashboardKpisAction } from "@/lib/boutique/actions";
+import { factoryCreditsOpenSummaryAction } from "@/lib/factory/actions";
 import { getHotelDashboardKpisAction } from "@/lib/hotel/actions";
 import {
   branchDashboardPath,
@@ -33,11 +34,11 @@ export default async function TableauBordPage({ params }: PageProps) {
     requireDashCard: "rapport_tableau",
   });
   const hospitality = isHospitality(branch.type);
-  const isBoutique = branch.type === "BOUTIQUE";
+  const isBoutique = branch.type === "BOUTIQUE" || branch.type === "USINE";
   const showStays = canAccessStays(branch);
   const showRestaurant = canAccessRestaurant(branch);
 
-  const [hotelKpis, boutiqueKpis, rate] = await Promise.all([
+  const [hotelKpis, boutiqueKpis, rate, factoryOpen] = await Promise.all([
     hospitality
       ? getHotelDashboardKpisAction(organizationId, branchId)
       : Promise.resolve(null),
@@ -46,6 +47,9 @@ export default async function TableauBordPage({ params }: PageProps) {
       : Promise.resolve(null),
     hospitality || isBoutique
       ? getActiveExchangeRate(branchId)
+      : Promise.resolve(null),
+    branch.type === "USINE"
+      ? factoryCreditsOpenSummaryAction(organizationId, branchId)
       : Promise.resolve(null),
   ]);
 
@@ -89,7 +93,7 @@ export default async function TableauBordPage({ params }: PageProps) {
     : boutiqueKpis
       ? [
           {
-            label: "CA boutique (jour)",
+            label: branch.type === "USINE" ? "CA cash (jour)" : "CA boutique (jour)",
             value: caBoth ?? `${boutiqueKpis.caJour.toFixed(2)} $`,
             sub: rateLabels,
           },
@@ -108,6 +112,15 @@ export default async function TableauBordPage({ params }: PageProps) {
             value: String(boutiqueKpis.lowStock),
             sub: "≤ 5 unités",
           },
+          ...(factoryOpen
+            ? [
+                {
+                  label: "Crédits ouverts",
+                  value: String(factoryOpen.count),
+                  sub: `${factoryOpen.remainingUsd.toFixed(2)} USD restant`,
+                },
+              ]
+            : []),
         ]
       : [];
 

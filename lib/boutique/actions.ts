@@ -33,8 +33,8 @@ async function ctx(organizationId: string, branchId: string) {
   if (!branch || branch.organizationId !== organizationId) {
     throw new Error("Branche inaccessible.");
   }
-  if (branch.type !== "BOUTIQUE") {
-    throw new Error("Module boutique requis.");
+  if (branch.type !== "BOUTIQUE" && branch.type !== "USINE") {
+    throw new Error("Module boutique ou usine requis.");
   }
   return { user: session.user, branch };
 }
@@ -46,6 +46,10 @@ function revalidateBoutique(organizationId: string, branchId: string) {
   revalidatePath(`${base}/boutique/produits`);
   revalidatePath(`${base}/boutique/stock`);
   revalidatePath(`${base}/boutique/service-stock`);
+  revalidatePath(`${base}/usine/pos`);
+  revalidatePath(`${base}/usine/produits`);
+  revalidatePath(`${base}/usine/depot`);
+  revalidatePath(`${base}/usine/service-stock`);
   revalidatePath(`${base}/rapports/tableau-bord`);
 }
 
@@ -67,6 +71,8 @@ export type ShopProductDto = {
   name: string;
   sku: string;
   kind: "ARTICLE" | "PLAT";
+  productKind?: "FINISHED" | "CONSUMABLE";
+  finishedFamily?: "EAU" | "VIN" | null;
   price: number;
   promoPrice: number | null;
   promoActive: boolean;
@@ -138,6 +144,8 @@ function toDto(
     name: string;
     sku: string;
     kind: "ARTICLE" | "PLAT";
+    productKind?: "FINISHED" | "CONSUMABLE";
+    finishedFamily?: "EAU" | "VIN" | null;
     price: number;
     promoPrice: number | null;
     promoActive: boolean;
@@ -162,6 +170,8 @@ function toDto(
     name: p.name,
     sku: p.sku,
     kind: p.kind,
+    productKind: p.productKind,
+    finishedFamily: p.finishedFamily ?? null,
     price: p.price,
     promoPrice: p.promoPrice,
     promoActive: p.promoActive,
@@ -230,6 +240,8 @@ export async function createShopProductAction(input: {
   name: string;
   sku: string;
   kind?: "ARTICLE" | "PLAT";
+  productKind?: "FINISHED" | "CONSUMABLE";
+  finishedFamily?: "EAU" | "VIN" | null;
   price: number;
   stockQty?: number;
   barcode?: string | null;
@@ -270,6 +282,8 @@ export async function createShopProductAction(input: {
         name,
         sku,
         kind: input.kind ?? "ARTICLE",
+        productKind: input.productKind ?? "FINISHED",
+        finishedFamily: input.finishedFamily ?? null,
         price: input.price,
         stockQty: input.stockQty ?? 0,
         barcode,

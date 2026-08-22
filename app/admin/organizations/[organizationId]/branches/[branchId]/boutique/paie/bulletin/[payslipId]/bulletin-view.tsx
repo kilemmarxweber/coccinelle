@@ -22,42 +22,42 @@ export function BulletinView({ data }: { data: Data }) {
             Imprimer
           </Button>
         </div>
-        <article className="overflow-hidden rounded-[1.5rem] border border-[#e4ddd0] bg-white text-[#1c1917] shadow-[0_18px_40px_-24px_rgba(15,61,46,0.28)] print:rounded-none print:border-0 print:shadow-none">
-          <div className="h-1.5 bg-gradient-to-r from-[#0f3d2e] via-[#c4a574] to-[#0f3d2e]" />
+        <article className="overflow-hidden rounded-xl border border-border bg-card text-foreground shadow-sm print:rounded-none print:border-0 print:shadow-none">
+          <div className="h-1.5 bg-primary" />
           <div className="px-7 py-8 sm:px-10">
-            <header className="mb-8 flex items-start justify-between gap-4 border-b border-[#eee8dc] pb-6">
+            <header className="mb-8 flex items-start justify-between gap-4 border-b border-border pb-6">
               <div>
-                <p className="text-[11px] font-semibold tracking-[0.2em] text-[#9a7040] uppercase">
+                <p className="text-[11px] font-semibold tracking-[0.2em] text-primary uppercase">
                   Bulletin de paie
                 </p>
-                <p className="mt-1 font-serif text-2xl font-semibold text-[#0f3d2e]">
+                <p className="mt-1 font-serif text-2xl font-semibold text-foreground">
                   {data.branchName}
                 </p>
-                <p className="text-sm text-[#6f675c]">{data.period.label}</p>
+                <p className="text-sm text-muted-foreground">{data.period.label}</p>
               </div>
-              <p className="rounded-full bg-[#0f3d2e] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#f4efe4]">
+              <p className="rounded-full bg-primary px-3 py-1 text-[11px] font-semibold tracking-wide text-primary-foreground">
                 Journalier
               </p>
             </header>
 
             <div className="mb-6 grid gap-3 text-sm sm:grid-cols-2">
               <p>
-                <span className="text-[#6f675c]">Agent</span>
+                <span className="text-muted-foreground">Agent</span>
                 <br />
-                <strong className="text-[#0f3d2e]">{p.agentName}</strong>
+                <strong className="text-foreground">{p.agentName}</strong>
               </p>
               <p>
-                <span className="text-[#6f675c]">Taux journalier</span>
+                <span className="text-muted-foreground">Taux journalier</span>
                 <br />
                 <strong className="tabular-nums">{p.dailyRateUsd.toFixed(2)} USD</strong>
               </p>
               <p>
-                <span className="text-[#6f675c]">Jours ouvrés</span>
+                <span className="text-muted-foreground">Jours ouvrés</span>
                 <br />
                 <strong className="tabular-nums">{p.expectedDays}</strong>
               </p>
               <p>
-                <span className="text-[#6f675c]">Taux clôturé</span>
+                <span className="text-muted-foreground">Taux clôturé</span>
                 <br />
                 <strong className="tabular-nums">
                   1 USD = {p.exchangeRateUsed.toLocaleString("fr-FR")} CDF
@@ -80,8 +80,8 @@ export function BulletinView({ data }: { data: Data }) {
               </div>
             ) : null}
 
-            <div className="space-y-2 border-t border-[#eee8dc] pt-5 text-sm tabular-nums">
-              <p className="flex justify-between text-[#6f675c]">
+            <div className="space-y-2 border-t border-border pt-5 text-sm tabular-nums">
+              <p className="flex justify-between text-muted-foreground">
                 <span>Brut</span>
                 <span>{p.grossUsd.toFixed(2)} USD</span>
               </p>
@@ -93,18 +93,18 @@ export function BulletinView({ data }: { data: Data }) {
                 <span>− Avances</span>
                 <span>{p.advancesUsd.toFixed(2)} USD</span>
               </p>
-              <p className="mt-3 flex justify-between border-t border-[#eee8dc] pt-3 font-serif text-xl font-semibold text-[#0f3d2e]">
+              <p className="mt-3 flex justify-between border-t border-border pt-3 font-serif text-xl font-semibold text-foreground">
                 <span>Net à verser</span>
                 <span>{p.netUsd.toFixed(2)} USD</span>
               </p>
-              <p className="flex justify-between text-[#9a7040]">
+              <p className="flex justify-between text-primary">
                 <span />
                 <span>{Math.round(p.netCdf).toLocaleString("fr-FR")} CDF</span>
               </p>
             </div>
 
             {data.payoutHint ? (
-              <p className="mt-8 rounded-2xl bg-[#faf8f4] px-4 py-3 text-sm text-[#4a453e]">
+              <p className="mt-8 rounded-2xl bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
                 Versement : {data.payoutHint}
               </p>
             ) : null}

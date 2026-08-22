@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, KeyRound, Lock, Mail, Plane, User } from "lucide-react";
+import { Eye, EyeOff, KeyRound, Lock, Mail, User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
@@ -29,9 +29,10 @@ const fieldClass =
 
 type SignUpFormProps = {
   callbackUrl?: string;
+  appName: string;
 };
 
-export function SignUpForm({ callbackUrl }: SignUpFormProps) {
+export function SignUpForm({ callbackUrl, appName }: SignUpFormProps) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -93,12 +94,12 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
   return (
     <div className="flex h-full flex-col">
       <Link href="/" className="mb-8 inline-flex items-center gap-2.5 self-start">
-        <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-          <Plane className="size-4" aria-hidden />
+        <span className="flex size-9 items-center justify-center overflow-hidden rounded-lg">
+          <img src="/favicon.ico" alt="" className="size-9" />
         </span>
         <span className="leading-tight">
-          <span className="block text-sm font-bold tracking-[0.12em] text-foreground uppercase">
-            Coccinelle
+          <span className="block text-sm font-bold tracking-[0.12em] text-foreground">
+            {appName}
           </span>
           <span className="block text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
             v 0.1
@@ -111,7 +112,7 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
           Créer un compte
         </h1>
         <p className="text-sm text-muted-foreground">
-          Rejoignez la console Coccinelle pour gérer vos commandes, réservations et demandes de service.
+          Rejoignez la console {appName} pour gérer vos commandes, réservations et demandes de service.
         </p>
       </div>
 

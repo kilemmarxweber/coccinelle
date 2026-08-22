@@ -9,6 +9,7 @@ import {
   listProductCategoriesAction,
   listPurchaseOrdersAction,
 } from "@/lib/purchases/actions";
+import prisma from "@/lib/prisma";
 import { BonsCommandeClient } from "./bons-commande-client";
 
 type PageProps = {
@@ -26,13 +27,21 @@ export default async function BonsCommandePage({ params }: PageProps) {
   const userId = sessionAuth?.user?.id;
   if (!userId) redirect("/auth/sign-in");
 
-  const [orders, catalog, categories, rate, cashSession] = await Promise.all([
-    listPurchaseOrdersAction(organizationId, branchId),
-    listCatalogProductsAction(organizationId, branchId),
-    listProductCategoriesAction(organizationId, branchId),
-    getActiveExchangeRate(branchId),
-    getOpenCashSession(branchId, userId),
-  ]);
+  const [orders, catalog, categories, rate, cashSession, suppliers] =
+    await Promise.all([
+      listPurchaseOrdersAction(organizationId, branchId),
+      listCatalogProductsAction(organizationId, branchId),
+      listProductCategoriesAction(organizationId, branchId),
+      getActiveExchangeRate(branchId),
+      getOpenCashSession(branchId, userId),
+      branch.type === "USINE"
+        ? prisma.branchSupplier.findMany({
+            where: { branchId, active: true },
+            orderBy: { name: "asc" },
+            select: { id: true, name: true },
+          })
+        : Promise.resolve([]),
+    ]);
   return (
     <BonsCommandeClient
       organizationId={organizationId}
@@ -44,6 +53,7 @@ export default async function BonsCommandePage({ params }: PageProps) {
       categories={categories}
       rate={rate}
       hasOpenCashSession={Boolean(cashSession)}
+      suppliers={suppliers}
     />
   );
 }

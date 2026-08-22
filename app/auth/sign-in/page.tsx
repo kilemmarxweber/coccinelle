@@ -17,11 +17,13 @@ export default async function SignInPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const callbackUrl = safeAuthCallbackUrl(params.callbackUrl, "");
 
+  const name = appName();
+
   return (
-    <AuthShell mode="sign-in">
+    <AuthShell mode="sign-in" appName={name}>
       <SignInForm
         callbackUrl={callbackUrl || undefined}
-        appName={appName()}
+        appName={name}
       />
     </AuthShell>
   );

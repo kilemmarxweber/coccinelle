@@ -26,7 +26,7 @@ function normalizeZone(value: string | null | undefined): StorageZone {
 }
 
 function isCommerceStockBranch(type: string) {
-  return type === "BOUTIQUE";
+  return type === "BOUTIQUE" || type === "USINE";
 }
 
 async function ctx(organizationId: string, branchId: string) {
@@ -184,7 +184,11 @@ export async function listDepotSellableItemsAction(
   const { branch } = await ctx(organizationId, branchId);
   if (isCommerceStockBranch(branch.type)) {
     const rows = await prisma.shopProduct.findMany({
-      where: { branchId, active: true },
+      where: {
+        branchId,
+        active: true,
+        ...(branch.type === "USINE" ? { productKind: "FINISHED" } : {}),
+      },
       include: { category: { select: { name: true } } },
       orderBy: [{ category: { name: "asc" } }, { name: "asc" }],
     });
@@ -1593,6 +1597,15 @@ export async function consumeShopServiceFloatInTx(
         (heldMap.get(item.productId) ?? 0) + item.quantity,
       );
     }
+  }
+  const reservationHolds = await tx.factoryReservationLine.findMany({
+    where: { reservation: { branchId, status: "HOLD" } },
+  });
+  for (const h of reservationHolds) {
+    heldMap.set(
+      h.shopProductId,
+      (heldMap.get(h.shopProductId) ?? 0) + h.qty,
+    );
   }
 
   const floatLines = new Map(

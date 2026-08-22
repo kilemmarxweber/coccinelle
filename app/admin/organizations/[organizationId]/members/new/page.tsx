@@ -3,13 +3,18 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { listBranchesAction } from "../../branches/actions";
 import { listAssignableOpsRolesAction } from "@/lib/branch/privilege-actions";
+import prisma from "@/lib/prisma";
 import { CreateMemberForm } from "./create-member-form";
 
 type PageProps = { params: Promise<{ organizationId: string }> };
 
 export default async function NewOrganizationMemberPage({ params }: PageProps) {
   const { organizationId } = await params;
-  const [branchesRes, opsRoles] = await Promise.all([
+  const [org, branchesRes, opsRoles] = await Promise.all([
+    prisma.organization.findUnique({
+      where: { id: organizationId },
+      select: { slug: true },
+    }),
     listBranchesAction(organizationId),
     listAssignableOpsRolesAction(),
   ]);
@@ -46,6 +51,7 @@ export default async function NewOrganizationMemberPage({ params }: PageProps) {
 
       <CreateMemberForm
         organizationId={organizationId}
+        organizationSlug={org?.slug ?? "org"}
         branches={branches}
         opsRoleOptions={opsRoles.map((r) => ({
           slug: r.slug,

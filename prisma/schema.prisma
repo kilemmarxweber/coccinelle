@@ -96,6 +96,8 @@ enum BranchType {
   BOUTIQUE
   /// F&B seul (sans hébergement) — routes module `hotel/*` + flags.
   RESTAURANT
+  /// Production eau / vins — famille commerce (paie boutique).
+  USINE
 }
 
 enum BranchStatus {
@@ -128,6 +130,42 @@ enum HotelRoomStatus {
 enum ShopProductKind {
   ARTICLE
   PLAT
+}
+
+enum FactoryProductKind {
+  FINISHED
+  CONSUMABLE
+}
+
+enum FactoryFinishedFamily {
+  EAU
+  VIN
+}
+
+enum FactoryCreditStatus {
+  OPEN
+  PARTIAL
+  SETTLED
+  CANCELLED
+}
+
+enum FactoryInstallmentKind {
+  ACOMPTE
+  COMPLEMENT
+  SOLDE
+}
+
+enum FactoryReservationStatus {
+  HOLD
+  PICKED
+  EXPIRED
+  CANCELLED
+}
+
+enum FactoryBatchStatus {
+  DRAFT
+  VALIDATED
+  CANCELLED
 }
 
 enum ShopSaleStatus {
@@ -639,6 +677,10 @@ model Branch {
   /// Boutique générale (commerce).
   hasShop        Boolean       @default(false)
   hasAlimentation Boolean      @default(false)
+  /// Usine : production / vente eau.
+  hasEau         Boolean       @default(false)
+  /// Usine : production / vente vins.
+  hasVin         Boolean       @default(false)
   /// Logo / image de la branche (URL ou data URL), optionnel.
   imageUrl       String?
   address        String?
@@ -647,6 +689,12 @@ model Branch {
   email          String?
   timezone       String        @default("Africa/Kinshasa")
   settings       Json?
+  /// Accent interface client (#RRGGBB). Null = thème Coccinelle.
+  customerUiPrimary     String?
+  /// Fond de page interface client (#RRGGBB).
+  customerUiBackground  String?
+  /// Fond des cartes interface client (#RRGGBB).
+  customerUiCard        String?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -683,6 +731,12 @@ model Branch {
   staffLeaveRequests   StaffLeaveRequest[]
   staffSalaryAdvances  StaffSalaryAdvance[]
   payslips             Payslip[]
+  suppliers            BranchSupplier[]
+  factoryCustomers     FactoryCustomer[]
+  factoryCredits       FactoryCredit[]
+  factoryRecipes       FactoryRecipe[]
+  factoryBatches       FactoryBatch[]
+  factoryReservations  FactoryReservation[]
 
   @@unique([organizationId, code])
   @@index([organizationId, type])
@@ -860,6 +914,9 @@ model ShopProduct {
   name         String
   sku          String
   kind         ShopProductKind @default(ARTICLE)
+  /// Usine : fini vendable vs consommable de production.
+  productKind  FactoryProductKind @default(FINISHED)
+  finishedFamily FactoryFinishedFamily?
   price        Float
   /// Prix promo si `promoActive`.
   promoPrice   Float?
@@ -879,6 +936,12 @@ model ShopProduct {
   stockMovements ShopStockMovement[]
   serviceStockLines ServiceStockLine[]
   serviceStockTopUps ServiceStockTopUp[]
+  factoryRecipes FactoryRecipe[]
+  factoryRecipeLines FactoryRecipeLine[]
+  factoryCreditLines FactoryCreditLine[]
+  factoryReservationLines FactoryReservationLine[]
+  factoryBatches FactoryBatch[]
+  purchaseOrderItems PurchaseOrderItem[]
 
   @@unique([categoryId, sku])
   @@unique([branchId, barcode])
@@ -1091,6 +1154,8 @@ model Payment {
   expenseId        String?       @unique
   partnerId        String?
   partnerBookingId String?
+  factoryCreditId  String?
+  installmentKind  FactoryInstallmentKind?
   receiptNumber    String
   method           PaymentMethod @default(CASH)
   amountCdf        Float
@@ -1111,6 +1176,7 @@ model Payment {
   expense          BranchExpense? @relation(fields: [expenseId], references: [id], onDelete: SetNull)
   partner          BranchPartner? @relation(fields: [partnerId], references: [id], onDelete: SetNull)
   partnerBooking   PartnerBooking? @relation(fields: [partnerBookingId], references: [id], onDelete: SetNull)
+  factoryCredit    FactoryCredit? @relation(fields: [factoryCreditId], references: [id], onDelete: SetNull)
 
   @@unique([branchId, receiptNumber])
   @@index([branchId, paidAt])
@@ -1120,6 +1186,7 @@ model Payment {
   @@index([purchaseOrderId])
   @@index([partnerId])
   @@index([partnerBookingId])
+  @@index([factoryCreditId])
 }
 
 /** Catalogue F&B / vente rapide / consommables hôtel. */
@@ -1339,6 +1406,7 @@ model PurchaseOrder {
   number            String
   status            PurchaseOrderStatus @default(EN_ATTENTE)
   supplierName      String?
+  supplierId        String?
   note              String?
   /// Total demandé (USD) au moment de la création / dernière édition.
   totalAmountUsd    Float               @default(0)
@@ -1352,12 +1420,14 @@ model PurchaseOrder {
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
   branch            Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  supplier          BranchSupplier?     @relation(fields: [supplierId], references: [id], onDelete: SetNull)
   items             PurchaseOrderItem[]
   payments          Payment[]
 
   @@unique([branchId, number])
   @@index([branchId, status])
   @@index([branchId, createdAt])
+  @@index([supplierId])
 }
 
 model PurchaseOrderItem {
@@ -1380,6 +1450,7 @@ model PurchaseOrderItem {
   createProduct   Boolean       @default(false)
   createdAt       DateTime      @default(now())
   purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  shopProduct     ShopProduct?  @relation(fields: [shopProductId], references: [id], onDelete: SetNull)
 
   @@index([purchaseOrderId])
 }
@@ -1750,5 +1821,185 @@ model Payslip {
 
   @@unique([periodId, branchMemberId])
   @@index([branchId, periodId])
+}
+
+/** Fournisseur enregistré (usine : obligatoire sur chaque BC). */
+model BranchSupplier {
+  id          String          @id @default(uuid())
+  branchId    String
+  name        String
+  phone       String?
+  contactName String?
+  address     String?
+  notes       String?
+  active      Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  branch      Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  purchaseOrders PurchaseOrder[]
+
+  @@index([branchId, active])
+}
+
+model FactoryCustomer {
+  id          String               @id @default(uuid())
+  branchId    String
+  name        String
+  phone       String?
+  contactName String?
+  companyName String?
+  email       String?
+  notes       String?
+  active      Boolean              @default(true)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  branch      Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  credits     FactoryCredit[]
+  reservations FactoryReservation[]
+
+  @@index([branchId, active])
+  @@index([branchId, phone])
+}
+
+model FactoryCredit {
+  id                   String                 @id @default(uuid())
+  branchId             String
+  number               String
+  customerId           String
+  marketerUserId       String
+  marketerDisplayName  String
+  status               FactoryCreditStatus    @default(OPEN)
+  dueAt                DateTime               @db.Date
+  originalDueAt        DateTime               @db.Date
+  totalUsd             Float
+  paidUsd              Float                  @default(0)
+  fxUsdToCdf           Float?
+  documentIssuedAt     DateTime?
+  signedAt             DateTime?
+  reminderSentAt       DateTime?
+  dueDayReminderSentAt DateTime?
+  cancelReason         String?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  branch               Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  customer             FactoryCustomer        @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  lines                FactoryCreditLine[]
+  extensions           FactoryCreditExtension[]
+  payments             Payment[]
+  reservations         FactoryReservation[]
+
+  @@unique([branchId, number])
+  @@index([branchId, status])
+  @@index([customerId])
+  @@index([branchId, dueAt])
+}
+
+model FactoryCreditLine {
+  id            String        @id @default(uuid())
+  creditId      String
+  shopProductId String
+  nameSnapshot  String
+  qty           Int
+  unitPriceUsd  Float
+  lineTotalUsd  Float
+  credit        FactoryCredit @relation(fields: [creditId], references: [id], onDelete: Cascade)
+  shopProduct   ShopProduct   @relation(fields: [shopProductId], references: [id], onDelete: Restrict)
+
+  @@index([creditId])
+}
+
+model FactoryCreditExtension {
+  id            String        @id @default(uuid())
+  creditId      String
+  previousDueAt DateTime      @db.Date
+  newDueAt      DateTime      @db.Date
+  reason        String
+  createdByUserId String
+  createdAt     DateTime      @default(now())
+  credit        FactoryCredit @relation(fields: [creditId], references: [id], onDelete: Cascade)
+
+  @@index([creditId])
+}
+
+model FactoryRecipe {
+  id            String              @id @default(uuid())
+  branchId      String
+  shopProductId String
+  outputQty     Int                 @default(1)
+  active        Boolean             @default(true)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  branch        Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  shopProduct   ShopProduct         @relation(fields: [shopProductId], references: [id], onDelete: Restrict)
+  lines         FactoryRecipeLine[]
+  batches       FactoryBatch[]
+
+  @@index([branchId, active])
+  @@index([shopProductId])
+}
+
+model FactoryRecipeLine {
+  id                  String        @id @default(uuid())
+  recipeId            String
+  consumableProductId String
+  qtyPerBatch         Float
+  recipe              FactoryRecipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  consumable          ShopProduct   @relation(fields: [consumableProductId], references: [id], onDelete: Restrict)
+
+  @@index([recipeId])
+}
+
+model FactoryBatch {
+  id                 String             @id @default(uuid())
+  branchId           String
+  number             String
+  status             FactoryBatchStatus @default(DRAFT)
+  recipeId           String
+  multiplier         Float              @default(1)
+  outputProductId    String
+  outputQty          Int
+  notes              String?
+  producedAt         DateTime?
+  validatedByUserId  String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  branch             Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  recipe             FactoryRecipe      @relation(fields: [recipeId], references: [id], onDelete: Restrict)
+  outputProduct      ShopProduct        @relation(fields: [outputProductId], references: [id], onDelete: Restrict)
+
+  @@unique([branchId, number])
+  @@index([branchId, status])
+}
+
+model FactoryReservation {
+  id               String                    @id @default(uuid())
+  branchId         String
+  customerId       String
+  marketerUserId   String
+  marketerDisplayName String
+  status           FactoryReservationStatus  @default(HOLD)
+  holdUntil        DateTime
+  creditId         String?
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime                  @updatedAt
+  branch           Branch                    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  customer         FactoryCustomer           @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  credit           FactoryCredit?            @relation(fields: [creditId], references: [id], onDelete: SetNull)
+  lines            FactoryReservationLine[]
+
+  @@index([branchId, status])
+  @@index([customerId])
+  @@index([holdUntil])
+}
+
+model FactoryReservationLine {
+  id             String              @id @default(uuid())
+  reservationId  String
+  shopProductId  String
+  qty            Int
+  reservation    FactoryReservation  @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  shopProduct    ShopProduct         @relation(fields: [shopProductId], references: [id], onDelete: Restrict)
+
+  @@index([reservationId])
 }
 

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
+  ArrowLeft,
   Clock3,
   Pause,
   ShoppingBag,
@@ -49,6 +50,7 @@ import {
   branchDashboardPath,
   boutiqueRoutes,
   caisseRoutes,
+  usineRoutes,
 } from "@/lib/branch/paths";
 import type { PendingPosReception } from "@/lib/warehouse/actions";
 import {
@@ -101,15 +103,30 @@ type Props = {
   liveSituation?: LiveShiftSituation | null;
   stockCanOperate?: boolean;
   rate?: NormalizedUsdCdfRate | null;
+  /** Usine : filtres Eau/Vins + choix cash / crédit. */
+  catalogMode?: "boutique" | "usine";
+  hasEau?: boolean;
+  hasVin?: boolean;
+  creditNewHref?: string;
+  depotHref?: string;
 };
 
 export function BoutiquePosClient(props: Props) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const { cart, addItem, setQty, clear, toPayload } = usePosCart();
+  const usine = props.catalogMode === "usine";
   const [kindFilter, setKindFilter] = useState<"ALL" | "ARTICLE" | "PLAT">(
     "ALL",
   );
+  const [familyFilter, setFamilyFilter] = useState<"ALL" | "EAU" | "VIN">(
+    props.hasEau && !props.hasVin
+      ? "EAU"
+      : !props.hasEau && props.hasVin
+        ? "VIN"
+        : "ALL",
+  );
+  const [saleKind, setSaleKind] = useState<"CASH" | "CREDIT">("CASH");
   const [method, setMethod] = useState<
     "CASH" | "MOBILE_MONEY" | "CARTE" | "BANK"
   >(
@@ -151,7 +168,15 @@ export function BoutiquePosClient(props: Props) {
 
   const posItems: PosMenuItem[] = useMemo(() => {
     return props.products
-      .filter((p) => kindFilter === "ALL" || p.kind === kindFilter)
+      .filter((p) => {
+        if (usine) {
+          if (p.productKind === "CONSUMABLE") return false;
+          if (familyFilter === "EAU") return p.finishedFamily === "EAU";
+          if (familyFilter === "VIN") return p.finishedFamily === "VIN";
+          return true;
+        }
+        return kindFilter === "ALL" || p.kind === kindFilter;
+      })
       .map((p) => ({
         id: p.id,
         name: p.promoLive
@@ -161,9 +186,13 @@ export function BoutiquePosClient(props: Props) {
         price: p.effectivePrice,
         stockQty: p.availableQty,
         barcode: p.barcode,
-        imageUrl: p.imageUrl,
+        imageUrl: usine ? null : p.imageUrl,
+        sku: p.sku,
+        family: p.finishedFamily ?? null,
+        promoLive: p.promoLive,
+        basePrice: p.price,
       }));
-  }, [props.products, kindFilter]);
+  }, [props.products, kindFilter, familyFilter, usine]);
 
   const cartTotal = cart.reduce((s, l) => s + l.price * l.quantity, 0);
 
@@ -288,6 +317,24 @@ export function BoutiquePosClient(props: Props) {
     setClientOpen(true);
   }
 
+  function goCredit() {
+    if (!props.creditNewHref) return;
+    if (!stockReady) {
+      toast.error("Ouvrez le float marketeur avant de vendre.");
+      return;
+    }
+    if (!cart.length) {
+      toast.error("Panier vide");
+      return;
+    }
+    const lines = cart
+      .map((l) => `${l.menuItemId}:${l.quantity}`)
+      .join(",");
+    const params = new URLSearchParams({ lines });
+    if (familyFilter !== "ALL") params.set("family", familyFilter);
+    router.push(`${props.creditNewHref}?${params.toString()}`);
+  }
+
   function confirmCheckout(anonymous: boolean) {
     start(async () => {
       try {
@@ -326,94 +373,262 @@ export function BoutiquePosClient(props: Props) {
     });
   }
 
-  return (
-    <BoutiquePage>
-      <BoutiqueHero
-        kicker={`${props.branchName} · caisse`}
-        title="Point de vente"
-        subtitle="Le stock vendu est le float du service — ouvrez-le depuis le stock auxiliaire."
-        icon={ShoppingBag}
-        backHref={branchDashboardPath(props.organizationId, props.branchId)}
-        actions={
-          <>
+  const heldAndCashButtons = (
+    <>
+      <Button
+        variant="outline"
+        size="sm"
+        className={boutiqueOutlineBtn()}
+        onClick={() => setHeldOpen(true)}
+      >
+        <Clock3 className="size-4" />
+        En attente ({props.heldSales.length})
+      </Button>
+      {props.cashSession ? (
+        <Button
+          variant="outline"
+          size="sm"
+          className={boutiqueOutlineBtn()}
+          disabled={pending}
+          onClick={closeSession}
+        >
+          <Wallet className="size-4" />
+          Clôturer caisse
+        </Button>
+      ) : (
+        <Button
+          size="sm"
+          className={boutiquePrimaryBtn()}
+          onClick={() => setSessionDialogOpen(true)}
+        >
+          <Wallet className="size-4" />
+          Ouvrir caisse
+        </Button>
+      )}
+    </>
+  );
+
+  const posActions = (
+    <div className="space-y-2">
+      {usine ? (
+        <div className="grid grid-cols-2 gap-1.5">
+          {(
+            [
+              ["CASH", "Cash"],
+              ["CREDIT", "Crédit"],
+            ] as const
+          ).map(([k, label]) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => setSaleKind(k)}
+              className={cn(
+                "h-10 rounded-xl border text-sm font-semibold",
+                saleKind === k
+                  ? "border-emerald-800 bg-emerald-800 text-white"
+                  : "border-border bg-card text-muted-foreground",
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      ) : null}
+      {usine && saleKind === "CREDIT" ? (
+        <Button
+          className="h-12 w-full rounded-2xl bg-amber-700 text-white hover:bg-amber-700/90"
+          disabled={!cart.length || !stockReady || pending}
+          onClick={goCredit}
+        >
+          Crédit — client & échéance
+        </Button>
+      ) : (
+        <div className="space-y-2">
+          <PosPayMethodPicker value={method} onChange={setMethod} />
+          <div className="grid grid-cols-2 gap-2">
             <Button
               variant="outline"
-              size="sm"
-              className={boutiqueOutlineBtn()}
-              onClick={() => setHeldOpen(true)}
+              className={cn(
+                "h-12 rounded-2xl",
+                (!cart.length ||
+                  pending ||
+                  !props.cashSession ||
+                  !stockReady) &&
+                  "pointer-events-none opacity-50",
+              )}
+              aria-disabled={
+                !cart.length ||
+                pending ||
+                !props.cashSession ||
+                !stockReady ||
+                undefined
+              }
+              onClick={() => {
+                if (
+                  !cart.length ||
+                  pending ||
+                  !props.cashSession ||
+                  !stockReady
+                )
+                  return;
+                setHoldOpen(true);
+              }}
             >
-              <Clock3 className="size-4" />
-              En attente ({props.heldSales.length})
+              <Pause className="size-4" />
+              Attente
             </Button>
-            {props.cashSession ? (
-              <Button
-                variant="outline"
-                size="sm"
-                className={boutiqueOutlineBtn()}
-                disabled={pending}
-                onClick={closeSession}
+            <PosChargeButton
+              label="Encaisser"
+              disabled={!cart.length || !props.cashSession || !stockReady}
+              pending={pending}
+              onClick={charge}
+              className="h-12 rounded-2xl bg-emerald-700 text-white hover:bg-emerald-700/90"
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <BoutiquePage wide={usine}>
+      {usine ? (
+        <div className="flex flex-col gap-2 rounded-xl border border-border bg-card px-3 py-2.5 shadow-sm sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="-ml-1 h-8 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+              render={
+                <Link
+                  href={branchDashboardPath(
+                    props.organizationId,
+                    props.branchId,
+                  )}
+                />
+              }
+            >
+              <ArrowLeft className="size-4" />
+              Hub
+            </Button>
+            {heldAndCashButtons}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-[11px] text-muted-foreground">
+              <span
+                className={
+                  stockReady
+                    ? "font-semibold text-emerald-700"
+                    : "font-semibold text-amber-700"
+                }
               >
-                <Wallet className="size-4" />
-                Clôturer caisse
-              </Button>
-            ) : (
-              <Button
-                size="sm"
-                className={boutiquePrimaryBtn()}
-                onClick={() => setSessionDialogOpen(true)}
+                {stockReady ? "Float ouvert" : "Float fermé"}
+              </span>
+              {" · "}
+              <span
+                className={
+                  props.cashSession
+                    ? "font-semibold text-emerald-700"
+                    : "font-semibold text-amber-700"
+                }
               >
-                <Wallet className="size-4" />
-                Ouvrir caisse
+                {props.cashSession ? "Caisse ouverte" : "Caisse fermée"}
+              </span>
+            </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 rounded-full"
+              render={
+                <Link
+                  href={usineRoutes.serviceStock(
+                    props.organizationId,
+                    props.branchId,
+                  )}
+                />
+              }
+            >
+              Float
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 rounded-full"
+              render={
+                <Link
+                  href={
+                    props.depotHref ??
+                    usineRoutes.depot(props.organizationId, props.branchId)
+                  }
+                />
+              }
+            >
+              Dépôt
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <BoutiqueHero
+          kicker={`${props.branchName} · caisse`}
+          title="Point de vente"
+          subtitle="Le stock vendu est le float du service — ouvrez-le depuis le stock auxiliaire."
+          icon={ShoppingBag}
+          backHref={branchDashboardPath(props.organizationId, props.branchId)}
+          actions={
+            <>
+              {heldAndCashButtons}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-full"
+                render={
+                  <Link
+                    href={boutiqueRoutes.serviceStock(
+                      props.organizationId,
+                      props.branchId,
+                    )}
+                  />
+                }
+              >
+                Service stock
               </Button>
-            )}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="rounded-full"
-              render={
-                <Link
-                  href={boutiqueRoutes.serviceStock(
-                    props.organizationId,
-                    props.branchId,
-                  )}
-                />
-              }
-            >
-              Service stock
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="rounded-full"
-              render={
-                <Link
-                  href={boutiqueRoutes.produits(
-                    props.organizationId,
-                    props.branchId,
-                  )}
-                />
-              }
-            >
-              Produits
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="rounded-full"
-              render={
-                <Link
-                  href={boutiqueRoutes.stock(
-                    props.organizationId,
-                    props.branchId,
-                  )}
-                />
-              }
-            >
-              Stock
-            </Button>
-          </>
-        }
-      />
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-full"
+                render={
+                  <Link
+                    href={boutiqueRoutes.produits(
+                      props.organizationId,
+                      props.branchId,
+                    )}
+                  />
+                }
+              >
+                Produits
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-full"
+                render={
+                  <Link
+                    href={
+                      props.depotHref ??
+                      boutiqueRoutes.stock(
+                        props.organizationId,
+                        props.branchId,
+                      )
+                    }
+                  />
+                }
+              >
+                Stock
+              </Button>
+            </>
+          }
+        />
+      )}
 
       {(props.foreignCashSessions?.length ?? 0) > 0 ? (
         <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-sm">
@@ -429,81 +644,84 @@ export function BoutiquePosClient(props: Props) {
         pending={props.pendingReceptions ?? []}
       />
 
-      <div className="flex flex-wrap gap-1.5">
-        {(["ALL", "ARTICLE", "PLAT"] as const).map((k) => (
-          <button
-            key={k}
-            type="button"
-            onClick={() => setKindFilter(k)}
-            className={cn(
-              "rounded-full border px-3.5 py-1.5 text-xs font-semibold transition",
-              kindFilter === k
-                ? "border-[#0f3d2e] bg-[#0f3d2e] text-[#f4efe4] shadow-sm"
-                : "border-[#e4ddd0] bg-white text-[#4a453e] hover:bg-[#f4f1ea]",
-            )}
-          >
-            {k === "ALL" ? "Tous" : k === "ARTICLE" ? "Articles" : "Plats"}
-          </button>
-        ))}
-      </div>
+      {usine ? null : (
+        <div className="flex flex-wrap gap-1.5">
+          {(["ALL", "ARTICLE", "PLAT"] as const).map((k) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => setKindFilter(k)}
+              className={cn(
+                "rounded-full border px-3.5 py-1.5 text-xs font-semibold transition",
+                kindFilter === k
+                  ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                  : "border-border bg-card text-muted-foreground hover:bg-muted",
+              )}
+            >
+              {k === "ALL" ? "Tous" : k === "ARTICLE" ? "Articles" : "Plats"}
+            </button>
+          ))}
+        </div>
+      )}
 
-      <div className="overflow-hidden rounded-[1.35rem] border border-[#e4ddd0] bg-white/90 shadow-[0_18px_40px_-24px_rgba(15,61,46,0.28)]">
-      <PosTerminal
-        items={posItems}
-        cart={cart}
-        onAdd={addItem}
-        onSetQty={setQty}
-        onClear={clear}
-        ticketTitle="Ticket commerce"
-        emptyHint="Scannez ou cherchez un article / plat"
-        formatPrice={(n) => `${n.toFixed(2)} $`}
-        actions={
-          <div className="space-y-2">
-            <PosPayMethodPicker value={method} onChange={setMethod} />
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                variant="outline"
-                className={cn(
-                  "h-12 rounded-2xl",
-                  (!cart.length ||
-                    pending ||
-                    !props.cashSession ||
-                    !stockReady) &&
-                    "pointer-events-none opacity-50",
-                )}
-                aria-disabled={
-                  !cart.length ||
-                  pending ||
-                  !props.cashSession ||
-                  !stockReady ||
-                  undefined
-                }
-                onClick={() => {
-                  if (
-                    !cart.length ||
-                    pending ||
-                    !props.cashSession ||
-                    !stockReady
-                  )
-                    return;
-                  setHoldOpen(true);
-                }}
-              >
-                <Pause className="size-4" />
-                Attente
-              </Button>
-              <PosChargeButton
-                label="Encaisser"
-                disabled={!cart.length || !props.cashSession || !stockReady}
-                pending={pending}
-                onClick={charge}
-                className="h-12 rounded-2xl bg-emerald-700 text-white hover:bg-emerald-700/90"
-              />
+      {usine ? (
+        <PosTerminal
+          items={posItems}
+          cart={cart}
+          onAdd={addItem}
+          onSetQty={setQty}
+          onClear={clear}
+          catalogLayout="list"
+          catalogStatus={
+            <div className="flex flex-wrap gap-1">
+              {(
+                [
+                  ["ALL", "Tous"],
+                  ...(props.hasEau !== false
+                    ? ([["EAU", "Eau"]] as const)
+                    : []),
+                  ...(props.hasVin !== false
+                    ? ([["VIN", "Vins"]] as const)
+                    : []),
+                ] as const
+              ).map(([k, label]) => (
+                <button
+                  key={k}
+                  type="button"
+                  onClick={() => setFamilyFilter(k)}
+                  className={cn(
+                    "rounded-full border px-2.5 py-1 text-[11px] font-semibold transition",
+                    familyFilter === k
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-card text-muted-foreground hover:bg-muted",
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
-          </div>
-        }
-      />
-      </div>
+          }
+          ticketTitle="Panier"
+          emptyHint="Ajoutez un produit du catalogue"
+          formatPrice={(n) => `${n.toFixed(2)} $`}
+          actions={posActions}
+        />
+      ) : (
+        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+          <PosTerminal
+            items={posItems}
+            cart={cart}
+            onAdd={addItem}
+            onSetQty={setQty}
+            onClear={clear}
+            catalogLayout="tiles"
+            ticketTitle="Ticket commerce"
+            emptyHint="Scannez ou cherchez un article / plat"
+            formatPrice={(n) => `${n.toFixed(2)} $`}
+            actions={posActions}
+          />
+        </div>
+      )}
 
       {/* Session caisse */}
       <Dialog
@@ -668,7 +886,7 @@ export function BoutiquePosClient(props: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {props.stockCanOperate && !props.stockForeignSession ? (
+      {usine ? null : props.stockCanOperate && !props.stockForeignSession ? (
         <ServiceStockOpsPanel
           organizationId={props.organizationId}
           branchId={props.branchId}
@@ -684,7 +902,10 @@ export function BoutiquePosClient(props: Props) {
             props.branchId,
           )}
         />
-      ) : !props.stockCanOperate && stockReady && props.stockSession ? (
+      ) : !usine &&
+        !props.stockCanOperate &&
+        stockReady &&
+        props.stockSession ? (
         <p className="text-xs text-muted-foreground">
           Stock service ouvert par {props.stockSession.vendorDisplayName} (
           {props.stockSession.number}) — vous vendez sur ce float.

@@ -9,6 +9,7 @@ import { assertOrganizationPermission } from "@/lib/auth/organization-permission
 import { consumeAdminCreatedUserPlainPassword, stashAdminCreatedUserPlainPassword } from "@/lib/admin-created-user-password";
 import { sendPasswordResetCredentialsEmail } from "@/lib/email/send-password-reset-credentials";
 import { generateSecurePassword } from "@/lib/generate-password";
+import { resolveMemberEmail } from "@/lib/member-email";
 import prisma from "@/lib/prisma";
 import {
   createOrgMemberSchema,
@@ -174,11 +175,18 @@ export async function createOrganizationMemberAction(
 
   const org = await prisma.organization.findUnique({
     where: { id: organizationId },
-    select: { name: true },
+    select: { name: true, slug: true },
   });
 
+  const resolvedEmail = await resolveMemberEmail({
+    email,
+    name,
+    organizationSlug: org?.slug ?? "org",
+  });
+  if (!resolvedEmail.ok) return resolvedEmail;
+
   const h = await headers();
-  const emailLower = email.toLowerCase();
+  const emailLower = resolvedEmail.email;
   const password = generateSecurePassword(16);
   const primaryBranchId = branches.ids[0]!;
   stashAdminCreatedUserPlainPassword(emailLower, password, {

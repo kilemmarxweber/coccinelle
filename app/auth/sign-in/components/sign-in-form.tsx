@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Lock, Mail, Plane } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
@@ -163,11 +163,11 @@ export function SignInForm({ callbackUrl, appName }: SignInFormProps) {
   return (
     <div className="flex h-full flex-col">
       <Link href="/" className="mb-5 inline-flex items-center gap-2 self-start">
-        <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-          <Plane className="size-4" aria-hidden />
+        <span className="flex size-8 items-center justify-center overflow-hidden rounded-lg">
+          <img src="/favicon.ico" alt="" className="size-8" />
         </span>
         <span className="leading-tight">
-          <span className="block text-sm font-bold tracking-[0.12em] text-foreground uppercase">
+          <span className="block text-sm font-bold tracking-[0.12em] text-foreground">
             {appName}
           </span>
           <span className="block text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
@@ -252,22 +252,14 @@ export function SignInForm({ callbackUrl, appName }: SignInFormProps) {
             </p>
           </div>
 
-          <div className="mb-4 grid grid-cols-2 gap-2.5">
+          <div className="mb-4">
             <button
               type="button"
               onClick={notifySocialSoon}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-input text-sm font-medium text-foreground transition hover:bg-muted"
+              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border bg-input text-sm font-medium text-foreground transition hover:bg-muted"
             >
               <GoogleIcon />
               Google
-            </button>
-            <button
-              type="button"
-              onClick={notifySocialSoon}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-input text-sm font-medium text-foreground transition hover:bg-muted"
-            >
-              <GitHubIcon />
-              GitHub
             </button>
           </div>
 
@@ -390,20 +382,6 @@ export function SignInForm({ callbackUrl, appName }: SignInFormProps) {
               >
                 {isSubmitting ? "Connexion…" : "Se connecter"}
               </button>
-
-              <p className="text-center text-sm text-muted-foreground">
-                Nouveau membre ?{" "}
-                <Link
-                  href={
-                    callbackUrl
-                      ? `/auth/sign-up?callbackUrl=${encodeURIComponent(callbackUrl)}`
-                      : "/auth/sign-up"
-                  }
-                  className="font-semibold text-primary transition hover:text-primary/80"
-                >
-                  Créer un compte
-                </Link>
-              </p>
             </form>
           </Form>
         </>
@@ -494,10 +472,3 @@ function GoogleIcon() {
   );
 }
 
-function GitHubIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="size-4 fill-current" aria-hidden>
-      <path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.52 2.87 8.35 6.84 9.7.5.1.68-.22.68-.48 0-.24-.01-.87-.01-1.7-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.55-1.14-4.55-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.27 2.75 1.05A9.3 9.3 0 0 1 12 6.8c.85 0 1.7.12 2.5.34 1.9-1.32 2.74-1.05 2.74-1.05.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.8 0 .27.18.59.69.48A10.05 10.05 0 0 0 22 12.26C22 6.58 17.52 2 12 2z" />
-    </svg>
-  );
-}

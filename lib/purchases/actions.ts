@@ -79,7 +79,17 @@ function roundMoney(n: number) {
 }
 
 function branchHasProductCatalog(type: string) {
-  return type === "BOUTIQUE" || type === "HOTEL" || type === "RESTAURANT";
+  return type === "BOUTIQUE" || type === "HOTEL" || type === "RESTAURANT" || type === "USINE";
+}
+
+function factoryKindFromCategory(catName: string): {
+  productKind: "FINISHED" | "CONSUMABLE";
+  finishedFamily: "EAU" | "VIN" | null;
+} {
+  const n = catName.toLowerCase();
+  if (n.includes("eau")) return { productKind: "FINISHED", finishedFamily: "EAU" };
+  if (n.includes("vin")) return { productKind: "FINISHED", finishedFamily: "VIN" };
+  return { productKind: "CONSUMABLE", finishedFamily: null };
 }
 
 function assertBranchProductCatalog(type: string) {
@@ -194,7 +204,7 @@ export async function listCatalogProductsAction(
   branchId: string,
 ) {
   const { branch } = await ctx(organizationId, branchId, { bons_commande: ["voir"] });
-  if (branch.type === "BOUTIQUE") {
+  if (branch.type === "BOUTIQUE" || branch.type === "USINE") {
     const products = await prisma.shopProduct.findMany({
       where: { branchId, active: true },
       orderBy: { name: "asc" },
@@ -247,7 +257,7 @@ export async function listProductCategoriesAction(
   branchId: string,
 ) {
   const { branch } = await ctx(organizationId, branchId, { bons_commande: ["voir"] });
-  if (branch.type === "BOUTIQUE") {
+  if (branch.type === "BOUTIQUE" || branch.type === "USINE") {
     const rows = await prisma.shopCategory.findMany({
       where: { branchId },
       orderBy: { name: "asc" },
@@ -293,10 +303,14 @@ export async function createPurchaseOrderAction(input: {
   organizationId: string;
   branchId: string;
   supplierName?: string | null;
+  supplierId?: string | null;
   note?: string | null;
   lines: PoLineInput[];
 }) {
-  const { user } = await ctx(input.organizationId, input.branchId, { bons_commande: ["ajouter"] });
+  const { user, branch } = await ctx(input.organizationId, input.branchId, { bons_commande: ["ajouter"] });
+  if (branch.type === "USINE" && !input.supplierId?.trim()) {
+    throw new Error("Choisissez un fournisseur enregistré.");
+  }
   const { lines, totalAmountUsd } = normalizeLines(input.lines);
   const number = await nextPurchaseOrderNumber(input.branchId);
   const po = await prisma.purchaseOrder.create({
@@ -305,6 +319,7 @@ export async function createPurchaseOrderAction(input: {
       number,
       status: "EN_ATTENTE",
       supplierName: input.supplierName?.trim() || null,
+      supplierId: input.supplierId?.trim() || null,
       note: input.note?.trim() || null,
       totalAmountUsd,
       createdByUserId: user.id,
@@ -390,6 +405,9 @@ export async function validatePurchaseOrderAction(input: {
   if (po.status === "VALIDE" || po.status === "ANNULE") {
     throw new Error("Ce bon est déjà clôturé.");
   }
+  if (branch.type === "USINE" && !po.supplierId) {
+    throw new Error("Choisissez un fournisseur enregistré avant de valider.");
+  }
 
   const byId = new Map(input.lines.map((l) => [l.id, l]));
   let validatedTotal = 0;
@@ -438,7 +456,7 @@ export async function validatePurchaseOrderAction(input: {
 
       if (row.receivedQty > 0) {
         // Catalogue strictement scopé à la branche du bon (jamais partagé).
-        if (branch.type === "BOUTIQUE") {
+        if (branch.type === "BOUTIQUE" || branch.type === "USINE") {
           let product =
             shopProductId != null
               ? await tx.shopProduct.findFirst({
@@ -474,6 +492,10 @@ export async function validatePurchaseOrderAction(input: {
               .toUpperCase()
               .slice(0, 16);
             const sku = `${skuBase || "ART"}-${Date.now().toString(36).toUpperCase()}`;
+            const factory =
+              branch.type === "USINE"
+                ? factoryKindFromCategory(catName)
+                : null;
             product = await tx.shopProduct.create({
               data: {
                 branchId: input.branchId,
@@ -483,6 +505,8 @@ export async function validatePurchaseOrderAction(input: {
                 price: row.unitPriceUsd,
                 stockQty: 0,
                 kind: "ARTICLE",
+                productKind: factory?.productKind ?? "FINISHED",
+                finishedFamily: factory?.finishedFamily ?? null,
                 active: true,
               },
             });
@@ -694,7 +718,7 @@ export async function syncPurchaseOrderCatalogAction(input: {
       if (!(qty > 0)) continue;
       const name = item.name.trim();
 
-      if (branch.type === "BOUTIQUE") {
+      if (branch.type === "BOUTIQUE" || branch.type === "USINE") {
         if (item.shopProductId) continue;
         let product = await tx.shopProduct.findFirst({
           where: {
@@ -717,6 +741,10 @@ export async function syncPurchaseOrderCatalogAction(input: {
             });
           }
           const sku = `BC-${Date.now().toString(36).toUpperCase()}`;
+          const factory =
+            branch.type === "USINE"
+              ? factoryKindFromCategory(catName)
+              : null;
           product = await tx.shopProduct.create({
             data: {
               branchId: input.branchId,
@@ -726,6 +754,8 @@ export async function syncPurchaseOrderCatalogAction(input: {
               price: item.unitPriceUsd,
               stockQty: 0,
               kind: "ARTICLE",
+              productKind: factory?.productKind ?? "FINISHED",
+              finishedFamily: factory?.finishedFamily ?? null,
               active: true,
             },
           });

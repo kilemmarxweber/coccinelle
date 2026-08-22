@@ -203,6 +203,7 @@ export function BonsCommandeClient(props: {
   categories: string[];
   rate: NormalizedUsdCdfRate | null;
   hasOpenCashSession: boolean;
+  suppliers?: { id: string; name: string }[];
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -210,6 +211,7 @@ export function BonsCommandeClient(props: {
   const [previewPo, setPreviewPo] = useState<PurchaseOrder | null>(null);
   const [validateTarget, setValidateTarget] = useState<PurchaseOrder | null>(null);
   const [supplierName, setSupplierName] = useState("");
+  const [supplierId, setSupplierId] = useState("");
   const [note, setNote] = useState("");
   const defaultCategory = props.categories[0] ?? "Divers";
   const [categoryOptions, setCategoryOptions] = useState<string[]>(
@@ -314,6 +316,7 @@ export function BonsCommandeClient(props: {
           organizationId: props.organizationId,
           branchId: props.branchId,
           supplierName: supplierName || null,
+          supplierId: supplierId || null,
           note: note || null,
           lines: payload,
         });
@@ -461,13 +464,13 @@ export function BonsCommandeClient(props: {
     >
     <div className="mx-auto flex max-w-5xl flex-col gap-5 px-4 py-6">
       <header
-        className="rounded-3xl border border-[#d1ddd4] bg-white/90 px-4 py-4 shadow-sm sm:px-5"
+        className="rounded-3xl border border-border bg-card px-4 py-4 shadow-sm sm:px-5"
       >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <Link
             href={branchDashboardPath(props.organizationId, props.branchId)}
-            className="mb-2 inline-flex items-center gap-1 text-xs text-slate-500 hover:text-emerald-800"
+            className="mb-2 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="size-3.5" /> Dashboard
           </Link>
@@ -477,7 +480,7 @@ export function BonsCommandeClient(props: {
           <h1 className="text-xl font-bold tracking-tight text-emerald-950 sm:text-2xl">
             Bons de commande
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             {props.branchName} · alimente le stock{" "}
             {props.branchType === "BOUTIQUE" ? "auxiliaire (POS)" : "catalogue"}{" "}
             à la validation
@@ -535,14 +538,14 @@ export function BonsCommandeClient(props: {
 
       <ul className="space-y-3">
         {props.orders.length === 0 ? (
-          <li className="rounded-3xl border border-dashed border-[#d1ddd4] bg-white/70 p-10 text-center text-sm text-slate-500">
+          <li className="rounded-3xl border border-dashed border-border bg-card/70 p-10 text-center text-sm text-muted-foreground">
             Aucun bon de commande.
           </li>
         ) : (
           props.orders.map((po) => (
             <li
               key={po.id}
-              className="rounded-3xl border border-[#d1ddd4] bg-white p-4 shadow-sm"
+              className="rounded-3xl border border-border bg-card p-4 shadow-sm"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
@@ -698,12 +701,35 @@ export function BonsCommandeClient(props: {
           </DialogHeader>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="grid gap-1.5">
-              <Label>Fournisseur</Label>
-              <Input
-                value={supplierName}
-                onChange={(e) => setSupplierName(e.target.value)}
-                placeholder="Optionnel"
-              />
+              <Label>
+                Fournisseur
+                {props.branchType === "USINE" ? " (enregistré)" : ""}
+              </Label>
+              {props.branchType === "USINE" ? (
+                <select
+                  className="h-9 w-full rounded-lg border bg-background px-3 text-sm"
+                  value={supplierId}
+                  onChange={(e) => {
+                    setSupplierId(e.target.value);
+                    const hit = props.suppliers?.find((s) => s.id === e.target.value);
+                    setSupplierName(hit?.name ?? "");
+                  }}
+                  required
+                >
+                  <option value="">Choisir…</option>
+                  {(props.suppliers ?? []).map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <Input
+                  value={supplierName}
+                  onChange={(e) => setSupplierName(e.target.value)}
+                  placeholder="Optionnel"
+                />
+              )}
             </div>
             <div className="grid gap-1.5">
               <Label>Note</Label>

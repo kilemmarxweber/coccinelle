@@ -1,17 +1,12 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { KeyRound, Pencil, Plus, Shield, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +15,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
+import {
+  ParametresPanel,
+  segmentedTabClass,
+} from "./parametres-section-nav";
 import {
   PRIVILEGE_ACTIONS,
   PRIVILEGE_RESOURCE_GROUPS,
@@ -94,6 +92,7 @@ export function ParametresRolesClient({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const [form, setForm] = useState<RoleFormState>(emptyForm);
+  const [mainTab, setMainTab] = useState<"roles" | "privileges">("roles");
 
   const selected = useMemo(
     () => roles.find((r) => r.slug === selectedSlug) ?? roles[0],
@@ -273,80 +272,77 @@ export function ParametresRolesClient({
     });
   }
 
+  const tabSwitch = (
+    <div className="flex gap-1 rounded-xl bg-muted p-1">
+      {(
+        [
+          ["roles", "Rôles"],
+          ["privileges", "Privilèges"],
+        ] as const
+      ).map(([id, label]) => (
+        <button
+          key={id}
+          type="button"
+          onClick={() => setMainTab(id)}
+          className={segmentedTabClass(mainTab === id)}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 sm:px-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Paramètres</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Gérez les rôles métier, puis leurs privilèges module par module.
-        </p>
-      </div>
-
-      <Tabs defaultValue="roles" className="w-full">
-        <TabsList className="h-11 w-full max-w-md p-1">
-          <TabsTrigger value="roles" className="flex-1 h-9">
-            Rôles
-          </TabsTrigger>
-          <TabsTrigger value="privileges" className="flex-1 h-9">
-            Privilèges
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="roles" className="mt-4 space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-sm text-muted-foreground">
-              Créer, modifier ou supprimer les métiers de la branche.
-            </p>
-            <Button type="button" disabled={pending} onClick={openCreate}>
+    <div className="space-y-5">
+      {mainTab === "roles" ? (
+        <ParametresPanel
+          title="Métiers de la branche"
+          description="Créez, renommez ou supprimez les rôles."
+          icon={Shield}
+          actions={
+            <Button type="button" size="sm" disabled={pending} onClick={openCreate}>
               <Plus className="size-4" />
-              Nouveau rôle
+              Nouveau
             </Button>
-          </div>
-
-          <div className="overflow-hidden rounded-2xl border border-border">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b bg-muted/30 text-left text-xs text-muted-foreground">
-                  <th className="px-4 py-3 font-medium">Nom</th>
-                  <th className="hidden px-4 py-3 font-medium sm:table-cell">
-                    Slug
-                  </th>
-                  <th className="hidden px-4 py-3 font-medium md:table-cell">
-                    Description
-                  </th>
-                  <th className="px-4 py-3 font-medium">Type</th>
-                  <th className="px-4 py-3 text-right font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {roles.map((role) => (
-                  <tr key={role.id} className="border-b last:border-0">
-                    <td className="px-4 py-3 font-medium">{role.label}</td>
-                    <td className="hidden px-4 py-3 font-mono text-xs text-muted-foreground sm:table-cell">
-                      {role.slug}
-                    </td>
-                    <td className="hidden max-w-xs truncate px-4 py-3 text-muted-foreground md:table-cell">
-                      {role.description ?? "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={cn(
-                          "rounded-md px-2 py-0.5 text-[11px] font-medium",
-                          role.isSystem
-                            ? "bg-sky-500/15 text-sky-700 dark:text-sky-300"
-                            : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
-                        )}
-                      >
-                        {role.isSystem ? "Système" : "Personnalisé"}
-                      </span>
-                      {role.slug === "caissier" ? (
-                        <span className="ml-1 text-[11px] text-amber-600">
-                          Legacy
-                        </span>
-                      ) : null}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex justify-end gap-1">
+          }
+        >
+          <div className="mb-4">{tabSwitch}</div>
+          {roles.length === 0 ? (
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              Aucun rôle en base.
+            </p>
+          ) : (
+            <div className="-mx-1 overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b text-left text-muted-foreground">
+                    <th className="py-2 pr-3 font-medium">Nom</th>
+                    <th className="hidden py-2 pr-3 font-medium sm:table-cell">
+                      Slug
+                    </th>
+                    <th className="hidden py-2 pr-3 font-medium md:table-cell">
+                      Description
+                    </th>
+                    <th className="py-2 pr-3 font-medium">Type</th>
+                    <th className="py-2 text-right font-medium"> </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {roles.map((role) => (
+                    <tr key={role.id} className="border-b last:border-0">
+                      <td className="py-2.5 pr-3 font-medium">{role.label}</td>
+                      <td className="hidden py-2.5 pr-3 font-mono text-xs text-muted-foreground sm:table-cell">
+                        {role.slug}
+                      </td>
+                      <td className="hidden max-w-xs truncate py-2.5 pr-3 text-muted-foreground md:table-cell">
+                        {role.description ?? "—"}
+                      </td>
+                      <td className="py-2.5 pr-3">
+                        <Badge variant={role.isSystem ? "secondary" : "outline"}>
+                          {role.isSystem ? "Système" : "Perso"}
+                        </Badge>
+                      </td>
+                      <td className="py-2.5 text-right">
                         <Button
                           type="button"
                           size="sm"
@@ -367,130 +363,119 @@ export function ParametresRolesClient({
                         >
                           <Trash2 className="size-3.5" />
                         </Button>
-                      </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </ParametresPanel>
+      ) : !selected ? (
+        <ParametresPanel
+          title="Privilèges"
+          description="Aucun rôle en base."
+          icon={KeyRound}
+          actions={tabSwitch}
+        >
+          <p className="py-8 text-center text-sm text-muted-foreground">
+            Créez d’abord un rôle.
+          </p>
+        </ParametresPanel>
+      ) : (
+        <ParametresPanel
+          title={`Privilèges — ${selected.label}`}
+          description={selected.description ?? selected.slug}
+          icon={KeyRound}
+          actions={
+            <div className="flex flex-wrap justify-end gap-2">
+              <Button
+                type="button"
+                size="sm"
+                disabled={pending}
+                onClick={savePrivileges}
+              >
+                Enregistrer
+              </Button>
+              {selected.isSystem ? (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={pending}
+                  onClick={resetPrivileges}
+                >
+                  Réinitialiser
+                </Button>
+              ) : null}
+            </div>
+          }
+        >
+          <div className="mb-4 space-y-3">
+            {tabSwitch}
+            <div className="flex flex-wrap gap-1 rounded-xl bg-muted p-1">
+              {roles.map((role) => (
+                <button
+                  key={role.slug}
+                  type="button"
+                  onClick={() => setSelectedSlug(role.slug)}
+                  className={segmentedTabClass(role.slug === selected.slug)}
+                >
+                  {role.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="-mx-1 overflow-x-auto">
+            <table className="w-full min-w-[560px] text-sm">
+              <thead>
+                <tr className="border-b text-left text-xs text-muted-foreground">
+                  <th className="py-2 pr-3 font-medium">Module</th>
+                  {PRIVILEGE_ACTIONS.map((a) => (
+                    <th key={a} className="px-1 py-2 text-center font-medium">
+                      {a}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {PRIVILEGE_RESOURCE_GROUPS.flatMap((group) => [
+                  <tr key={group.title} className="border-b bg-muted/40">
+                    <td
+                      colSpan={1 + PRIVILEGE_ACTIONS.length}
+                      className="px-1 py-1.5 text-[11px] font-medium tracking-wide text-muted-foreground uppercase"
+                    >
+                      {group.title}
                     </td>
-                  </tr>
-                ))}
+                  </tr>,
+                  ...group.resources.map((resource) => (
+                    <tr key={resource} className="border-b last:border-0">
+                      <td className="py-1.5 pr-3">
+                        {PRIVILEGE_RESOURCE_LABELS[resource] ?? resource}
+                      </td>
+                      {PRIVILEGE_ACTIONS.map((action) => {
+                        const on = allowed.has(privilegeKey(resource, action));
+                        return (
+                          <td key={action} className="px-1 py-1.5 text-center">
+                            <input
+                              type="checkbox"
+                              className="size-4 accent-primary"
+                              checked={on}
+                              disabled={pending}
+                              onChange={() => toggle(resource, action)}
+                              aria-label={`${resource} ${action}`}
+                            />
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  )),
+                ])}
               </tbody>
             </table>
           </div>
-        </TabsContent>
-
-        <TabsContent value="privileges" className="mt-4">
-          {!selected ? (
-            <p className="text-sm text-muted-foreground">Aucun rôle en base.</p>
-          ) : (
-            <div className="flex flex-col gap-4 lg:flex-row">
-              <aside className="flex shrink-0 flex-row gap-2 overflow-x-auto lg:w-56 lg:flex-col">
-                {roles.map((role) => (
-                  <button
-                    key={role.slug}
-                    type="button"
-                    onClick={() => setSelectedSlug(role.slug)}
-                    className={cn(
-                      "rounded-xl border px-3 py-2 text-left text-sm transition",
-                      role.slug === selected.slug
-                        ? "border-primary bg-primary/10 font-medium"
-                        : "border-border bg-card/40 hover:bg-muted/40",
-                    )}
-                  >
-                    <span className="block">{role.label}</span>
-                    <span className="text-[11px] text-muted-foreground">
-                      {role.slug}
-                    </span>
-                  </button>
-                ))}
-              </aside>
-
-              <div className="min-w-0 flex-1 space-y-4">
-                <div className="rounded-2xl border border-border bg-card/50 px-4 py-3">
-                  <p className="font-medium">{selected.label}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {selected.description ?? selected.slug}
-                  </p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <Button
-                      type="button"
-                      disabled={pending}
-                      onClick={savePrivileges}
-                    >
-                      Enregistrer
-                    </Button>
-                    {selected.isSystem ? (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        disabled={pending}
-                        onClick={resetPrivileges}
-                      >
-                        Réinitialiser au seed
-                      </Button>
-                    ) : null}
-                  </div>
-                </div>
-
-                {PRIVILEGE_RESOURCE_GROUPS.map((group) => (
-                  <div
-                    key={group.title}
-                    className="overflow-x-auto rounded-2xl border border-border"
-                  >
-                    <div className="border-b bg-muted/30 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      {group.title}
-                    </div>
-                    <table className="w-full min-w-[640px] text-sm">
-                      <thead>
-                        <tr className="border-b text-left text-xs text-muted-foreground">
-                          <th className="px-3 py-2 font-medium">Module</th>
-                          {PRIVILEGE_ACTIONS.map((a) => (
-                            <th
-                              key={a}
-                              className="px-2 py-2 text-center font-medium"
-                            >
-                              {a}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {group.resources.map((resource) => (
-                          <tr
-                            key={resource}
-                            className="border-b last:border-0"
-                          >
-                            <td className="px-3 py-2">
-                              {PRIVILEGE_RESOURCE_LABELS[resource] ?? resource}
-                            </td>
-                            {PRIVILEGE_ACTIONS.map((action) => {
-                              const on = allowed.has(
-                                privilegeKey(resource, action),
-                              );
-                              return (
-                                <td
-                                  key={action}
-                                  className="px-2 py-2 text-center"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    className="size-4 accent-primary"
-                                    checked={on}
-                                    disabled={pending}
-                                    onChange={() => toggle(resource, action)}
-                                    aria-label={`${resource} ${action}`}
-                                  />
-                                </td>
-                              );
-                            })}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+        </ParametresPanel>
+      )}
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-md">

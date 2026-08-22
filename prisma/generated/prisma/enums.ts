@@ -132,7 +132,8 @@ export const BranchType = {
   AGENCE: 'AGENCE',
   HOTEL: 'HOTEL',
   BOUTIQUE: 'BOUTIQUE',
-  RESTAURANT: 'RESTAURANT'
+  RESTAURANT: 'RESTAURANT',
+  USINE: 'USINE'
 } as const
 
 export type BranchType = (typeof BranchType)[keyof typeof BranchType]
@@ -182,6 +183,60 @@ export const ShopProductKind = {
 } as const
 
 export type ShopProductKind = (typeof ShopProductKind)[keyof typeof ShopProductKind]
+
+
+export const FactoryProductKind = {
+  FINISHED: 'FINISHED',
+  CONSUMABLE: 'CONSUMABLE'
+} as const
+
+export type FactoryProductKind = (typeof FactoryProductKind)[keyof typeof FactoryProductKind]
+
+
+export const FactoryFinishedFamily = {
+  EAU: 'EAU',
+  VIN: 'VIN'
+} as const
+
+export type FactoryFinishedFamily = (typeof FactoryFinishedFamily)[keyof typeof FactoryFinishedFamily]
+
+
+export const FactoryCreditStatus = {
+  OPEN: 'OPEN',
+  PARTIAL: 'PARTIAL',
+  SETTLED: 'SETTLED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type FactoryCreditStatus = (typeof FactoryCreditStatus)[keyof typeof FactoryCreditStatus]
+
+
+export const FactoryInstallmentKind = {
+  ACOMPTE: 'ACOMPTE',
+  COMPLEMENT: 'COMPLEMENT',
+  SOLDE: 'SOLDE'
+} as const
+
+export type FactoryInstallmentKind = (typeof FactoryInstallmentKind)[keyof typeof FactoryInstallmentKind]
+
+
+export const FactoryReservationStatus = {
+  HOLD: 'HOLD',
+  PICKED: 'PICKED',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type FactoryReservationStatus = (typeof FactoryReservationStatus)[keyof typeof FactoryReservationStatus]
+
+
+export const FactoryBatchStatus = {
+  DRAFT: 'DRAFT',
+  VALIDATED: 'VALIDATED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type FactoryBatchStatus = (typeof FactoryBatchStatus)[keyof typeof FactoryBatchStatus]
 
 
 export const ShopSaleStatus = {

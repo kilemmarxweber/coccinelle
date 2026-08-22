@@ -1,17 +1,14 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import { GitBranch } from "lucide-react";
-import { DashboardNavbar } from "@/components/layout/dashboard-navbar";
-import { BranchNotificationsBell } from "@/components/layout/branch-notifications-bell";
-import { Button } from "@/components/ui/button";
+import { BranchWorkspace } from "@/components/branch/branch-workspace";
 import { auth } from "@/lib/auth";
+import { appName } from "@/lib/app-name";
 import { canAccessBranch } from "@/lib/branch/user-branches";
-import {
-  branchDashboardPath,
-  organizationBranchesPath,
-} from "@/lib/branch/paths";
+import { loadBranchCustomerUiTheme } from "@/lib/branch/load-customer-ui-theme";
+import { branchDashboardPath } from "@/lib/branch/paths";
+import { resolveCurrentBranchOpsRole } from "@/lib/branch/resolve-ops-role";
+import { getViewResourcesForRole } from "@/lib/branch/privileges";
 import { isHospitality } from "@/lib/branch/hospitality";
 
 type LayoutProps = {
@@ -38,35 +35,38 @@ export default async function BranchWorkspaceLayout({
   );
   if (!branch || branch.organizationId !== organizationId) notFound();
 
+  const [opsRole, customerUi] = await Promise.all([
+    resolveCurrentBranchOpsRole(organizationId, branchId),
+    loadBranchCustomerUiTheme(branchId),
+  ]);
+  const viewResources =
+    isHospitality(branch.type) || branch.type === "USINE"
+      ? await getViewResourcesForRole(opsRole)
+      : "ALL";
+  const allowedCardIds =
+    viewResources === "ALL"
+      ? ("ALL" as const)
+      : Array.from(viewResources);
+
+  const userName =
+    session.user.name?.trim() || session.user.email || "Visiteur";
+
   return (
-    <div className="min-h-svh bg-background">
-      <DashboardNavbar
-        title={branch.name}
-        titleHref={branchDashboardPath(organizationId, branchId)}
-        actions={
-          <div className="flex items-center gap-2">
-            {isHospitality(branch.type) ? (
-              <BranchNotificationsBell
-                organizationId={organizationId}
-                branchId={branchId}
-              />
-            ) : null}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="hidden gap-1.5 sm:inline-flex"
-              render={
-                <Link href={organizationBranchesPath(organizationId)} />
-              }
-            >
-              <GitBranch className="size-3.5" />
-              Branches
-            </Button>
-          </div>
-        }
-      />
-      <div className="pt-14 sm:pt-16">{children}</div>
-    </div>
+    <BranchWorkspace
+      organizationId={organizationId}
+      branchId={branchId}
+      branchName={branch.name}
+      branchType={branch.type}
+      hasStays={branch.hasStays}
+      hasRestaurant={branch.hasRestaurant}
+      appName={appName()}
+      opsRole={opsRole}
+      allowedCardIds={allowedCardIds}
+      userName={userName}
+      customerUiTheme={customerUi.theme}
+      customerUiEnabled={customerUi.isCustom}
+    >
+      {children}
+    </BranchWorkspace>
   );
 }

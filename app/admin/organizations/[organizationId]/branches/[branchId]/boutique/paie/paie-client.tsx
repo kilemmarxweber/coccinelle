@@ -203,21 +203,21 @@ export function PaieMoisClient({
               key={a.branchMemberId}
               className={cn(
                 "grid gap-3 px-4 py-4 sm:grid-cols-[1fr_auto] sm:items-center",
-                i > 0 && "border-t border-[#eee8dc]",
+                i > 0 && "border-t border-border",
               )}
             >
               <div>
-                <p className="font-semibold text-[#0f3d2e]">{a.name}</p>
-                <p className="mt-0.5 text-xs text-[#6f675c]">
+                <p className="font-semibold text-foreground">{a.name}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
                   {a.expectedDays} ouvrés · {a.presentDays} présents · {a.leaveDays}{" "}
                   congés · {a.justifiedDays} justifiés · {a.unpaidDays} non payés
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2 text-sm tabular-nums">
-                <span className="text-[#6f675c]">{a.grossUsd.toFixed(2)}</span>
+                <span className="text-muted-foreground">{a.grossUsd.toFixed(2)}</span>
                 <span className="text-rose-700">−{a.absenceDeductionUsd.toFixed(2)}</span>
                 <span className="text-amber-800">−{a.advancesUsd.toFixed(2)}</span>
-                <span className="font-serif text-base font-semibold text-[#0f3d2e]">
+                <span className="font-serif text-base font-semibold text-foreground">
                   {a.netUsd.toFixed(2)} USD
                 </span>
                 {a.payslip ? (
@@ -254,7 +254,7 @@ export function PaieMoisClient({
           icon={ClipboardCheck}
           tint="rose"
         >
-          <ul className="divide-y divide-[#eee8dc]">
+          <ul className="divide-y divide-border">
             {data.pendingJustifications.map((d) => {
               const agent = agents.find((a) => a.branchMemberId === d.branchMemberId);
               return (
@@ -311,7 +311,7 @@ export function PaieMoisClient({
 
       {data.leaves.filter((l) => l.status === "REQUESTED").length > 0 ? (
         <BoutiquePanel title="Congés à approuver" eyebrow="Planning" icon={Wallet} tint="mint">
-          <ul className="divide-y divide-[#eee8dc]">
+          <ul className="divide-y divide-border">
             {data.leaves
               .filter((l) => l.status === "REQUESTED")
               .map((l) => (
@@ -367,7 +367,7 @@ export function PaieMoisClient({
       {data.advances.filter((a) => a.status === "REQUESTED" || a.status === "APPROVED").length >
       0 ? (
         <BoutiquePanel title="Avances" eyebrow="Acomptes" icon={Wallet} tint="amber">
-          <ul className="divide-y divide-[#eee8dc]">
+          <ul className="divide-y divide-border">
             {data.advances
               .filter((a) => a.status === "REQUESTED" || a.status === "APPROVED")
               .map((a) => (

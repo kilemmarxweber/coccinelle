@@ -1,6 +1,7 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { DASH_CARD } from "@/lib/branch/ops-roles";
 import { listExchangeRatesAction } from "@/lib/cash/actions";
+import { ParametresShell } from "../parametres/parametres-section-nav";
 import { TauxChangeClient } from "./taux-change-client";
 
 type PageProps = {
@@ -16,10 +17,18 @@ export default async function TauxChangePage({ params }: PageProps) {
   });
   const rates = await listExchangeRatesAction(organizationId, branchId);
   return (
-    <TauxChangeClient
+    <ParametresShell
+      title="Taux de change"
+      subtitle="1 $ = N FC, entier uniquement (ex. 2250)."
       organizationId={organizationId}
       branchId={branchId}
-      rates={rates}
-    />
+      active="taux"
+    >
+      <TauxChangeClient
+        organizationId={organizationId}
+        branchId={branchId}
+        rates={rates}
+      />
+    </ParametresShell>
   );
 }

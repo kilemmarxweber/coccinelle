@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { OrgBrandHeader } from "@/components/pwa/org-brand-header";
-import { getPublicOrganizationBySlug } from "@/lib/pwa/org";
+import { ApplyCustomerUiTheme } from "@/components/theme/apply-customer-ui-theme";
+import { getPublicOrganizationThemeBySlug } from "@/lib/pwa/org";
 
 type OrgPwaLayoutProps = {
   children: ReactNode;
@@ -13,11 +14,15 @@ export default async function OrgPwaLayout({
   params,
 }: OrgPwaLayoutProps) {
   const { orgSlug } = await params;
-  const org = await getPublicOrganizationBySlug(orgSlug);
+  const org = await getPublicOrganizationThemeBySlug(orgSlug);
   if (!org) notFound();
 
   return (
     <div className="min-h-svh bg-background">
+      <ApplyCustomerUiTheme
+        theme={org.customerUiTheme}
+        enabled={org.customerUiEnabled}
+      />
       <OrgBrandHeader org={org} />
       <div className="mx-auto w-full max-w-lg px-4 pb-10 pt-6">{children}</div>
     </div>

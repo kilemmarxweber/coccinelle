@@ -15,6 +15,7 @@ import {
   ShoppingBasket,
   Store,
   UtensilsCrossed,
+  Factory,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -54,7 +55,16 @@ const TYPES = [
     icon: Store,
     bootstrap: "Catalogue démo selon les verticales cochées",
   },
+  {
+    value: "USINE" as const,
+    label: "Usine",
+    description: "Production et vente cash / crédit — catalogue libre (plusieurs types de produits).",
+    icon: Factory,
+    bootstrap: "Catalogue démo (finis + consommables) + paie commerce",
+  },
 ];
+
+type BranchFormType = "AGENCE" | "HOTEL" | "BOUTIQUE" | "USINE";
 
 type Props = {
   organizationId: string;
@@ -64,7 +74,7 @@ type Props = {
 export function CreateBranchForm({ organizationId, organizationName }: Props) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
-  const [type, setType] = useState<"AGENCE" | "HOTEL" | "BOUTIQUE">("AGENCE");
+  const [type, setType] = useState<BranchFormType>("AGENCE");
   const [hasStays, setHasStays] = useState(true);
   const [hasRestaurant, setHasRestaurant] = useState(true);
   const [hasAvion, setHasAvion] = useState(true);
@@ -88,7 +98,9 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
       ? hasStays || hasRestaurant
       : type === "AGENCE"
         ? hasAvion || hasBus || hasBateau
-        : hasPharmacie || hasShop || hasAlimentation;
+        : type === "USINE"
+          ? true
+          : hasPharmacie || hasShop || hasAlimentation;
 
   async function onPickImage(file: File | null) {
     if (!file) return;
@@ -162,11 +174,13 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
         ? !hasStays && hasRestaurant
           ? "Restaurant Riviera"
           : "Hôtel Fleuve"
-        : hasPharmacie && !hasShop && !hasAlimentation
-          ? "Pharmacie Centrale"
-          : hasAlimentation && !hasShop && !hasPharmacie
-            ? "Alimentation Marché"
-            : "Boutique Victoire";
+        : type === "USINE"
+          ? "Usine Kwilu"
+          : hasPharmacie && !hasShop && !hasAlimentation
+            ? "Pharmacie Centrale"
+            : hasAlimentation && !hasShop && !hasPharmacie
+              ? "Alimentation Marché"
+              : "Boutique Victoire";
 
   return (
     <form onSubmit={submit} className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6">

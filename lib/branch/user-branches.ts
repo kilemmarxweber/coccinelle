@@ -15,7 +15,7 @@ export type AccessibleBranch = {
   id: string;
   name: string;
   code: string;
-  type: "AGENCE" | "HOTEL" | "BOUTIQUE" | "RESTAURANT";
+  type: "AGENCE" | "HOTEL" | "BOUTIQUE" | "RESTAURANT" | "USINE";
   hasStays: boolean;
   hasRestaurant: boolean;
   hasAvion: boolean;
@@ -24,6 +24,8 @@ export type AccessibleBranch = {
   hasPharmacie: boolean;
   hasShop: boolean;
   hasAlimentation: boolean;
+  hasEau: boolean;
+  hasVin: boolean;
   organizationId: string;
   organizationName: string;
 };
@@ -41,6 +43,8 @@ const branchSelect = {
   hasPharmacie: true,
   hasShop: true,
   hasAlimentation: true,
+  hasEau: true,
+  hasVin: true,
   organizationId: true,
   organization: { select: { name: true } },
 } as const;
@@ -58,6 +62,8 @@ function mapBranch(b: {
   hasPharmacie: boolean;
   hasShop: boolean;
   hasAlimentation: boolean;
+  hasEau: boolean;
+  hasVin: boolean;
   organizationId: string;
   organization: { name: string };
 }): AccessibleBranch {
@@ -74,6 +80,8 @@ function mapBranch(b: {
     hasPharmacie: b.hasPharmacie,
     hasShop: b.hasShop,
     hasAlimentation: b.hasAlimentation,
+    hasEau: b.hasEau,
+    hasVin: b.hasVin,
     organizationId: b.organizationId,
     organizationName: b.organization.name,
   };

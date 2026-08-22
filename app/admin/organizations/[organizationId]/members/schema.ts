@@ -15,8 +15,10 @@ export const createOrgMemberSchema = z.object({
   email: z
     .string()
     .trim()
-    .min(1, "L’email est requis.")
-    .email("Adresse email invalide."),
+    .refine(
+      (v) => v === "" || z.string().email().safeParse(v).success,
+      "Adresse email invalide.",
+    ),
   name: z
     .string()
     .trim()

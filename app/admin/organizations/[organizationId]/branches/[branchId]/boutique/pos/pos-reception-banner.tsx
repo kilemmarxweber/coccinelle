@@ -44,18 +44,18 @@ export function PosReceptionBanner(props: {
 
   return (
     <>
-      <div className="overflow-hidden rounded-[1.35rem] border border-[#c4a574]/40 bg-white/90 shadow-[0_18px_40px_-24px_rgba(15,61,46,0.22)]">
-        <div className="h-1 w-full bg-gradient-to-r from-[#0f3d2e] to-[#c4a574]" />
+      <div className="overflow-hidden rounded-xl border border-primary/40 bg-card shadow-sm">
+        <div className="h-1 w-full bg-primary" />
         <div className="px-4 py-3">
-          <p className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#0f3d2e]">
-            <PackageCheck className="size-4 text-[#9a7040]" />
+          <p className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
+            <PackageCheck className="size-4 text-primary" />
             {props.pending.length} envoi(s) du stock principal à réceptionner
           </p>
           <ul className="space-y-2">
             {props.pending.map((s) => (
               <li
                 key={s.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#eee8dc] bg-[#faf8f4] px-3 py-2.5 text-sm"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-muted/30 px-3 py-2.5 text-sm"
               >
                 <div>
                   <p className="font-semibold">{s.number}</p>
@@ -98,7 +98,7 @@ export function PosReceptionBanner(props: {
                   <Button
                     type="button"
                     size="sm"
-                    className="h-8 rounded-full bg-[#0f3d2e] text-[#f4efe4] hover:bg-[#0f3d2e]/90"
+                    className="h-8 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
                     onClick={() => {
                       setSlip(s);
                       setSignature("");
@@ -148,7 +148,7 @@ export function PosReceptionBanner(props: {
               Annuler
             </Button>
             <Button
-              className="rounded-full bg-[#0f3d2e] text-[#f4efe4] hover:bg-[#0f3d2e]/90"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={pendingUi}
               onClick={() => {
                 if (!slip) return;

@@ -349,10 +349,10 @@ export function BoutiqueProduitsClient(props: Props) {
                 openEdit(p);
               }
             }}
-            className="cursor-pointer rounded-[1.35rem] border border-[#e4ddd0] bg-white/90 p-4 text-left shadow-[0_18px_40px_-24px_rgba(15,61,46,0.22)] transition hover:-translate-y-0.5 hover:border-[#c4a574]/50"
+            className="cursor-pointer rounded-xl border border-border bg-card p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-primary/45"
           >
             <div className="flex items-start gap-3">
-              <div className="relative size-16 shrink-0 overflow-hidden rounded-2xl border border-[#eee8dc] bg-[#faf8f4]">
+              <div className="relative size-16 shrink-0 overflow-hidden rounded-2xl border border-border bg-muted/30">
                 {p.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img

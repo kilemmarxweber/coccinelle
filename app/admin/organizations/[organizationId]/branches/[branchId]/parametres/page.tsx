@@ -1,9 +1,8 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { DASH_CARD } from "@/lib/branch/ops-roles";
-import { boutiqueRoutes } from "@/lib/branch/paths";
 import { listRolesForParametresAction } from "@/lib/branch/privilege-actions";
+import { ParametresShell } from "./parametres-section-nav";
 import { ParametresRolesClient } from "./parametres-client";
-import Link from "next/link";
 
 type PageProps = {
   params: Promise<{ organizationId: string; branchId: string }>;
@@ -11,7 +10,7 @@ type PageProps = {
 
 export default async function BranchParametresPage({ params }: PageProps) {
   const { organizationId, branchId } = await params;
-  const branch = await requireBranchContext({
+  await requireBranchContext({
     organizationId,
     branchId,
     requireDashCard: DASH_CARD.PARAMETRES,
@@ -19,22 +18,19 @@ export default async function BranchParametresPage({ params }: PageProps) {
   const roles = await listRolesForParametresAction(organizationId, branchId);
 
   return (
-    <div className="flex flex-col gap-4">
-      {branch.type === "BOUTIQUE" ? (
-        <div className="mx-auto w-full max-w-5xl px-4 pt-4 sm:px-6">
-          <Link
-            href={boutiqueRoutes.paieParametres(organizationId, branchId)}
-            className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-          >
-            Paramètres paie (taux 10 $, semaine, cutoff, avances)
-          </Link>
-        </div>
-      ) : null}
+    <ParametresShell
+      title="Rôles"
+      subtitle="Métiers de la branche et leurs privilèges."
+      organizationId={organizationId}
+      branchId={branchId}
+      active="roles"
+      wide
+    >
       <ParametresRolesClient
         organizationId={organizationId}
         branchId={branchId}
         initialRoles={roles}
       />
-    </div>
+    </ParametresShell>
   );
 }

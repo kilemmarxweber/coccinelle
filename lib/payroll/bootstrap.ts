@@ -7,7 +7,8 @@ import {
 } from "@/lib/payroll/constants";
 
 export function isCommerceBranchType(type: string | null | undefined): boolean {
-  return (type ?? "").toUpperCase() === "BOUTIQUE";
+  const t = (type ?? "").toUpperCase();
+  return t === "BOUTIQUE" || t === "USINE";
 }
 
 type PayrollDb = {

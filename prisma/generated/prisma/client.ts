@@ -350,3 +350,53 @@ export type StaffSalaryAdvance = Prisma.StaffSalaryAdvanceModel
  * 
  */
 export type Payslip = Prisma.PayslipModel
+/**
+ * Model BranchSupplier
+ * * Fournisseur enregistré (usine : obligatoire sur chaque BC).
+ */
+export type BranchSupplier = Prisma.BranchSupplierModel
+/**
+ * Model FactoryCustomer
+ * 
+ */
+export type FactoryCustomer = Prisma.FactoryCustomerModel
+/**
+ * Model FactoryCredit
+ * 
+ */
+export type FactoryCredit = Prisma.FactoryCreditModel
+/**
+ * Model FactoryCreditLine
+ * 
+ */
+export type FactoryCreditLine = Prisma.FactoryCreditLineModel
+/**
+ * Model FactoryCreditExtension
+ * 
+ */
+export type FactoryCreditExtension = Prisma.FactoryCreditExtensionModel
+/**
+ * Model FactoryRecipe
+ * 
+ */
+export type FactoryRecipe = Prisma.FactoryRecipeModel
+/**
+ * Model FactoryRecipeLine
+ * 
+ */
+export type FactoryRecipeLine = Prisma.FactoryRecipeLineModel
+/**
+ * Model FactoryBatch
+ * 
+ */
+export type FactoryBatch = Prisma.FactoryBatchModel
+/**
+ * Model FactoryReservation
+ * 
+ */
+export type FactoryReservation = Prisma.FactoryReservationModel
+/**
+ * Model FactoryReservationLine
+ * 
+ */
+export type FactoryReservationLine = Prisma.FactoryReservationLineModel

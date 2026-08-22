@@ -42,6 +42,7 @@ Chaque unit = livrable **visible** + **testable**. Suivre l’ordre strict.
 | B12 | [Rapports multi-branches](./B12-rapports-consolides.md) | B5 | B07–B11 | CA consolidé owner | `todo` |
 | B13 | [Modules hôtellerie-restaurant](./B13-hospitalite-modules.md) | B3+ | B01–B03, B10 | Création modules séjours ± resto ; type RESTAURANT | `done` |
 | B14 | [Modules Agence & Boutique](./B14-agence-boutique-modules.md) | B0+ | B01–B03 | Avion/Bus/Bateau · Pharmacie/Boutique/Alimentation | `done` |
+| B15 | [Branche Usine](./B15-usine.md) | B4+ | B01–B03, B11, paie, stock service | Eau/vins · crédit · marketeur · paie commerce | `done` |
 
 ```mermaid
 flowchart TD
@@ -79,6 +80,7 @@ flowchart TD
 **Hôtel (caisse · séjours · resto) :** [`../plan-hotel-caisse-sejours-restauration.md`](../plan-hotel-caisse-sejours-restauration.md) — phases H0→H5, cartes Dashboard only.  
 **Hôtellerie-restaurant (modules Hôtel / Restaurant) :** [`../plan-hospitalite-modules-hotel-restaurant.md`](../plan-hospitalite-modules-hotel-restaurant.md) — séjours ± restaurant, type `RESTAURANT`, livraison commune.  
 **Agence & Boutique (modules) :** [`../plan-agence-boutique-modules.md`](../plan-agence-boutique-modules.md) — Avion/Bus/Bateau · Pharmacie/Boutique/Alimentation.  
+**Usine (eau / vins · crédit · marketeur) :** [`../plan-usine-production-commerce.md`](../plan-usine-production-commerce.md) — type `USINE`, paie comme boutique, stock comme resto, [B15](./B15-usine.md).  
 **Séjour — Note de chambre :** [`../plan-sejour-note-chambre.md`](../plan-sejour-note-chambre.md) — Comptant vs Sur note · consommations sur facture séjour.  
 **Rôles custom + équipe branche :** [`../plan-roles-custom-dynamiques.md`](../plan-roles-custom-dynamiques.md) — units [`../units-roles/INDEX.md`](../units-roles/INDEX.md) (R01→R07).
 

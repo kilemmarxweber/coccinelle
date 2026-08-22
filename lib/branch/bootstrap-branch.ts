@@ -26,6 +26,8 @@ export type BootstrapBranchInput = {
   hasPharmacie?: boolean;
   hasShop?: boolean;
   hasAlimentation?: boolean;
+  hasEau?: boolean;
+  hasVin?: boolean;
   /** Crée des données démo (trajets / chambres / produits). Défaut true. */
   seedDemo?: boolean;
   /** Member id du créateur (owner) à rattacher comme branch_manager. */
@@ -395,6 +397,132 @@ export async function bootstrapBranchByType(
 
     result.categoriesCreated = categoriesCreated;
     result.productsCreated = productsCreated;
+    await ensureBranchPayrollSettings(db, input.branchId);
+  }
+
+  if (input.type === "USINE") {
+    let productsCreated = 0;
+    let categoriesCreated = 0;
+
+    const conso = await db.shopCategory.create({
+      data: {
+        branchId: input.branchId,
+        name: "Consommables",
+        products: {
+          create: [
+            {
+              branchId: input.branchId,
+              name: "Bouchon plastique",
+              sku: "CONSO-BOU",
+              kind: "ARTICLE",
+              productKind: "CONSUMABLE",
+              price: 0.05,
+              stockQty: 500,
+            },
+            {
+              branchId: input.branchId,
+              name: "Étiquette",
+              sku: "CONSO-ETI",
+              kind: "ARTICLE",
+              productKind: "CONSUMABLE",
+              price: 0.02,
+              stockQty: 800,
+            },
+            {
+              branchId: input.branchId,
+              name: "Sachet / jerrican",
+              sku: "CONSO-SAC",
+              kind: "ARTICLE",
+              productKind: "CONSUMABLE",
+              price: 0.1,
+              stockQty: 200,
+            },
+          ],
+        },
+      },
+      include: { products: true },
+    });
+    categoriesCreated += 1;
+    productsCreated += conso.products.length;
+
+    const eau = await db.shopCategory.create({
+      data: {
+        branchId: input.branchId,
+        name: "Eau",
+        products: {
+          create: [
+            {
+              branchId: input.branchId,
+              name: "Eau 1,5 L",
+              sku: "EAU-15",
+              kind: "ARTICLE",
+              productKind: "FINISHED",
+              finishedFamily: "EAU",
+              price: 1.2,
+              stockQty: 80,
+            },
+            {
+              branchId: input.branchId,
+              name: "Casier eau 12×1,5 L",
+              sku: "EAU-CAS",
+              kind: "ARTICLE",
+              productKind: "FINISHED",
+              finishedFamily: "EAU",
+              price: 12,
+              stockQty: 20,
+            },
+          ],
+        },
+      },
+      include: { products: true },
+    });
+    categoriesCreated += 1;
+    productsCreated += eau.products.length;
+
+    const vins = await db.shopCategory.create({
+      data: {
+        branchId: input.branchId,
+        name: "Vins",
+        products: {
+          create: [
+            {
+              branchId: input.branchId,
+              name: "Vin rouge 75 cl",
+              sku: "VIN-R75",
+              kind: "ARTICLE",
+              productKind: "FINISHED",
+              finishedFamily: "VIN",
+              price: 8,
+              stockQty: 40,
+            },
+            {
+              branchId: input.branchId,
+              name: "Vin blanc 75 cl",
+              sku: "VIN-B75",
+              kind: "ARTICLE",
+              productKind: "FINISHED",
+              finishedFamily: "VIN",
+              price: 7.5,
+              stockQty: 30,
+            },
+          ],
+        },
+      },
+      include: { products: true },
+    });
+    categoriesCreated += 1;
+    productsCreated += vins.products.length;
+
+    result.categoriesCreated = categoriesCreated;
+    result.productsCreated = productsCreated;
+    await db.exchangeRate.create({
+      data: {
+        branchId: input.branchId,
+        fromCurrency: "USD",
+        toCurrency: "CDF",
+        rate: 2850,
+      },
+    });
     await ensureBranchPayrollSettings(db, input.branchId);
   }
 

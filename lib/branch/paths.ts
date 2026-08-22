@@ -9,7 +9,7 @@
  *   .../branches/[branchId]/caisse/*     → cashpaye partagé (toutes)
  */
 
-export type BranchModule = "agence" | "hotel" | "boutique";
+export type BranchModule = "agence" | "hotel" | "boutique" | "usine";
 
 export function organizationBranchesPath(organizationId: string): string {
   return `/admin/organizations/${organizationId}/branches`;
@@ -31,10 +31,11 @@ export function branchBasePath(
 
 /** Module métier selon BranchType Prisma. */
 export function moduleForBranchType(
-  type: "AGENCE" | "HOTEL" | "BOUTIQUE" | "RESTAURANT" | string,
+  type: "AGENCE" | "HOTEL" | "BOUTIQUE" | "RESTAURANT" | "USINE" | string,
 ): BranchModule {
   if (type === "HOTEL" || type === "RESTAURANT") return "hotel";
   if (type === "BOUTIQUE") return "boutique";
+  if (type === "USINE") return "usine";
   return "agence";
 }
 
@@ -85,6 +86,12 @@ export const sharedBranchRoutes = {
     `${branchBasePath(orgId, branchId)}/rapports/sejours`,
   parametres: (orgId: string, branchId: string) =>
     `${branchBasePath(orgId, branchId)}/parametres`,
+  /** Utilisateurs de la branche active (ex-Équipe). */
+  parametresUsers: (orgId: string, branchId: string) =>
+    `${branchBasePath(orgId, branchId)}/parametres/users`,
+  /** Couleurs de base de l’interface client, par branche. */
+  parametresApparence: (orgId: string, branchId: string) =>
+    `${branchBasePath(orgId, branchId)}/parametres/apparence`,
 } as const;
 
 /** Sous-routes AGENCE (voyage). */
@@ -162,4 +169,32 @@ export const boutiqueRoutes = {
     `${branchModulePath(orgId, branchId, "boutique")}/paie/parametres`,
   paieBulletin: (orgId: string, branchId: string, payslipId: string) =>
     `${branchModulePath(orgId, branchId, "boutique")}/paie/bulletin/${payslipId}`,
+} as const;
+
+/** Sous-routes USINE (production eau / vins). */
+export const usineRoutes = {
+  root: (orgId: string, branchId: string) =>
+    branchModulePath(orgId, branchId, "usine"),
+  pos: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "usine")}/pos`,
+  credits: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "usine")}/credits`,
+  creditNew: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "usine")}/credits/nouveau`,
+  credit: (orgId: string, branchId: string, creditId: string) =>
+    `${branchModulePath(orgId, branchId, "usine")}/credits/${creditId}`,
+  clients: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "usine")}/clients`,
+  reservations: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "usine")}/reservations`,
+  produits: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "usine")}/produits`,
+  depot: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "usine")}/depot`,
+  serviceStock: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "usine")}/service-stock`,
+  production: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "usine")}/production`,
+  fournisseurs: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "usine")}/fournisseurs`,
 } as const;

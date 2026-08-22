@@ -18,6 +18,7 @@ export const OPS_ROLE = {
   MANAGER: "manager",
   GERANT: "gerant",
   PROPRIETAIRE: "proprietaire",
+  MARKETEUR: "marketeur",
   /** Legacy BranchMember.role */
   BRANCH_MANAGER: "branch_manager",
 } as const;
@@ -34,6 +35,7 @@ export const OPS_ROLE_SLUGS = [
   OPS_ROLE.MANAGER,
   OPS_ROLE.GERANT,
   OPS_ROLE.PROPRIETAIRE,
+  OPS_ROLE.MARKETEUR,
 ] as const;
 
 export type AssignableOpsRole = (typeof OPS_ROLE_SLUGS)[number];
@@ -75,6 +77,12 @@ export const DASH_CARD = {
   TRAJETS: "trajets",
   COLIS: "colis",
   EMBARQUEMENT: "embarquement",
+  USINE_CREDITS: "usine_credits",
+  USINE_CLIENTS: "usine_clients",
+  USINE_RESERVATIONS: "usine_reservations",
+  USINE_DEPOT: "usine_depot",
+  USINE_PRODUCTION: "usine_production",
+  USINE_FOURNISSEURS: "usine_fournisseurs",
 } as const;
 
 export type DashCardId = (typeof DASH_CARD)[keyof typeof DASH_CARD];
@@ -100,6 +108,8 @@ export function opsRoleLabel(role: string | null | undefined): string {
       return "Gérant";
     case OPS_ROLE.PROPRIETAIRE:
       return "Propriétaire";
+    case OPS_ROLE.MARKETEUR:
+      return "Marketeur";
     default:
       if (!role) return "Équipe";
       return role

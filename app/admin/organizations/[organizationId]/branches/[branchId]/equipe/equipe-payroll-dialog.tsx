@@ -96,7 +96,7 @@ export function EquipePayrollDialog({
     <Dialog open={Boolean(branchMemberId)} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-serif text-[#0f3d2e]">Paie & versement</DialogTitle>
+          <DialogTitle>Paie & versement</DialogTitle>
           <DialogDescription>
             {agentName} · défaut branche {defaultRate.toFixed(2)} USD / jour
           </DialogDescription>

@@ -45,6 +45,8 @@ export type ShopProductMinAggregateOutputType = {
   name: string | null
   sku: string | null
   kind: $Enums.ShopProductKind | null
+  productKind: $Enums.FactoryProductKind | null
+  finishedFamily: $Enums.FactoryFinishedFamily | null
   price: number | null
   promoPrice: number | null
   promoActive: boolean | null
@@ -66,6 +68,8 @@ export type ShopProductMaxAggregateOutputType = {
   name: string | null
   sku: string | null
   kind: $Enums.ShopProductKind | null
+  productKind: $Enums.FactoryProductKind | null
+  finishedFamily: $Enums.FactoryFinishedFamily | null
   price: number | null
   promoPrice: number | null
   promoActive: boolean | null
@@ -87,6 +91,8 @@ export type ShopProductCountAggregateOutputType = {
   name: number
   sku: number
   kind: number
+  productKind: number
+  finishedFamily: number
   price: number
   promoPrice: number
   promoActive: number
@@ -122,6 +128,8 @@ export type ShopProductMinAggregateInputType = {
   name?: true
   sku?: true
   kind?: true
+  productKind?: true
+  finishedFamily?: true
   price?: true
   promoPrice?: true
   promoActive?: true
@@ -143,6 +151,8 @@ export type ShopProductMaxAggregateInputType = {
   name?: true
   sku?: true
   kind?: true
+  productKind?: true
+  finishedFamily?: true
   price?: true
   promoPrice?: true
   promoActive?: true
@@ -164,6 +174,8 @@ export type ShopProductCountAggregateInputType = {
   name?: true
   sku?: true
   kind?: true
+  productKind?: true
+  finishedFamily?: true
   price?: true
   promoPrice?: true
   promoActive?: true
@@ -272,6 +284,8 @@ export type ShopProductGroupByOutputType = {
   name: string
   sku: string
   kind: $Enums.ShopProductKind
+  productKind: $Enums.FactoryProductKind
+  finishedFamily: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice: number | null
   promoActive: boolean
@@ -316,6 +330,8 @@ export type ShopProductWhereInput = {
   name?: Prisma.StringFilter<"ShopProduct"> | string
   sku?: Prisma.StringFilter<"ShopProduct"> | string
   kind?: Prisma.EnumShopProductKindFilter<"ShopProduct"> | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFilter<"ShopProduct"> | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.EnumFactoryFinishedFamilyNullableFilter<"ShopProduct"> | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFilter<"ShopProduct"> | number
   promoPrice?: Prisma.FloatNullableFilter<"ShopProduct"> | number | null
   promoActive?: Prisma.BoolFilter<"ShopProduct"> | boolean
@@ -334,6 +350,12 @@ export type ShopProductWhereInput = {
   stockMovements?: Prisma.ShopStockMovementListRelationFilter
   serviceStockLines?: Prisma.ServiceStockLineListRelationFilter
   serviceStockTopUps?: Prisma.ServiceStockTopUpListRelationFilter
+  factoryRecipes?: Prisma.FactoryRecipeListRelationFilter
+  factoryRecipeLines?: Prisma.FactoryRecipeLineListRelationFilter
+  factoryCreditLines?: Prisma.FactoryCreditLineListRelationFilter
+  factoryReservationLines?: Prisma.FactoryReservationLineListRelationFilter
+  factoryBatches?: Prisma.FactoryBatchListRelationFilter
+  purchaseOrderItems?: Prisma.PurchaseOrderItemListRelationFilter
 }
 
 export type ShopProductOrderByWithRelationInput = {
@@ -343,6 +365,8 @@ export type ShopProductOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   sku?: Prisma.SortOrder
   kind?: Prisma.SortOrder
+  productKind?: Prisma.SortOrder
+  finishedFamily?: Prisma.SortOrderInput | Prisma.SortOrder
   price?: Prisma.SortOrder
   promoPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   promoActive?: Prisma.SortOrder
@@ -361,6 +385,12 @@ export type ShopProductOrderByWithRelationInput = {
   stockMovements?: Prisma.ShopStockMovementOrderByRelationAggregateInput
   serviceStockLines?: Prisma.ServiceStockLineOrderByRelationAggregateInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpOrderByRelationAggregateInput
+  factoryRecipes?: Prisma.FactoryRecipeOrderByRelationAggregateInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineOrderByRelationAggregateInput
+  factoryCreditLines?: Prisma.FactoryCreditLineOrderByRelationAggregateInput
+  factoryReservationLines?: Prisma.FactoryReservationLineOrderByRelationAggregateInput
+  factoryBatches?: Prisma.FactoryBatchOrderByRelationAggregateInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemOrderByRelationAggregateInput
 }
 
 export type ShopProductWhereUniqueInput = Prisma.AtLeast<{
@@ -375,6 +405,8 @@ export type ShopProductWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"ShopProduct"> | string
   sku?: Prisma.StringFilter<"ShopProduct"> | string
   kind?: Prisma.EnumShopProductKindFilter<"ShopProduct"> | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFilter<"ShopProduct"> | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.EnumFactoryFinishedFamilyNullableFilter<"ShopProduct"> | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFilter<"ShopProduct"> | number
   promoPrice?: Prisma.FloatNullableFilter<"ShopProduct"> | number | null
   promoActive?: Prisma.BoolFilter<"ShopProduct"> | boolean
@@ -393,6 +425,12 @@ export type ShopProductWhereUniqueInput = Prisma.AtLeast<{
   stockMovements?: Prisma.ShopStockMovementListRelationFilter
   serviceStockLines?: Prisma.ServiceStockLineListRelationFilter
   serviceStockTopUps?: Prisma.ServiceStockTopUpListRelationFilter
+  factoryRecipes?: Prisma.FactoryRecipeListRelationFilter
+  factoryRecipeLines?: Prisma.FactoryRecipeLineListRelationFilter
+  factoryCreditLines?: Prisma.FactoryCreditLineListRelationFilter
+  factoryReservationLines?: Prisma.FactoryReservationLineListRelationFilter
+  factoryBatches?: Prisma.FactoryBatchListRelationFilter
+  purchaseOrderItems?: Prisma.PurchaseOrderItemListRelationFilter
 }, "id" | "categoryId_sku" | "branchId_barcode">
 
 export type ShopProductOrderByWithAggregationInput = {
@@ -402,6 +440,8 @@ export type ShopProductOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   sku?: Prisma.SortOrder
   kind?: Prisma.SortOrder
+  productKind?: Prisma.SortOrder
+  finishedFamily?: Prisma.SortOrderInput | Prisma.SortOrder
   price?: Prisma.SortOrder
   promoPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   promoActive?: Prisma.SortOrder
@@ -431,6 +471,8 @@ export type ShopProductScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"ShopProduct"> | string
   sku?: Prisma.StringWithAggregatesFilter<"ShopProduct"> | string
   kind?: Prisma.EnumShopProductKindWithAggregatesFilter<"ShopProduct"> | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindWithAggregatesFilter<"ShopProduct"> | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.EnumFactoryFinishedFamilyNullableWithAggregatesFilter<"ShopProduct"> | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatWithAggregatesFilter<"ShopProduct"> | number
   promoPrice?: Prisma.FloatNullableWithAggregatesFilter<"ShopProduct"> | number | null
   promoActive?: Prisma.BoolWithAggregatesFilter<"ShopProduct"> | boolean
@@ -450,6 +492,8 @@ export type ShopProductCreateInput = {
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -468,6 +512,12 @@ export type ShopProductCreateInput = {
   stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutProductInput
   serviceStockLines?: Prisma.ServiceStockLineCreateNestedManyWithoutShopProductInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
 export type ShopProductUncheckedCreateInput = {
@@ -477,6 +527,8 @@ export type ShopProductUncheckedCreateInput = {
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -493,6 +545,12 @@ export type ShopProductUncheckedCreateInput = {
   stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutProductInput
   serviceStockLines?: Prisma.ServiceStockLineUncheckedCreateNestedManyWithoutShopProductInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
 export type ShopProductUpdateInput = {
@@ -500,6 +558,8 @@ export type ShopProductUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -518,6 +578,12 @@ export type ShopProductUpdateInput = {
   stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutProductNestedInput
   serviceStockLines?: Prisma.ServiceStockLineUpdateManyWithoutShopProductNestedInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
 export type ShopProductUncheckedUpdateInput = {
@@ -527,6 +593,8 @@ export type ShopProductUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -543,6 +611,12 @@ export type ShopProductUncheckedUpdateInput = {
   stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutProductNestedInput
   serviceStockLines?: Prisma.ServiceStockLineUncheckedUpdateManyWithoutShopProductNestedInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
 export type ShopProductCreateManyInput = {
@@ -552,6 +626,8 @@ export type ShopProductCreateManyInput = {
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -571,6 +647,8 @@ export type ShopProductUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -592,6 +670,8 @@ export type ShopProductUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -633,6 +713,8 @@ export type ShopProductCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   sku?: Prisma.SortOrder
   kind?: Prisma.SortOrder
+  productKind?: Prisma.SortOrder
+  finishedFamily?: Prisma.SortOrder
   price?: Prisma.SortOrder
   promoPrice?: Prisma.SortOrder
   promoActive?: Prisma.SortOrder
@@ -660,6 +742,8 @@ export type ShopProductMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   sku?: Prisma.SortOrder
   kind?: Prisma.SortOrder
+  productKind?: Prisma.SortOrder
+  finishedFamily?: Prisma.SortOrder
   price?: Prisma.SortOrder
   promoPrice?: Prisma.SortOrder
   promoActive?: Prisma.SortOrder
@@ -681,6 +765,8 @@ export type ShopProductMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   sku?: Prisma.SortOrder
   kind?: Prisma.SortOrder
+  productKind?: Prisma.SortOrder
+  finishedFamily?: Prisma.SortOrder
   price?: Prisma.SortOrder
   promoPrice?: Prisma.SortOrder
   promoActive?: Prisma.SortOrder
@@ -799,6 +885,14 @@ export type EnumShopProductKindFieldUpdateOperationsInput = {
   set?: $Enums.ShopProductKind
 }
 
+export type EnumFactoryProductKindFieldUpdateOperationsInput = {
+  set?: $Enums.FactoryProductKind
+}
+
+export type NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput = {
+  set?: $Enums.FactoryFinishedFamily | null
+}
+
 export type ShopProductCreateNestedOneWithoutSaleItemsInput = {
   create?: Prisma.XOR<Prisma.ShopProductCreateWithoutSaleItemsInput, Prisma.ShopProductUncheckedCreateWithoutSaleItemsInput>
   connectOrCreate?: Prisma.ShopProductCreateOrConnectWithoutSaleItemsInput
@@ -861,11 +955,99 @@ export type ShopProductUpdateOneWithoutServiceStockTopUpsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ShopProductUpdateToOneWithWhereWithoutServiceStockTopUpsInput, Prisma.ShopProductUpdateWithoutServiceStockTopUpsInput>, Prisma.ShopProductUncheckedUpdateWithoutServiceStockTopUpsInput>
 }
 
+export type ShopProductCreateNestedOneWithoutPurchaseOrderItemsInput = {
+  create?: Prisma.XOR<Prisma.ShopProductCreateWithoutPurchaseOrderItemsInput, Prisma.ShopProductUncheckedCreateWithoutPurchaseOrderItemsInput>
+  connectOrCreate?: Prisma.ShopProductCreateOrConnectWithoutPurchaseOrderItemsInput
+  connect?: Prisma.ShopProductWhereUniqueInput
+}
+
+export type ShopProductUpdateOneWithoutPurchaseOrderItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.ShopProductCreateWithoutPurchaseOrderItemsInput, Prisma.ShopProductUncheckedCreateWithoutPurchaseOrderItemsInput>
+  connectOrCreate?: Prisma.ShopProductCreateOrConnectWithoutPurchaseOrderItemsInput
+  upsert?: Prisma.ShopProductUpsertWithoutPurchaseOrderItemsInput
+  disconnect?: Prisma.ShopProductWhereInput | boolean
+  delete?: Prisma.ShopProductWhereInput | boolean
+  connect?: Prisma.ShopProductWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ShopProductUpdateToOneWithWhereWithoutPurchaseOrderItemsInput, Prisma.ShopProductUpdateWithoutPurchaseOrderItemsInput>, Prisma.ShopProductUncheckedUpdateWithoutPurchaseOrderItemsInput>
+}
+
+export type ShopProductCreateNestedOneWithoutFactoryCreditLinesInput = {
+  create?: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryCreditLinesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryCreditLinesInput>
+  connectOrCreate?: Prisma.ShopProductCreateOrConnectWithoutFactoryCreditLinesInput
+  connect?: Prisma.ShopProductWhereUniqueInput
+}
+
+export type ShopProductUpdateOneRequiredWithoutFactoryCreditLinesNestedInput = {
+  create?: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryCreditLinesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryCreditLinesInput>
+  connectOrCreate?: Prisma.ShopProductCreateOrConnectWithoutFactoryCreditLinesInput
+  upsert?: Prisma.ShopProductUpsertWithoutFactoryCreditLinesInput
+  connect?: Prisma.ShopProductWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ShopProductUpdateToOneWithWhereWithoutFactoryCreditLinesInput, Prisma.ShopProductUpdateWithoutFactoryCreditLinesInput>, Prisma.ShopProductUncheckedUpdateWithoutFactoryCreditLinesInput>
+}
+
+export type ShopProductCreateNestedOneWithoutFactoryRecipesInput = {
+  create?: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryRecipesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryRecipesInput>
+  connectOrCreate?: Prisma.ShopProductCreateOrConnectWithoutFactoryRecipesInput
+  connect?: Prisma.ShopProductWhereUniqueInput
+}
+
+export type ShopProductUpdateOneRequiredWithoutFactoryRecipesNestedInput = {
+  create?: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryRecipesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryRecipesInput>
+  connectOrCreate?: Prisma.ShopProductCreateOrConnectWithoutFactoryRecipesInput
+  upsert?: Prisma.ShopProductUpsertWithoutFactoryRecipesInput
+  connect?: Prisma.ShopProductWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ShopProductUpdateToOneWithWhereWithoutFactoryRecipesInput, Prisma.ShopProductUpdateWithoutFactoryRecipesInput>, Prisma.ShopProductUncheckedUpdateWithoutFactoryRecipesInput>
+}
+
+export type ShopProductCreateNestedOneWithoutFactoryRecipeLinesInput = {
+  create?: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryRecipeLinesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryRecipeLinesInput>
+  connectOrCreate?: Prisma.ShopProductCreateOrConnectWithoutFactoryRecipeLinesInput
+  connect?: Prisma.ShopProductWhereUniqueInput
+}
+
+export type ShopProductUpdateOneRequiredWithoutFactoryRecipeLinesNestedInput = {
+  create?: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryRecipeLinesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryRecipeLinesInput>
+  connectOrCreate?: Prisma.ShopProductCreateOrConnectWithoutFactoryRecipeLinesInput
+  upsert?: Prisma.ShopProductUpsertWithoutFactoryRecipeLinesInput
+  connect?: Prisma.ShopProductWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ShopProductUpdateToOneWithWhereWithoutFactoryRecipeLinesInput, Prisma.ShopProductUpdateWithoutFactoryRecipeLinesInput>, Prisma.ShopProductUncheckedUpdateWithoutFactoryRecipeLinesInput>
+}
+
+export type ShopProductCreateNestedOneWithoutFactoryBatchesInput = {
+  create?: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryBatchesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryBatchesInput>
+  connectOrCreate?: Prisma.ShopProductCreateOrConnectWithoutFactoryBatchesInput
+  connect?: Prisma.ShopProductWhereUniqueInput
+}
+
+export type ShopProductUpdateOneRequiredWithoutFactoryBatchesNestedInput = {
+  create?: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryBatchesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryBatchesInput>
+  connectOrCreate?: Prisma.ShopProductCreateOrConnectWithoutFactoryBatchesInput
+  upsert?: Prisma.ShopProductUpsertWithoutFactoryBatchesInput
+  connect?: Prisma.ShopProductWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ShopProductUpdateToOneWithWhereWithoutFactoryBatchesInput, Prisma.ShopProductUpdateWithoutFactoryBatchesInput>, Prisma.ShopProductUncheckedUpdateWithoutFactoryBatchesInput>
+}
+
+export type ShopProductCreateNestedOneWithoutFactoryReservationLinesInput = {
+  create?: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryReservationLinesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryReservationLinesInput>
+  connectOrCreate?: Prisma.ShopProductCreateOrConnectWithoutFactoryReservationLinesInput
+  connect?: Prisma.ShopProductWhereUniqueInput
+}
+
+export type ShopProductUpdateOneRequiredWithoutFactoryReservationLinesNestedInput = {
+  create?: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryReservationLinesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryReservationLinesInput>
+  connectOrCreate?: Prisma.ShopProductCreateOrConnectWithoutFactoryReservationLinesInput
+  upsert?: Prisma.ShopProductUpsertWithoutFactoryReservationLinesInput
+  connect?: Prisma.ShopProductWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ShopProductUpdateToOneWithWhereWithoutFactoryReservationLinesInput, Prisma.ShopProductUpdateWithoutFactoryReservationLinesInput>, Prisma.ShopProductUncheckedUpdateWithoutFactoryReservationLinesInput>
+}
+
 export type ShopProductCreateWithoutBranchInput = {
   id?: string
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -883,6 +1065,12 @@ export type ShopProductCreateWithoutBranchInput = {
   stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutProductInput
   serviceStockLines?: Prisma.ServiceStockLineCreateNestedManyWithoutShopProductInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
 export type ShopProductUncheckedCreateWithoutBranchInput = {
@@ -891,6 +1079,8 @@ export type ShopProductUncheckedCreateWithoutBranchInput = {
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -907,6 +1097,12 @@ export type ShopProductUncheckedCreateWithoutBranchInput = {
   stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutProductInput
   serviceStockLines?: Prisma.ServiceStockLineUncheckedCreateNestedManyWithoutShopProductInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
 export type ShopProductCreateOrConnectWithoutBranchInput = {
@@ -945,6 +1141,8 @@ export type ShopProductScalarWhereInput = {
   name?: Prisma.StringFilter<"ShopProduct"> | string
   sku?: Prisma.StringFilter<"ShopProduct"> | string
   kind?: Prisma.EnumShopProductKindFilter<"ShopProduct"> | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFilter<"ShopProduct"> | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.EnumFactoryFinishedFamilyNullableFilter<"ShopProduct"> | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFilter<"ShopProduct"> | number
   promoPrice?: Prisma.FloatNullableFilter<"ShopProduct"> | number | null
   promoActive?: Prisma.BoolFilter<"ShopProduct"> | boolean
@@ -964,6 +1162,8 @@ export type ShopProductCreateWithoutCategoryInput = {
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -981,6 +1181,12 @@ export type ShopProductCreateWithoutCategoryInput = {
   stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutProductInput
   serviceStockLines?: Prisma.ServiceStockLineCreateNestedManyWithoutShopProductInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
 export type ShopProductUncheckedCreateWithoutCategoryInput = {
@@ -989,6 +1195,8 @@ export type ShopProductUncheckedCreateWithoutCategoryInput = {
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -1005,6 +1213,12 @@ export type ShopProductUncheckedCreateWithoutCategoryInput = {
   stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutProductInput
   serviceStockLines?: Prisma.ServiceStockLineUncheckedCreateNestedManyWithoutShopProductInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
 export type ShopProductCreateOrConnectWithoutCategoryInput = {
@@ -1038,6 +1252,8 @@ export type ShopProductCreateWithoutSaleItemsInput = {
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -1055,6 +1271,12 @@ export type ShopProductCreateWithoutSaleItemsInput = {
   stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutProductInput
   serviceStockLines?: Prisma.ServiceStockLineCreateNestedManyWithoutShopProductInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
 export type ShopProductUncheckedCreateWithoutSaleItemsInput = {
@@ -1064,6 +1286,8 @@ export type ShopProductUncheckedCreateWithoutSaleItemsInput = {
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -1079,6 +1303,12 @@ export type ShopProductUncheckedCreateWithoutSaleItemsInput = {
   stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutProductInput
   serviceStockLines?: Prisma.ServiceStockLineUncheckedCreateNestedManyWithoutShopProductInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
 export type ShopProductCreateOrConnectWithoutSaleItemsInput = {
@@ -1102,6 +1332,8 @@ export type ShopProductUpdateWithoutSaleItemsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1119,6 +1351,12 @@ export type ShopProductUpdateWithoutSaleItemsInput = {
   stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutProductNestedInput
   serviceStockLines?: Prisma.ServiceStockLineUpdateManyWithoutShopProductNestedInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
 export type ShopProductUncheckedUpdateWithoutSaleItemsInput = {
@@ -1128,6 +1366,8 @@ export type ShopProductUncheckedUpdateWithoutSaleItemsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1143,6 +1383,12 @@ export type ShopProductUncheckedUpdateWithoutSaleItemsInput = {
   stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutProductNestedInput
   serviceStockLines?: Prisma.ServiceStockLineUncheckedUpdateManyWithoutShopProductNestedInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
 export type ShopProductCreateWithoutStockMovementsInput = {
@@ -1150,6 +1396,8 @@ export type ShopProductCreateWithoutStockMovementsInput = {
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -1167,6 +1415,12 @@ export type ShopProductCreateWithoutStockMovementsInput = {
   saleItems?: Prisma.ShopSaleItemCreateNestedManyWithoutProductInput
   serviceStockLines?: Prisma.ServiceStockLineCreateNestedManyWithoutShopProductInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
 export type ShopProductUncheckedCreateWithoutStockMovementsInput = {
@@ -1176,6 +1430,8 @@ export type ShopProductUncheckedCreateWithoutStockMovementsInput = {
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -1191,6 +1447,12 @@ export type ShopProductUncheckedCreateWithoutStockMovementsInput = {
   saleItems?: Prisma.ShopSaleItemUncheckedCreateNestedManyWithoutProductInput
   serviceStockLines?: Prisma.ServiceStockLineUncheckedCreateNestedManyWithoutShopProductInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
 export type ShopProductCreateOrConnectWithoutStockMovementsInput = {
@@ -1214,6 +1476,8 @@ export type ShopProductUpdateWithoutStockMovementsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1231,6 +1495,12 @@ export type ShopProductUpdateWithoutStockMovementsInput = {
   saleItems?: Prisma.ShopSaleItemUpdateManyWithoutProductNestedInput
   serviceStockLines?: Prisma.ServiceStockLineUpdateManyWithoutShopProductNestedInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
 export type ShopProductUncheckedUpdateWithoutStockMovementsInput = {
@@ -1240,6 +1510,8 @@ export type ShopProductUncheckedUpdateWithoutStockMovementsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1255,6 +1527,12 @@ export type ShopProductUncheckedUpdateWithoutStockMovementsInput = {
   saleItems?: Prisma.ShopSaleItemUncheckedUpdateManyWithoutProductNestedInput
   serviceStockLines?: Prisma.ServiceStockLineUncheckedUpdateManyWithoutShopProductNestedInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
 export type ShopProductCreateWithoutServiceStockLinesInput = {
@@ -1262,6 +1540,8 @@ export type ShopProductCreateWithoutServiceStockLinesInput = {
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -1279,6 +1559,12 @@ export type ShopProductCreateWithoutServiceStockLinesInput = {
   saleItems?: Prisma.ShopSaleItemCreateNestedManyWithoutProductInput
   stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutProductInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
 export type ShopProductUncheckedCreateWithoutServiceStockLinesInput = {
@@ -1288,6 +1574,8 @@ export type ShopProductUncheckedCreateWithoutServiceStockLinesInput = {
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -1303,6 +1591,12 @@ export type ShopProductUncheckedCreateWithoutServiceStockLinesInput = {
   saleItems?: Prisma.ShopSaleItemUncheckedCreateNestedManyWithoutProductInput
   stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutProductInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
 export type ShopProductCreateOrConnectWithoutServiceStockLinesInput = {
@@ -1326,6 +1620,8 @@ export type ShopProductUpdateWithoutServiceStockLinesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1343,6 +1639,12 @@ export type ShopProductUpdateWithoutServiceStockLinesInput = {
   saleItems?: Prisma.ShopSaleItemUpdateManyWithoutProductNestedInput
   stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutProductNestedInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
 export type ShopProductUncheckedUpdateWithoutServiceStockLinesInput = {
@@ -1352,6 +1654,8 @@ export type ShopProductUncheckedUpdateWithoutServiceStockLinesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1367,6 +1671,12 @@ export type ShopProductUncheckedUpdateWithoutServiceStockLinesInput = {
   saleItems?: Prisma.ShopSaleItemUncheckedUpdateManyWithoutProductNestedInput
   stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutProductNestedInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
 export type ShopProductCreateWithoutServiceStockTopUpsInput = {
@@ -1374,6 +1684,8 @@ export type ShopProductCreateWithoutServiceStockTopUpsInput = {
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -1391,6 +1703,12 @@ export type ShopProductCreateWithoutServiceStockTopUpsInput = {
   saleItems?: Prisma.ShopSaleItemCreateNestedManyWithoutProductInput
   stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutProductInput
   serviceStockLines?: Prisma.ServiceStockLineCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
 export type ShopProductUncheckedCreateWithoutServiceStockTopUpsInput = {
@@ -1400,6 +1718,8 @@ export type ShopProductUncheckedCreateWithoutServiceStockTopUpsInput = {
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -1415,6 +1735,12 @@ export type ShopProductUncheckedCreateWithoutServiceStockTopUpsInput = {
   saleItems?: Prisma.ShopSaleItemUncheckedCreateNestedManyWithoutProductInput
   stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutProductInput
   serviceStockLines?: Prisma.ServiceStockLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
 export type ShopProductCreateOrConnectWithoutServiceStockTopUpsInput = {
@@ -1438,6 +1764,8 @@ export type ShopProductUpdateWithoutServiceStockTopUpsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1455,6 +1783,12 @@ export type ShopProductUpdateWithoutServiceStockTopUpsInput = {
   saleItems?: Prisma.ShopSaleItemUpdateManyWithoutProductNestedInput
   stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutProductNestedInput
   serviceStockLines?: Prisma.ServiceStockLineUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
 export type ShopProductUncheckedUpdateWithoutServiceStockTopUpsInput = {
@@ -1464,6 +1798,8 @@ export type ShopProductUncheckedUpdateWithoutServiceStockTopUpsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1479,6 +1815,876 @@ export type ShopProductUncheckedUpdateWithoutServiceStockTopUpsInput = {
   saleItems?: Prisma.ShopSaleItemUncheckedUpdateManyWithoutProductNestedInput
   stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutProductNestedInput
   serviceStockLines?: Prisma.ServiceStockLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
+}
+
+export type ShopProductCreateWithoutPurchaseOrderItemsInput = {
+  id?: string
+  name: string
+  sku: string
+  kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
+  price: number
+  promoPrice?: number | null
+  promoActive?: boolean
+  promoLabel?: string | null
+  promoStartsAt?: Date | string | null
+  promoEndsAt?: Date | string | null
+  stockQty?: number
+  barcode?: string | null
+  imageUrl?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutShopProductsInput
+  category: Prisma.ShopCategoryCreateNestedOneWithoutProductsInput
+  saleItems?: Prisma.ShopSaleItemCreateNestedManyWithoutProductInput
+  stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutProductInput
+  serviceStockLines?: Prisma.ServiceStockLineCreateNestedManyWithoutShopProductInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+}
+
+export type ShopProductUncheckedCreateWithoutPurchaseOrderItemsInput = {
+  id?: string
+  branchId: string
+  categoryId: string
+  name: string
+  sku: string
+  kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
+  price: number
+  promoPrice?: number | null
+  promoActive?: boolean
+  promoLabel?: string | null
+  promoStartsAt?: Date | string | null
+  promoEndsAt?: Date | string | null
+  stockQty?: number
+  barcode?: string | null
+  imageUrl?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  saleItems?: Prisma.ShopSaleItemUncheckedCreateNestedManyWithoutProductInput
+  stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutProductInput
+  serviceStockLines?: Prisma.ServiceStockLineUncheckedCreateNestedManyWithoutShopProductInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+}
+
+export type ShopProductCreateOrConnectWithoutPurchaseOrderItemsInput = {
+  where: Prisma.ShopProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ShopProductCreateWithoutPurchaseOrderItemsInput, Prisma.ShopProductUncheckedCreateWithoutPurchaseOrderItemsInput>
+}
+
+export type ShopProductUpsertWithoutPurchaseOrderItemsInput = {
+  update: Prisma.XOR<Prisma.ShopProductUpdateWithoutPurchaseOrderItemsInput, Prisma.ShopProductUncheckedUpdateWithoutPurchaseOrderItemsInput>
+  create: Prisma.XOR<Prisma.ShopProductCreateWithoutPurchaseOrderItemsInput, Prisma.ShopProductUncheckedCreateWithoutPurchaseOrderItemsInput>
+  where?: Prisma.ShopProductWhereInput
+}
+
+export type ShopProductUpdateToOneWithWhereWithoutPurchaseOrderItemsInput = {
+  where?: Prisma.ShopProductWhereInput
+  data: Prisma.XOR<Prisma.ShopProductUpdateWithoutPurchaseOrderItemsInput, Prisma.ShopProductUncheckedUpdateWithoutPurchaseOrderItemsInput>
+}
+
+export type ShopProductUpdateWithoutPurchaseOrderItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  promoLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promoStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  promoEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutShopProductsNestedInput
+  category?: Prisma.ShopCategoryUpdateOneRequiredWithoutProductsNestedInput
+  saleItems?: Prisma.ShopSaleItemUpdateManyWithoutProductNestedInput
+  stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutProductNestedInput
+  serviceStockLines?: Prisma.ServiceStockLineUpdateManyWithoutShopProductNestedInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+}
+
+export type ShopProductUncheckedUpdateWithoutPurchaseOrderItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  promoLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promoStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  promoEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  saleItems?: Prisma.ShopSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutProductNestedInput
+  serviceStockLines?: Prisma.ServiceStockLineUncheckedUpdateManyWithoutShopProductNestedInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+}
+
+export type ShopProductCreateWithoutFactoryCreditLinesInput = {
+  id?: string
+  name: string
+  sku: string
+  kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
+  price: number
+  promoPrice?: number | null
+  promoActive?: boolean
+  promoLabel?: string | null
+  promoStartsAt?: Date | string | null
+  promoEndsAt?: Date | string | null
+  stockQty?: number
+  barcode?: string | null
+  imageUrl?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutShopProductsInput
+  category: Prisma.ShopCategoryCreateNestedOneWithoutProductsInput
+  saleItems?: Prisma.ShopSaleItemCreateNestedManyWithoutProductInput
+  stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutProductInput
+  serviceStockLines?: Prisma.ServiceStockLineCreateNestedManyWithoutShopProductInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineCreateNestedManyWithoutConsumableInput
+  factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
+}
+
+export type ShopProductUncheckedCreateWithoutFactoryCreditLinesInput = {
+  id?: string
+  branchId: string
+  categoryId: string
+  name: string
+  sku: string
+  kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
+  price: number
+  promoPrice?: number | null
+  promoActive?: boolean
+  promoLabel?: string | null
+  promoStartsAt?: Date | string | null
+  promoEndsAt?: Date | string | null
+  stockQty?: number
+  barcode?: string | null
+  imageUrl?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  saleItems?: Prisma.ShopSaleItemUncheckedCreateNestedManyWithoutProductInput
+  stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutProductInput
+  serviceStockLines?: Prisma.ServiceStockLineUncheckedCreateNestedManyWithoutShopProductInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedCreateNestedManyWithoutConsumableInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
+}
+
+export type ShopProductCreateOrConnectWithoutFactoryCreditLinesInput = {
+  where: Prisma.ShopProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryCreditLinesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryCreditLinesInput>
+}
+
+export type ShopProductUpsertWithoutFactoryCreditLinesInput = {
+  update: Prisma.XOR<Prisma.ShopProductUpdateWithoutFactoryCreditLinesInput, Prisma.ShopProductUncheckedUpdateWithoutFactoryCreditLinesInput>
+  create: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryCreditLinesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryCreditLinesInput>
+  where?: Prisma.ShopProductWhereInput
+}
+
+export type ShopProductUpdateToOneWithWhereWithoutFactoryCreditLinesInput = {
+  where?: Prisma.ShopProductWhereInput
+  data: Prisma.XOR<Prisma.ShopProductUpdateWithoutFactoryCreditLinesInput, Prisma.ShopProductUncheckedUpdateWithoutFactoryCreditLinesInput>
+}
+
+export type ShopProductUpdateWithoutFactoryCreditLinesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  promoLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promoStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  promoEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutShopProductsNestedInput
+  category?: Prisma.ShopCategoryUpdateOneRequiredWithoutProductsNestedInput
+  saleItems?: Prisma.ShopSaleItemUpdateManyWithoutProductNestedInput
+  stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutProductNestedInput
+  serviceStockLines?: Prisma.ServiceStockLineUpdateManyWithoutShopProductNestedInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUpdateManyWithoutConsumableNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
+}
+
+export type ShopProductUncheckedUpdateWithoutFactoryCreditLinesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  promoLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promoStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  promoEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  saleItems?: Prisma.ShopSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutProductNestedInput
+  serviceStockLines?: Prisma.ServiceStockLineUncheckedUpdateManyWithoutShopProductNestedInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedUpdateManyWithoutConsumableNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
+}
+
+export type ShopProductCreateWithoutFactoryRecipesInput = {
+  id?: string
+  name: string
+  sku: string
+  kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
+  price: number
+  promoPrice?: number | null
+  promoActive?: boolean
+  promoLabel?: string | null
+  promoStartsAt?: Date | string | null
+  promoEndsAt?: Date | string | null
+  stockQty?: number
+  barcode?: string | null
+  imageUrl?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutShopProductsInput
+  category: Prisma.ShopCategoryCreateNestedOneWithoutProductsInput
+  saleItems?: Prisma.ShopSaleItemCreateNestedManyWithoutProductInput
+  stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutProductInput
+  serviceStockLines?: Prisma.ServiceStockLineCreateNestedManyWithoutShopProductInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
+}
+
+export type ShopProductUncheckedCreateWithoutFactoryRecipesInput = {
+  id?: string
+  branchId: string
+  categoryId: string
+  name: string
+  sku: string
+  kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
+  price: number
+  promoPrice?: number | null
+  promoActive?: boolean
+  promoLabel?: string | null
+  promoStartsAt?: Date | string | null
+  promoEndsAt?: Date | string | null
+  stockQty?: number
+  barcode?: string | null
+  imageUrl?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  saleItems?: Prisma.ShopSaleItemUncheckedCreateNestedManyWithoutProductInput
+  stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutProductInput
+  serviceStockLines?: Prisma.ServiceStockLineUncheckedCreateNestedManyWithoutShopProductInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
+}
+
+export type ShopProductCreateOrConnectWithoutFactoryRecipesInput = {
+  where: Prisma.ShopProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryRecipesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryRecipesInput>
+}
+
+export type ShopProductUpsertWithoutFactoryRecipesInput = {
+  update: Prisma.XOR<Prisma.ShopProductUpdateWithoutFactoryRecipesInput, Prisma.ShopProductUncheckedUpdateWithoutFactoryRecipesInput>
+  create: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryRecipesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryRecipesInput>
+  where?: Prisma.ShopProductWhereInput
+}
+
+export type ShopProductUpdateToOneWithWhereWithoutFactoryRecipesInput = {
+  where?: Prisma.ShopProductWhereInput
+  data: Prisma.XOR<Prisma.ShopProductUpdateWithoutFactoryRecipesInput, Prisma.ShopProductUncheckedUpdateWithoutFactoryRecipesInput>
+}
+
+export type ShopProductUpdateWithoutFactoryRecipesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  promoLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promoStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  promoEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutShopProductsNestedInput
+  category?: Prisma.ShopCategoryUpdateOneRequiredWithoutProductsNestedInput
+  saleItems?: Prisma.ShopSaleItemUpdateManyWithoutProductNestedInput
+  stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutProductNestedInput
+  serviceStockLines?: Prisma.ServiceStockLineUpdateManyWithoutShopProductNestedInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
+}
+
+export type ShopProductUncheckedUpdateWithoutFactoryRecipesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  promoLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promoStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  promoEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  saleItems?: Prisma.ShopSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutProductNestedInput
+  serviceStockLines?: Prisma.ServiceStockLineUncheckedUpdateManyWithoutShopProductNestedInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
+}
+
+export type ShopProductCreateWithoutFactoryRecipeLinesInput = {
+  id?: string
+  name: string
+  sku: string
+  kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
+  price: number
+  promoPrice?: number | null
+  promoActive?: boolean
+  promoLabel?: string | null
+  promoStartsAt?: Date | string | null
+  promoEndsAt?: Date | string | null
+  stockQty?: number
+  barcode?: string | null
+  imageUrl?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutShopProductsInput
+  category: Prisma.ShopCategoryCreateNestedOneWithoutProductsInput
+  saleItems?: Prisma.ShopSaleItemCreateNestedManyWithoutProductInput
+  stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutProductInput
+  serviceStockLines?: Prisma.ServiceStockLineCreateNestedManyWithoutShopProductInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeCreateNestedManyWithoutShopProductInput
+  factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
+}
+
+export type ShopProductUncheckedCreateWithoutFactoryRecipeLinesInput = {
+  id?: string
+  branchId: string
+  categoryId: string
+  name: string
+  sku: string
+  kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
+  price: number
+  promoPrice?: number | null
+  promoActive?: boolean
+  promoLabel?: string | null
+  promoStartsAt?: Date | string | null
+  promoEndsAt?: Date | string | null
+  stockQty?: number
+  barcode?: string | null
+  imageUrl?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  saleItems?: Prisma.ShopSaleItemUncheckedCreateNestedManyWithoutProductInput
+  stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutProductInput
+  serviceStockLines?: Prisma.ServiceStockLineUncheckedCreateNestedManyWithoutShopProductInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedCreateNestedManyWithoutShopProductInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
+}
+
+export type ShopProductCreateOrConnectWithoutFactoryRecipeLinesInput = {
+  where: Prisma.ShopProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryRecipeLinesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryRecipeLinesInput>
+}
+
+export type ShopProductUpsertWithoutFactoryRecipeLinesInput = {
+  update: Prisma.XOR<Prisma.ShopProductUpdateWithoutFactoryRecipeLinesInput, Prisma.ShopProductUncheckedUpdateWithoutFactoryRecipeLinesInput>
+  create: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryRecipeLinesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryRecipeLinesInput>
+  where?: Prisma.ShopProductWhereInput
+}
+
+export type ShopProductUpdateToOneWithWhereWithoutFactoryRecipeLinesInput = {
+  where?: Prisma.ShopProductWhereInput
+  data: Prisma.XOR<Prisma.ShopProductUpdateWithoutFactoryRecipeLinesInput, Prisma.ShopProductUncheckedUpdateWithoutFactoryRecipeLinesInput>
+}
+
+export type ShopProductUpdateWithoutFactoryRecipeLinesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  promoLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promoStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  promoEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutShopProductsNestedInput
+  category?: Prisma.ShopCategoryUpdateOneRequiredWithoutProductsNestedInput
+  saleItems?: Prisma.ShopSaleItemUpdateManyWithoutProductNestedInput
+  stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutProductNestedInput
+  serviceStockLines?: Prisma.ServiceStockLineUpdateManyWithoutShopProductNestedInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUpdateManyWithoutShopProductNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
+}
+
+export type ShopProductUncheckedUpdateWithoutFactoryRecipeLinesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  promoLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promoStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  promoEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  saleItems?: Prisma.ShopSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutProductNestedInput
+  serviceStockLines?: Prisma.ServiceStockLineUncheckedUpdateManyWithoutShopProductNestedInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
+}
+
+export type ShopProductCreateWithoutFactoryBatchesInput = {
+  id?: string
+  name: string
+  sku: string
+  kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
+  price: number
+  promoPrice?: number | null
+  promoActive?: boolean
+  promoLabel?: string | null
+  promoStartsAt?: Date | string | null
+  promoEndsAt?: Date | string | null
+  stockQty?: number
+  barcode?: string | null
+  imageUrl?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutShopProductsInput
+  category: Prisma.ShopCategoryCreateNestedOneWithoutProductsInput
+  saleItems?: Prisma.ShopSaleItemCreateNestedManyWithoutProductInput
+  stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutProductInput
+  serviceStockLines?: Prisma.ServiceStockLineCreateNestedManyWithoutShopProductInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
+}
+
+export type ShopProductUncheckedCreateWithoutFactoryBatchesInput = {
+  id?: string
+  branchId: string
+  categoryId: string
+  name: string
+  sku: string
+  kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
+  price: number
+  promoPrice?: number | null
+  promoActive?: boolean
+  promoLabel?: string | null
+  promoStartsAt?: Date | string | null
+  promoEndsAt?: Date | string | null
+  stockQty?: number
+  barcode?: string | null
+  imageUrl?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  saleItems?: Prisma.ShopSaleItemUncheckedCreateNestedManyWithoutProductInput
+  stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutProductInput
+  serviceStockLines?: Prisma.ServiceStockLineUncheckedCreateNestedManyWithoutShopProductInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
+}
+
+export type ShopProductCreateOrConnectWithoutFactoryBatchesInput = {
+  where: Prisma.ShopProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryBatchesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryBatchesInput>
+}
+
+export type ShopProductUpsertWithoutFactoryBatchesInput = {
+  update: Prisma.XOR<Prisma.ShopProductUpdateWithoutFactoryBatchesInput, Prisma.ShopProductUncheckedUpdateWithoutFactoryBatchesInput>
+  create: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryBatchesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryBatchesInput>
+  where?: Prisma.ShopProductWhereInput
+}
+
+export type ShopProductUpdateToOneWithWhereWithoutFactoryBatchesInput = {
+  where?: Prisma.ShopProductWhereInput
+  data: Prisma.XOR<Prisma.ShopProductUpdateWithoutFactoryBatchesInput, Prisma.ShopProductUncheckedUpdateWithoutFactoryBatchesInput>
+}
+
+export type ShopProductUpdateWithoutFactoryBatchesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  promoLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promoStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  promoEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutShopProductsNestedInput
+  category?: Prisma.ShopCategoryUpdateOneRequiredWithoutProductsNestedInput
+  saleItems?: Prisma.ShopSaleItemUpdateManyWithoutProductNestedInput
+  stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutProductNestedInput
+  serviceStockLines?: Prisma.ServiceStockLineUpdateManyWithoutShopProductNestedInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
+}
+
+export type ShopProductUncheckedUpdateWithoutFactoryBatchesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  promoLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promoStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  promoEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  saleItems?: Prisma.ShopSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutProductNestedInput
+  serviceStockLines?: Prisma.ServiceStockLineUncheckedUpdateManyWithoutShopProductNestedInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
+}
+
+export type ShopProductCreateWithoutFactoryReservationLinesInput = {
+  id?: string
+  name: string
+  sku: string
+  kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
+  price: number
+  promoPrice?: number | null
+  promoActive?: boolean
+  promoLabel?: string | null
+  promoStartsAt?: Date | string | null
+  promoEndsAt?: Date | string | null
+  stockQty?: number
+  barcode?: string | null
+  imageUrl?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutShopProductsInput
+  category: Prisma.ShopCategoryCreateNestedOneWithoutProductsInput
+  saleItems?: Prisma.ShopSaleItemCreateNestedManyWithoutProductInput
+  stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutProductInput
+  serviceStockLines?: Prisma.ServiceStockLineCreateNestedManyWithoutShopProductInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
+}
+
+export type ShopProductUncheckedCreateWithoutFactoryReservationLinesInput = {
+  id?: string
+  branchId: string
+  categoryId: string
+  name: string
+  sku: string
+  kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
+  price: number
+  promoPrice?: number | null
+  promoActive?: boolean
+  promoLabel?: string | null
+  promoStartsAt?: Date | string | null
+  promoEndsAt?: Date | string | null
+  stockQty?: number
+  barcode?: string | null
+  imageUrl?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  saleItems?: Prisma.ShopSaleItemUncheckedCreateNestedManyWithoutProductInput
+  stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutProductInput
+  serviceStockLines?: Prisma.ServiceStockLineUncheckedCreateNestedManyWithoutShopProductInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
+}
+
+export type ShopProductCreateOrConnectWithoutFactoryReservationLinesInput = {
+  where: Prisma.ShopProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryReservationLinesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryReservationLinesInput>
+}
+
+export type ShopProductUpsertWithoutFactoryReservationLinesInput = {
+  update: Prisma.XOR<Prisma.ShopProductUpdateWithoutFactoryReservationLinesInput, Prisma.ShopProductUncheckedUpdateWithoutFactoryReservationLinesInput>
+  create: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryReservationLinesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryReservationLinesInput>
+  where?: Prisma.ShopProductWhereInput
+}
+
+export type ShopProductUpdateToOneWithWhereWithoutFactoryReservationLinesInput = {
+  where?: Prisma.ShopProductWhereInput
+  data: Prisma.XOR<Prisma.ShopProductUpdateWithoutFactoryReservationLinesInput, Prisma.ShopProductUncheckedUpdateWithoutFactoryReservationLinesInput>
+}
+
+export type ShopProductUpdateWithoutFactoryReservationLinesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  promoLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promoStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  promoEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutShopProductsNestedInput
+  category?: Prisma.ShopCategoryUpdateOneRequiredWithoutProductsNestedInput
+  saleItems?: Prisma.ShopSaleItemUpdateManyWithoutProductNestedInput
+  stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutProductNestedInput
+  serviceStockLines?: Prisma.ServiceStockLineUpdateManyWithoutShopProductNestedInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
+}
+
+export type ShopProductUncheckedUpdateWithoutFactoryReservationLinesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  promoLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promoStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  promoEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  saleItems?: Prisma.ShopSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutProductNestedInput
+  serviceStockLines?: Prisma.ServiceStockLineUncheckedUpdateManyWithoutShopProductNestedInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
 export type ShopProductCreateManyBranchInput = {
@@ -1487,6 +2693,8 @@ export type ShopProductCreateManyBranchInput = {
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -1506,6 +2714,8 @@ export type ShopProductUpdateWithoutBranchInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1523,6 +2733,12 @@ export type ShopProductUpdateWithoutBranchInput = {
   stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutProductNestedInput
   serviceStockLines?: Prisma.ServiceStockLineUpdateManyWithoutShopProductNestedInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
 export type ShopProductUncheckedUpdateWithoutBranchInput = {
@@ -1531,6 +2747,8 @@ export type ShopProductUncheckedUpdateWithoutBranchInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1547,6 +2765,12 @@ export type ShopProductUncheckedUpdateWithoutBranchInput = {
   stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutProductNestedInput
   serviceStockLines?: Prisma.ServiceStockLineUncheckedUpdateManyWithoutShopProductNestedInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
 export type ShopProductUncheckedUpdateManyWithoutBranchInput = {
@@ -1555,6 +2779,8 @@ export type ShopProductUncheckedUpdateManyWithoutBranchInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1575,6 +2801,8 @@ export type ShopProductCreateManyCategoryInput = {
   name: string
   sku: string
   kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
   price: number
   promoPrice?: number | null
   promoActive?: boolean
@@ -1594,6 +2822,8 @@ export type ShopProductUpdateWithoutCategoryInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1611,6 +2841,12 @@ export type ShopProductUpdateWithoutCategoryInput = {
   stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutProductNestedInput
   serviceStockLines?: Prisma.ServiceStockLineUpdateManyWithoutShopProductNestedInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
 export type ShopProductUncheckedUpdateWithoutCategoryInput = {
@@ -1619,6 +2855,8 @@ export type ShopProductUncheckedUpdateWithoutCategoryInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1635,6 +2873,12 @@ export type ShopProductUncheckedUpdateWithoutCategoryInput = {
   stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutProductNestedInput
   serviceStockLines?: Prisma.ServiceStockLineUncheckedUpdateManyWithoutShopProductNestedInput
   serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
 export type ShopProductUncheckedUpdateManyWithoutCategoryInput = {
@@ -1643,6 +2887,8 @@ export type ShopProductUncheckedUpdateManyWithoutCategoryInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1667,6 +2913,12 @@ export type ShopProductCountOutputType = {
   stockMovements: number
   serviceStockLines: number
   serviceStockTopUps: number
+  factoryRecipes: number
+  factoryRecipeLines: number
+  factoryCreditLines: number
+  factoryReservationLines: number
+  factoryBatches: number
+  purchaseOrderItems: number
 }
 
 export type ShopProductCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1674,6 +2926,12 @@ export type ShopProductCountOutputTypeSelect<ExtArgs extends runtime.Types.Exten
   stockMovements?: boolean | ShopProductCountOutputTypeCountStockMovementsArgs
   serviceStockLines?: boolean | ShopProductCountOutputTypeCountServiceStockLinesArgs
   serviceStockTopUps?: boolean | ShopProductCountOutputTypeCountServiceStockTopUpsArgs
+  factoryRecipes?: boolean | ShopProductCountOutputTypeCountFactoryRecipesArgs
+  factoryRecipeLines?: boolean | ShopProductCountOutputTypeCountFactoryRecipeLinesArgs
+  factoryCreditLines?: boolean | ShopProductCountOutputTypeCountFactoryCreditLinesArgs
+  factoryReservationLines?: boolean | ShopProductCountOutputTypeCountFactoryReservationLinesArgs
+  factoryBatches?: boolean | ShopProductCountOutputTypeCountFactoryBatchesArgs
+  purchaseOrderItems?: boolean | ShopProductCountOutputTypeCountPurchaseOrderItemsArgs
 }
 
 /**
@@ -1714,6 +2972,48 @@ export type ShopProductCountOutputTypeCountServiceStockTopUpsArgs<ExtArgs extend
   where?: Prisma.ServiceStockTopUpWhereInput
 }
 
+/**
+ * ShopProductCountOutputType without action
+ */
+export type ShopProductCountOutputTypeCountFactoryRecipesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FactoryRecipeWhereInput
+}
+
+/**
+ * ShopProductCountOutputType without action
+ */
+export type ShopProductCountOutputTypeCountFactoryRecipeLinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FactoryRecipeLineWhereInput
+}
+
+/**
+ * ShopProductCountOutputType without action
+ */
+export type ShopProductCountOutputTypeCountFactoryCreditLinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FactoryCreditLineWhereInput
+}
+
+/**
+ * ShopProductCountOutputType without action
+ */
+export type ShopProductCountOutputTypeCountFactoryReservationLinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FactoryReservationLineWhereInput
+}
+
+/**
+ * ShopProductCountOutputType without action
+ */
+export type ShopProductCountOutputTypeCountFactoryBatchesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FactoryBatchWhereInput
+}
+
+/**
+ * ShopProductCountOutputType without action
+ */
+export type ShopProductCountOutputTypeCountPurchaseOrderItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PurchaseOrderItemWhereInput
+}
+
 
 export type ShopProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1722,6 +3022,8 @@ export type ShopProductSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   name?: boolean
   sku?: boolean
   kind?: boolean
+  productKind?: boolean
+  finishedFamily?: boolean
   price?: boolean
   promoPrice?: boolean
   promoActive?: boolean
@@ -1740,6 +3042,12 @@ export type ShopProductSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   stockMovements?: boolean | Prisma.ShopProduct$stockMovementsArgs<ExtArgs>
   serviceStockLines?: boolean | Prisma.ShopProduct$serviceStockLinesArgs<ExtArgs>
   serviceStockTopUps?: boolean | Prisma.ShopProduct$serviceStockTopUpsArgs<ExtArgs>
+  factoryRecipes?: boolean | Prisma.ShopProduct$factoryRecipesArgs<ExtArgs>
+  factoryRecipeLines?: boolean | Prisma.ShopProduct$factoryRecipeLinesArgs<ExtArgs>
+  factoryCreditLines?: boolean | Prisma.ShopProduct$factoryCreditLinesArgs<ExtArgs>
+  factoryReservationLines?: boolean | Prisma.ShopProduct$factoryReservationLinesArgs<ExtArgs>
+  factoryBatches?: boolean | Prisma.ShopProduct$factoryBatchesArgs<ExtArgs>
+  purchaseOrderItems?: boolean | Prisma.ShopProduct$purchaseOrderItemsArgs<ExtArgs>
   _count?: boolean | Prisma.ShopProductCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["shopProduct"]>
 
@@ -1750,6 +3058,8 @@ export type ShopProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   name?: boolean
   sku?: boolean
   kind?: boolean
+  productKind?: boolean
+  finishedFamily?: boolean
   price?: boolean
   promoPrice?: boolean
   promoActive?: boolean
@@ -1773,6 +3083,8 @@ export type ShopProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   name?: boolean
   sku?: boolean
   kind?: boolean
+  productKind?: boolean
+  finishedFamily?: boolean
   price?: boolean
   promoPrice?: boolean
   promoActive?: boolean
@@ -1796,6 +3108,8 @@ export type ShopProductSelectScalar = {
   name?: boolean
   sku?: boolean
   kind?: boolean
+  productKind?: boolean
+  finishedFamily?: boolean
   price?: boolean
   promoPrice?: boolean
   promoActive?: boolean
@@ -1810,7 +3124,7 @@ export type ShopProductSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ShopProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "categoryId" | "name" | "sku" | "kind" | "price" | "promoPrice" | "promoActive" | "promoLabel" | "promoStartsAt" | "promoEndsAt" | "stockQty" | "barcode" | "imageUrl" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["shopProduct"]>
+export type ShopProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "categoryId" | "name" | "sku" | "kind" | "productKind" | "finishedFamily" | "price" | "promoPrice" | "promoActive" | "promoLabel" | "promoStartsAt" | "promoEndsAt" | "stockQty" | "barcode" | "imageUrl" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["shopProduct"]>
 export type ShopProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   category?: boolean | Prisma.ShopCategoryDefaultArgs<ExtArgs>
@@ -1818,6 +3132,12 @@ export type ShopProductInclude<ExtArgs extends runtime.Types.Extensions.Internal
   stockMovements?: boolean | Prisma.ShopProduct$stockMovementsArgs<ExtArgs>
   serviceStockLines?: boolean | Prisma.ShopProduct$serviceStockLinesArgs<ExtArgs>
   serviceStockTopUps?: boolean | Prisma.ShopProduct$serviceStockTopUpsArgs<ExtArgs>
+  factoryRecipes?: boolean | Prisma.ShopProduct$factoryRecipesArgs<ExtArgs>
+  factoryRecipeLines?: boolean | Prisma.ShopProduct$factoryRecipeLinesArgs<ExtArgs>
+  factoryCreditLines?: boolean | Prisma.ShopProduct$factoryCreditLinesArgs<ExtArgs>
+  factoryReservationLines?: boolean | Prisma.ShopProduct$factoryReservationLinesArgs<ExtArgs>
+  factoryBatches?: boolean | Prisma.ShopProduct$factoryBatchesArgs<ExtArgs>
+  purchaseOrderItems?: boolean | Prisma.ShopProduct$purchaseOrderItemsArgs<ExtArgs>
   _count?: boolean | Prisma.ShopProductCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ShopProductIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1838,6 +3158,12 @@ export type $ShopProductPayload<ExtArgs extends runtime.Types.Extensions.Interna
     stockMovements: Prisma.$ShopStockMovementPayload<ExtArgs>[]
     serviceStockLines: Prisma.$ServiceStockLinePayload<ExtArgs>[]
     serviceStockTopUps: Prisma.$ServiceStockTopUpPayload<ExtArgs>[]
+    factoryRecipes: Prisma.$FactoryRecipePayload<ExtArgs>[]
+    factoryRecipeLines: Prisma.$FactoryRecipeLinePayload<ExtArgs>[]
+    factoryCreditLines: Prisma.$FactoryCreditLinePayload<ExtArgs>[]
+    factoryReservationLines: Prisma.$FactoryReservationLinePayload<ExtArgs>[]
+    factoryBatches: Prisma.$FactoryBatchPayload<ExtArgs>[]
+    purchaseOrderItems: Prisma.$PurchaseOrderItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1849,6 +3175,11 @@ export type $ShopProductPayload<ExtArgs extends runtime.Types.Extensions.Interna
     name: string
     sku: string
     kind: $Enums.ShopProductKind
+    /**
+     * Usine : fini vendable vs consommable de production.
+     */
+    productKind: $Enums.FactoryProductKind
+    finishedFamily: $Enums.FactoryFinishedFamily | null
     price: number
     /**
      * Prix promo si `promoActive`.
@@ -2264,6 +3595,12 @@ export interface Prisma__ShopProductClient<T, Null = never, ExtArgs extends runt
   stockMovements<T extends Prisma.ShopProduct$stockMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopProduct$stockMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ShopStockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   serviceStockLines<T extends Prisma.ShopProduct$serviceStockLinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopProduct$serviceStockLinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceStockLinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   serviceStockTopUps<T extends Prisma.ShopProduct$serviceStockTopUpsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopProduct$serviceStockTopUpsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceStockTopUpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  factoryRecipes<T extends Prisma.ShopProduct$factoryRecipesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopProduct$factoryRecipesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactoryRecipePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  factoryRecipeLines<T extends Prisma.ShopProduct$factoryRecipeLinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopProduct$factoryRecipeLinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactoryRecipeLinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  factoryCreditLines<T extends Prisma.ShopProduct$factoryCreditLinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopProduct$factoryCreditLinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactoryCreditLinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  factoryReservationLines<T extends Prisma.ShopProduct$factoryReservationLinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopProduct$factoryReservationLinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactoryReservationLinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  factoryBatches<T extends Prisma.ShopProduct$factoryBatchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopProduct$factoryBatchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactoryBatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  purchaseOrderItems<T extends Prisma.ShopProduct$purchaseOrderItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopProduct$purchaseOrderItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PurchaseOrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2299,6 +3636,8 @@ export interface ShopProductFieldRefs {
   readonly name: Prisma.FieldRef<"ShopProduct", 'String'>
   readonly sku: Prisma.FieldRef<"ShopProduct", 'String'>
   readonly kind: Prisma.FieldRef<"ShopProduct", 'ShopProductKind'>
+  readonly productKind: Prisma.FieldRef<"ShopProduct", 'FactoryProductKind'>
+  readonly finishedFamily: Prisma.FieldRef<"ShopProduct", 'FactoryFinishedFamily'>
   readonly price: Prisma.FieldRef<"ShopProduct", 'Float'>
   readonly promoPrice: Prisma.FieldRef<"ShopProduct", 'Float'>
   readonly promoActive: Prisma.FieldRef<"ShopProduct", 'Boolean'>
@@ -2805,6 +4144,150 @@ export type ShopProduct$serviceStockTopUpsArgs<ExtArgs extends runtime.Types.Ext
   take?: number
   skip?: number
   distinct?: Prisma.ServiceStockTopUpScalarFieldEnum | Prisma.ServiceStockTopUpScalarFieldEnum[]
+}
+
+/**
+ * ShopProduct.factoryRecipes
+ */
+export type ShopProduct$factoryRecipesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FactoryRecipe
+   */
+  select?: Prisma.FactoryRecipeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FactoryRecipe
+   */
+  omit?: Prisma.FactoryRecipeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FactoryRecipeInclude<ExtArgs> | null
+  where?: Prisma.FactoryRecipeWhereInput
+  orderBy?: Prisma.FactoryRecipeOrderByWithRelationInput | Prisma.FactoryRecipeOrderByWithRelationInput[]
+  cursor?: Prisma.FactoryRecipeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FactoryRecipeScalarFieldEnum | Prisma.FactoryRecipeScalarFieldEnum[]
+}
+
+/**
+ * ShopProduct.factoryRecipeLines
+ */
+export type ShopProduct$factoryRecipeLinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FactoryRecipeLine
+   */
+  select?: Prisma.FactoryRecipeLineSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FactoryRecipeLine
+   */
+  omit?: Prisma.FactoryRecipeLineOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FactoryRecipeLineInclude<ExtArgs> | null
+  where?: Prisma.FactoryRecipeLineWhereInput
+  orderBy?: Prisma.FactoryRecipeLineOrderByWithRelationInput | Prisma.FactoryRecipeLineOrderByWithRelationInput[]
+  cursor?: Prisma.FactoryRecipeLineWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FactoryRecipeLineScalarFieldEnum | Prisma.FactoryRecipeLineScalarFieldEnum[]
+}
+
+/**
+ * ShopProduct.factoryCreditLines
+ */
+export type ShopProduct$factoryCreditLinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FactoryCreditLine
+   */
+  select?: Prisma.FactoryCreditLineSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FactoryCreditLine
+   */
+  omit?: Prisma.FactoryCreditLineOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FactoryCreditLineInclude<ExtArgs> | null
+  where?: Prisma.FactoryCreditLineWhereInput
+  orderBy?: Prisma.FactoryCreditLineOrderByWithRelationInput | Prisma.FactoryCreditLineOrderByWithRelationInput[]
+  cursor?: Prisma.FactoryCreditLineWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FactoryCreditLineScalarFieldEnum | Prisma.FactoryCreditLineScalarFieldEnum[]
+}
+
+/**
+ * ShopProduct.factoryReservationLines
+ */
+export type ShopProduct$factoryReservationLinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FactoryReservationLine
+   */
+  select?: Prisma.FactoryReservationLineSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FactoryReservationLine
+   */
+  omit?: Prisma.FactoryReservationLineOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FactoryReservationLineInclude<ExtArgs> | null
+  where?: Prisma.FactoryReservationLineWhereInput
+  orderBy?: Prisma.FactoryReservationLineOrderByWithRelationInput | Prisma.FactoryReservationLineOrderByWithRelationInput[]
+  cursor?: Prisma.FactoryReservationLineWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FactoryReservationLineScalarFieldEnum | Prisma.FactoryReservationLineScalarFieldEnum[]
+}
+
+/**
+ * ShopProduct.factoryBatches
+ */
+export type ShopProduct$factoryBatchesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FactoryBatch
+   */
+  select?: Prisma.FactoryBatchSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FactoryBatch
+   */
+  omit?: Prisma.FactoryBatchOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FactoryBatchInclude<ExtArgs> | null
+  where?: Prisma.FactoryBatchWhereInput
+  orderBy?: Prisma.FactoryBatchOrderByWithRelationInput | Prisma.FactoryBatchOrderByWithRelationInput[]
+  cursor?: Prisma.FactoryBatchWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FactoryBatchScalarFieldEnum | Prisma.FactoryBatchScalarFieldEnum[]
+}
+
+/**
+ * ShopProduct.purchaseOrderItems
+ */
+export type ShopProduct$purchaseOrderItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PurchaseOrderItem
+   */
+  select?: Prisma.PurchaseOrderItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PurchaseOrderItem
+   */
+  omit?: Prisma.PurchaseOrderItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PurchaseOrderItemInclude<ExtArgs> | null
+  where?: Prisma.PurchaseOrderItemWhereInput
+  orderBy?: Prisma.PurchaseOrderItemOrderByWithRelationInput | Prisma.PurchaseOrderItemOrderByWithRelationInput[]
+  cursor?: Prisma.PurchaseOrderItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PurchaseOrderItemScalarFieldEnum | Prisma.PurchaseOrderItemScalarFieldEnum[]
 }
 
 /**

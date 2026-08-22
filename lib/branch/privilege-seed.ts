@@ -40,6 +40,14 @@ const R = {
   PAIE: "paie",
   PAIE_PRESENCES: "paie_presences",
   PAIE_MOI: "paie_moi",
+  POS: "pos",
+  BOUTIQUE_PRODUITS: "boutique_produits",
+  USINE_CREDITS: "usine_credits",
+  USINE_CLIENTS: "usine_clients",
+  USINE_RESERVATIONS: "usine_reservations",
+  USINE_DEPOT: "usine_depot",
+  USINE_PRODUCTION: "usine_production",
+  USINE_FOURNISSEURS: "usine_fournisseurs",
 } as const;
 
 /** Ressources éditables dans Paramètres (hospitalité + admin). */
@@ -69,6 +77,14 @@ export const PRIVILEGE_RESOURCES = [
   R.PAIE,
   R.PAIE_PRESENCES,
   R.PAIE_MOI,
+  R.POS,
+  R.BOUTIQUE_PRODUITS,
+  R.USINE_CREDITS,
+  R.USINE_CLIENTS,
+  R.USINE_RESERVATIONS,
+  R.USINE_DEPOT,
+  R.USINE_PRODUCTION,
+  R.USINE_FOURNISSEURS,
 ] as const;
 
 export type PrivilegeResourceId = (typeof PRIVILEGE_RESOURCES)[number];
@@ -117,6 +133,19 @@ export const PRIVILEGE_RESOURCE_GROUPS: {
     title: "Administration",
     resources: [R.PARAMETRES, R.PAIE, R.PAIE_PRESENCES, R.PAIE_MOI],
   },
+  {
+    title: "Usine",
+    resources: [
+      R.POS,
+      R.BOUTIQUE_PRODUITS,
+      R.USINE_CREDITS,
+      R.USINE_CLIENTS,
+      R.USINE_RESERVATIONS,
+      R.USINE_DEPOT,
+      R.USINE_PRODUCTION,
+      R.USINE_FOURNISSEURS,
+    ],
+  },
 ];
 
 export const PRIVILEGE_RESOURCE_LABELS: Record<string, string> = {
@@ -141,10 +170,18 @@ export const PRIVILEGE_RESOURCE_LABELS: Record<string, string> = {
   [R.RAPPORT_ARTICLES]: "Rapport articles",
   [R.RAPPORT_MES_COMMANDES]: "Mes commandes",
   [R.RAPPORT_SEJOURS]: "Rapport séjours",
-  [R.PARAMETRES]: "Paramètres (rôles)",
+  [R.PARAMETRES]: "Paramètres",
   [R.PAIE]: "Paie du mois",
   [R.PAIE_PRESENCES]: "Présences",
   [R.PAIE_MOI]: "Mes jours",
+  [R.POS]: "Vente cash / POS",
+  [R.BOUTIQUE_PRODUITS]: "Catalogue produits",
+  [R.USINE_CREDITS]: "Crédits usine",
+  [R.USINE_CLIENTS]: "Clients usine",
+  [R.USINE_RESERVATIONS]: "Réservations stock",
+  [R.USINE_DEPOT]: "Dépôt usine",
+  [R.USINE_PRODUCTION]: "Production",
+  [R.USINE_FOURNISSEURS]: "Fournisseurs",
 };
 
 type ActionsMap = Partial<Record<PrivilegeActionName, true>>;
@@ -231,6 +268,15 @@ const GERANT_SPEC: RolePrivilegeSpec = {
   [R.PAIE]: full(),
   [R.PAIE_PRESENCES]: ops(),
   [R.PAIE_MOI]: vr(),
+  [R.CAISSE]: ops(),
+  [R.POS]: full(),
+  [R.BOUTIQUE_PRODUITS]: full(),
+  [R.USINE_CREDITS]: full(),
+  [R.USINE_CLIENTS]: full(),
+  [R.USINE_RESERVATIONS]: full(),
+  [R.USINE_DEPOT]: full(),
+  [R.USINE_PRODUCTION]: full(),
+  [R.USINE_FOURNISSEURS]: full(),
 };
 
 export const SEED_BRANCH_ROLES: SeedRoleDef[] = [
@@ -307,6 +353,24 @@ export const SEED_BRANCH_ROLES: SeedRoleDef[] = [
     description: "Accès complet à la branche.",
     sortOrder: 70,
     all: true,
+  },
+  {
+    slug: "marketeur",
+    label: "Marketeur",
+    description: "Vente cash/crédit et float — pas de dépôt ni production.",
+    sortOrder: 25,
+    privileges: {
+      [R.CAISSE]: ops(),
+      [R.TAUX_CHANGE]: vr(),
+      [R.POS]: ops(),
+      [R.USINE_CREDITS]: ops(),
+      [R.USINE_CLIENTS]: ops(),
+      [R.USINE_RESERVATIONS]: ops(),
+      [R.SERVICE_STOCK]: { VIEW: true, READ: true, UPDATE: true },
+      [R.PAIE_MOI]: vr(),
+      [R.RAPPORT_TABLEAU]: vr(),
+      [R.RAPPORT_VENTES]: vr(),
+    },
   },
 ];
 
