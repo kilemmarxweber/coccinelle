@@ -62,6 +62,19 @@ export async function loadCustomerUiThemeAction(
   return loadBranchCustomerUiTheme(branchId);
 }
 
+function isMissingBranchUiColumn(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const e = error as { code?: string; message?: string };
+  if (e.code === "P2022") return true;
+  const msg = e.message ?? "";
+  return (
+    msg.includes("customerUiPrimary") ||
+    msg.includes("customerUiBackground") ||
+    msg.includes("customerUiCard") ||
+    msg.includes("ColumnNotFound")
+  );
+}
+
 export async function saveCustomerUiThemeAction(input: {
   organizationId: string;
   branchId: string;
@@ -74,10 +87,28 @@ export async function saveCustomerUiThemeAction(input: {
     action: "UPDATE",
   });
 
-  const existing = await prisma.branch.findFirst({
-    where: { id: input.branchId, organizationId: input.organizationId },
-    select: THEME_SELECT,
-  });
+  let existing: {
+    customerUiPrimary?: string | null;
+    customerUiBackground?: string | null;
+    customerUiCard?: string | null;
+    settings: unknown;
+    organization: { slug: string | null };
+  } | null;
+  try {
+    existing = await prisma.branch.findFirst({
+      where: { id: input.branchId, organizationId: input.organizationId },
+      select: THEME_SELECT,
+    });
+  } catch (error) {
+    if (!isMissingBranchUiColumn(error)) throw error;
+    existing = await prisma.branch.findFirst({
+      where: { id: input.branchId, organizationId: input.organizationId },
+      select: {
+        settings: true,
+        organization: { select: { slug: true } },
+      },
+    });
+  }
   if (!existing) throw new Error("Branche introuvable.");
 
   const serialized = serializeCustomerUiForDb(input.theme);
@@ -88,16 +119,36 @@ export async function saveCustomerUiThemeAction(input: {
     delete settings.customerUi;
   }
 
-  const updated = await prisma.branch.update({
-    where: { id: input.branchId },
-    data: {
-      customerUiPrimary: serialized.customerUiPrimary,
-      customerUiBackground: serialized.customerUiBackground,
-      customerUiCard: serialized.customerUiCard,
-      settings: settings as Prisma.InputJsonValue,
-    },
-    select: THEME_SELECT,
-  });
+  let updated: {
+    customerUiPrimary?: string | null;
+    customerUiBackground?: string | null;
+    customerUiCard?: string | null;
+    settings: unknown;
+    organization: { slug: string | null };
+  };
+  try {
+    updated = await prisma.branch.update({
+      where: { id: input.branchId },
+      data: {
+        customerUiPrimary: serialized.customerUiPrimary,
+        customerUiBackground: serialized.customerUiBackground,
+        customerUiCard: serialized.customerUiCard,
+        settings: settings as Prisma.InputJsonValue,
+      },
+      select: THEME_SELECT,
+    });
+  } catch (error) {
+    if (!isMissingBranchUiColumn(error)) throw error;
+    // DB sans colonnes : persister uniquement dans settings.customerUi.
+    updated = await prisma.branch.update({
+      where: { id: input.branchId },
+      data: { settings: settings as Prisma.InputJsonValue },
+      select: {
+        settings: true,
+        organization: { select: { slug: true } },
+      },
+    });
+  }
 
   revalidateCustomerUi(
     input.organizationId,
