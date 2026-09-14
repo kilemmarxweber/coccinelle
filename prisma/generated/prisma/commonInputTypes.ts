@@ -1238,6 +1238,23 @@ export type EnumFactoryReservationStatusWithAggregatesFilter<$PrismaModel = neve
   _max?: Prisma.NestedEnumFactoryReservationStatusFilter<$PrismaModel>
 }
 
+export type EnumFactoryOrderRequestStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.FactoryOrderRequestStatus | Prisma.EnumFactoryOrderRequestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.FactoryOrderRequestStatus[] | Prisma.ListEnumFactoryOrderRequestStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FactoryOrderRequestStatus[] | Prisma.ListEnumFactoryOrderRequestStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFactoryOrderRequestStatusFilter<$PrismaModel> | $Enums.FactoryOrderRequestStatus
+}
+
+export type EnumFactoryOrderRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FactoryOrderRequestStatus | Prisma.EnumFactoryOrderRequestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.FactoryOrderRequestStatus[] | Prisma.ListEnumFactoryOrderRequestStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FactoryOrderRequestStatus[] | Prisma.ListEnumFactoryOrderRequestStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFactoryOrderRequestStatusWithAggregatesFilter<$PrismaModel> | $Enums.FactoryOrderRequestStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFactoryOrderRequestStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFactoryOrderRequestStatusFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -2397,6 +2414,23 @@ export type NestedEnumFactoryReservationStatusWithAggregatesFilter<$PrismaModel 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumFactoryReservationStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumFactoryReservationStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumFactoryOrderRequestStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.FactoryOrderRequestStatus | Prisma.EnumFactoryOrderRequestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.FactoryOrderRequestStatus[] | Prisma.ListEnumFactoryOrderRequestStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FactoryOrderRequestStatus[] | Prisma.ListEnumFactoryOrderRequestStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFactoryOrderRequestStatusFilter<$PrismaModel> | $Enums.FactoryOrderRequestStatus
+}
+
+export type NestedEnumFactoryOrderRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FactoryOrderRequestStatus | Prisma.EnumFactoryOrderRequestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.FactoryOrderRequestStatus[] | Prisma.ListEnumFactoryOrderRequestStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FactoryOrderRequestStatus[] | Prisma.ListEnumFactoryOrderRequestStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFactoryOrderRequestStatusWithAggregatesFilter<$PrismaModel> | $Enums.FactoryOrderRequestStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFactoryOrderRequestStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFactoryOrderRequestStatusFilter<$PrismaModel>
 }
 
 

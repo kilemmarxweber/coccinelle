@@ -454,7 +454,9 @@ export const ModelName = {
   FactoryRecipeLine: 'FactoryRecipeLine',
   FactoryBatch: 'FactoryBatch',
   FactoryReservation: 'FactoryReservation',
-  FactoryReservationLine: 'FactoryReservationLine'
+  FactoryReservationLine: 'FactoryReservationLine',
+  FactoryOrderRequest: 'FactoryOrderRequest',
+  FactoryOrderRequestLine: 'FactoryOrderRequestLine'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -470,7 +472,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationRole" | "member" | "invitation" | "client" | "trajet" | "trajetProgramme" | "trajetDepart" | "passager" | "reservation" | "colis" | "reservationDraft" | "paiement" | "penalite" | "branch" | "branchPartner" | "partnerBooking" | "branchMember" | "branchRole" | "branchRolePrivilege" | "hotelRoomType" | "hotelRoom" | "shopCategory" | "shopProduct" | "shopSale" | "shopSaleItem" | "shopStockMovement" | "exchangeRate" | "cashSession" | "hotelStay" | "folio" | "folioLine" | "payment" | "hotelMenuItem" | "hotelStockMovement" | "serviceStockSession" | "serviceStockLine" | "serviceStockTopUp" | "hotelOrder" | "hotelOrderItem" | "branchNotification" | "purchaseOrder" | "purchaseOrderItem" | "branchExpense" | "warehouseCategory" | "warehouseLocation" | "warehouseProduct" | "warehouseMovement" | "warehouseSlip" | "warehouseSlipItem" | "branchPayrollSettings" | "staffPayrollProfile" | "payrollPeriod" | "staffAttendanceDay" | "staffLeaveRequest" | "staffSalaryAdvance" | "payslip" | "branchSupplier" | "factoryCustomer" | "factoryCredit" | "factoryCreditLine" | "factoryCreditExtension" | "factoryRecipe" | "factoryRecipeLine" | "factoryBatch" | "factoryReservation" | "factoryReservationLine"
+    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationRole" | "member" | "invitation" | "client" | "trajet" | "trajetProgramme" | "trajetDepart" | "passager" | "reservation" | "colis" | "reservationDraft" | "paiement" | "penalite" | "branch" | "branchPartner" | "partnerBooking" | "branchMember" | "branchRole" | "branchRolePrivilege" | "hotelRoomType" | "hotelRoom" | "shopCategory" | "shopProduct" | "shopSale" | "shopSaleItem" | "shopStockMovement" | "exchangeRate" | "cashSession" | "hotelStay" | "folio" | "folioLine" | "payment" | "hotelMenuItem" | "hotelStockMovement" | "serviceStockSession" | "serviceStockLine" | "serviceStockTopUp" | "hotelOrder" | "hotelOrderItem" | "branchNotification" | "purchaseOrder" | "purchaseOrderItem" | "branchExpense" | "warehouseCategory" | "warehouseLocation" | "warehouseProduct" | "warehouseMovement" | "warehouseSlip" | "warehouseSlipItem" | "branchPayrollSettings" | "staffPayrollProfile" | "payrollPeriod" | "staffAttendanceDay" | "staffLeaveRequest" | "staffSalaryAdvance" | "payslip" | "branchSupplier" | "factoryCustomer" | "factoryCredit" | "factoryCreditLine" | "factoryCreditExtension" | "factoryRecipe" | "factoryRecipeLine" | "factoryBatch" | "factoryReservation" | "factoryReservationLine" | "factoryOrderRequest" | "factoryOrderRequestLine"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -5728,6 +5730,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    FactoryOrderRequest: {
+      payload: Prisma.$FactoryOrderRequestPayload<ExtArgs>
+      fields: Prisma.FactoryOrderRequestFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FactoryOrderRequestFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FactoryOrderRequestFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestPayload>
+        }
+        findFirst: {
+          args: Prisma.FactoryOrderRequestFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FactoryOrderRequestFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestPayload>
+        }
+        findMany: {
+          args: Prisma.FactoryOrderRequestFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestPayload>[]
+        }
+        create: {
+          args: Prisma.FactoryOrderRequestCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestPayload>
+        }
+        createMany: {
+          args: Prisma.FactoryOrderRequestCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FactoryOrderRequestCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestPayload>[]
+        }
+        delete: {
+          args: Prisma.FactoryOrderRequestDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestPayload>
+        }
+        update: {
+          args: Prisma.FactoryOrderRequestUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestPayload>
+        }
+        deleteMany: {
+          args: Prisma.FactoryOrderRequestDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FactoryOrderRequestUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FactoryOrderRequestUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestPayload>[]
+        }
+        upsert: {
+          args: Prisma.FactoryOrderRequestUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestPayload>
+        }
+        aggregate: {
+          args: Prisma.FactoryOrderRequestAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFactoryOrderRequest>
+        }
+        groupBy: {
+          args: Prisma.FactoryOrderRequestGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FactoryOrderRequestGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FactoryOrderRequestCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FactoryOrderRequestCountAggregateOutputType> | number
+        }
+      }
+    }
+    FactoryOrderRequestLine: {
+      payload: Prisma.$FactoryOrderRequestLinePayload<ExtArgs>
+      fields: Prisma.FactoryOrderRequestLineFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FactoryOrderRequestLineFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestLinePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FactoryOrderRequestLineFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestLinePayload>
+        }
+        findFirst: {
+          args: Prisma.FactoryOrderRequestLineFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestLinePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FactoryOrderRequestLineFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestLinePayload>
+        }
+        findMany: {
+          args: Prisma.FactoryOrderRequestLineFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestLinePayload>[]
+        }
+        create: {
+          args: Prisma.FactoryOrderRequestLineCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestLinePayload>
+        }
+        createMany: {
+          args: Prisma.FactoryOrderRequestLineCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FactoryOrderRequestLineCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestLinePayload>[]
+        }
+        delete: {
+          args: Prisma.FactoryOrderRequestLineDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestLinePayload>
+        }
+        update: {
+          args: Prisma.FactoryOrderRequestLineUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestLinePayload>
+        }
+        deleteMany: {
+          args: Prisma.FactoryOrderRequestLineDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FactoryOrderRequestLineUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FactoryOrderRequestLineUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestLinePayload>[]
+        }
+        upsert: {
+          args: Prisma.FactoryOrderRequestLineUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactoryOrderRequestLinePayload>
+        }
+        aggregate: {
+          args: Prisma.FactoryOrderRequestLineAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFactoryOrderRequestLine>
+        }
+        groupBy: {
+          args: Prisma.FactoryOrderRequestLineGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FactoryOrderRequestLineGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FactoryOrderRequestLineCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FactoryOrderRequestLineCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -6892,6 +7042,11 @@ export const FactoryCustomerScalarFieldEnum = {
   companyName: 'companyName',
   email: 'email',
   notes: 'notes',
+  deliveryAddress: 'deliveryAddress',
+  deliveryCity: 'deliveryCity',
+  affiliateBranchId: 'affiliateBranchId',
+  userId: 'userId',
+  notifyPrefs: 'notifyPrefs',
   active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -6918,6 +7073,9 @@ export const FactoryCreditScalarFieldEnum = {
   reminderSentAt: 'reminderSentAt',
   dueDayReminderSentAt: 'dueDayReminderSentAt',
   cancelReason: 'cancelReason',
+  deliveryAddress: 'deliveryAddress',
+  deliveryCity: 'deliveryCity',
+  requestedDeliveryAt: 'requestedDeliveryAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -7017,6 +7175,38 @@ export const FactoryReservationLineScalarFieldEnum = {
 } as const
 
 export type FactoryReservationLineScalarFieldEnum = (typeof FactoryReservationLineScalarFieldEnum)[keyof typeof FactoryReservationLineScalarFieldEnum]
+
+
+export const FactoryOrderRequestScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  customerId: 'customerId',
+  status: 'status',
+  requestedDeliveryAt: 'requestedDeliveryAt',
+  deliveryAddress: 'deliveryAddress',
+  deliveryCity: 'deliveryCity',
+  notes: 'notes',
+  reviewedByUserId: 'reviewedByUserId',
+  reviewedAt: 'reviewedAt',
+  rejectReason: 'rejectReason',
+  creditId: 'creditId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FactoryOrderRequestScalarFieldEnum = (typeof FactoryOrderRequestScalarFieldEnum)[keyof typeof FactoryOrderRequestScalarFieldEnum]
+
+
+export const FactoryOrderRequestLineScalarFieldEnum = {
+  id: 'id',
+  requestId: 'requestId',
+  shopProductId: 'shopProductId',
+  nameSnapshot: 'nameSnapshot',
+  qty: 'qty',
+  unitPriceUsd: 'unitPriceUsd'
+} as const
+
+export type FactoryOrderRequestLineScalarFieldEnum = (typeof FactoryOrderRequestLineScalarFieldEnum)[keyof typeof FactoryOrderRequestLineScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -7863,6 +8053,20 @@ export type EnumFactoryReservationStatusFieldRefInput<$PrismaModel> = FieldRefIn
 export type ListEnumFactoryReservationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FactoryReservationStatus[]'>
     
 
+
+/**
+ * Reference to a field of type 'FactoryOrderRequestStatus'
+ */
+export type EnumFactoryOrderRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FactoryOrderRequestStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'FactoryOrderRequestStatus[]'
+ */
+export type ListEnumFactoryOrderRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FactoryOrderRequestStatus[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -8044,6 +8248,8 @@ export type GlobalOmitConfig = {
   factoryBatch?: Prisma.FactoryBatchOmit
   factoryReservation?: Prisma.FactoryReservationOmit
   factoryReservationLine?: Prisma.FactoryReservationLineOmit
+  factoryOrderRequest?: Prisma.FactoryOrderRequestOmit
+  factoryOrderRequestLine?: Prisma.FactoryOrderRequestLineOmit
 }
 
 /* Types for Logging */

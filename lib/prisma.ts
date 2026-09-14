@@ -6,7 +6,7 @@ const adapter = new PrismaPg({
 });
 
 /** Incrémenter après tout changement de modèle Prisma pour invalider le singleton HMR. */
-const PRISMA_SCHEMA_REV = 37;
+const PRISMA_SCHEMA_REV = 38;
 
 const globalForPrisma = global as unknown as {
   prisma: PrismaClient | undefined;
@@ -140,6 +140,12 @@ function resolvePrisma(): PrismaClient {
       !modelHasField(existing, "Branch", "hasVin") ||
       !modelHasField(existing, "Branch", "customerUiPrimary") ||
       !modelHasField(existing, "ShopProduct", "productKind") ||
+      !modelHasField(existing, "FactoryCustomer", "affiliateBranchId") ||
+      !modelHasField(existing, "FactoryCustomer", "userId") ||
+      !modelHasField(existing, "FactoryCredit", "deliveryAddress") ||
+      !enumHasValue(existing, "FactoryOrderRequestStatus", "PENDING") ||
+      typeof (existing as { factoryOrderRequest?: unknown })
+        .factoryOrderRequest === "undefined" ||
       typeof (existing as { branchSupplier?: unknown }).branchSupplier ===
         "undefined");
 

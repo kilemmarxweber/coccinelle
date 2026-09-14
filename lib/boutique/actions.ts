@@ -283,7 +283,10 @@ export async function createShopProductAction(input: {
         sku,
         kind: input.kind ?? "ARTICLE",
         productKind: input.productKind ?? "FINISHED",
-        finishedFamily: input.finishedFamily ?? null,
+        finishedFamily:
+          (input.productKind ?? "FINISHED") === "CONSUMABLE"
+            ? null
+            : (input.finishedFamily ?? null),
         price: input.price,
         stockQty: input.stockQty ?? 0,
         barcode,
@@ -313,6 +316,8 @@ export async function updateShopProductAction(input: {
   name?: string;
   sku?: string;
   kind?: "ARTICLE" | "PLAT";
+  productKind?: "FINISHED" | "CONSUMABLE";
+  finishedFamily?: "EAU" | "VIN" | null;
   price?: number;
   stockQty?: number;
   barcode?: string | null;
@@ -361,6 +366,13 @@ export async function updateShopProductAction(input: {
         name: input.name?.trim(),
         sku: input.sku?.trim().toUpperCase(),
         kind: input.kind,
+        productKind: input.productKind,
+        finishedFamily:
+          input.finishedFamily === undefined
+            ? undefined
+            : input.productKind === "CONSUMABLE"
+              ? null
+              : input.finishedFamily,
         price: input.price,
         stockQty: input.stockQty,
         barcode,

@@ -168,6 +168,13 @@ enum FactoryBatchStatus {
   CANCELLED
 }
 
+enum FactoryOrderRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
 enum ShopSaleStatus {
   BROUILLON
   EN_ATTENTE
@@ -327,6 +334,7 @@ model User {
   banReason     String?
   banExpires    DateTime?
   client            Client?
+  factoryCustomer   FactoryCustomer?
   accounts          Account[]
   invitations       Invitation[]
   members           Member[]
@@ -733,10 +741,12 @@ model Branch {
   payslips             Payslip[]
   suppliers            BranchSupplier[]
   factoryCustomers     FactoryCustomer[]
+  factoryCustomersAsAffiliate FactoryCustomer[] @relation("FactoryCustomerAffiliateBranch")
   factoryCredits       FactoryCredit[]
   factoryRecipes       FactoryRecipe[]
   factoryBatches       FactoryBatch[]
   factoryReservations  FactoryReservation[]
+  factoryOrderRequests FactoryOrderRequest[]
 
   @@unique([organizationId, code])
   @@index([organizationId, type])
@@ -941,6 +951,7 @@ model ShopProduct {
   factoryCreditLines FactoryCreditLine[]
   factoryReservationLines FactoryReservationLine[]
   factoryBatches FactoryBatch[]
+  factoryOrderRequestLines FactoryOrderRequestLine[]
   purchaseOrderItems PurchaseOrderItem[]
 
   @@unique([categoryId, sku])
@@ -1842,23 +1853,35 @@ model BranchSupplier {
 }
 
 model FactoryCustomer {
-  id          String               @id @default(uuid())
-  branchId    String
-  name        String
-  phone       String?
-  contactName String?
-  companyName String?
-  email       String?
-  notes       String?
-  active      Boolean              @default(true)
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
-  branch      Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  credits     FactoryCredit[]
-  reservations FactoryReservation[]
+  id                 String                @id @default(uuid())
+  branchId           String
+  name               String
+  phone              String?
+  contactName        String?
+  companyName        String?
+  email              String?
+  notes              String?
+  deliveryAddress    String?
+  deliveryCity       String?
+  /// Branche Coccinelle affiliée (BOUTIQUE / RESTAURANT), null si client externe.
+  affiliateBranchId  String?
+  /// Compte portail optionnel.
+  userId             String?               @unique
+  /// Préférences notifs : { families?: ("EAU"|"VIN")[], waPromo?: boolean, waStock?: boolean }
+  notifyPrefs        Json?
+  active             Boolean               @default(true)
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  branch             Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  affiliateBranch    Branch?               @relation("FactoryCustomerAffiliateBranch", fields: [affiliateBranchId], references: [id], onDelete: SetNull)
+  user               User?                 @relation(fields: [userId], references: [id], onDelete: SetNull)
+  credits            FactoryCredit[]
+  reservations       FactoryReservation[]
+  orderRequests      FactoryOrderRequest[]
 
   @@index([branchId, active])
   @@index([branchId, phone])
+  @@index([affiliateBranchId])
 }
 
 model FactoryCredit {
@@ -1879,6 +1902,9 @@ model FactoryCredit {
   reminderSentAt       DateTime?
   dueDayReminderSentAt DateTime?
   cancelReason         String?
+  deliveryAddress      String?
+  deliveryCity         String?
+  requestedDeliveryAt  DateTime?
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
   branch               Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
@@ -1887,6 +1913,7 @@ model FactoryCredit {
   extensions           FactoryCreditExtension[]
   payments             Payment[]
   reservations         FactoryReservation[]
+  orderRequest         FactoryOrderRequest?
 
   @@unique([branchId, number])
   @@index([branchId, status])
@@ -2001,5 +2028,43 @@ model FactoryReservationLine {
   shopProduct    ShopProduct         @relation(fields: [shopProductId], references: [id], onDelete: Restrict)
 
   @@index([reservationId])
+}
+
+model FactoryOrderRequest {
+  id                   String                     @id @default(uuid())
+  branchId             String
+  customerId           String
+  status               FactoryOrderRequestStatus  @default(PENDING)
+  requestedDeliveryAt  DateTime?
+  deliveryAddress      String?
+  deliveryCity         String?
+  notes                String?
+  reviewedByUserId     String?
+  reviewedAt           DateTime?
+  rejectReason         String?
+  creditId             String?                    @unique
+  createdAt            DateTime                   @default(now())
+  updatedAt            DateTime                   @updatedAt
+  branch               Branch                     @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  customer             FactoryCustomer            @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  credit               FactoryCredit?             @relation(fields: [creditId], references: [id], onDelete: SetNull)
+  lines                FactoryOrderRequestLine[]
+
+  @@index([branchId, status])
+  @@index([customerId])
+  @@index([branchId, createdAt])
+}
+
+model FactoryOrderRequestLine {
+  id            String              @id @default(uuid())
+  requestId     String
+  shopProductId String
+  nameSnapshot  String
+  qty           Int
+  unitPriceUsd  Float?
+  request       FactoryOrderRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  shopProduct   ShopProduct         @relation(fields: [shopProductId], references: [id], onDelete: Restrict)
+
+  @@index([requestId])
 }
 

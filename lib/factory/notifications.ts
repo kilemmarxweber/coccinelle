@@ -184,3 +184,125 @@ export async function notifyFactoryReservation(input: {
         ],
   });
 }
+
+export async function notifyFactoryOrderRequestCreated(input: {
+  branchId: string;
+  requestId: string;
+  customerName: string;
+  phone?: string | null;
+  qtyLabel: string;
+  href?: string;
+}) {
+  await send({
+    branchId: input.branchId,
+    refType: "factory_order_request",
+    refId: input.requestId,
+    phone: input.phone,
+    name: input.customerName,
+    parts: [
+      `Demande reçue : ${input.qtyLabel}.`,
+      "Le marketeur la validera avant livraison.",
+    ],
+  });
+
+  const { default: prisma } = await import("@/lib/prisma");
+  await prisma.branchNotification.create({
+    data: {
+      branchId: input.branchId,
+      title: "Nouvelle demande affilié",
+      body: `${input.customerName} · ${input.qtyLabel}`,
+      kind: "usine_demande",
+      href: input.href ?? null,
+    },
+  });
+}
+
+export async function notifyFactoryOrderRequestApproved(input: {
+  branchId: string;
+  requestId: string;
+  customerName: string;
+  phone?: string | null;
+  creditNumber: string;
+  qtyLabel: string;
+}) {
+  await send({
+    branchId: input.branchId,
+    refType: "factory_order_request_approved",
+    refId: input.requestId,
+    phone: input.phone,
+    name: input.customerName,
+    parts: [
+      `Demande validée · crédit ${input.creditNumber}.`,
+      input.qtyLabel,
+      "Livraison à planifier avec le marketeur.",
+    ],
+  });
+}
+
+export async function notifyFactoryOrderRequestRejected(input: {
+  branchId: string;
+  requestId: string;
+  customerName: string;
+  phone?: string | null;
+  reason: string;
+}) {
+  await send({
+    branchId: input.branchId,
+    refType: "factory_order_request_rejected",
+    refId: input.requestId,
+    phone: input.phone,
+    name: input.customerName,
+    parts: [
+      "Demande refusée.",
+      input.reason.trim() ? `Motif : ${input.reason.trim()}` : null,
+    ],
+  });
+}
+
+/** Bienvenue après enregistrement fiche affilié (sans compte). */
+export async function notifyFactoryCustomerWelcome(input: {
+  branchId: string;
+  customerId: string;
+  customerName: string;
+  phone?: string | null;
+  companyName?: string | null;
+}) {
+  await send({
+    branchId: input.branchId,
+    refType: "factory_customer_welcome",
+    refId: input.customerId,
+    phone: input.phone,
+    name: input.customerName,
+    parts: [
+      input.companyName
+        ? `Bienvenue ${input.companyName}.`
+        : `Bienvenue ${input.customerName}.`,
+      "Vous êtes enregistré comme client affilié.",
+      "Vous recevrez les infos crédit, échéances et livraisons sur WhatsApp.",
+    ],
+  });
+}
+
+/** Accès portail pour un compte déjà existant (lien sans nouveau MDP). */
+export async function notifyFactoryAffiliatePortalAccess(input: {
+  branchId: string;
+  customerId: string;
+  customerName: string;
+  phone?: string | null;
+  email: string;
+  portalUrl: string;
+}) {
+  await send({
+    branchId: input.branchId,
+    refType: "factory_affiliate_portal",
+    refId: input.customerId,
+    phone: input.phone,
+    name: input.customerName,
+    parts: [
+      `Bonjour ${input.customerName},`,
+      "Votre accès affilié est prêt.",
+      `Email : ${input.email}`,
+      `Portail : ${input.portalUrl}`,
+    ],
+  });
+}

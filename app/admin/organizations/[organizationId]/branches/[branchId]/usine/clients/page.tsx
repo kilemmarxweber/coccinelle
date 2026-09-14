@@ -1,6 +1,9 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { DASH_CARD } from "@/lib/branch/ops-roles";
-import { listFactoryCustomersAction } from "@/lib/factory/actions";
+import {
+  listAffiliateBranchOptionsAction,
+  listFactoryCustomersAction,
+} from "@/lib/factory/actions";
 import { UsineClientsClient } from "./clients-client";
 
 type PageProps = {
@@ -15,12 +18,16 @@ export default async function UsineClientsPage({ params }: PageProps) {
     requireModule: "usine",
     requireDashCard: DASH_CARD.USINE_CLIENTS,
   });
-  const customers = await listFactoryCustomersAction(organizationId, branchId);
+  const [customers, affiliateBranches] = await Promise.all([
+    listFactoryCustomersAction(organizationId, branchId),
+    listAffiliateBranchOptionsAction(organizationId, branchId),
+  ]);
   return (
     <UsineClientsClient
       organizationId={organizationId}
       branchId={branchId}
       customers={customers}
+      affiliateBranches={affiliateBranches}
     />
   );
 }

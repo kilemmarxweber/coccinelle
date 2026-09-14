@@ -239,6 +239,16 @@ export const FactoryBatchStatus = {
 export type FactoryBatchStatus = (typeof FactoryBatchStatus)[keyof typeof FactoryBatchStatus]
 
 
+export const FactoryOrderRequestStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type FactoryOrderRequestStatus = (typeof FactoryOrderRequestStatus)[keyof typeof FactoryOrderRequestStatus]
+
+
 export const ShopSaleStatus = {
   BROUILLON: 'BROUILLON',
   EN_ATTENTE: 'EN_ATTENTE',

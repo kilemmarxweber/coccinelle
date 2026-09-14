@@ -13,6 +13,13 @@
         "-y",
         "next-devtools-mcp@latest"
       ]
+    },
+    "zindua": {
+      "command": "npx",
+      "args": ["-y", "@zindua/mcp@latest"],
+      "env": {
+        "ZINDUA_API_KEY": "znd_live_350fpeu4gj3qy52fkm1dpvtv"
+      }
     }
   }
 }

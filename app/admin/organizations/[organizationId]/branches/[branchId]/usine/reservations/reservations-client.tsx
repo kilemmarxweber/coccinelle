@@ -64,7 +64,7 @@ function QtyStepper(props: {
     >
       <button
         type="button"
-        className="flex size-8 items-center justify-center rounded-lg border border-border bg-white hover:bg-muted disabled:opacity-40"
+        className="flex size-8 items-center justify-center rounded-lg border border-border bg-card hover:bg-muted disabled:opacity-40"
         disabled={quantity <= 0}
         onClick={(e) => {
           e.stopPropagation();
@@ -79,7 +79,7 @@ function QtyStepper(props: {
       </span>
       <button
         type="button"
-        className="flex size-8 items-center justify-center rounded-lg border border-border bg-white hover:bg-muted disabled:opacity-40"
+        className="flex size-8 items-center justify-center rounded-lg border border-border bg-card hover:bg-muted disabled:opacity-40"
         disabled={quantity >= max}
         onClick={(e) => {
           e.stopPropagation();
@@ -232,7 +232,7 @@ export function UsineReservationsClient(props: {
                             e.stopPropagation();
                             addOne(p.id, p.free);
                           }}
-                          className="flex size-9 items-center justify-center rounded-xl border border-border bg-white hover:bg-muted disabled:opacity-40"
+                          className="flex size-9 items-center justify-center rounded-xl border border-border bg-card hover:bg-muted disabled:opacity-40"
                           aria-label="Ajouter"
                         >
                           <Plus className="size-4" />
@@ -288,7 +288,7 @@ export function UsineReservationsClient(props: {
                                 type="button"
                                 disabled={p.free <= 0}
                                 onClick={() => addOne(p.id, p.free)}
-                                className="inline-flex size-8 items-center justify-center rounded-lg border border-border bg-white hover:bg-muted disabled:opacity-40"
+                                className="inline-flex size-8 items-center justify-center rounded-lg border border-border bg-card hover:bg-muted disabled:opacity-40"
                                 aria-label="Ajouter"
                               >
                                 <Plus className="size-4" />

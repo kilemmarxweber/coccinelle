@@ -8,6 +8,8 @@ export type AdminCreatedUserStash = {
   branchId?: string | null;
   organizationName?: string | null;
   role?: string | null;
+  /** URL de connexion (ex. portail affilié). */
+  loginUrl?: string | null;
 };
 
 const pendingByEmail = new Map<string, AdminCreatedUserStash>();
@@ -23,6 +25,7 @@ export function stashAdminCreatedUserPlainPassword(
     branchId: extra?.branchId ?? null,
     organizationName: extra?.organizationName ?? null,
     role: extra?.role ?? null,
+    loginUrl: extra?.loginUrl ?? null,
   });
 }
 

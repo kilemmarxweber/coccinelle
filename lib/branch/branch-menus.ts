@@ -636,11 +636,20 @@ export function menuSectionsForBranch(
           {
             id: DASH_CARD.USINE_CLIENTS,
             title: "Clients",
-            description: "Fiches : nom, téléphone, société.",
+            description: "Affiliés : entreprise, contact, compte optionnel.",
             href: usineRoutes.clients(organizationId, branchId),
             icon: Users,
             iconBg: "bg-sky-500/15",
             iconColor: "text-sky-400",
+          },
+          {
+            id: DASH_CARD.USINE_CLIENTS,
+            title: "Demandes",
+            description: "Commandes affiliés à valider (→ crédit).",
+            href: usineRoutes.demandes(organizationId, branchId),
+            icon: ClipboardList,
+            iconBg: "bg-amber-500/15",
+            iconColor: "text-amber-500",
           },
           {
             id: DASH_CARD.USINE_RESERVATIONS,

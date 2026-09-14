@@ -355,6 +355,7 @@ export type ShopProductWhereInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineListRelationFilter
   factoryReservationLines?: Prisma.FactoryReservationLineListRelationFilter
   factoryBatches?: Prisma.FactoryBatchListRelationFilter
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineListRelationFilter
   purchaseOrderItems?: Prisma.PurchaseOrderItemListRelationFilter
 }
 
@@ -390,6 +391,7 @@ export type ShopProductOrderByWithRelationInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineOrderByRelationAggregateInput
   factoryReservationLines?: Prisma.FactoryReservationLineOrderByRelationAggregateInput
   factoryBatches?: Prisma.FactoryBatchOrderByRelationAggregateInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineOrderByRelationAggregateInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemOrderByRelationAggregateInput
 }
 
@@ -430,6 +432,7 @@ export type ShopProductWhereUniqueInput = Prisma.AtLeast<{
   factoryCreditLines?: Prisma.FactoryCreditLineListRelationFilter
   factoryReservationLines?: Prisma.FactoryReservationLineListRelationFilter
   factoryBatches?: Prisma.FactoryBatchListRelationFilter
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineListRelationFilter
   purchaseOrderItems?: Prisma.PurchaseOrderItemListRelationFilter
 }, "id" | "categoryId_sku" | "branchId_barcode">
 
@@ -517,6 +520,7 @@ export type ShopProductCreateInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
@@ -550,6 +554,7 @@ export type ShopProductUncheckedCreateInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
@@ -583,6 +588,7 @@ export type ShopProductUpdateInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
@@ -616,6 +622,7 @@ export type ShopProductUncheckedUpdateInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
@@ -1041,6 +1048,20 @@ export type ShopProductUpdateOneRequiredWithoutFactoryReservationLinesNestedInpu
   update?: Prisma.XOR<Prisma.XOR<Prisma.ShopProductUpdateToOneWithWhereWithoutFactoryReservationLinesInput, Prisma.ShopProductUpdateWithoutFactoryReservationLinesInput>, Prisma.ShopProductUncheckedUpdateWithoutFactoryReservationLinesInput>
 }
 
+export type ShopProductCreateNestedOneWithoutFactoryOrderRequestLinesInput = {
+  create?: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryOrderRequestLinesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryOrderRequestLinesInput>
+  connectOrCreate?: Prisma.ShopProductCreateOrConnectWithoutFactoryOrderRequestLinesInput
+  connect?: Prisma.ShopProductWhereUniqueInput
+}
+
+export type ShopProductUpdateOneRequiredWithoutFactoryOrderRequestLinesNestedInput = {
+  create?: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryOrderRequestLinesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryOrderRequestLinesInput>
+  connectOrCreate?: Prisma.ShopProductCreateOrConnectWithoutFactoryOrderRequestLinesInput
+  upsert?: Prisma.ShopProductUpsertWithoutFactoryOrderRequestLinesInput
+  connect?: Prisma.ShopProductWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ShopProductUpdateToOneWithWhereWithoutFactoryOrderRequestLinesInput, Prisma.ShopProductUpdateWithoutFactoryOrderRequestLinesInput>, Prisma.ShopProductUncheckedUpdateWithoutFactoryOrderRequestLinesInput>
+}
+
 export type ShopProductCreateWithoutBranchInput = {
   id?: string
   name: string
@@ -1070,6 +1091,7 @@ export type ShopProductCreateWithoutBranchInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
@@ -1102,6 +1124,7 @@ export type ShopProductUncheckedCreateWithoutBranchInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
@@ -1186,6 +1209,7 @@ export type ShopProductCreateWithoutCategoryInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
@@ -1218,6 +1242,7 @@ export type ShopProductUncheckedCreateWithoutCategoryInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
@@ -1276,6 +1301,7 @@ export type ShopProductCreateWithoutSaleItemsInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
@@ -1308,6 +1334,7 @@ export type ShopProductUncheckedCreateWithoutSaleItemsInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
@@ -1356,6 +1383,7 @@ export type ShopProductUpdateWithoutSaleItemsInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
@@ -1388,6 +1416,7 @@ export type ShopProductUncheckedUpdateWithoutSaleItemsInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
@@ -1420,6 +1449,7 @@ export type ShopProductCreateWithoutStockMovementsInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
@@ -1452,6 +1482,7 @@ export type ShopProductUncheckedCreateWithoutStockMovementsInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
@@ -1500,6 +1531,7 @@ export type ShopProductUpdateWithoutStockMovementsInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
@@ -1532,6 +1564,7 @@ export type ShopProductUncheckedUpdateWithoutStockMovementsInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
@@ -1564,6 +1597,7 @@ export type ShopProductCreateWithoutServiceStockLinesInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
@@ -1596,6 +1630,7 @@ export type ShopProductUncheckedCreateWithoutServiceStockLinesInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
@@ -1644,6 +1679,7 @@ export type ShopProductUpdateWithoutServiceStockLinesInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
@@ -1676,6 +1712,7 @@ export type ShopProductUncheckedUpdateWithoutServiceStockLinesInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
@@ -1708,6 +1745,7 @@ export type ShopProductCreateWithoutServiceStockTopUpsInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
@@ -1740,6 +1778,7 @@ export type ShopProductUncheckedCreateWithoutServiceStockTopUpsInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
@@ -1788,6 +1827,7 @@ export type ShopProductUpdateWithoutServiceStockTopUpsInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
@@ -1820,6 +1860,7 @@ export type ShopProductUncheckedUpdateWithoutServiceStockTopUpsInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
@@ -1853,6 +1894,7 @@ export type ShopProductCreateWithoutPurchaseOrderItemsInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineCreateNestedManyWithoutShopProductInput
 }
 
 export type ShopProductUncheckedCreateWithoutPurchaseOrderItemsInput = {
@@ -1885,6 +1927,7 @@ export type ShopProductUncheckedCreateWithoutPurchaseOrderItemsInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedCreateNestedManyWithoutShopProductInput
 }
 
 export type ShopProductCreateOrConnectWithoutPurchaseOrderItemsInput = {
@@ -1933,6 +1976,7 @@ export type ShopProductUpdateWithoutPurchaseOrderItemsInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUpdateManyWithoutShopProductNestedInput
 }
 
 export type ShopProductUncheckedUpdateWithoutPurchaseOrderItemsInput = {
@@ -1965,6 +2009,7 @@ export type ShopProductUncheckedUpdateWithoutPurchaseOrderItemsInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
 export type ShopProductCreateWithoutFactoryCreditLinesInput = {
@@ -1996,6 +2041,7 @@ export type ShopProductCreateWithoutFactoryCreditLinesInput = {
   factoryRecipeLines?: Prisma.FactoryRecipeLineCreateNestedManyWithoutConsumableInput
   factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
@@ -2028,6 +2074,7 @@ export type ShopProductUncheckedCreateWithoutFactoryCreditLinesInput = {
   factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedCreateNestedManyWithoutConsumableInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
@@ -2076,6 +2123,7 @@ export type ShopProductUpdateWithoutFactoryCreditLinesInput = {
   factoryRecipeLines?: Prisma.FactoryRecipeLineUpdateManyWithoutConsumableNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
@@ -2108,6 +2156,7 @@ export type ShopProductUncheckedUpdateWithoutFactoryCreditLinesInput = {
   factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedUpdateManyWithoutConsumableNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
@@ -2140,6 +2189,7 @@ export type ShopProductCreateWithoutFactoryRecipesInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
@@ -2172,6 +2222,7 @@ export type ShopProductUncheckedCreateWithoutFactoryRecipesInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
@@ -2220,6 +2271,7 @@ export type ShopProductUpdateWithoutFactoryRecipesInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
@@ -2252,6 +2304,7 @@ export type ShopProductUncheckedUpdateWithoutFactoryRecipesInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
@@ -2284,6 +2337,7 @@ export type ShopProductCreateWithoutFactoryRecipeLinesInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
@@ -2316,6 +2370,7 @@ export type ShopProductUncheckedCreateWithoutFactoryRecipeLinesInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
@@ -2364,6 +2419,7 @@ export type ShopProductUpdateWithoutFactoryRecipeLinesInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
@@ -2396,6 +2452,7 @@ export type ShopProductUncheckedUpdateWithoutFactoryRecipeLinesInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
@@ -2428,6 +2485,7 @@ export type ShopProductCreateWithoutFactoryBatchesInput = {
   factoryRecipeLines?: Prisma.FactoryRecipeLineCreateNestedManyWithoutConsumableInput
   factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
@@ -2460,6 +2518,7 @@ export type ShopProductUncheckedCreateWithoutFactoryBatchesInput = {
   factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedCreateNestedManyWithoutConsumableInput
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
@@ -2508,6 +2567,7 @@ export type ShopProductUpdateWithoutFactoryBatchesInput = {
   factoryRecipeLines?: Prisma.FactoryRecipeLineUpdateManyWithoutConsumableNestedInput
   factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
@@ -2540,6 +2600,7 @@ export type ShopProductUncheckedUpdateWithoutFactoryBatchesInput = {
   factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedUpdateManyWithoutConsumableNestedInput
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
@@ -2572,6 +2633,7 @@ export type ShopProductCreateWithoutFactoryReservationLinesInput = {
   factoryRecipeLines?: Prisma.FactoryRecipeLineCreateNestedManyWithoutConsumableInput
   factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
 }
 
@@ -2604,6 +2666,7 @@ export type ShopProductUncheckedCreateWithoutFactoryReservationLinesInput = {
   factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedCreateNestedManyWithoutConsumableInput
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
   factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedCreateNestedManyWithoutShopProductInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
 }
 
@@ -2652,6 +2715,7 @@ export type ShopProductUpdateWithoutFactoryReservationLinesInput = {
   factoryRecipeLines?: Prisma.FactoryRecipeLineUpdateManyWithoutConsumableNestedInput
   factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
@@ -2683,6 +2747,155 @@ export type ShopProductUncheckedUpdateWithoutFactoryReservationLinesInput = {
   factoryRecipes?: Prisma.FactoryRecipeUncheckedUpdateManyWithoutShopProductNestedInput
   factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedUpdateManyWithoutConsumableNestedInput
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedUpdateManyWithoutShopProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
+}
+
+export type ShopProductCreateWithoutFactoryOrderRequestLinesInput = {
+  id?: string
+  name: string
+  sku: string
+  kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
+  price: number
+  promoPrice?: number | null
+  promoActive?: boolean
+  promoLabel?: string | null
+  promoStartsAt?: Date | string | null
+  promoEndsAt?: Date | string | null
+  stockQty?: number
+  barcode?: string | null
+  imageUrl?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutShopProductsInput
+  category: Prisma.ShopCategoryCreateNestedOneWithoutProductsInput
+  saleItems?: Prisma.ShopSaleItemCreateNestedManyWithoutProductInput
+  stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutProductInput
+  serviceStockLines?: Prisma.ServiceStockLineCreateNestedManyWithoutShopProductInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemCreateNestedManyWithoutShopProductInput
+}
+
+export type ShopProductUncheckedCreateWithoutFactoryOrderRequestLinesInput = {
+  id?: string
+  branchId: string
+  categoryId: string
+  name: string
+  sku: string
+  kind?: $Enums.ShopProductKind
+  productKind?: $Enums.FactoryProductKind
+  finishedFamily?: $Enums.FactoryFinishedFamily | null
+  price: number
+  promoPrice?: number | null
+  promoActive?: boolean
+  promoLabel?: string | null
+  promoStartsAt?: Date | string | null
+  promoEndsAt?: Date | string | null
+  stockQty?: number
+  barcode?: string | null
+  imageUrl?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  saleItems?: Prisma.ShopSaleItemUncheckedCreateNestedManyWithoutProductInput
+  stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutProductInput
+  serviceStockLines?: Prisma.ServiceStockLineUncheckedCreateNestedManyWithoutShopProductInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedCreateNestedManyWithoutShopProductInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedCreateNestedManyWithoutConsumableInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedCreateNestedManyWithoutShopProductInput
+  factoryBatches?: Prisma.FactoryBatchUncheckedCreateNestedManyWithoutOutputProductInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedCreateNestedManyWithoutShopProductInput
+}
+
+export type ShopProductCreateOrConnectWithoutFactoryOrderRequestLinesInput = {
+  where: Prisma.ShopProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryOrderRequestLinesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryOrderRequestLinesInput>
+}
+
+export type ShopProductUpsertWithoutFactoryOrderRequestLinesInput = {
+  update: Prisma.XOR<Prisma.ShopProductUpdateWithoutFactoryOrderRequestLinesInput, Prisma.ShopProductUncheckedUpdateWithoutFactoryOrderRequestLinesInput>
+  create: Prisma.XOR<Prisma.ShopProductCreateWithoutFactoryOrderRequestLinesInput, Prisma.ShopProductUncheckedCreateWithoutFactoryOrderRequestLinesInput>
+  where?: Prisma.ShopProductWhereInput
+}
+
+export type ShopProductUpdateToOneWithWhereWithoutFactoryOrderRequestLinesInput = {
+  where?: Prisma.ShopProductWhereInput
+  data: Prisma.XOR<Prisma.ShopProductUpdateWithoutFactoryOrderRequestLinesInput, Prisma.ShopProductUncheckedUpdateWithoutFactoryOrderRequestLinesInput>
+}
+
+export type ShopProductUpdateWithoutFactoryOrderRequestLinesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  promoLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promoStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  promoEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutShopProductsNestedInput
+  category?: Prisma.ShopCategoryUpdateOneRequiredWithoutProductsNestedInput
+  saleItems?: Prisma.ShopSaleItemUpdateManyWithoutProductNestedInput
+  stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutProductNestedInput
+  serviceStockLines?: Prisma.ServiceStockLineUpdateManyWithoutShopProductNestedInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
+  factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
+}
+
+export type ShopProductUncheckedUpdateWithoutFactoryOrderRequestLinesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumShopProductKindFieldUpdateOperationsInput | $Enums.ShopProductKind
+  productKind?: Prisma.EnumFactoryProductKindFieldUpdateOperationsInput | $Enums.FactoryProductKind
+  finishedFamily?: Prisma.NullableEnumFactoryFinishedFamilyFieldUpdateOperationsInput | $Enums.FactoryFinishedFamily | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  promoPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  promoActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  promoLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promoStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  promoEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stockQty?: Prisma.IntFieldUpdateOperationsInput | number
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  saleItems?: Prisma.ShopSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutProductNestedInput
+  serviceStockLines?: Prisma.ServiceStockLineUncheckedUpdateManyWithoutShopProductNestedInput
+  serviceStockTopUps?: Prisma.ServiceStockTopUpUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipes?: Prisma.FactoryRecipeUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryRecipeLines?: Prisma.FactoryRecipeLineUncheckedUpdateManyWithoutConsumableNestedInput
+  factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
+  factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
@@ -2738,6 +2951,7 @@ export type ShopProductUpdateWithoutBranchInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
@@ -2770,6 +2984,7 @@ export type ShopProductUncheckedUpdateWithoutBranchInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
@@ -2846,6 +3061,7 @@ export type ShopProductUpdateWithoutCategoryInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUpdateManyWithoutShopProductNestedInput
 }
 
@@ -2878,6 +3094,7 @@ export type ShopProductUncheckedUpdateWithoutCategoryInput = {
   factoryCreditLines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryReservationLines?: Prisma.FactoryReservationLineUncheckedUpdateManyWithoutShopProductNestedInput
   factoryBatches?: Prisma.FactoryBatchUncheckedUpdateManyWithoutOutputProductNestedInput
+  factoryOrderRequestLines?: Prisma.FactoryOrderRequestLineUncheckedUpdateManyWithoutShopProductNestedInput
   purchaseOrderItems?: Prisma.PurchaseOrderItemUncheckedUpdateManyWithoutShopProductNestedInput
 }
 
@@ -2918,6 +3135,7 @@ export type ShopProductCountOutputType = {
   factoryCreditLines: number
   factoryReservationLines: number
   factoryBatches: number
+  factoryOrderRequestLines: number
   purchaseOrderItems: number
 }
 
@@ -2931,6 +3149,7 @@ export type ShopProductCountOutputTypeSelect<ExtArgs extends runtime.Types.Exten
   factoryCreditLines?: boolean | ShopProductCountOutputTypeCountFactoryCreditLinesArgs
   factoryReservationLines?: boolean | ShopProductCountOutputTypeCountFactoryReservationLinesArgs
   factoryBatches?: boolean | ShopProductCountOutputTypeCountFactoryBatchesArgs
+  factoryOrderRequestLines?: boolean | ShopProductCountOutputTypeCountFactoryOrderRequestLinesArgs
   purchaseOrderItems?: boolean | ShopProductCountOutputTypeCountPurchaseOrderItemsArgs
 }
 
@@ -3010,6 +3229,13 @@ export type ShopProductCountOutputTypeCountFactoryBatchesArgs<ExtArgs extends ru
 /**
  * ShopProductCountOutputType without action
  */
+export type ShopProductCountOutputTypeCountFactoryOrderRequestLinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FactoryOrderRequestLineWhereInput
+}
+
+/**
+ * ShopProductCountOutputType without action
+ */
 export type ShopProductCountOutputTypeCountPurchaseOrderItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.PurchaseOrderItemWhereInput
 }
@@ -3047,6 +3273,7 @@ export type ShopProductSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   factoryCreditLines?: boolean | Prisma.ShopProduct$factoryCreditLinesArgs<ExtArgs>
   factoryReservationLines?: boolean | Prisma.ShopProduct$factoryReservationLinesArgs<ExtArgs>
   factoryBatches?: boolean | Prisma.ShopProduct$factoryBatchesArgs<ExtArgs>
+  factoryOrderRequestLines?: boolean | Prisma.ShopProduct$factoryOrderRequestLinesArgs<ExtArgs>
   purchaseOrderItems?: boolean | Prisma.ShopProduct$purchaseOrderItemsArgs<ExtArgs>
   _count?: boolean | Prisma.ShopProductCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["shopProduct"]>
@@ -3137,6 +3364,7 @@ export type ShopProductInclude<ExtArgs extends runtime.Types.Extensions.Internal
   factoryCreditLines?: boolean | Prisma.ShopProduct$factoryCreditLinesArgs<ExtArgs>
   factoryReservationLines?: boolean | Prisma.ShopProduct$factoryReservationLinesArgs<ExtArgs>
   factoryBatches?: boolean | Prisma.ShopProduct$factoryBatchesArgs<ExtArgs>
+  factoryOrderRequestLines?: boolean | Prisma.ShopProduct$factoryOrderRequestLinesArgs<ExtArgs>
   purchaseOrderItems?: boolean | Prisma.ShopProduct$purchaseOrderItemsArgs<ExtArgs>
   _count?: boolean | Prisma.ShopProductCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -3163,6 +3391,7 @@ export type $ShopProductPayload<ExtArgs extends runtime.Types.Extensions.Interna
     factoryCreditLines: Prisma.$FactoryCreditLinePayload<ExtArgs>[]
     factoryReservationLines: Prisma.$FactoryReservationLinePayload<ExtArgs>[]
     factoryBatches: Prisma.$FactoryBatchPayload<ExtArgs>[]
+    factoryOrderRequestLines: Prisma.$FactoryOrderRequestLinePayload<ExtArgs>[]
     purchaseOrderItems: Prisma.$PurchaseOrderItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -3600,6 +3829,7 @@ export interface Prisma__ShopProductClient<T, Null = never, ExtArgs extends runt
   factoryCreditLines<T extends Prisma.ShopProduct$factoryCreditLinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopProduct$factoryCreditLinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactoryCreditLinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   factoryReservationLines<T extends Prisma.ShopProduct$factoryReservationLinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopProduct$factoryReservationLinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactoryReservationLinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   factoryBatches<T extends Prisma.ShopProduct$factoryBatchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopProduct$factoryBatchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactoryBatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  factoryOrderRequestLines<T extends Prisma.ShopProduct$factoryOrderRequestLinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopProduct$factoryOrderRequestLinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactoryOrderRequestLinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   purchaseOrderItems<T extends Prisma.ShopProduct$purchaseOrderItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopProduct$purchaseOrderItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PurchaseOrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -4264,6 +4494,30 @@ export type ShopProduct$factoryBatchesArgs<ExtArgs extends runtime.Types.Extensi
   take?: number
   skip?: number
   distinct?: Prisma.FactoryBatchScalarFieldEnum | Prisma.FactoryBatchScalarFieldEnum[]
+}
+
+/**
+ * ShopProduct.factoryOrderRequestLines
+ */
+export type ShopProduct$factoryOrderRequestLinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FactoryOrderRequestLine
+   */
+  select?: Prisma.FactoryOrderRequestLineSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FactoryOrderRequestLine
+   */
+  omit?: Prisma.FactoryOrderRequestLineOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FactoryOrderRequestLineInclude<ExtArgs> | null
+  where?: Prisma.FactoryOrderRequestLineWhereInput
+  orderBy?: Prisma.FactoryOrderRequestLineOrderByWithRelationInput | Prisma.FactoryOrderRequestLineOrderByWithRelationInput[]
+  cursor?: Prisma.FactoryOrderRequestLineWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FactoryOrderRequestLineScalarFieldEnum | Prisma.FactoryOrderRequestLineScalarFieldEnum[]
 }
 
 /**

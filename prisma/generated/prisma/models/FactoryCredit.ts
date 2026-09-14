@@ -56,6 +56,9 @@ export type FactoryCreditMinAggregateOutputType = {
   reminderSentAt: Date | null
   dueDayReminderSentAt: Date | null
   cancelReason: string | null
+  deliveryAddress: string | null
+  deliveryCity: string | null
+  requestedDeliveryAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -78,6 +81,9 @@ export type FactoryCreditMaxAggregateOutputType = {
   reminderSentAt: Date | null
   dueDayReminderSentAt: Date | null
   cancelReason: string | null
+  deliveryAddress: string | null
+  deliveryCity: string | null
+  requestedDeliveryAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -100,6 +106,9 @@ export type FactoryCreditCountAggregateOutputType = {
   reminderSentAt: number
   dueDayReminderSentAt: number
   cancelReason: number
+  deliveryAddress: number
+  deliveryCity: number
+  requestedDeliveryAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -136,6 +145,9 @@ export type FactoryCreditMinAggregateInputType = {
   reminderSentAt?: true
   dueDayReminderSentAt?: true
   cancelReason?: true
+  deliveryAddress?: true
+  deliveryCity?: true
+  requestedDeliveryAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -158,6 +170,9 @@ export type FactoryCreditMaxAggregateInputType = {
   reminderSentAt?: true
   dueDayReminderSentAt?: true
   cancelReason?: true
+  deliveryAddress?: true
+  deliveryCity?: true
+  requestedDeliveryAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -180,6 +195,9 @@ export type FactoryCreditCountAggregateInputType = {
   reminderSentAt?: true
   dueDayReminderSentAt?: true
   cancelReason?: true
+  deliveryAddress?: true
+  deliveryCity?: true
+  requestedDeliveryAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -289,6 +307,9 @@ export type FactoryCreditGroupByOutputType = {
   reminderSentAt: Date | null
   dueDayReminderSentAt: Date | null
   cancelReason: string | null
+  deliveryAddress: string | null
+  deliveryCity: string | null
+  requestedDeliveryAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: FactoryCreditCountAggregateOutputType | null
@@ -334,6 +355,9 @@ export type FactoryCreditWhereInput = {
   reminderSentAt?: Prisma.DateTimeNullableFilter<"FactoryCredit"> | Date | string | null
   dueDayReminderSentAt?: Prisma.DateTimeNullableFilter<"FactoryCredit"> | Date | string | null
   cancelReason?: Prisma.StringNullableFilter<"FactoryCredit"> | string | null
+  deliveryAddress?: Prisma.StringNullableFilter<"FactoryCredit"> | string | null
+  deliveryCity?: Prisma.StringNullableFilter<"FactoryCredit"> | string | null
+  requestedDeliveryAt?: Prisma.DateTimeNullableFilter<"FactoryCredit"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"FactoryCredit"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FactoryCredit"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
@@ -342,6 +366,7 @@ export type FactoryCreditWhereInput = {
   extensions?: Prisma.FactoryCreditExtensionListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
   reservations?: Prisma.FactoryReservationListRelationFilter
+  orderRequest?: Prisma.XOR<Prisma.FactoryOrderRequestNullableScalarRelationFilter, Prisma.FactoryOrderRequestWhereInput> | null
 }
 
 export type FactoryCreditOrderByWithRelationInput = {
@@ -362,6 +387,9 @@ export type FactoryCreditOrderByWithRelationInput = {
   reminderSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
   dueDayReminderSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
   cancelReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryAddress?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryCity?: Prisma.SortOrderInput | Prisma.SortOrder
+  requestedDeliveryAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   branch?: Prisma.BranchOrderByWithRelationInput
@@ -370,6 +398,7 @@ export type FactoryCreditOrderByWithRelationInput = {
   extensions?: Prisma.FactoryCreditExtensionOrderByRelationAggregateInput
   payments?: Prisma.PaymentOrderByRelationAggregateInput
   reservations?: Prisma.FactoryReservationOrderByRelationAggregateInput
+  orderRequest?: Prisma.FactoryOrderRequestOrderByWithRelationInput
 }
 
 export type FactoryCreditWhereUniqueInput = Prisma.AtLeast<{
@@ -394,6 +423,9 @@ export type FactoryCreditWhereUniqueInput = Prisma.AtLeast<{
   reminderSentAt?: Prisma.DateTimeNullableFilter<"FactoryCredit"> | Date | string | null
   dueDayReminderSentAt?: Prisma.DateTimeNullableFilter<"FactoryCredit"> | Date | string | null
   cancelReason?: Prisma.StringNullableFilter<"FactoryCredit"> | string | null
+  deliveryAddress?: Prisma.StringNullableFilter<"FactoryCredit"> | string | null
+  deliveryCity?: Prisma.StringNullableFilter<"FactoryCredit"> | string | null
+  requestedDeliveryAt?: Prisma.DateTimeNullableFilter<"FactoryCredit"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"FactoryCredit"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FactoryCredit"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
@@ -402,6 +434,7 @@ export type FactoryCreditWhereUniqueInput = Prisma.AtLeast<{
   extensions?: Prisma.FactoryCreditExtensionListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
   reservations?: Prisma.FactoryReservationListRelationFilter
+  orderRequest?: Prisma.XOR<Prisma.FactoryOrderRequestNullableScalarRelationFilter, Prisma.FactoryOrderRequestWhereInput> | null
 }, "id" | "branchId_number">
 
 export type FactoryCreditOrderByWithAggregationInput = {
@@ -422,6 +455,9 @@ export type FactoryCreditOrderByWithAggregationInput = {
   reminderSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
   dueDayReminderSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
   cancelReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryAddress?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryCity?: Prisma.SortOrderInput | Prisma.SortOrder
+  requestedDeliveryAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.FactoryCreditCountOrderByAggregateInput
@@ -452,6 +488,9 @@ export type FactoryCreditScalarWhereWithAggregatesInput = {
   reminderSentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"FactoryCredit"> | Date | string | null
   dueDayReminderSentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"FactoryCredit"> | Date | string | null
   cancelReason?: Prisma.StringNullableWithAggregatesFilter<"FactoryCredit"> | string | null
+  deliveryAddress?: Prisma.StringNullableWithAggregatesFilter<"FactoryCredit"> | string | null
+  deliveryCity?: Prisma.StringNullableWithAggregatesFilter<"FactoryCredit"> | string | null
+  requestedDeliveryAt?: Prisma.DateTimeNullableWithAggregatesFilter<"FactoryCredit"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"FactoryCredit"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"FactoryCredit"> | Date | string
 }
@@ -472,6 +511,9 @@ export type FactoryCreditCreateInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutFactoryCreditsInput
@@ -480,6 +522,7 @@ export type FactoryCreditCreateInput = {
   extensions?: Prisma.FactoryCreditExtensionCreateNestedManyWithoutCreditInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFactoryCreditInput
   reservations?: Prisma.FactoryReservationCreateNestedManyWithoutCreditInput
+  orderRequest?: Prisma.FactoryOrderRequestCreateNestedOneWithoutCreditInput
 }
 
 export type FactoryCreditUncheckedCreateInput = {
@@ -500,12 +543,16 @@ export type FactoryCreditUncheckedCreateInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutCreditInput
   extensions?: Prisma.FactoryCreditExtensionUncheckedCreateNestedManyWithoutCreditInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFactoryCreditInput
   reservations?: Prisma.FactoryReservationUncheckedCreateNestedManyWithoutCreditInput
+  orderRequest?: Prisma.FactoryOrderRequestUncheckedCreateNestedOneWithoutCreditInput
 }
 
 export type FactoryCreditUpdateInput = {
@@ -524,6 +571,9 @@ export type FactoryCreditUpdateInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutFactoryCreditsNestedInput
@@ -532,6 +582,7 @@ export type FactoryCreditUpdateInput = {
   extensions?: Prisma.FactoryCreditExtensionUpdateManyWithoutCreditNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFactoryCreditNestedInput
   reservations?: Prisma.FactoryReservationUpdateManyWithoutCreditNestedInput
+  orderRequest?: Prisma.FactoryOrderRequestUpdateOneWithoutCreditNestedInput
 }
 
 export type FactoryCreditUncheckedUpdateInput = {
@@ -552,12 +603,16 @@ export type FactoryCreditUncheckedUpdateInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutCreditNestedInput
   extensions?: Prisma.FactoryCreditExtensionUncheckedUpdateManyWithoutCreditNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFactoryCreditNestedInput
   reservations?: Prisma.FactoryReservationUncheckedUpdateManyWithoutCreditNestedInput
+  orderRequest?: Prisma.FactoryOrderRequestUncheckedUpdateOneWithoutCreditNestedInput
 }
 
 export type FactoryCreditCreateManyInput = {
@@ -578,6 +633,9 @@ export type FactoryCreditCreateManyInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -598,6 +656,9 @@ export type FactoryCreditUpdateManyMutationInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -620,6 +681,9 @@ export type FactoryCreditUncheckedUpdateManyInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -662,6 +726,9 @@ export type FactoryCreditCountOrderByAggregateInput = {
   reminderSentAt?: Prisma.SortOrder
   dueDayReminderSentAt?: Prisma.SortOrder
   cancelReason?: Prisma.SortOrder
+  deliveryAddress?: Prisma.SortOrder
+  deliveryCity?: Prisma.SortOrder
+  requestedDeliveryAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -690,6 +757,9 @@ export type FactoryCreditMaxOrderByAggregateInput = {
   reminderSentAt?: Prisma.SortOrder
   dueDayReminderSentAt?: Prisma.SortOrder
   cancelReason?: Prisma.SortOrder
+  deliveryAddress?: Prisma.SortOrder
+  deliveryCity?: Prisma.SortOrder
+  requestedDeliveryAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -712,6 +782,9 @@ export type FactoryCreditMinOrderByAggregateInput = {
   reminderSentAt?: Prisma.SortOrder
   dueDayReminderSentAt?: Prisma.SortOrder
   cancelReason?: Prisma.SortOrder
+  deliveryAddress?: Prisma.SortOrder
+  deliveryCity?: Prisma.SortOrder
+  requestedDeliveryAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -875,6 +948,22 @@ export type FactoryCreditUpdateOneWithoutReservationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.FactoryCreditUpdateToOneWithWhereWithoutReservationsInput, Prisma.FactoryCreditUpdateWithoutReservationsInput>, Prisma.FactoryCreditUncheckedUpdateWithoutReservationsInput>
 }
 
+export type FactoryCreditCreateNestedOneWithoutOrderRequestInput = {
+  create?: Prisma.XOR<Prisma.FactoryCreditCreateWithoutOrderRequestInput, Prisma.FactoryCreditUncheckedCreateWithoutOrderRequestInput>
+  connectOrCreate?: Prisma.FactoryCreditCreateOrConnectWithoutOrderRequestInput
+  connect?: Prisma.FactoryCreditWhereUniqueInput
+}
+
+export type FactoryCreditUpdateOneWithoutOrderRequestNestedInput = {
+  create?: Prisma.XOR<Prisma.FactoryCreditCreateWithoutOrderRequestInput, Prisma.FactoryCreditUncheckedCreateWithoutOrderRequestInput>
+  connectOrCreate?: Prisma.FactoryCreditCreateOrConnectWithoutOrderRequestInput
+  upsert?: Prisma.FactoryCreditUpsertWithoutOrderRequestInput
+  disconnect?: Prisma.FactoryCreditWhereInput | boolean
+  delete?: Prisma.FactoryCreditWhereInput | boolean
+  connect?: Prisma.FactoryCreditWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.FactoryCreditUpdateToOneWithWhereWithoutOrderRequestInput, Prisma.FactoryCreditUpdateWithoutOrderRequestInput>, Prisma.FactoryCreditUncheckedUpdateWithoutOrderRequestInput>
+}
+
 export type FactoryCreditCreateWithoutBranchInput = {
   id?: string
   number: string
@@ -891,6 +980,9 @@ export type FactoryCreditCreateWithoutBranchInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.FactoryCustomerCreateNestedOneWithoutCreditsInput
@@ -898,6 +990,7 @@ export type FactoryCreditCreateWithoutBranchInput = {
   extensions?: Prisma.FactoryCreditExtensionCreateNestedManyWithoutCreditInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFactoryCreditInput
   reservations?: Prisma.FactoryReservationCreateNestedManyWithoutCreditInput
+  orderRequest?: Prisma.FactoryOrderRequestCreateNestedOneWithoutCreditInput
 }
 
 export type FactoryCreditUncheckedCreateWithoutBranchInput = {
@@ -917,12 +1010,16 @@ export type FactoryCreditUncheckedCreateWithoutBranchInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutCreditInput
   extensions?: Prisma.FactoryCreditExtensionUncheckedCreateNestedManyWithoutCreditInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFactoryCreditInput
   reservations?: Prisma.FactoryReservationUncheckedCreateNestedManyWithoutCreditInput
+  orderRequest?: Prisma.FactoryOrderRequestUncheckedCreateNestedOneWithoutCreditInput
 }
 
 export type FactoryCreditCreateOrConnectWithoutBranchInput = {
@@ -972,6 +1069,9 @@ export type FactoryCreditScalarWhereInput = {
   reminderSentAt?: Prisma.DateTimeNullableFilter<"FactoryCredit"> | Date | string | null
   dueDayReminderSentAt?: Prisma.DateTimeNullableFilter<"FactoryCredit"> | Date | string | null
   cancelReason?: Prisma.StringNullableFilter<"FactoryCredit"> | string | null
+  deliveryAddress?: Prisma.StringNullableFilter<"FactoryCredit"> | string | null
+  deliveryCity?: Prisma.StringNullableFilter<"FactoryCredit"> | string | null
+  requestedDeliveryAt?: Prisma.DateTimeNullableFilter<"FactoryCredit"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"FactoryCredit"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FactoryCredit"> | Date | string
 }
@@ -992,6 +1092,9 @@ export type FactoryCreditCreateWithoutPaymentsInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutFactoryCreditsInput
@@ -999,6 +1102,7 @@ export type FactoryCreditCreateWithoutPaymentsInput = {
   lines?: Prisma.FactoryCreditLineCreateNestedManyWithoutCreditInput
   extensions?: Prisma.FactoryCreditExtensionCreateNestedManyWithoutCreditInput
   reservations?: Prisma.FactoryReservationCreateNestedManyWithoutCreditInput
+  orderRequest?: Prisma.FactoryOrderRequestCreateNestedOneWithoutCreditInput
 }
 
 export type FactoryCreditUncheckedCreateWithoutPaymentsInput = {
@@ -1019,11 +1123,15 @@ export type FactoryCreditUncheckedCreateWithoutPaymentsInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutCreditInput
   extensions?: Prisma.FactoryCreditExtensionUncheckedCreateNestedManyWithoutCreditInput
   reservations?: Prisma.FactoryReservationUncheckedCreateNestedManyWithoutCreditInput
+  orderRequest?: Prisma.FactoryOrderRequestUncheckedCreateNestedOneWithoutCreditInput
 }
 
 export type FactoryCreditCreateOrConnectWithoutPaymentsInput = {
@@ -1058,6 +1166,9 @@ export type FactoryCreditUpdateWithoutPaymentsInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutFactoryCreditsNestedInput
@@ -1065,6 +1176,7 @@ export type FactoryCreditUpdateWithoutPaymentsInput = {
   lines?: Prisma.FactoryCreditLineUpdateManyWithoutCreditNestedInput
   extensions?: Prisma.FactoryCreditExtensionUpdateManyWithoutCreditNestedInput
   reservations?: Prisma.FactoryReservationUpdateManyWithoutCreditNestedInput
+  orderRequest?: Prisma.FactoryOrderRequestUpdateOneWithoutCreditNestedInput
 }
 
 export type FactoryCreditUncheckedUpdateWithoutPaymentsInput = {
@@ -1085,11 +1197,15 @@ export type FactoryCreditUncheckedUpdateWithoutPaymentsInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutCreditNestedInput
   extensions?: Prisma.FactoryCreditExtensionUncheckedUpdateManyWithoutCreditNestedInput
   reservations?: Prisma.FactoryReservationUncheckedUpdateManyWithoutCreditNestedInput
+  orderRequest?: Prisma.FactoryOrderRequestUncheckedUpdateOneWithoutCreditNestedInput
 }
 
 export type FactoryCreditCreateWithoutCustomerInput = {
@@ -1108,6 +1224,9 @@ export type FactoryCreditCreateWithoutCustomerInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutFactoryCreditsInput
@@ -1115,6 +1234,7 @@ export type FactoryCreditCreateWithoutCustomerInput = {
   extensions?: Prisma.FactoryCreditExtensionCreateNestedManyWithoutCreditInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFactoryCreditInput
   reservations?: Prisma.FactoryReservationCreateNestedManyWithoutCreditInput
+  orderRequest?: Prisma.FactoryOrderRequestCreateNestedOneWithoutCreditInput
 }
 
 export type FactoryCreditUncheckedCreateWithoutCustomerInput = {
@@ -1134,12 +1254,16 @@ export type FactoryCreditUncheckedCreateWithoutCustomerInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutCreditInput
   extensions?: Prisma.FactoryCreditExtensionUncheckedCreateNestedManyWithoutCreditInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFactoryCreditInput
   reservations?: Prisma.FactoryReservationUncheckedCreateNestedManyWithoutCreditInput
+  orderRequest?: Prisma.FactoryOrderRequestUncheckedCreateNestedOneWithoutCreditInput
 }
 
 export type FactoryCreditCreateOrConnectWithoutCustomerInput = {
@@ -1184,6 +1308,9 @@ export type FactoryCreditCreateWithoutLinesInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutFactoryCreditsInput
@@ -1191,6 +1318,7 @@ export type FactoryCreditCreateWithoutLinesInput = {
   extensions?: Prisma.FactoryCreditExtensionCreateNestedManyWithoutCreditInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFactoryCreditInput
   reservations?: Prisma.FactoryReservationCreateNestedManyWithoutCreditInput
+  orderRequest?: Prisma.FactoryOrderRequestCreateNestedOneWithoutCreditInput
 }
 
 export type FactoryCreditUncheckedCreateWithoutLinesInput = {
@@ -1211,11 +1339,15 @@ export type FactoryCreditUncheckedCreateWithoutLinesInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   extensions?: Prisma.FactoryCreditExtensionUncheckedCreateNestedManyWithoutCreditInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFactoryCreditInput
   reservations?: Prisma.FactoryReservationUncheckedCreateNestedManyWithoutCreditInput
+  orderRequest?: Prisma.FactoryOrderRequestUncheckedCreateNestedOneWithoutCreditInput
 }
 
 export type FactoryCreditCreateOrConnectWithoutLinesInput = {
@@ -1250,6 +1382,9 @@ export type FactoryCreditUpdateWithoutLinesInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutFactoryCreditsNestedInput
@@ -1257,6 +1392,7 @@ export type FactoryCreditUpdateWithoutLinesInput = {
   extensions?: Prisma.FactoryCreditExtensionUpdateManyWithoutCreditNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFactoryCreditNestedInput
   reservations?: Prisma.FactoryReservationUpdateManyWithoutCreditNestedInput
+  orderRequest?: Prisma.FactoryOrderRequestUpdateOneWithoutCreditNestedInput
 }
 
 export type FactoryCreditUncheckedUpdateWithoutLinesInput = {
@@ -1277,11 +1413,15 @@ export type FactoryCreditUncheckedUpdateWithoutLinesInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   extensions?: Prisma.FactoryCreditExtensionUncheckedUpdateManyWithoutCreditNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFactoryCreditNestedInput
   reservations?: Prisma.FactoryReservationUncheckedUpdateManyWithoutCreditNestedInput
+  orderRequest?: Prisma.FactoryOrderRequestUncheckedUpdateOneWithoutCreditNestedInput
 }
 
 export type FactoryCreditCreateWithoutExtensionsInput = {
@@ -1300,6 +1440,9 @@ export type FactoryCreditCreateWithoutExtensionsInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutFactoryCreditsInput
@@ -1307,6 +1450,7 @@ export type FactoryCreditCreateWithoutExtensionsInput = {
   lines?: Prisma.FactoryCreditLineCreateNestedManyWithoutCreditInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFactoryCreditInput
   reservations?: Prisma.FactoryReservationCreateNestedManyWithoutCreditInput
+  orderRequest?: Prisma.FactoryOrderRequestCreateNestedOneWithoutCreditInput
 }
 
 export type FactoryCreditUncheckedCreateWithoutExtensionsInput = {
@@ -1327,11 +1471,15 @@ export type FactoryCreditUncheckedCreateWithoutExtensionsInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutCreditInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFactoryCreditInput
   reservations?: Prisma.FactoryReservationUncheckedCreateNestedManyWithoutCreditInput
+  orderRequest?: Prisma.FactoryOrderRequestUncheckedCreateNestedOneWithoutCreditInput
 }
 
 export type FactoryCreditCreateOrConnectWithoutExtensionsInput = {
@@ -1366,6 +1514,9 @@ export type FactoryCreditUpdateWithoutExtensionsInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutFactoryCreditsNestedInput
@@ -1373,6 +1524,7 @@ export type FactoryCreditUpdateWithoutExtensionsInput = {
   lines?: Prisma.FactoryCreditLineUpdateManyWithoutCreditNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFactoryCreditNestedInput
   reservations?: Prisma.FactoryReservationUpdateManyWithoutCreditNestedInput
+  orderRequest?: Prisma.FactoryOrderRequestUpdateOneWithoutCreditNestedInput
 }
 
 export type FactoryCreditUncheckedUpdateWithoutExtensionsInput = {
@@ -1393,11 +1545,15 @@ export type FactoryCreditUncheckedUpdateWithoutExtensionsInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutCreditNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFactoryCreditNestedInput
   reservations?: Prisma.FactoryReservationUncheckedUpdateManyWithoutCreditNestedInput
+  orderRequest?: Prisma.FactoryOrderRequestUncheckedUpdateOneWithoutCreditNestedInput
 }
 
 export type FactoryCreditCreateWithoutReservationsInput = {
@@ -1416,6 +1572,9 @@ export type FactoryCreditCreateWithoutReservationsInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutFactoryCreditsInput
@@ -1423,6 +1582,7 @@ export type FactoryCreditCreateWithoutReservationsInput = {
   lines?: Prisma.FactoryCreditLineCreateNestedManyWithoutCreditInput
   extensions?: Prisma.FactoryCreditExtensionCreateNestedManyWithoutCreditInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFactoryCreditInput
+  orderRequest?: Prisma.FactoryOrderRequestCreateNestedOneWithoutCreditInput
 }
 
 export type FactoryCreditUncheckedCreateWithoutReservationsInput = {
@@ -1443,11 +1603,15 @@ export type FactoryCreditUncheckedCreateWithoutReservationsInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutCreditInput
   extensions?: Prisma.FactoryCreditExtensionUncheckedCreateNestedManyWithoutCreditInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFactoryCreditInput
+  orderRequest?: Prisma.FactoryOrderRequestUncheckedCreateNestedOneWithoutCreditInput
 }
 
 export type FactoryCreditCreateOrConnectWithoutReservationsInput = {
@@ -1482,6 +1646,9 @@ export type FactoryCreditUpdateWithoutReservationsInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutFactoryCreditsNestedInput
@@ -1489,6 +1656,7 @@ export type FactoryCreditUpdateWithoutReservationsInput = {
   lines?: Prisma.FactoryCreditLineUpdateManyWithoutCreditNestedInput
   extensions?: Prisma.FactoryCreditExtensionUpdateManyWithoutCreditNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFactoryCreditNestedInput
+  orderRequest?: Prisma.FactoryOrderRequestUpdateOneWithoutCreditNestedInput
 }
 
 export type FactoryCreditUncheckedUpdateWithoutReservationsInput = {
@@ -1509,11 +1677,147 @@ export type FactoryCreditUncheckedUpdateWithoutReservationsInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutCreditNestedInput
   extensions?: Prisma.FactoryCreditExtensionUncheckedUpdateManyWithoutCreditNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFactoryCreditNestedInput
+  orderRequest?: Prisma.FactoryOrderRequestUncheckedUpdateOneWithoutCreditNestedInput
+}
+
+export type FactoryCreditCreateWithoutOrderRequestInput = {
+  id?: string
+  number: string
+  marketerUserId: string
+  marketerDisplayName: string
+  status?: $Enums.FactoryCreditStatus
+  dueAt: Date | string
+  originalDueAt: Date | string
+  totalUsd: number
+  paidUsd?: number
+  fxUsdToCdf?: number | null
+  documentIssuedAt?: Date | string | null
+  signedAt?: Date | string | null
+  reminderSentAt?: Date | string | null
+  dueDayReminderSentAt?: Date | string | null
+  cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutFactoryCreditsInput
+  customer: Prisma.FactoryCustomerCreateNestedOneWithoutCreditsInput
+  lines?: Prisma.FactoryCreditLineCreateNestedManyWithoutCreditInput
+  extensions?: Prisma.FactoryCreditExtensionCreateNestedManyWithoutCreditInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutFactoryCreditInput
+  reservations?: Prisma.FactoryReservationCreateNestedManyWithoutCreditInput
+}
+
+export type FactoryCreditUncheckedCreateWithoutOrderRequestInput = {
+  id?: string
+  branchId: string
+  number: string
+  customerId: string
+  marketerUserId: string
+  marketerDisplayName: string
+  status?: $Enums.FactoryCreditStatus
+  dueAt: Date | string
+  originalDueAt: Date | string
+  totalUsd: number
+  paidUsd?: number
+  fxUsdToCdf?: number | null
+  documentIssuedAt?: Date | string | null
+  signedAt?: Date | string | null
+  reminderSentAt?: Date | string | null
+  dueDayReminderSentAt?: Date | string | null
+  cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lines?: Prisma.FactoryCreditLineUncheckedCreateNestedManyWithoutCreditInput
+  extensions?: Prisma.FactoryCreditExtensionUncheckedCreateNestedManyWithoutCreditInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFactoryCreditInput
+  reservations?: Prisma.FactoryReservationUncheckedCreateNestedManyWithoutCreditInput
+}
+
+export type FactoryCreditCreateOrConnectWithoutOrderRequestInput = {
+  where: Prisma.FactoryCreditWhereUniqueInput
+  create: Prisma.XOR<Prisma.FactoryCreditCreateWithoutOrderRequestInput, Prisma.FactoryCreditUncheckedCreateWithoutOrderRequestInput>
+}
+
+export type FactoryCreditUpsertWithoutOrderRequestInput = {
+  update: Prisma.XOR<Prisma.FactoryCreditUpdateWithoutOrderRequestInput, Prisma.FactoryCreditUncheckedUpdateWithoutOrderRequestInput>
+  create: Prisma.XOR<Prisma.FactoryCreditCreateWithoutOrderRequestInput, Prisma.FactoryCreditUncheckedCreateWithoutOrderRequestInput>
+  where?: Prisma.FactoryCreditWhereInput
+}
+
+export type FactoryCreditUpdateToOneWithWhereWithoutOrderRequestInput = {
+  where?: Prisma.FactoryCreditWhereInput
+  data: Prisma.XOR<Prisma.FactoryCreditUpdateWithoutOrderRequestInput, Prisma.FactoryCreditUncheckedUpdateWithoutOrderRequestInput>
+}
+
+export type FactoryCreditUpdateWithoutOrderRequestInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.StringFieldUpdateOperationsInput | string
+  marketerUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  marketerDisplayName?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumFactoryCreditStatusFieldUpdateOperationsInput | $Enums.FactoryCreditStatus
+  dueAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  originalDueAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  totalUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  paidUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  fxUsdToCdf?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  documentIssuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutFactoryCreditsNestedInput
+  customer?: Prisma.FactoryCustomerUpdateOneRequiredWithoutCreditsNestedInput
+  lines?: Prisma.FactoryCreditLineUpdateManyWithoutCreditNestedInput
+  extensions?: Prisma.FactoryCreditExtensionUpdateManyWithoutCreditNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutFactoryCreditNestedInput
+  reservations?: Prisma.FactoryReservationUpdateManyWithoutCreditNestedInput
+}
+
+export type FactoryCreditUncheckedUpdateWithoutOrderRequestInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  marketerUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  marketerDisplayName?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumFactoryCreditStatusFieldUpdateOperationsInput | $Enums.FactoryCreditStatus
+  dueAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  originalDueAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  totalUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  paidUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  fxUsdToCdf?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  documentIssuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutCreditNestedInput
+  extensions?: Prisma.FactoryCreditExtensionUncheckedUpdateManyWithoutCreditNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutFactoryCreditNestedInput
+  reservations?: Prisma.FactoryReservationUncheckedUpdateManyWithoutCreditNestedInput
 }
 
 export type FactoryCreditCreateManyBranchInput = {
@@ -1533,6 +1837,9 @@ export type FactoryCreditCreateManyBranchInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1553,6 +1860,9 @@ export type FactoryCreditUpdateWithoutBranchInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.FactoryCustomerUpdateOneRequiredWithoutCreditsNestedInput
@@ -1560,6 +1870,7 @@ export type FactoryCreditUpdateWithoutBranchInput = {
   extensions?: Prisma.FactoryCreditExtensionUpdateManyWithoutCreditNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFactoryCreditNestedInput
   reservations?: Prisma.FactoryReservationUpdateManyWithoutCreditNestedInput
+  orderRequest?: Prisma.FactoryOrderRequestUpdateOneWithoutCreditNestedInput
 }
 
 export type FactoryCreditUncheckedUpdateWithoutBranchInput = {
@@ -1579,12 +1890,16 @@ export type FactoryCreditUncheckedUpdateWithoutBranchInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutCreditNestedInput
   extensions?: Prisma.FactoryCreditExtensionUncheckedUpdateManyWithoutCreditNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFactoryCreditNestedInput
   reservations?: Prisma.FactoryReservationUncheckedUpdateManyWithoutCreditNestedInput
+  orderRequest?: Prisma.FactoryOrderRequestUncheckedUpdateOneWithoutCreditNestedInput
 }
 
 export type FactoryCreditUncheckedUpdateManyWithoutBranchInput = {
@@ -1604,6 +1919,9 @@ export type FactoryCreditUncheckedUpdateManyWithoutBranchInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1625,6 +1943,9 @@ export type FactoryCreditCreateManyCustomerInput = {
   reminderSentAt?: Date | string | null
   dueDayReminderSentAt?: Date | string | null
   cancelReason?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  requestedDeliveryAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1645,6 +1966,9 @@ export type FactoryCreditUpdateWithoutCustomerInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutFactoryCreditsNestedInput
@@ -1652,6 +1976,7 @@ export type FactoryCreditUpdateWithoutCustomerInput = {
   extensions?: Prisma.FactoryCreditExtensionUpdateManyWithoutCreditNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFactoryCreditNestedInput
   reservations?: Prisma.FactoryReservationUpdateManyWithoutCreditNestedInput
+  orderRequest?: Prisma.FactoryOrderRequestUpdateOneWithoutCreditNestedInput
 }
 
 export type FactoryCreditUncheckedUpdateWithoutCustomerInput = {
@@ -1671,12 +1996,16 @@ export type FactoryCreditUncheckedUpdateWithoutCustomerInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.FactoryCreditLineUncheckedUpdateManyWithoutCreditNestedInput
   extensions?: Prisma.FactoryCreditExtensionUncheckedUpdateManyWithoutCreditNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFactoryCreditNestedInput
   reservations?: Prisma.FactoryReservationUncheckedUpdateManyWithoutCreditNestedInput
+  orderRequest?: Prisma.FactoryOrderRequestUncheckedUpdateOneWithoutCreditNestedInput
 }
 
 export type FactoryCreditUncheckedUpdateManyWithoutCustomerInput = {
@@ -1696,6 +2025,9 @@ export type FactoryCreditUncheckedUpdateManyWithoutCustomerInput = {
   reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDayReminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestedDeliveryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1776,6 +2108,9 @@ export type FactoryCreditSelect<ExtArgs extends runtime.Types.Extensions.Interna
   reminderSentAt?: boolean
   dueDayReminderSentAt?: boolean
   cancelReason?: boolean
+  deliveryAddress?: boolean
+  deliveryCity?: boolean
+  requestedDeliveryAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -1784,6 +2119,7 @@ export type FactoryCreditSelect<ExtArgs extends runtime.Types.Extensions.Interna
   extensions?: boolean | Prisma.FactoryCredit$extensionsArgs<ExtArgs>
   payments?: boolean | Prisma.FactoryCredit$paymentsArgs<ExtArgs>
   reservations?: boolean | Prisma.FactoryCredit$reservationsArgs<ExtArgs>
+  orderRequest?: boolean | Prisma.FactoryCredit$orderRequestArgs<ExtArgs>
   _count?: boolean | Prisma.FactoryCreditCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["factoryCredit"]>
 
@@ -1805,6 +2141,9 @@ export type FactoryCreditSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   reminderSentAt?: boolean
   dueDayReminderSentAt?: boolean
   cancelReason?: boolean
+  deliveryAddress?: boolean
+  deliveryCity?: boolean
+  requestedDeliveryAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -1829,6 +2168,9 @@ export type FactoryCreditSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   reminderSentAt?: boolean
   dueDayReminderSentAt?: boolean
   cancelReason?: boolean
+  deliveryAddress?: boolean
+  deliveryCity?: boolean
+  requestedDeliveryAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -1853,11 +2195,14 @@ export type FactoryCreditSelectScalar = {
   reminderSentAt?: boolean
   dueDayReminderSentAt?: boolean
   cancelReason?: boolean
+  deliveryAddress?: boolean
+  deliveryCity?: boolean
+  requestedDeliveryAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type FactoryCreditOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "number" | "customerId" | "marketerUserId" | "marketerDisplayName" | "status" | "dueAt" | "originalDueAt" | "totalUsd" | "paidUsd" | "fxUsdToCdf" | "documentIssuedAt" | "signedAt" | "reminderSentAt" | "dueDayReminderSentAt" | "cancelReason" | "createdAt" | "updatedAt", ExtArgs["result"]["factoryCredit"]>
+export type FactoryCreditOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "number" | "customerId" | "marketerUserId" | "marketerDisplayName" | "status" | "dueAt" | "originalDueAt" | "totalUsd" | "paidUsd" | "fxUsdToCdf" | "documentIssuedAt" | "signedAt" | "reminderSentAt" | "dueDayReminderSentAt" | "cancelReason" | "deliveryAddress" | "deliveryCity" | "requestedDeliveryAt" | "createdAt" | "updatedAt", ExtArgs["result"]["factoryCredit"]>
 export type FactoryCreditInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.FactoryCustomerDefaultArgs<ExtArgs>
@@ -1865,6 +2210,7 @@ export type FactoryCreditInclude<ExtArgs extends runtime.Types.Extensions.Intern
   extensions?: boolean | Prisma.FactoryCredit$extensionsArgs<ExtArgs>
   payments?: boolean | Prisma.FactoryCredit$paymentsArgs<ExtArgs>
   reservations?: boolean | Prisma.FactoryCredit$reservationsArgs<ExtArgs>
+  orderRequest?: boolean | Prisma.FactoryCredit$orderRequestArgs<ExtArgs>
   _count?: boolean | Prisma.FactoryCreditCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type FactoryCreditIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1885,6 +2231,7 @@ export type $FactoryCreditPayload<ExtArgs extends runtime.Types.Extensions.Inter
     extensions: Prisma.$FactoryCreditExtensionPayload<ExtArgs>[]
     payments: Prisma.$PaymentPayload<ExtArgs>[]
     reservations: Prisma.$FactoryReservationPayload<ExtArgs>[]
+    orderRequest: Prisma.$FactoryOrderRequestPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1904,6 +2251,9 @@ export type $FactoryCreditPayload<ExtArgs extends runtime.Types.Extensions.Inter
     reminderSentAt: Date | null
     dueDayReminderSentAt: Date | null
     cancelReason: string | null
+    deliveryAddress: string | null
+    deliveryCity: string | null
+    requestedDeliveryAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["factoryCredit"]>
@@ -2306,6 +2656,7 @@ export interface Prisma__FactoryCreditClient<T, Null = never, ExtArgs extends ru
   extensions<T extends Prisma.FactoryCredit$extensionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FactoryCredit$extensionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactoryCreditExtensionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payments<T extends Prisma.FactoryCredit$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FactoryCredit$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reservations<T extends Prisma.FactoryCredit$reservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FactoryCredit$reservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactoryReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  orderRequest<T extends Prisma.FactoryCredit$orderRequestArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FactoryCredit$orderRequestArgs<ExtArgs>>): Prisma.Prisma__FactoryOrderRequestClient<runtime.Types.Result.GetResult<Prisma.$FactoryOrderRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2352,6 +2703,9 @@ export interface FactoryCreditFieldRefs {
   readonly reminderSentAt: Prisma.FieldRef<"FactoryCredit", 'DateTime'>
   readonly dueDayReminderSentAt: Prisma.FieldRef<"FactoryCredit", 'DateTime'>
   readonly cancelReason: Prisma.FieldRef<"FactoryCredit", 'String'>
+  readonly deliveryAddress: Prisma.FieldRef<"FactoryCredit", 'String'>
+  readonly deliveryCity: Prisma.FieldRef<"FactoryCredit", 'String'>
+  readonly requestedDeliveryAt: Prisma.FieldRef<"FactoryCredit", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"FactoryCredit", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"FactoryCredit", 'DateTime'>
 }
@@ -2848,6 +3202,25 @@ export type FactoryCredit$reservationsArgs<ExtArgs extends runtime.Types.Extensi
   take?: number
   skip?: number
   distinct?: Prisma.FactoryReservationScalarFieldEnum | Prisma.FactoryReservationScalarFieldEnum[]
+}
+
+/**
+ * FactoryCredit.orderRequest
+ */
+export type FactoryCredit$orderRequestArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FactoryOrderRequest
+   */
+  select?: Prisma.FactoryOrderRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FactoryOrderRequest
+   */
+  omit?: Prisma.FactoryOrderRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FactoryOrderRequestInclude<ExtArgs> | null
+  where?: Prisma.FactoryOrderRequestWhereInput
 }
 
 /**

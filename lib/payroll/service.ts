@@ -192,7 +192,7 @@ export async function assertCommerceBranch(branchId: string) {
   });
   if (!branch) throw new Error("Branche introuvable.");
   if (!isCommerceBranchType(branch.type)) {
-    throw new Error("La paie journalière est disponible pour les branches commerce (boutique, alimentation, pharmacie).");
+    throw new Error("La paie journalière est disponible pour les branches commerce (boutique, usine).");
   }
   await ensureCommercePayrollForBranch(prisma, branchId);
   return branch;

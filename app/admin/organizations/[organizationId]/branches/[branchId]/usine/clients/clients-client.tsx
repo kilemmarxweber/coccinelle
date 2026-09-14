@@ -23,8 +23,18 @@ import {
   BoutiquePanel,
   BoutiqueStatus,
 } from "@/components/boutique/boutique-shell";
-import { upsertFactoryCustomerAction } from "@/lib/factory/actions";
+import {
+  inviteFactoryCustomerAccountAction,
+  upsertFactoryCustomerAction,
+} from "@/lib/factory/actions";
 import { branchDashboardPath } from "@/lib/branch/paths";
+
+type AffiliateBranch = {
+  id: string;
+  name: string;
+  type: string;
+  code: string;
+};
 
 type Customer = {
   id: string;
@@ -33,14 +43,21 @@ type Customer = {
   contactName: string | null;
   companyName: string | null;
   email: string | null;
+  deliveryAddress: string | null;
+  deliveryCity: string | null;
+  affiliateBranchId: string | null;
+  userId: string | null;
   active: boolean;
-  _count: { credits: number; reservations: number };
+  affiliateBranch: { id: string; name: string; type: string } | null;
+  user: { id: string; email: string; name: string } | null;
+  _count: { credits: number; reservations: number; orderRequests: number };
 };
 
 export function UsineClientsClient(props: {
   organizationId: string;
   branchId: string;
   customers: Customer[];
+  affiliateBranches: AffiliateBranch[];
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -48,13 +65,24 @@ export function UsineClientsClient(props: {
   const [phone, setPhone] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [contactName, setContactName] = useState("");
+  const [email, setEmail] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [deliveryCity, setDeliveryCity] = useState("");
+  const [affiliateBranchId, setAffiliateBranchId] = useState("");
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return props.customers;
     return props.customers.filter((c) =>
-      [c.name, c.phone, c.companyName, c.contactName]
+      [
+        c.name,
+        c.phone,
+        c.companyName,
+        c.contactName,
+        c.email,
+        c.affiliateBranch?.name,
+      ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
@@ -63,16 +91,36 @@ export function UsineClientsClient(props: {
   }, [props.customers, search]);
 
   const withCredits = props.customers.filter((c) => c._count.credits > 0).length;
-  const withReservations = props.customers.filter(
-    (c) => c._count.reservations > 0,
-  ).length;
+  const withAccount = props.customers.filter((c) => c.userId).length;
+
+  function invite(customerId: string) {
+    start(async () => {
+      const res = await inviteFactoryCustomerAccountAction({
+        organizationId: props.organizationId,
+        branchId: props.branchId,
+        customerId,
+      });
+      if (!res.ok) {
+        toast.error(res.message);
+        return;
+      }
+      const wa = res.whatsappSent
+        ? " · WhatsApp envoyé"
+        : " · WhatsApp non envoyé (vérifiez Zindua)";
+      toast.success(
+        `Compte : ${res.email} · MDP : ${res.temporaryPassword}${wa}`,
+        { duration: 14_000 },
+      );
+      router.refresh();
+    });
+  }
 
   return (
     <BoutiquePage>
       <BoutiqueHero
         kicker="Usine"
-        title="Clients"
-        subtitle="Nom et téléphone obligatoires pour un crédit. Société optionnelle."
+        title="Clients affiliés"
+        subtitle="Entreprise + contact. Compte optionnel : invitation WhatsApp automatique."
         icon={Users}
         backHref={branchDashboardPath(props.organizationId, props.branchId)}
       />
@@ -80,11 +128,11 @@ export function UsineClientsClient(props: {
         items={[
           { label: "Fiches", value: props.customers.length },
           { label: "Avec crédit", value: withCredits },
-          { label: "Avec hold", value: withReservations },
+          { label: "Avec compte", value: withAccount },
         ]}
       />
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(280px,360px)_minmax(0,1fr)] lg:items-start">
+      <div className="grid gap-4 lg:grid-cols-[minmax(280px,380px)_minmax(0,1fr)] lg:items-start">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -93,16 +141,28 @@ export function UsineClientsClient(props: {
                 await upsertFactoryCustomerAction({
                   organizationId: props.organizationId,
                   branchId: props.branchId,
-                  name,
+                  name: companyName.trim() || name,
                   phone,
                   companyName,
-                  contactName,
+                  contactName: contactName || name,
+                  email,
+                  deliveryAddress,
+                  deliveryCity,
+                  affiliateBranchId: affiliateBranchId || null,
                 });
-                toast.success("Client enregistré");
+                toast.success(
+                  phone.trim()
+                    ? "Client enregistré · WhatsApp de bienvenue envoyé"
+                    : "Client enregistré",
+                );
                 setName("");
                 setPhone("");
                 setCompanyName("");
                 setContactName("");
+                setEmail("");
+                setDeliveryAddress("");
+                setDeliveryCity("");
+                setAffiliateBranchId("");
                 router.refresh();
               } catch (err) {
                 toast.error(err instanceof Error ? err.message : "Erreur");
@@ -110,60 +170,99 @@ export function UsineClientsClient(props: {
             });
           }}
         >
-        <BoutiquePanel
-          title="Nouveau client"
-          icon={UserRound}
-          bodyClassName="grid gap-3 p-4"
-        >
-          <div className="grid gap-1.5">
-            <Label htmlFor="client-name">Nom</Label>
-            <Input
-              id="client-name"
-              className="h-10 rounded-xl"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
-          <div className="grid gap-1.5">
-            <Label htmlFor="client-phone">Téléphone</Label>
-            <Input
-              id="client-phone"
-              className="h-10 rounded-xl"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-              inputMode="tel"
-            />
-          </div>
-          <div className="grid gap-1.5">
-            <Label htmlFor="client-company">Société</Label>
-            <Input
-              id="client-company"
-              className="h-10 rounded-xl"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              placeholder="Optionnel"
-            />
-          </div>
-          <div className="grid gap-1.5">
-            <Label htmlFor="client-contact">Contact</Label>
-            <Input
-              id="client-contact"
-              className="h-10 rounded-xl"
-              value={contactName}
-              onChange={(e) => setContactName(e.target.value)}
-              placeholder="Optionnel"
-            />
-          </div>
-          <Button
-            type="submit"
-            disabled={pending}
-            className="h-11 w-full"
+          <BoutiquePanel
+            title="Nouveau client"
+            icon={UserRound}
+            bodyClassName="grid gap-3 p-4"
           >
-            Enregistrer
-          </Button>
-        </BoutiquePanel>
+            <div className="grid gap-1.5">
+              <Label htmlFor="client-company">Entreprise</Label>
+              <Input
+                id="client-company"
+                className="h-10 rounded-xl"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                required
+                placeholder="Boutique / resto"
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="client-contact">Contact (nom)</Label>
+              <Input
+                id="client-contact"
+                className="h-10 rounded-xl"
+                value={contactName}
+                onChange={(e) => {
+                  setContactName(e.target.value);
+                  setName(e.target.value);
+                }}
+                required
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="client-phone">Téléphone</Label>
+              <Input
+                id="client-phone"
+                className="h-10 rounded-xl"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+                inputMode="tel"
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="client-email">Email (compte optionnel)</Label>
+              <Input
+                id="client-email"
+                type="email"
+                className="h-10 rounded-xl"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Optionnel"
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="client-address">Adresse livraison</Label>
+              <Input
+                id="client-address"
+                className="h-10 rounded-xl"
+                value={deliveryAddress}
+                onChange={(e) => setDeliveryAddress(e.target.value)}
+                placeholder="Optionnel"
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="client-city">Ville</Label>
+              <Input
+                id="client-city"
+                className="h-10 rounded-xl"
+                value={deliveryCity}
+                onChange={(e) => setDeliveryCity(e.target.value)}
+                placeholder="Optionnel"
+              />
+            </div>
+            {props.affiliateBranches.length > 0 ? (
+              <div className="grid gap-1.5">
+                <Label htmlFor="client-affiliate">Branche Coccinelle</Label>
+                <select
+                  id="client-affiliate"
+                  className="h-10 rounded-xl border border-input bg-background px-3 text-sm"
+                  value={affiliateBranchId}
+                  onChange={(e) => setAffiliateBranchId(e.target.value)}
+                >
+                  <option value="">Externe (hors Coccinelle)</option>
+                  {props.affiliateBranches.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name} · {b.type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+            <Button type="submit" disabled={pending} className="h-11 w-full">
+              Enregistrer
+            </Button>
+          </BoutiquePanel>
         </form>
 
         <BoutiquePanel
@@ -186,7 +285,7 @@ export function UsineClientsClient(props: {
             <EmptyState
               icon={UserRound}
               title="Aucun client"
-              description="Enregistrez une fiche à gauche pour vendre à crédit ou réserver."
+              description="Enregistrez une entreprise affiliée pour vendre à crédit."
             />
           ) : (
             <>
@@ -195,17 +294,33 @@ export function UsineClientsClient(props: {
                   <li key={c.id} className="px-4 py-3">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="font-semibold text-foreground">{c.name}</p>
+                        <p className="font-semibold text-foreground">
+                          {c.companyName || c.name}
+                        </p>
                         <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
-                          {[c.companyName, c.phone, c.contactName]
+                          {[c.contactName, c.phone, c.affiliateBranch?.name]
                             .filter(Boolean)
                             .join(" · ")}
                         </p>
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          <BoutiqueStatus>
+                            {c._count.credits} crédit(s)
+                          </BoutiqueStatus>
+                          {c.userId ? (
+                            <BoutiqueStatus>Compte</BoutiqueStatus>
+                          ) : null}
+                        </div>
                       </div>
-                      <BoutiqueStatus tone={c.active ? "ok" : "neutral"}>
-                        {c._count.credits} crédit
-                        {c._count.credits === 1 ? "" : "s"}
-                      </BoutiqueStatus>
+                      {!c.userId ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={pending}
+                          onClick={() => invite(c.id)}
+                        >
+                          Inviter
+                        </Button>
+                      ) : null}
                     </div>
                   </li>
                 ))}
@@ -213,34 +328,52 @@ export function UsineClientsClient(props: {
               <div className="hidden lg:block">
                 <Table>
                   <TableHeader>
-                    <TableRow className="hover:bg-transparent">
-                      <TableHead>Nom</TableHead>
-                      <TableHead>Téléphone</TableHead>
-                      <TableHead>Société</TableHead>
-                      <TableHead className="text-right">Crédits</TableHead>
-                      <TableHead className="text-right">Réservations</TableHead>
+                    <TableRow>
+                      <TableHead>Entreprise</TableHead>
+                      <TableHead>Contact</TableHead>
+                      <TableHead>Affiliation</TableHead>
+                      <TableHead>Compte</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filtered.map((c) => (
                       <TableRow key={c.id}>
-                        <TableCell className="font-medium whitespace-normal">
-                          {c.name}
-                          {c.contactName ? (
-                            <p className="text-[11px] font-normal text-muted-foreground">
-                              {c.contactName}
-                            </p>
-                          ) : null}
+                        <TableCell className="font-medium">
+                          {c.companyName || c.name}
+                          <div className="text-xs text-muted-foreground">
+                            {c.phone}
+                          </div>
                         </TableCell>
-                        <TableCell className="tabular-nums">
-                          {c.phone ?? "—"}
+                        <TableCell>
+                          {c.contactName || "—"}
+                          <div className="text-xs text-muted-foreground">
+                            {c.email || "—"}
+                          </div>
                         </TableCell>
-                        <TableCell>{c.companyName ?? "—"}</TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {c._count.credits}
+                        <TableCell>
+                          {c.affiliateBranch
+                            ? c.affiliateBranch.name
+                            : "Externe"}
                         </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {c._count.reservations}
+                        <TableCell>
+                          {c.user ? c.user.email : "Sans compte"}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {!c.userId ? (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={pending}
+                              onClick={() => invite(c.id)}
+                            >
+                              Inviter
+                            </Button>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">
+                              Actif
+                            </span>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}

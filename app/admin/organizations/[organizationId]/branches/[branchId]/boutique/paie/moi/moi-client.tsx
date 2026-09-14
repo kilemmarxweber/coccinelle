@@ -114,8 +114,10 @@ export function MoiClient({
                 key={ymd}
                 className={cn(
                   "rounded-xl border border-border bg-card p-2.5 text-xs",
-                  day?.payTreatment === "UNPAID" && "border-rose-300 bg-rose-50",
-                  day?.kind === "PRESENT" && "border-emerald-300 bg-emerald-50",
+                  day?.payTreatment === "UNPAID" &&
+                    "border-rose-300 bg-rose-50 dark:border-rose-800 dark:bg-rose-950/40",
+                  day?.kind === "PRESENT" &&
+                    "border-emerald-300 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/40",
                 )}
               >
                 <p className="font-medium">{ymd.slice(8)}</p>

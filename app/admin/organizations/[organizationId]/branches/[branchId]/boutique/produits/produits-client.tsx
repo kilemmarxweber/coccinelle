@@ -35,7 +35,11 @@ import {
   updateShopProductAction,
   type ShopProductDto,
 } from "@/lib/boutique/actions";
-import { branchDashboardPath, boutiqueRoutes } from "@/lib/branch/paths";
+import {
+  branchDashboardPath,
+  boutiqueRoutes,
+  usineRoutes,
+} from "@/lib/branch/paths";
 import {
   BoutiqueHero,
   BoutiquePage,
@@ -48,12 +52,17 @@ import { cn } from "@/lib/utils";
 const PAGE_SIZE = 6;
 
 type Category = { id: string; name: string };
+type ProductKind = "FINISHED" | "CONSUMABLE";
+type FinishedFamily = "EAU" | "VIN";
+type UsineListFilter = "ALL" | ProductKind | FinishedFamily;
 
 type FormState = {
   name: string;
   sku: string;
   categoryId: string;
   kind: "ARTICLE" | "PLAT";
+  productKind: ProductKind;
+  finishedFamily: FinishedFamily | "";
   price: string;
   stockQty: string;
   barcode: string;
@@ -69,6 +78,8 @@ const EMPTY: FormState = {
   sku: "",
   categoryId: "",
   kind: "ARTICLE",
+  productKind: "FINISHED",
+  finishedFamily: "EAU",
   price: "",
   stockQty: "0",
   barcode: "",
@@ -85,15 +96,18 @@ type Props = {
   branchName: string;
   products: ShopProductDto[];
   categories: Category[];
+  catalogMode?: "boutique" | "usine";
 };
 
 export function BoutiqueProduitsClient(props: Props) {
+  const usine = props.catalogMode === "usine";
   const router = useRouter();
   const [pending, start] = useTransition();
   const [q, setQ] = useState("");
   const [kindFilter, setKindFilter] = useState<"ALL" | "ARTICLE" | "PLAT">(
     "ALL",
   );
+  const [usineFilter, setUsineFilter] = useState<UsineListFilter>("ALL");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<ShopProductDto | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY);
@@ -104,7 +118,15 @@ export function BoutiqueProduitsClient(props: Props) {
   const filtered = useMemo(() => {
     const query = q.trim().toLowerCase();
     return props.products.filter((p) => {
-      if (kindFilter !== "ALL" && p.kind !== kindFilter) return false;
+      if (usine) {
+        if (usineFilter === "FINISHED" || usineFilter === "CONSUMABLE") {
+          if ((p.productKind ?? "FINISHED") !== usineFilter) return false;
+        } else if (usineFilter === "EAU" || usineFilter === "VIN") {
+          if (p.finishedFamily !== usineFilter) return false;
+        }
+      } else if (kindFilter !== "ALL" && p.kind !== kindFilter) {
+        return false;
+      }
       if (!query) return true;
       return (
         p.name.toLowerCase().includes(query) ||
@@ -113,7 +135,7 @@ export function BoutiqueProduitsClient(props: Props) {
         (p.barcode?.toLowerCase().includes(query) ?? false)
       );
     });
-  }, [props.products, q, kindFilter]);
+  }, [props.products, q, kindFilter, usine, usineFilter]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, pageCount);
@@ -125,7 +147,7 @@ export function BoutiqueProduitsClient(props: Props) {
 
   useEffect(() => {
     setPage(1);
-  }, [q, kindFilter]);
+  }, [q, kindFilter, usineFilter]);
 
   useEffect(() => {
     if (page > pageCount) setPage(pageCount);
@@ -136,6 +158,8 @@ export function BoutiqueProduitsClient(props: Props) {
     setForm({
       ...EMPTY,
       categoryId: props.categories[0]?.id ?? "",
+      productKind: "FINISHED",
+      finishedFamily: "EAU",
     });
     setDialogOpen(true);
   }
@@ -147,6 +171,8 @@ export function BoutiqueProduitsClient(props: Props) {
       sku: p.sku,
       categoryId: p.categoryId,
       kind: p.kind,
+      productKind: p.productKind ?? "FINISHED",
+      finishedFamily: p.finishedFamily ?? "",
       price: String(p.price),
       stockQty: String(p.stockQty),
       barcode: p.barcode ?? "",
@@ -192,6 +218,10 @@ export function BoutiqueProduitsClient(props: Props) {
       toast.error("Prix invalide");
       return;
     }
+    if (usine && form.productKind === "FINISHED" && !form.finishedFamily) {
+      toast.error("Famille requise (Eau ou Vin) pour un produit fini");
+      return;
+    }
     start(async () => {
       try {
         const payload = {
@@ -201,6 +231,12 @@ export function BoutiqueProduitsClient(props: Props) {
           name: form.name,
           sku: form.sku,
           kind: form.kind,
+          productKind: usine ? form.productKind : undefined,
+          finishedFamily: usine
+            ? form.productKind === "CONSUMABLE"
+              ? null
+              : (form.finishedFamily as FinishedFamily)
+            : undefined,
           price,
           stockQty: Number.isFinite(stockQty) ? stockQty : 0,
           barcode: form.barcode || null,
@@ -271,7 +307,11 @@ export function BoutiqueProduitsClient(props: Props) {
       <BoutiqueHero
         kicker={`${props.branchName} · catalogue`}
         title="Produits"
-        subtitle="Fiches POS — le stock se remplit par réception depuis l’entrepôt."
+        subtitle={
+          usine
+            ? "Fiches catalogue usine — précisez fini/consommable et la famille Eau ou Vin."
+            : "Fiches POS — le stock se remplit par réception depuis l’entrepôt."
+        }
         icon={Package}
         backHref={branchDashboardPath(props.organizationId, props.branchId)}
         actions={
@@ -281,21 +321,35 @@ export function BoutiqueProduitsClient(props: Props) {
               className={boutiqueOutlineBtn()}
               render={
                 <Link
-                  href={boutiqueRoutes.stock(
-                    props.organizationId,
-                    props.branchId,
-                  )}
+                  href={
+                    usine
+                      ? usineRoutes.depot(
+                          props.organizationId,
+                          props.branchId,
+                        )
+                      : boutiqueRoutes.stock(
+                          props.organizationId,
+                          props.branchId,
+                        )
+                  }
                 />
               }
             >
-              Stock
+              {usine ? "Dépôt" : "Stock"}
             </Button>
             <Button
               variant="outline"
               className={boutiqueOutlineBtn()}
               render={
                 <Link
-                  href={boutiqueRoutes.pos(props.organizationId, props.branchId)}
+                  href={
+                    usine
+                      ? usineRoutes.pos(props.organizationId, props.branchId)
+                      : boutiqueRoutes.pos(
+                          props.organizationId,
+                          props.branchId,
+                        )
+                  }
                 />
               }
             >
@@ -319,21 +373,45 @@ export function BoutiqueProduitsClient(props: Props) {
             onChange={(e) => setQ(e.target.value)}
           />
         </div>
-        {(["ALL", "ARTICLE", "PLAT"] as const).map((k) => (
-          <button
-            key={k}
-            type="button"
-            onClick={() => setKindFilter(k)}
-            className={cn(
-              "rounded-full border px-3 py-1.5 text-xs font-semibold",
-              kindFilter === k
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-border bg-card text-muted-foreground",
-            )}
-          >
-            {k === "ALL" ? "Tous" : k === "ARTICLE" ? "Articles" : "Plats"}
-          </button>
-        ))}
+        {usine
+          ? (
+              [
+                ["ALL", "Tous"],
+                ["FINISHED", "Finis"],
+                ["CONSUMABLE", "Consos"],
+                ["EAU", "Eau"],
+                ["VIN", "Vins"],
+              ] as const
+            ).map(([k, label]) => (
+              <button
+                key={k}
+                type="button"
+                onClick={() => setUsineFilter(k)}
+                className={cn(
+                  "rounded-full border px-3 py-1.5 text-xs font-semibold",
+                  usineFilter === k
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card text-muted-foreground",
+                )}
+              >
+                {label}
+              </button>
+            ))
+          : (["ALL", "ARTICLE", "PLAT"] as const).map((k) => (
+              <button
+                key={k}
+                type="button"
+                onClick={() => setKindFilter(k)}
+                className={cn(
+                  "rounded-full border px-3 py-1.5 text-xs font-semibold",
+                  kindFilter === k
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card text-muted-foreground",
+                )}
+              >
+                {k === "ALL" ? "Tous" : k === "ARTICLE" ? "Articles" : "Plats"}
+              </button>
+            ))}
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -379,16 +457,38 @@ export function BoutiqueProduitsClient(props: Props) {
               </div>
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-1.5">
-              <Badge variant="secondary">
-                {p.kind === "PLAT" ? (
-                  <>
-                    <UtensilsCrossed className="mr-1 size-3" />
-                    Plat
-                  </>
-                ) : (
-                  "Article"
-                )}
-              </Badge>
+              {usine ? (
+                <>
+                  <Badge variant="secondary">
+                    {(p.productKind ?? "FINISHED") === "CONSUMABLE"
+                      ? "Conso"
+                      : "Fini"}
+                  </Badge>
+                  {p.finishedFamily ? (
+                    <Badge
+                      variant="outline"
+                      className={
+                        p.finishedFamily === "EAU"
+                          ? "border-sky-300 bg-sky-50 text-sky-800 dark:border-sky-700 dark:bg-sky-950/50 dark:text-sky-200"
+                          : "border-violet-300 bg-violet-50 text-violet-800 dark:border-violet-700 dark:bg-violet-950/50 dark:text-violet-200"
+                      }
+                    >
+                      {p.finishedFamily === "EAU" ? "Eau" : "Vin"}
+                    </Badge>
+                  ) : null}
+                </>
+              ) : (
+                <Badge variant="secondary">
+                  {p.kind === "PLAT" ? (
+                    <>
+                      <UtensilsCrossed className="mr-1 size-3" />
+                      Plat
+                    </>
+                  ) : (
+                    "Article"
+                  )}
+                </Badge>
+              )}
               {p.promoLive ? (
                 <Badge className="bg-amber-500/15 text-amber-800 dark:text-amber-200">
                   <BadgePercent className="mr-1 size-3" />
@@ -433,7 +533,7 @@ export function BoutiqueProduitsClient(props: Props) {
               <div>
                 {p.promoLive ? (
                   <p className="text-sm">
-                    <span className="font-bold text-emerald-600">
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400">
                       {p.effectivePrice.toFixed(2)} $
                     </span>{" "}
                     <span className="text-muted-foreground line-through">
@@ -598,23 +698,66 @@ export function BoutiqueProduitsClient(props: Props) {
                   }
                 />
               </div>
+              {usine ? (
+                <div className="grid gap-1.5">
+                  <Label>Nature</Label>
+                  <select
+                    className="h-9 rounded-lg border border-input bg-background px-3 text-sm"
+                    value={form.productKind}
+                    onChange={(e) => {
+                      const productKind = e.target.value as ProductKind;
+                      setForm((f) => ({
+                        ...f,
+                        productKind,
+                        finishedFamily:
+                          productKind === "CONSUMABLE"
+                            ? ""
+                            : f.finishedFamily || "EAU",
+                      }));
+                    }}
+                  >
+                    <option value="FINISHED">Produit fini</option>
+                    <option value="CONSUMABLE">Consommable</option>
+                  </select>
+                </div>
+              ) : (
+                <div className="grid gap-1.5">
+                  <Label>Type</Label>
+                  <select
+                    className="h-9 rounded-lg border border-input bg-background px-3 text-sm"
+                    value={form.kind}
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        kind: e.target.value as "ARTICLE" | "PLAT",
+                      }))
+                    }
+                  >
+                    <option value="ARTICLE">Article</option>
+                    <option value="PLAT">Plat</option>
+                  </select>
+                </div>
+              )}
+            </div>
+            {usine && form.productKind === "FINISHED" ? (
               <div className="grid gap-1.5">
-                <Label>Type</Label>
+                <Label>Famille</Label>
                 <select
                   className="h-9 rounded-lg border border-input bg-background px-3 text-sm"
-                  value={form.kind}
+                  value={form.finishedFamily}
                   onChange={(e) =>
                     setForm((f) => ({
                       ...f,
-                      kind: e.target.value as "ARTICLE" | "PLAT",
+                      finishedFamily: e.target.value as FinishedFamily | "",
                     }))
                   }
                 >
-                  <option value="ARTICLE">Article</option>
-                  <option value="PLAT">Plat</option>
+                  <option value="">— Choisir —</option>
+                  <option value="EAU">Eau</option>
+                  <option value="VIN">Vin</option>
                 </select>
               </div>
-            </div>
+            ) : null}
             <div className="grid gap-1.5">
               <Label>Catégorie</Label>
               <select

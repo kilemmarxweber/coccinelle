@@ -93,7 +93,7 @@ function QtyStepper(props: {
     >
       <button
         type="button"
-        className="flex size-8 items-center justify-center rounded-lg border border-border bg-white hover:bg-muted disabled:opacity-40"
+        className="flex size-8 items-center justify-center rounded-lg border border-border bg-card hover:bg-muted disabled:opacity-40"
         disabled={quantity <= 0}
         onClick={(e) => {
           e.stopPropagation();
@@ -108,7 +108,7 @@ function QtyStepper(props: {
       </span>
       <button
         type="button"
-        className="flex size-8 items-center justify-center rounded-lg border border-border bg-white hover:bg-muted disabled:opacity-40"
+        className="flex size-8 items-center justify-center rounded-lg border border-border bg-card hover:bg-muted disabled:opacity-40"
         disabled={quantity >= max}
         onClick={(e) => {
           e.stopPropagation();
@@ -304,7 +304,7 @@ export function UsineCreditNewClient(props: {
                     "rounded-full border px-2.5 py-1 text-[11px] font-semibold transition",
                     familyFilter === k
                       ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-white text-muted-foreground hover:bg-muted",
+                      : "border-border bg-card text-muted-foreground hover:bg-muted",
                   )}
                 >
                   {label}
@@ -320,7 +320,7 @@ export function UsineCreditNewClient(props: {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Rechercher un produit…"
-                className="h-10 rounded-xl border-border bg-white pl-8"
+                className="h-10 rounded-xl border-border bg-card pl-8"
               />
             </div>
           </div>
@@ -369,7 +369,7 @@ export function UsineCreditNewClient(props: {
                             e.stopPropagation();
                             addOne(p.id, p.free);
                           }}
-                          className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-border bg-white hover:bg-muted disabled:opacity-40"
+                          className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-border bg-card hover:bg-muted disabled:opacity-40"
                           aria-label="Ajouter"
                         >
                           <Plus className="size-4" />
@@ -446,7 +446,7 @@ export function UsineCreditNewClient(props: {
                                 type="button"
                                 disabled={p.free <= 0}
                                 onClick={() => addOne(p.id, p.free)}
-                                className="inline-flex size-8 items-center justify-center rounded-lg border border-border bg-white hover:bg-muted disabled:opacity-40"
+                                className="inline-flex size-8 items-center justify-center rounded-lg border border-border bg-card hover:bg-muted disabled:opacity-40"
                                 aria-label="Ajouter"
                               >
                                 <Plus className="size-4" />
@@ -484,7 +484,7 @@ export function UsineCreditNewClient(props: {
                   "h-10 rounded-xl border text-sm font-semibold",
                   clientMode === k
                     ? "border-emerald-800 bg-emerald-800 text-white"
-                    : "border-border bg-white text-muted-foreground",
+                    : "border-border bg-card text-muted-foreground",
                 )}
               >
                 {label}
@@ -497,7 +497,7 @@ export function UsineCreditNewClient(props: {
               <Label htmlFor="credit-customer">Client</Label>
               <Select
                 id="credit-customer"
-                className="h-10 rounded-xl border-border bg-white"
+                className="h-10 rounded-xl border-border bg-card"
                 value={customerId}
                 required
                 onChange={(e) => setCustomerId(e.target.value)}
@@ -525,7 +525,7 @@ export function UsineCreditNewClient(props: {
                 <Label htmlFor="credit-name">Nom</Label>
                 <Input
                   id="credit-name"
-                  className="h-10 rounded-xl border-border bg-white"
+                  className="h-10 rounded-xl border-border bg-card"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required={clientMode === "NEW"}
@@ -536,7 +536,7 @@ export function UsineCreditNewClient(props: {
                 <Label htmlFor="credit-phone">Téléphone</Label>
                 <Input
                   id="credit-phone"
-                  className="h-10 rounded-xl border-border bg-white"
+                  className="h-10 rounded-xl border-border bg-card"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   required={clientMode === "NEW"}
@@ -548,7 +548,7 @@ export function UsineCreditNewClient(props: {
                 <Label htmlFor="credit-company">Société</Label>
                 <Input
                   id="credit-company"
-                  className="h-10 rounded-xl border-border bg-white"
+                  className="h-10 rounded-xl border-border bg-card"
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   placeholder="Optionnel"
@@ -562,7 +562,7 @@ export function UsineCreditNewClient(props: {
             <Input
               id="credit-due"
               type="date"
-              className="h-10 rounded-xl border-border bg-white"
+              className="h-10 rounded-xl border-border bg-card"
               value={dueAt}
               onChange={(e) => setDueAt(e.target.value)}
               required

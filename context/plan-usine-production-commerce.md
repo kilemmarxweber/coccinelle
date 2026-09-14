@@ -2,8 +2,9 @@
 
 | | |
 |---|---|
-| **Status** | `done` — V1 implémentée (U0–U9) |
+| **Status** | `done` — V1 (U0–U9) + affiliation B2B (comptes optionnels, demandes, portail) |
 | **Périmètre V1** | Nouveau `BranchType = USINE` · famille **commerce** (même paie / bulletins que `BOUTIQUE`) · production **eau** et/ou **vins** · vente **cash** ou **crédit** · rôle **marketeur** · stock dépôt + float auxiliaire |
+| **Affiliation** | Clients externes + branches `BOUTIQUE`/`RESTAURANT` · compte optionnel · demandes validées marketeur · portail `/{slug}/usine-affilie` |
 | **UX** | Dashboard-first (cartes hub USINE) · même pattern que Boutique POS / Service stock resto / Paie commerce |
 | **Notifs** | WhatsApp Zindua (+ email si dispo) · branding `Branch.name` ([`plan-notifications-email-whatsapp.md`](./plan-notifications-email-whatsapp.md)) |
 | **Lié** | [`plan-paie-agents-commerce.md`](./plan-paie-agents-commerce.md) · [`plan-stock-service-depot-float.md`](./plan-stock-service-depot-float.md) · [`plan-commerce-pos-panier.md`](./plan-commerce-pos-panier.md) · bons de commande (`PurchaseOrder`) · [`plan-clients-partenaires-hotel.md`](./plan-clients-partenaires-hotel.md) (CRM / crédit) |
@@ -559,6 +560,23 @@ Zones stock : étendre `StorageZone` ou champ dépôt `PRODUCTION` \| `CONSOMMAB
 - Qualité / labo / dates de péremption avancées (champ `expiresAt` optionnel V1.1 sur lot).
 - App marketeur offline.
 - Fusion CRM `FactoryCustomer` ↔ `BranchPartner` hôtel (garder dédié V1).
+- Self-service affilié qui débite le float **sans** validation marketeur.
+- Sync stock boutique affiliée automatique à la réception.
+- Tracking livreur / GPS.
+
+---
+
+## 16bis. Affiliation B2B (V1.1) — **implémenté**
+
+Clients **externes** (majorité) et branches Coccinelle `BOUTIQUE` / `RESTAURANT` :
+
+| Élément | Détail |
+|---------|--------|
+| Fiche | `FactoryCustomer` : entreprise, contact, tel, email, adresse livraison, `affiliateBranchId?`, `userId?`, `notifyPrefs` |
+| Compte | **Optionnel** — invitation marketeur → Better Auth + portail `/{orgSlug}/usine-affilie` |
+| Demande | `FactoryOrderRequest` PENDING → marketeur Approuver (crée `FactoryCredit` + float) / Refuser |
+| Notifs | WhatsApp + `BranchNotification` à la création / approbation / refus |
+| UI staff | `usine/clients`, `usine/demandes` |
 
 ---
 

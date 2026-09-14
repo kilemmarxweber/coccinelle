@@ -182,6 +182,7 @@ export async function getBranchRoleDashboardAction(
     usineCreditNew: usineRoutes.creditNew(organizationId, branchId),
     usineCredits: usineRoutes.credits(organizationId, branchId),
     usineClients: usineRoutes.clients(organizationId, branchId),
+    usineDemandes: usineRoutes.demandes(organizationId, branchId),
     usineReservations: usineRoutes.reservations(organizationId, branchId),
     usineFloat: usineRoutes.serviceStock(organizationId, branchId),
     usineDepot: usineRoutes.depot(organizationId, branchId),
@@ -498,9 +499,15 @@ export async function getBranchRoleDashboardAction(
         },
         {
           title: "Clients",
-          description: "Fiches : nom, téléphone, société.",
+          description: "Affiliés : entreprise, contact, compte optionnel.",
           href: href.usineClients,
           icon: "users",
+        },
+        {
+          title: "Demandes",
+          description: "Valider les commandes affiliés.",
+          href: href.usineDemandes,
+          icon: "clipboard",
         },
       );
     } else {
@@ -587,6 +594,7 @@ export async function getBranchRoleDashboardAction(
       [href.usineCreditNew, DASH_CARD.USINE_CREDITS],
       [href.usineCredits, DASH_CARD.USINE_CREDITS],
       [href.usineClients, DASH_CARD.USINE_CLIENTS],
+      [href.usineDemandes, DASH_CARD.USINE_CLIENTS],
       [href.usineReservations, DASH_CARD.USINE_RESERVATIONS],
       [href.usineFloat, DASH_CARD.SERVICE_STOCK],
       [href.usineDepot, DASH_CARD.USINE_DEPOT],

@@ -42,6 +42,7 @@ function revalidateFactory(organizationId: string, branchId: string) {
   revalidatePath(usineRoutes.pos(organizationId, branchId));
   revalidatePath(usineRoutes.credits(organizationId, branchId));
   revalidatePath(usineRoutes.clients(organizationId, branchId));
+  revalidatePath(usineRoutes.demandes(organizationId, branchId));
   revalidatePath(usineRoutes.reservations(organizationId, branchId));
   revalidatePath(usineRoutes.produits(organizationId, branchId));
   revalidatePath(usineRoutes.depot(organizationId, branchId));
@@ -124,8 +125,30 @@ export async function listFactoryCustomersAction(
     where: { branchId },
     orderBy: { name: "asc" },
     include: {
-      _count: { select: { credits: true, reservations: true } },
+      affiliateBranch: { select: { id: true, name: true, type: true } },
+      user: { select: { id: true, email: true, name: true } },
+      _count: {
+        select: { credits: true, reservations: true, orderRequests: true },
+      },
     },
+  });
+}
+
+/** Branches BOUTIQUE / RESTAURANT de l’org (hors usine courante) pour affiliation interne. */
+export async function listAffiliateBranchOptionsAction(
+  organizationId: string,
+  branchId: string,
+) {
+  await ctx(organizationId, branchId);
+  return prisma.branch.findMany({
+    where: {
+      organizationId,
+      id: { not: branchId },
+      type: { in: ["BOUTIQUE", "RESTAURANT"] },
+      status: "ACTIVE",
+    },
+    select: { id: true, name: true, type: true, code: true },
+    orderBy: { name: "asc" },
   });
 }
 
@@ -139,27 +162,281 @@ export async function upsertFactoryCustomerAction(input: {
   companyName?: string;
   email?: string;
   notes?: string;
+  deliveryAddress?: string;
+  deliveryCity?: string;
+  affiliateBranchId?: string | null;
   active?: boolean;
 }) {
-  await ctx(input.organizationId, input.branchId);
+  const { branch } = await ctx(input.organizationId, input.branchId);
   const name = input.name.trim();
   if (name.length < 2) throw new Error("Nom du client requis.");
+
+  let affiliateBranchId: string | null | undefined = input.affiliateBranchId;
+  if (affiliateBranchId !== undefined) {
+    affiliateBranchId = affiliateBranchId?.trim() || null;
+    if (affiliateBranchId) {
+      const linked = await prisma.branch.findFirst({
+        where: {
+          id: affiliateBranchId,
+          organizationId: branch.organizationId,
+          type: { in: ["BOUTIQUE", "RESTAURANT"] },
+        },
+        select: { id: true },
+      });
+      if (!linked) throw new Error("Branche affiliée invalide.");
+    }
+  }
+
   const data = {
     name,
     phone: input.phone?.trim() || null,
     contactName: input.contactName?.trim() || null,
     companyName: input.companyName?.trim() || null,
-    email: input.email?.trim() || null,
+    email: input.email?.trim().toLowerCase() || null,
     notes: input.notes?.trim() || null,
+    deliveryAddress: input.deliveryAddress?.trim() || null,
+    deliveryCity: input.deliveryCity?.trim() || null,
+    ...(affiliateBranchId !== undefined ? { affiliateBranchId } : {}),
     active: input.active !== false,
   };
+  const isCreate = !input.id;
   const row = input.id
     ? await prisma.factoryCustomer.update({ where: { id: input.id }, data })
     : await prisma.factoryCustomer.create({
-        data: { branchId: input.branchId, ...data },
+        data: {
+          branchId: input.branchId,
+          ...data,
+          affiliateBranchId: affiliateBranchId ?? null,
+        },
       });
+
+  if (isCreate && row.phone?.trim()) {
+    const { notifyFactoryCustomerWelcome } = await import(
+      "@/lib/factory/notifications"
+    );
+    void notifyFactoryCustomerWelcome({
+      branchId: input.branchId,
+      customerId: row.id,
+      customerName: row.contactName || row.name,
+      phone: row.phone,
+      companyName: row.companyName,
+    });
+  }
+
   revalidateFactory(input.organizationId, input.branchId);
   return row;
+}
+
+function affiliatePortalLoginUrl(orgSlug: string): string {
+  const base = (
+    process.env.BETTER_AUTH_URL ||
+    process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
+    "http://localhost:3000"
+  ).replace(/\/$/, "");
+  const portalPath = `/${orgSlug}/usine-affilie`;
+  return `${base}/auth/sign-in?callbackUrl=${encodeURIComponent(portalPath)}`;
+}
+
+export async function inviteFactoryCustomerAccountAction(input: {
+  organizationId: string;
+  branchId: string;
+  customerId: string;
+}): Promise<
+  | {
+      ok: true;
+      email: string;
+      temporaryPassword: string;
+      whatsappSent: boolean;
+    }
+  | { ok: false; message: string }
+> {
+  try {
+    const h = await headers();
+    await ctx(input.organizationId, input.branchId);
+    const customer = await prisma.factoryCustomer.findFirst({
+      where: { id: input.customerId, branchId: input.branchId },
+    });
+    if (!customer) return { ok: false, message: "Client introuvable." };
+    if (customer.userId) {
+      return { ok: false, message: "Ce client a déjà un compte." };
+    }
+    if (!customer.phone?.trim()) {
+      return {
+        ok: false,
+        message: "Téléphone requis pour envoyer l’invitation WhatsApp.",
+      };
+    }
+
+    const org = await prisma.organization.findUnique({
+      where: { id: input.organizationId },
+      select: { name: true, slug: true },
+    });
+    if (!org) return { ok: false, message: "Organisation introuvable." };
+
+    const displayName =
+      customer.contactName?.trim() ||
+      customer.name.trim() ||
+      customer.companyName?.trim() ||
+      "Affilié";
+    const loginUrl = affiliatePortalLoginUrl(org.slug);
+    const portalUrl = (
+      process.env.BETTER_AUTH_URL ||
+      process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
+      "http://localhost:3000"
+    ).replace(/\/$/, "") + `/${org.slug}/usine-affilie`;
+
+    const { resolveMemberEmail } = await import("@/lib/member-email");
+    const { generateSecurePassword } = await import("@/lib/generate-password");
+    const { stashAdminCreatedUserPlainPassword } = await import(
+      "@/lib/admin-created-user-password"
+    );
+    const { ORG_ROLE } = await import("@/lib/permissions");
+    const {
+      notifyFactoryAffiliatePortalAccess,
+    } = await import("@/lib/factory/notifications");
+    const { isZinduaConfigured } = await import("@/lib/zindua");
+
+    const resolvedEmail = await resolveMemberEmail({
+      email: customer.email ?? "",
+      name: displayName,
+      organizationSlug: org.slug,
+    });
+    if (!resolvedEmail.ok) return resolvedEmail;
+
+    const emailLower = resolvedEmail.email;
+    const existingUser = await prisma.user.findUnique({
+      where: { email: emailLower },
+      select: { id: true },
+    });
+    if (existingUser) {
+      const taken = await prisma.factoryCustomer.findFirst({
+        where: { userId: existingUser.id },
+        select: { id: true },
+      });
+      if (taken && taken.id !== customer.id) {
+        return {
+          ok: false,
+          message: "Cet email est déjà lié à un autre client usine.",
+        };
+      }
+      const member = await prisma.member.findFirst({
+        where: {
+          userId: existingUser.id,
+          organizationId: input.organizationId,
+        },
+        select: { id: true },
+      });
+      if (!member) {
+        await auth.api.addMember({
+          body: {
+            userId: existingUser.id,
+            role: ORG_ROLE.USER as "owner",
+            organizationId: input.organizationId,
+          },
+          headers: h,
+        });
+      }
+      await prisma.factoryCustomer.update({
+        where: { id: customer.id },
+        data: {
+          userId: existingUser.id,
+          email: emailLower,
+        },
+      });
+
+      let whatsappSent = false;
+      if (isZinduaConfigured()) {
+        await notifyFactoryAffiliatePortalAccess({
+          branchId: input.branchId,
+          customerId: customer.id,
+          customerName: displayName,
+          phone: customer.phone,
+          email: emailLower,
+          portalUrl,
+        });
+        whatsappSent = true;
+      }
+
+      revalidateFactory(input.organizationId, input.branchId);
+      return {
+        ok: true,
+        email: emailLower,
+        temporaryPassword: "(compte existant — mot de passe inchangé)",
+        whatsappSent,
+      };
+    }
+
+    const password = generateSecurePassword(16);
+    stashAdminCreatedUserPlainPassword(emailLower, password, {
+      phone: customer.phone,
+      branchId: input.branchId,
+      organizationName: org.name,
+      role: "affilie",
+      loginUrl,
+    });
+
+    let userId: string | null = null;
+    try {
+      const created = await auth.api.createUser({
+        body: {
+          email: emailLower,
+          name: displayName,
+          password,
+          role: "user",
+        },
+        headers: h,
+      });
+      const user = (created as { user?: { id: string } } | null)?.user;
+      if (!user?.id) {
+        return { ok: false, message: "Création du compte impossible." };
+      }
+      userId = user.id;
+
+      await auth.api.addMember({
+        body: {
+          userId: user.id,
+          role: ORG_ROLE.USER as "owner",
+          organizationId: input.organizationId,
+        },
+        headers: h,
+      });
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          phone: customer.phone.trim(),
+          mustChangePassword: true,
+        },
+      });
+
+      await prisma.factoryCustomer.update({
+        where: { id: customer.id },
+        data: { userId: user.id, email: emailLower },
+      });
+
+      revalidateFactory(input.organizationId, input.branchId);
+      return {
+        ok: true,
+        email: emailLower,
+        temporaryPassword: password,
+        whatsappSent: Boolean(customer.phone?.trim() && isZinduaConfigured()),
+      };
+    } catch (e) {
+      const { consumeAdminCreatedUserPlainPassword } = await import(
+        "@/lib/admin-created-user-password"
+      );
+      consumeAdminCreatedUserPlainPassword(emailLower);
+      if (userId) {
+        await prisma.user.delete({ where: { id: userId } }).catch(() => undefined);
+      }
+      throw e;
+    }
+  } catch (e) {
+    return {
+      ok: false,
+      message: e instanceof Error ? e.message : "Invitation impossible.",
+    };
+  }
 }
 
 export async function listFactoryProductsAction(
@@ -428,6 +705,9 @@ export async function createFactoryCreditAction(input: {
   dueAt: string;
   lines: { shopProductId: string; qty: number; unitPriceUsd: number }[];
   signedOnPaper?: boolean;
+  deliveryAddress?: string;
+  deliveryCity?: string;
+  requestedDeliveryAt?: string | null;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
   if (!input.lines.length) throw new Error("Ajoutez au moins un produit.");
@@ -487,6 +767,15 @@ export async function createFactoryCreditAction(input: {
   const number = await nextNumber(input.branchId, "CR");
   const marketerDisplayName =
     user.name?.trim() || user.email || "Marketeur";
+  const requestedDeliveryAt = input.requestedDeliveryAt
+    ? new Date(input.requestedDeliveryAt)
+    : null;
+  if (
+    requestedDeliveryAt &&
+    Number.isNaN(requestedDeliveryAt.getTime())
+  ) {
+    throw new Error("Date de livraison invalide.");
+  }
 
   const credit = await prisma.$transaction(async (tx) => {
     await consumeShopServiceFloatInTx(
@@ -513,6 +802,11 @@ export async function createFactoryCreditAction(input: {
         fxUsdToCdf: rate?.rate ?? null,
         documentIssuedAt: new Date(),
         signedAt: input.signedOnPaper ? new Date() : null,
+        deliveryAddress:
+          input.deliveryAddress?.trim() || customer.deliveryAddress || null,
+        deliveryCity:
+          input.deliveryCity?.trim() || customer.deliveryCity || null,
+        requestedDeliveryAt,
         lines: { create: lines },
       },
       include: { customer: true, lines: true },
@@ -826,4 +1120,149 @@ export async function factoryCreditsOpenSummaryAction(
       rows.reduce((s, r) => s + (r.totalUsd - r.paidUsd), 0),
     ),
   };
+}
+
+export async function listFactoryOrderRequestsAction(
+  organizationId: string,
+  branchId: string,
+  status?: "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED" | "ALL",
+) {
+  await ctx(organizationId, branchId);
+  return prisma.factoryOrderRequest.findMany({
+    where: {
+      branchId,
+      ...(status && status !== "ALL" ? { status } : {}),
+    },
+    orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+    include: {
+      customer: {
+        select: {
+          id: true,
+          name: true,
+          companyName: true,
+          phone: true,
+          contactName: true,
+        },
+      },
+      lines: true,
+      credit: { select: { id: true, number: true } },
+    },
+  });
+}
+
+export async function rejectFactoryOrderRequestAction(input: {
+  organizationId: string;
+  branchId: string;
+  requestId: string;
+  reason: string;
+}) {
+  const { user } = await ctx(input.organizationId, input.branchId);
+  const reason = input.reason.trim();
+  if (reason.length < 3) throw new Error("Motif de refus requis.");
+  const req = await prisma.factoryOrderRequest.findFirst({
+    where: { id: input.requestId, branchId: input.branchId },
+    include: { customer: true, lines: true },
+  });
+  if (!req) throw new Error("Demande introuvable.");
+  if (req.status !== "PENDING") throw new Error("Demande déjà traitée.");
+
+  await prisma.factoryOrderRequest.update({
+    where: { id: req.id },
+    data: {
+      status: "REJECTED",
+      reviewedByUserId: user.id,
+      reviewedAt: new Date(),
+      rejectReason: reason,
+    },
+  });
+
+  const { notifyFactoryOrderRequestRejected } = await import(
+    "@/lib/factory/notifications"
+  );
+  void notifyFactoryOrderRequestRejected({
+    branchId: input.branchId,
+    requestId: req.id,
+    customerName: req.customer.name,
+    phone: req.customer.phone,
+    reason,
+  });
+  revalidateFactory(input.organizationId, input.branchId);
+}
+
+export async function approveFactoryOrderRequestAction(input: {
+  organizationId: string;
+  branchId: string;
+  requestId: string;
+  dueAt: string;
+  lines?: { shopProductId: string; qty: number; unitPriceUsd: number }[];
+}) {
+  const { user } = await ctx(input.organizationId, input.branchId);
+  const req = await prisma.factoryOrderRequest.findFirst({
+    where: { id: input.requestId, branchId: input.branchId },
+    include: { customer: true, lines: true },
+  });
+  if (!req) throw new Error("Demande introuvable.");
+  if (req.status !== "PENDING") throw new Error("Demande déjà traitée.");
+
+  const products = await prisma.shopProduct.findMany({
+    where: {
+      branchId: input.branchId,
+      productKind: "FINISHED",
+      id: {
+        in: (input.lines ?? req.lines).map((l) => l.shopProductId),
+      },
+    },
+  });
+  const byId = new Map(products.map((p) => [p.id, p]));
+
+  const creditLines = (input.lines ?? req.lines).map((l) => {
+    const p = byId.get(l.shopProductId);
+    if (!p) throw new Error("Produit fini introuvable.");
+    const qty = Math.max(1, Math.floor(l.qty));
+    const unitPriceUsd =
+      "unitPriceUsd" in l && typeof l.unitPriceUsd === "number"
+        ? roundMoney(l.unitPriceUsd)
+        : roundMoney(
+            (l as { unitPriceUsd?: number | null }).unitPriceUsd ??
+              p.price,
+          );
+    return { shopProductId: p.id, qty, unitPriceUsd };
+  });
+
+  const credit = await createFactoryCreditAction({
+    organizationId: input.organizationId,
+    branchId: input.branchId,
+    customerId: req.customerId,
+    dueAt: input.dueAt,
+    lines: creditLines,
+    deliveryAddress: req.deliveryAddress ?? undefined,
+    deliveryCity: req.deliveryCity ?? undefined,
+    requestedDeliveryAt: req.requestedDeliveryAt?.toISOString() ?? null,
+  });
+
+  await prisma.factoryOrderRequest.update({
+    where: { id: req.id },
+    data: {
+      status: "APPROVED",
+      reviewedByUserId: user.id,
+      reviewedAt: new Date(),
+      creditId: credit.id,
+    },
+  });
+
+  const { notifyFactoryOrderRequestApproved } = await import(
+    "@/lib/factory/notifications"
+  );
+  void notifyFactoryOrderRequestApproved({
+    branchId: input.branchId,
+    requestId: req.id,
+    customerName: req.customer.name,
+    phone: req.customer.phone,
+    creditNumber: credit.number,
+    qtyLabel: credit.lines
+      .map((l) => `${l.qty}× ${l.nameSnapshot}`)
+      .join(", "),
+  });
+  revalidateFactory(input.organizationId, input.branchId);
+  return credit;
 }

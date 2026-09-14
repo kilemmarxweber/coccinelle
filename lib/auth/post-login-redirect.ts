@@ -4,10 +4,12 @@ import { getUserOrganizationMembership } from "@/lib/auth/org-membership";
 import { organizationBranchesPath } from "@/lib/branch/paths";
 import { resolveDefaultBranchPath } from "@/lib/branch/user-branches";
 import { APP_ROLE, ORG_ROLE, normalizeOrgRole } from "@/lib/permissions";
+import prisma from "@/lib/prisma";
 
 /**
  * Destination après login.
  * Admin plateforme → /admin.
+ * Affilié usine (FactoryCustomer.userId) → portail /[slug]/usine-affilie.
  * Owner / admin org / user → liste ou dashboard sous
  * `/admin/organizations/[orgId]/branches…`.
  */
@@ -19,6 +21,30 @@ export async function resolvePostLoginPath(requestHeaders: Headers): Promise<str
 
   if (session.user.role === APP_ROLE.ADMIN) {
     return "/admin";
+  }
+
+  const affiliate = await prisma.factoryCustomer.findFirst({
+    where: { userId: session.user.id, active: true },
+    select: {
+      branch: {
+        select: {
+          organization: { select: { slug: true } },
+        },
+      },
+    },
+  });
+  if (affiliate?.branch.organization.slug) {
+    // Pas de BranchMember staff : portail affilié
+    const staffMembership = await prisma.branchMember.findFirst({
+      where: {
+        status: "ACTIVE",
+        member: { userId: session.user.id },
+      },
+      select: { id: true },
+    });
+    if (!staffMembership) {
+      return `/${affiliate.branch.organization.slug}/usine-affilie`;
+    }
   }
 
   const preferredOrgId =

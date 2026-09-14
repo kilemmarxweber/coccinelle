@@ -23,6 +23,7 @@ Nouveau `BranchType.USINE` : production **eau** et/ou **vins**, vente **cash / c
 | **U7** | POS cash | `done` |
 | **U8** | Rôle marketeur | `done` |
 | **U9** | Rapports | `done` |
+| **U10** | Affiliation B2B (compte optionnel, demandes, portail) | `done` |
 
 ## Critères smoke
 

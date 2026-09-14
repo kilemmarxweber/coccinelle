@@ -89,6 +89,7 @@ const authOptions = {
               branchName: branch.name,
               branchPhone: branch.phone,
               branchId: branch.id,
+              loginUrl: stash.loginUrl ?? undefined,
             });
           } catch (err) {
             // eslint-disable-next-line no-console

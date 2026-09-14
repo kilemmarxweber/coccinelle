@@ -185,6 +185,8 @@ export const usineRoutes = {
     `${branchModulePath(orgId, branchId, "usine")}/credits/${creditId}`,
   clients: (orgId: string, branchId: string) =>
     `${branchModulePath(orgId, branchId, "usine")}/clients`,
+  demandes: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "usine")}/demandes`,
   reservations: (orgId: string, branchId: string) =>
     `${branchModulePath(orgId, branchId, "usine")}/reservations`,
   produits: (orgId: string, branchId: string) =>

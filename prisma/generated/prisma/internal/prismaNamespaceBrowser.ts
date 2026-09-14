@@ -121,7 +121,9 @@ export const ModelName = {
   FactoryRecipeLine: 'FactoryRecipeLine',
   FactoryBatch: 'FactoryBatch',
   FactoryReservation: 'FactoryReservation',
-  FactoryReservationLine: 'FactoryReservationLine'
+  FactoryReservationLine: 'FactoryReservationLine',
+  FactoryOrderRequest: 'FactoryOrderRequest',
+  FactoryOrderRequestLine: 'FactoryOrderRequestLine'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1265,6 +1267,11 @@ export const FactoryCustomerScalarFieldEnum = {
   companyName: 'companyName',
   email: 'email',
   notes: 'notes',
+  deliveryAddress: 'deliveryAddress',
+  deliveryCity: 'deliveryCity',
+  affiliateBranchId: 'affiliateBranchId',
+  userId: 'userId',
+  notifyPrefs: 'notifyPrefs',
   active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1291,6 +1298,9 @@ export const FactoryCreditScalarFieldEnum = {
   reminderSentAt: 'reminderSentAt',
   dueDayReminderSentAt: 'dueDayReminderSentAt',
   cancelReason: 'cancelReason',
+  deliveryAddress: 'deliveryAddress',
+  deliveryCity: 'deliveryCity',
+  requestedDeliveryAt: 'requestedDeliveryAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1390,6 +1400,38 @@ export const FactoryReservationLineScalarFieldEnum = {
 } as const
 
 export type FactoryReservationLineScalarFieldEnum = (typeof FactoryReservationLineScalarFieldEnum)[keyof typeof FactoryReservationLineScalarFieldEnum]
+
+
+export const FactoryOrderRequestScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  customerId: 'customerId',
+  status: 'status',
+  requestedDeliveryAt: 'requestedDeliveryAt',
+  deliveryAddress: 'deliveryAddress',
+  deliveryCity: 'deliveryCity',
+  notes: 'notes',
+  reviewedByUserId: 'reviewedByUserId',
+  reviewedAt: 'reviewedAt',
+  rejectReason: 'rejectReason',
+  creditId: 'creditId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FactoryOrderRequestScalarFieldEnum = (typeof FactoryOrderRequestScalarFieldEnum)[keyof typeof FactoryOrderRequestScalarFieldEnum]
+
+
+export const FactoryOrderRequestLineScalarFieldEnum = {
+  id: 'id',
+  requestId: 'requestId',
+  shopProductId: 'shopProductId',
+  nameSnapshot: 'nameSnapshot',
+  qty: 'qty',
+  unitPriceUsd: 'unitPriceUsd'
+} as const
+
+export type FactoryOrderRequestLineScalarFieldEnum = (typeof FactoryOrderRequestLineScalarFieldEnum)[keyof typeof FactoryOrderRequestLineScalarFieldEnum]
 
 
 export const SortOrder = {

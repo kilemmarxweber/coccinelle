@@ -29,8 +29,8 @@ export function BranchWorkspaceHeader(props: {
   }
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 w-full min-w-0 shrink-0 items-center gap-3 overflow-hidden border-b border-neutral-200 bg-white px-3 text-neutral-900 sm:h-16 sm:px-5">
-      <SidebarTrigger className="text-neutral-800" />
+    <header className="sticky top-0 z-50 flex h-14 w-full min-w-0 shrink-0 items-center gap-3 overflow-hidden border-b border-border bg-background px-3 text-foreground sm:h-16 sm:px-5">
+      <SidebarTrigger className="text-foreground" />
 
       <div className="ml-auto flex min-w-0 items-center gap-2 sm:gap-3">
         <ThemeToggle />
@@ -57,10 +57,10 @@ export function BranchWorkspaceHeader(props: {
             <UserCircle className="size-5" />
           </div>
           <div className="hidden min-w-0 sm:block">
-            <p className="truncate text-sm font-semibold leading-tight text-neutral-900">
+            <p className="truncate text-sm font-semibold leading-tight text-foreground">
               {props.userName}
             </p>
-            <p className="truncate text-[11px] text-neutral-500 uppercase">
+            <p className="truncate text-[11px] text-muted-foreground uppercase">
               {props.branchName} / {opsRoleLabel(props.opsRole)}
             </p>
           </div>

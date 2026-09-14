@@ -247,6 +247,7 @@ export type UserWhereInput = {
   banReason?: Prisma.StringNullableFilter<"User"> | string | null
   banExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   client?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
+  factoryCustomer?: Prisma.XOR<Prisma.FactoryCustomerNullableScalarRelationFilter, Prisma.FactoryCustomerWhereInput> | null
   accounts?: Prisma.AccountListRelationFilter
   invitations?: Prisma.InvitationListRelationFilter
   members?: Prisma.MemberListRelationFilter
@@ -269,6 +270,7 @@ export type UserOrderByWithRelationInput = {
   banReason?: Prisma.SortOrderInput | Prisma.SortOrder
   banExpires?: Prisma.SortOrderInput | Prisma.SortOrder
   client?: Prisma.ClientOrderByWithRelationInput
+  factoryCustomer?: Prisma.FactoryCustomerOrderByWithRelationInput
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   invitations?: Prisma.InvitationOrderByRelationAggregateInput
   members?: Prisma.MemberOrderByRelationAggregateInput
@@ -294,6 +296,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   banReason?: Prisma.StringNullableFilter<"User"> | string | null
   banExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   client?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
+  factoryCustomer?: Prisma.XOR<Prisma.FactoryCustomerNullableScalarRelationFilter, Prisma.FactoryCustomerWhereInput> | null
   accounts?: Prisma.AccountListRelationFilter
   invitations?: Prisma.InvitationListRelationFilter
   members?: Prisma.MemberListRelationFilter
@@ -354,6 +357,7 @@ export type UserCreateInput = {
   banReason?: string | null
   banExpires?: Date | string | null
   client?: Prisma.ClientCreateNestedOneWithoutUserInput
+  factoryCustomer?: Prisma.FactoryCustomerCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
   members?: Prisma.MemberCreateNestedManyWithoutUserInput
@@ -376,6 +380,7 @@ export type UserUncheckedCreateInput = {
   banReason?: string | null
   banExpires?: Date | string | null
   client?: Prisma.ClientUncheckedCreateNestedOneWithoutUserInput
+  factoryCustomer?: Prisma.FactoryCustomerUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
@@ -398,6 +403,7 @@ export type UserUpdateInput = {
   banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUpdateOneWithoutUserNestedInput
+  factoryCustomer?: Prisma.FactoryCustomerUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUpdateManyWithoutUserNestedInput
@@ -420,6 +426,7 @@ export type UserUncheckedUpdateInput = {
   banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUncheckedUpdateOneWithoutUserNestedInput
+  factoryCustomer?: Prisma.FactoryCustomerUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
@@ -643,6 +650,22 @@ export type UserUpdateOneWithoutReservationDraftsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReservationDraftsInput, Prisma.UserUpdateWithoutReservationDraftsInput>, Prisma.UserUncheckedUpdateWithoutReservationDraftsInput>
 }
 
+export type UserCreateNestedOneWithoutFactoryCustomerInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutFactoryCustomerInput, Prisma.UserUncheckedCreateWithoutFactoryCustomerInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutFactoryCustomerInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutFactoryCustomerNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutFactoryCustomerInput, Prisma.UserUncheckedCreateWithoutFactoryCustomerInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutFactoryCustomerInput
+  upsert?: Prisma.UserUpsertWithoutFactoryCustomerInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutFactoryCustomerInput, Prisma.UserUpdateWithoutFactoryCustomerInput>, Prisma.UserUncheckedUpdateWithoutFactoryCustomerInput>
+}
+
 export type UserCreateWithoutSessionsInput = {
   id: string
   name: string
@@ -658,6 +681,7 @@ export type UserCreateWithoutSessionsInput = {
   banReason?: string | null
   banExpires?: Date | string | null
   client?: Prisma.ClientCreateNestedOneWithoutUserInput
+  factoryCustomer?: Prisma.FactoryCustomerCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
   members?: Prisma.MemberCreateNestedManyWithoutUserInput
@@ -679,6 +703,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   banReason?: string | null
   banExpires?: Date | string | null
   client?: Prisma.ClientUncheckedCreateNestedOneWithoutUserInput
+  factoryCustomer?: Prisma.FactoryCustomerUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
@@ -716,6 +741,7 @@ export type UserUpdateWithoutSessionsInput = {
   banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUpdateOneWithoutUserNestedInput
+  factoryCustomer?: Prisma.FactoryCustomerUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUpdateManyWithoutUserNestedInput
@@ -737,6 +763,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUncheckedUpdateOneWithoutUserNestedInput
+  factoryCustomer?: Prisma.FactoryCustomerUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
@@ -758,6 +785,7 @@ export type UserCreateWithoutAccountsInput = {
   banReason?: string | null
   banExpires?: Date | string | null
   client?: Prisma.ClientCreateNestedOneWithoutUserInput
+  factoryCustomer?: Prisma.FactoryCustomerCreateNestedOneWithoutUserInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
   members?: Prisma.MemberCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -779,6 +807,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   banReason?: string | null
   banExpires?: Date | string | null
   client?: Prisma.ClientUncheckedCreateNestedOneWithoutUserInput
+  factoryCustomer?: Prisma.FactoryCustomerUncheckedCreateNestedOneWithoutUserInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -816,6 +845,7 @@ export type UserUpdateWithoutAccountsInput = {
   banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUpdateOneWithoutUserNestedInput
+  factoryCustomer?: Prisma.FactoryCustomerUpdateOneWithoutUserNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -837,6 +867,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUncheckedUpdateOneWithoutUserNestedInput
+  factoryCustomer?: Prisma.FactoryCustomerUncheckedUpdateOneWithoutUserNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -858,6 +889,7 @@ export type UserCreateWithoutMembersInput = {
   banReason?: string | null
   banExpires?: Date | string | null
   client?: Prisma.ClientCreateNestedOneWithoutUserInput
+  factoryCustomer?: Prisma.FactoryCustomerCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -879,6 +911,7 @@ export type UserUncheckedCreateWithoutMembersInput = {
   banReason?: string | null
   banExpires?: Date | string | null
   client?: Prisma.ClientUncheckedCreateNestedOneWithoutUserInput
+  factoryCustomer?: Prisma.FactoryCustomerUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -916,6 +949,7 @@ export type UserUpdateWithoutMembersInput = {
   banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUpdateOneWithoutUserNestedInput
+  factoryCustomer?: Prisma.FactoryCustomerUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -937,6 +971,7 @@ export type UserUncheckedUpdateWithoutMembersInput = {
   banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUncheckedUpdateOneWithoutUserNestedInput
+  factoryCustomer?: Prisma.FactoryCustomerUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -958,6 +993,7 @@ export type UserCreateWithoutInvitationsInput = {
   banReason?: string | null
   banExpires?: Date | string | null
   client?: Prisma.ClientCreateNestedOneWithoutUserInput
+  factoryCustomer?: Prisma.FactoryCustomerCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   members?: Prisma.MemberCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -979,6 +1015,7 @@ export type UserUncheckedCreateWithoutInvitationsInput = {
   banReason?: string | null
   banExpires?: Date | string | null
   client?: Prisma.ClientUncheckedCreateNestedOneWithoutUserInput
+  factoryCustomer?: Prisma.FactoryCustomerUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1016,6 +1053,7 @@ export type UserUpdateWithoutInvitationsInput = {
   banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUpdateOneWithoutUserNestedInput
+  factoryCustomer?: Prisma.FactoryCustomerUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -1037,6 +1075,7 @@ export type UserUncheckedUpdateWithoutInvitationsInput = {
   banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUncheckedUpdateOneWithoutUserNestedInput
+  factoryCustomer?: Prisma.FactoryCustomerUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1057,6 +1096,7 @@ export type UserCreateWithoutClientInput = {
   banned?: boolean | null
   banReason?: string | null
   banExpires?: Date | string | null
+  factoryCustomer?: Prisma.FactoryCustomerCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
   members?: Prisma.MemberCreateNestedManyWithoutUserInput
@@ -1078,6 +1118,7 @@ export type UserUncheckedCreateWithoutClientInput = {
   banned?: boolean | null
   banReason?: string | null
   banExpires?: Date | string | null
+  factoryCustomer?: Prisma.FactoryCustomerUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
@@ -1115,6 +1156,7 @@ export type UserUpdateWithoutClientInput = {
   banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  factoryCustomer?: Prisma.FactoryCustomerUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUpdateManyWithoutUserNestedInput
@@ -1136,6 +1178,7 @@ export type UserUncheckedUpdateWithoutClientInput = {
   banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  factoryCustomer?: Prisma.FactoryCustomerUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
@@ -1158,6 +1201,7 @@ export type UserCreateWithoutReservationDraftsInput = {
   banReason?: string | null
   banExpires?: Date | string | null
   client?: Prisma.ClientCreateNestedOneWithoutUserInput
+  factoryCustomer?: Prisma.FactoryCustomerCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
   members?: Prisma.MemberCreateNestedManyWithoutUserInput
@@ -1179,6 +1223,7 @@ export type UserUncheckedCreateWithoutReservationDraftsInput = {
   banReason?: string | null
   banExpires?: Date | string | null
   client?: Prisma.ClientUncheckedCreateNestedOneWithoutUserInput
+  factoryCustomer?: Prisma.FactoryCustomerUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
@@ -1216,6 +1261,7 @@ export type UserUpdateWithoutReservationDraftsInput = {
   banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUpdateOneWithoutUserNestedInput
+  factoryCustomer?: Prisma.FactoryCustomerUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUpdateManyWithoutUserNestedInput
@@ -1237,10 +1283,115 @@ export type UserUncheckedUpdateWithoutReservationDraftsInput = {
   banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUncheckedUpdateOneWithoutUserNestedInput
+  factoryCustomer?: Prisma.FactoryCustomerUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutFactoryCustomerInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  phone?: string | null
+  mustChangePassword?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string | null
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  client?: Prisma.ClientCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
+  members?: Prisma.MemberCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutFactoryCustomerInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  phone?: string | null
+  mustChangePassword?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string | null
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  client?: Prisma.ClientUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutFactoryCustomerInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutFactoryCustomerInput, Prisma.UserUncheckedCreateWithoutFactoryCustomerInput>
+}
+
+export type UserUpsertWithoutFactoryCustomerInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutFactoryCustomerInput, Prisma.UserUncheckedUpdateWithoutFactoryCustomerInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutFactoryCustomerInput, Prisma.UserUncheckedCreateWithoutFactoryCustomerInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutFactoryCustomerInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutFactoryCustomerInput, Prisma.UserUncheckedUpdateWithoutFactoryCustomerInput>
+}
+
+export type UserUpdateWithoutFactoryCustomerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  client?: Prisma.ClientUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
+  members?: Prisma.MemberUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutFactoryCustomerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  client?: Prisma.ClientUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1325,6 +1476,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   banReason?: boolean
   banExpires?: boolean
   client?: boolean | Prisma.User$clientArgs<ExtArgs>
+  factoryCustomer?: boolean | Prisma.User$factoryCustomerArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   invitations?: boolean | Prisma.User$invitationsArgs<ExtArgs>
   members?: boolean | Prisma.User$membersArgs<ExtArgs>
@@ -1384,6 +1536,7 @@ export type UserSelectScalar = {
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "phone" | "mustChangePassword" | "createdAt" | "updatedAt" | "role" | "banned" | "banReason" | "banExpires", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.User$clientArgs<ExtArgs>
+  factoryCustomer?: boolean | Prisma.User$factoryCustomerArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   invitations?: boolean | Prisma.User$invitationsArgs<ExtArgs>
   members?: boolean | Prisma.User$membersArgs<ExtArgs>
@@ -1398,6 +1551,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "User"
   objects: {
     client: Prisma.$ClientPayload<ExtArgs> | null
+    factoryCustomer: Prisma.$FactoryCustomerPayload<ExtArgs> | null
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     invitations: Prisma.$InvitationPayload<ExtArgs>[]
     members: Prisma.$MemberPayload<ExtArgs>[]
@@ -1819,6 +1973,7 @@ readonly fields: UserFieldRefs;
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   client<T extends Prisma.User$clientArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$clientArgs<ExtArgs>>): Prisma.Prisma__ClientClient<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  factoryCustomer<T extends Prisma.User$factoryCustomerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$factoryCustomerArgs<ExtArgs>>): Prisma.Prisma__FactoryCustomerClient<runtime.Types.Result.GetResult<Prisma.$FactoryCustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invitations<T extends Prisma.User$invitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   members<T extends Prisma.User$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2275,6 +2430,25 @@ export type User$clientArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    */
   include?: Prisma.ClientInclude<ExtArgs> | null
   where?: Prisma.ClientWhereInput
+}
+
+/**
+ * User.factoryCustomer
+ */
+export type User$factoryCustomerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FactoryCustomer
+   */
+  select?: Prisma.FactoryCustomerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FactoryCustomer
+   */
+  omit?: Prisma.FactoryCustomerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FactoryCustomerInclude<ExtArgs> | null
+  where?: Prisma.FactoryCustomerWhereInput
 }
 
 /**

@@ -400,3 +400,13 @@ export type FactoryReservation = Prisma.FactoryReservationModel
  * 
  */
 export type FactoryReservationLine = Prisma.FactoryReservationLineModel
+/**
+ * Model FactoryOrderRequest
+ * 
+ */
+export type FactoryOrderRequest = Prisma.FactoryOrderRequestModel
+/**
+ * Model FactoryOrderRequestLine
+ * 
+ */
+export type FactoryOrderRequestLine = Prisma.FactoryOrderRequestLineModel

@@ -95,7 +95,7 @@ function factoryKindFromCategory(catName: string): {
 function assertBranchProductCatalog(type: string) {
   if (!branchHasProductCatalog(type)) {
     throw new Error(
-      "Ce type de branche n’a pas de catalogue produits. Un bon ne crée des produits que pour la boutique / hôtel / resto de cette branche.",
+      "Ce type de branche n’a pas de catalogue produits. Un bon ne crée des produits que pour boutique, hôtel, resto ou usine.",
     );
   }
 }

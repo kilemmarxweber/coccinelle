@@ -29,6 +29,7 @@ export default async function UsineProduitsPage({ params }: PageProps) {
       branchName={branch.name}
       products={products}
       categories={categories}
+      catalogMode="usine"
     />
   );
 }

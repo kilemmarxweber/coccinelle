@@ -31,6 +31,9 @@ type CreditDoc = {
     phone: string | null;
     companyName: string | null;
   };
+  deliveryAddress?: string | null;
+  deliveryCity?: string | null;
+  requestedDeliveryAt?: Date | string | null;
   lines: {
     nameSnapshot: string;
     qty: number;
@@ -140,6 +143,25 @@ export function UsineCreditDocument(props: {
                 <br />
                 <strong>{due.toLocaleDateString("fr-CD")}</strong>
               </p>
+              {credit.deliveryAddress || credit.deliveryCity ? (
+                <p className="sm:col-span-2">
+                  <span className="text-muted-foreground">Livraison</span>
+                  <br />
+                  <strong className="text-foreground">
+                    {[credit.deliveryAddress, credit.deliveryCity]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </strong>
+                  {credit.requestedDeliveryAt ? (
+                    <span className="block text-muted-foreground">
+                      Souhaitée le{" "}
+                      {new Date(credit.requestedDeliveryAt).toLocaleDateString(
+                        "fr-CD",
+                      )}
+                    </span>
+                  ) : null}
+                </p>
+              ) : null}
             </div>
 
             {credit.fxUsdToCdf ? (

@@ -33,6 +33,10 @@ export type FactoryCustomerMinAggregateOutputType = {
   companyName: string | null
   email: string | null
   notes: string | null
+  deliveryAddress: string | null
+  deliveryCity: string | null
+  affiliateBranchId: string | null
+  userId: string | null
   active: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -47,6 +51,10 @@ export type FactoryCustomerMaxAggregateOutputType = {
   companyName: string | null
   email: string | null
   notes: string | null
+  deliveryAddress: string | null
+  deliveryCity: string | null
+  affiliateBranchId: string | null
+  userId: string | null
   active: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -61,6 +69,11 @@ export type FactoryCustomerCountAggregateOutputType = {
   companyName: number
   email: number
   notes: number
+  deliveryAddress: number
+  deliveryCity: number
+  affiliateBranchId: number
+  userId: number
+  notifyPrefs: number
   active: number
   createdAt: number
   updatedAt: number
@@ -77,6 +90,10 @@ export type FactoryCustomerMinAggregateInputType = {
   companyName?: true
   email?: true
   notes?: true
+  deliveryAddress?: true
+  deliveryCity?: true
+  affiliateBranchId?: true
+  userId?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -91,6 +108,10 @@ export type FactoryCustomerMaxAggregateInputType = {
   companyName?: true
   email?: true
   notes?: true
+  deliveryAddress?: true
+  deliveryCity?: true
+  affiliateBranchId?: true
+  userId?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -105,6 +126,11 @@ export type FactoryCustomerCountAggregateInputType = {
   companyName?: true
   email?: true
   notes?: true
+  deliveryAddress?: true
+  deliveryCity?: true
+  affiliateBranchId?: true
+  userId?: true
+  notifyPrefs?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -192,6 +218,11 @@ export type FactoryCustomerGroupByOutputType = {
   companyName: string | null
   email: string | null
   notes: string | null
+  deliveryAddress: string | null
+  deliveryCity: string | null
+  affiliateBranchId: string | null
+  userId: string | null
+  notifyPrefs: runtime.JsonValue | null
   active: boolean
   createdAt: Date
   updatedAt: Date
@@ -227,12 +258,20 @@ export type FactoryCustomerWhereInput = {
   companyName?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
   email?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
   notes?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
+  deliveryAddress?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
+  deliveryCity?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
+  affiliateBranchId?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
+  userId?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
+  notifyPrefs?: Prisma.JsonNullableFilter<"FactoryCustomer">
   active?: Prisma.BoolFilter<"FactoryCustomer"> | boolean
   createdAt?: Prisma.DateTimeFilter<"FactoryCustomer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FactoryCustomer"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  affiliateBranch?: Prisma.XOR<Prisma.BranchNullableScalarRelationFilter, Prisma.BranchWhereInput> | null
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   credits?: Prisma.FactoryCreditListRelationFilter
   reservations?: Prisma.FactoryReservationListRelationFilter
+  orderRequests?: Prisma.FactoryOrderRequestListRelationFilter
 }
 
 export type FactoryCustomerOrderByWithRelationInput = {
@@ -244,16 +283,25 @@ export type FactoryCustomerOrderByWithRelationInput = {
   companyName?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryAddress?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryCity?: Prisma.SortOrderInput | Prisma.SortOrder
+  affiliateBranchId?: Prisma.SortOrderInput | Prisma.SortOrder
+  userId?: Prisma.SortOrderInput | Prisma.SortOrder
+  notifyPrefs?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   branch?: Prisma.BranchOrderByWithRelationInput
+  affiliateBranch?: Prisma.BranchOrderByWithRelationInput
+  user?: Prisma.UserOrderByWithRelationInput
   credits?: Prisma.FactoryCreditOrderByRelationAggregateInput
   reservations?: Prisma.FactoryReservationOrderByRelationAggregateInput
+  orderRequests?: Prisma.FactoryOrderRequestOrderByRelationAggregateInput
 }
 
 export type FactoryCustomerWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  userId?: string
   AND?: Prisma.FactoryCustomerWhereInput | Prisma.FactoryCustomerWhereInput[]
   OR?: Prisma.FactoryCustomerWhereInput[]
   NOT?: Prisma.FactoryCustomerWhereInput | Prisma.FactoryCustomerWhereInput[]
@@ -264,13 +312,20 @@ export type FactoryCustomerWhereUniqueInput = Prisma.AtLeast<{
   companyName?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
   email?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
   notes?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
+  deliveryAddress?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
+  deliveryCity?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
+  affiliateBranchId?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
+  notifyPrefs?: Prisma.JsonNullableFilter<"FactoryCustomer">
   active?: Prisma.BoolFilter<"FactoryCustomer"> | boolean
   createdAt?: Prisma.DateTimeFilter<"FactoryCustomer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FactoryCustomer"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  affiliateBranch?: Prisma.XOR<Prisma.BranchNullableScalarRelationFilter, Prisma.BranchWhereInput> | null
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   credits?: Prisma.FactoryCreditListRelationFilter
   reservations?: Prisma.FactoryReservationListRelationFilter
-}, "id">
+  orderRequests?: Prisma.FactoryOrderRequestListRelationFilter
+}, "id" | "userId">
 
 export type FactoryCustomerOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -281,6 +336,11 @@ export type FactoryCustomerOrderByWithAggregationInput = {
   companyName?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryAddress?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryCity?: Prisma.SortOrderInput | Prisma.SortOrder
+  affiliateBranchId?: Prisma.SortOrderInput | Prisma.SortOrder
+  userId?: Prisma.SortOrderInput | Prisma.SortOrder
+  notifyPrefs?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -301,6 +361,11 @@ export type FactoryCustomerScalarWhereWithAggregatesInput = {
   companyName?: Prisma.StringNullableWithAggregatesFilter<"FactoryCustomer"> | string | null
   email?: Prisma.StringNullableWithAggregatesFilter<"FactoryCustomer"> | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"FactoryCustomer"> | string | null
+  deliveryAddress?: Prisma.StringNullableWithAggregatesFilter<"FactoryCustomer"> | string | null
+  deliveryCity?: Prisma.StringNullableWithAggregatesFilter<"FactoryCustomer"> | string | null
+  affiliateBranchId?: Prisma.StringNullableWithAggregatesFilter<"FactoryCustomer"> | string | null
+  userId?: Prisma.StringNullableWithAggregatesFilter<"FactoryCustomer"> | string | null
+  notifyPrefs?: Prisma.JsonNullableWithAggregatesFilter<"FactoryCustomer">
   active?: Prisma.BoolWithAggregatesFilter<"FactoryCustomer"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"FactoryCustomer"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"FactoryCustomer"> | Date | string
@@ -314,12 +379,18 @@ export type FactoryCustomerCreateInput = {
   companyName?: string | null
   email?: string | null
   notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutFactoryCustomersInput
+  affiliateBranch?: Prisma.BranchCreateNestedOneWithoutFactoryCustomersAsAffiliateInput
+  user?: Prisma.UserCreateNestedOneWithoutFactoryCustomerInput
   credits?: Prisma.FactoryCreditCreateNestedManyWithoutCustomerInput
   reservations?: Prisma.FactoryReservationCreateNestedManyWithoutCustomerInput
+  orderRequests?: Prisma.FactoryOrderRequestCreateNestedManyWithoutCustomerInput
 }
 
 export type FactoryCustomerUncheckedCreateInput = {
@@ -331,11 +402,17 @@ export type FactoryCustomerUncheckedCreateInput = {
   companyName?: string | null
   email?: string | null
   notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  affiliateBranchId?: string | null
+  userId?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   credits?: Prisma.FactoryCreditUncheckedCreateNestedManyWithoutCustomerInput
   reservations?: Prisma.FactoryReservationUncheckedCreateNestedManyWithoutCustomerInput
+  orderRequests?: Prisma.FactoryOrderRequestUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type FactoryCustomerUpdateInput = {
@@ -346,12 +423,18 @@ export type FactoryCustomerUpdateInput = {
   companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutFactoryCustomersNestedInput
+  affiliateBranch?: Prisma.BranchUpdateOneWithoutFactoryCustomersAsAffiliateNestedInput
+  user?: Prisma.UserUpdateOneWithoutFactoryCustomerNestedInput
   credits?: Prisma.FactoryCreditUpdateManyWithoutCustomerNestedInput
   reservations?: Prisma.FactoryReservationUpdateManyWithoutCustomerNestedInput
+  orderRequests?: Prisma.FactoryOrderRequestUpdateManyWithoutCustomerNestedInput
 }
 
 export type FactoryCustomerUncheckedUpdateInput = {
@@ -363,11 +446,17 @@ export type FactoryCustomerUncheckedUpdateInput = {
   companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  affiliateBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   credits?: Prisma.FactoryCreditUncheckedUpdateManyWithoutCustomerNestedInput
   reservations?: Prisma.FactoryReservationUncheckedUpdateManyWithoutCustomerNestedInput
+  orderRequests?: Prisma.FactoryOrderRequestUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type FactoryCustomerCreateManyInput = {
@@ -379,6 +468,11 @@ export type FactoryCustomerCreateManyInput = {
   companyName?: string | null
   email?: string | null
   notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  affiliateBranchId?: string | null
+  userId?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -392,6 +486,9 @@ export type FactoryCustomerUpdateManyMutationInput = {
   companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -406,9 +503,19 @@ export type FactoryCustomerUncheckedUpdateManyInput = {
   companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  affiliateBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type FactoryCustomerNullableScalarRelationFilter = {
+  is?: Prisma.FactoryCustomerWhereInput | null
+  isNot?: Prisma.FactoryCustomerWhereInput | null
 }
 
 export type FactoryCustomerListRelationFilter = {
@@ -430,6 +537,11 @@ export type FactoryCustomerCountOrderByAggregateInput = {
   companyName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  deliveryAddress?: Prisma.SortOrder
+  deliveryCity?: Prisma.SortOrder
+  affiliateBranchId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
+  notifyPrefs?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -444,6 +556,10 @@ export type FactoryCustomerMaxOrderByAggregateInput = {
   companyName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  deliveryAddress?: Prisma.SortOrder
+  deliveryCity?: Prisma.SortOrder
+  affiliateBranchId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -458,6 +574,10 @@ export type FactoryCustomerMinOrderByAggregateInput = {
   companyName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  deliveryAddress?: Prisma.SortOrder
+  deliveryCity?: Prisma.SortOrder
+  affiliateBranchId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -468,6 +588,38 @@ export type FactoryCustomerScalarRelationFilter = {
   isNot?: Prisma.FactoryCustomerWhereInput
 }
 
+export type FactoryCustomerCreateNestedOneWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutUserInput, Prisma.FactoryCustomerUncheckedCreateWithoutUserInput>
+  connectOrCreate?: Prisma.FactoryCustomerCreateOrConnectWithoutUserInput
+  connect?: Prisma.FactoryCustomerWhereUniqueInput
+}
+
+export type FactoryCustomerUncheckedCreateNestedOneWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutUserInput, Prisma.FactoryCustomerUncheckedCreateWithoutUserInput>
+  connectOrCreate?: Prisma.FactoryCustomerCreateOrConnectWithoutUserInput
+  connect?: Prisma.FactoryCustomerWhereUniqueInput
+}
+
+export type FactoryCustomerUpdateOneWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutUserInput, Prisma.FactoryCustomerUncheckedCreateWithoutUserInput>
+  connectOrCreate?: Prisma.FactoryCustomerCreateOrConnectWithoutUserInput
+  upsert?: Prisma.FactoryCustomerUpsertWithoutUserInput
+  disconnect?: Prisma.FactoryCustomerWhereInput | boolean
+  delete?: Prisma.FactoryCustomerWhereInput | boolean
+  connect?: Prisma.FactoryCustomerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.FactoryCustomerUpdateToOneWithWhereWithoutUserInput, Prisma.FactoryCustomerUpdateWithoutUserInput>, Prisma.FactoryCustomerUncheckedUpdateWithoutUserInput>
+}
+
+export type FactoryCustomerUncheckedUpdateOneWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutUserInput, Prisma.FactoryCustomerUncheckedCreateWithoutUserInput>
+  connectOrCreate?: Prisma.FactoryCustomerCreateOrConnectWithoutUserInput
+  upsert?: Prisma.FactoryCustomerUpsertWithoutUserInput
+  disconnect?: Prisma.FactoryCustomerWhereInput | boolean
+  delete?: Prisma.FactoryCustomerWhereInput | boolean
+  connect?: Prisma.FactoryCustomerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.FactoryCustomerUpdateToOneWithWhereWithoutUserInput, Prisma.FactoryCustomerUpdateWithoutUserInput>, Prisma.FactoryCustomerUncheckedUpdateWithoutUserInput>
+}
+
 export type FactoryCustomerCreateNestedManyWithoutBranchInput = {
   create?: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutBranchInput, Prisma.FactoryCustomerUncheckedCreateWithoutBranchInput> | Prisma.FactoryCustomerCreateWithoutBranchInput[] | Prisma.FactoryCustomerUncheckedCreateWithoutBranchInput[]
   connectOrCreate?: Prisma.FactoryCustomerCreateOrConnectWithoutBranchInput | Prisma.FactoryCustomerCreateOrConnectWithoutBranchInput[]
@@ -475,10 +627,24 @@ export type FactoryCustomerCreateNestedManyWithoutBranchInput = {
   connect?: Prisma.FactoryCustomerWhereUniqueInput | Prisma.FactoryCustomerWhereUniqueInput[]
 }
 
+export type FactoryCustomerCreateNestedManyWithoutAffiliateBranchInput = {
+  create?: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutAffiliateBranchInput, Prisma.FactoryCustomerUncheckedCreateWithoutAffiliateBranchInput> | Prisma.FactoryCustomerCreateWithoutAffiliateBranchInput[] | Prisma.FactoryCustomerUncheckedCreateWithoutAffiliateBranchInput[]
+  connectOrCreate?: Prisma.FactoryCustomerCreateOrConnectWithoutAffiliateBranchInput | Prisma.FactoryCustomerCreateOrConnectWithoutAffiliateBranchInput[]
+  createMany?: Prisma.FactoryCustomerCreateManyAffiliateBranchInputEnvelope
+  connect?: Prisma.FactoryCustomerWhereUniqueInput | Prisma.FactoryCustomerWhereUniqueInput[]
+}
+
 export type FactoryCustomerUncheckedCreateNestedManyWithoutBranchInput = {
   create?: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutBranchInput, Prisma.FactoryCustomerUncheckedCreateWithoutBranchInput> | Prisma.FactoryCustomerCreateWithoutBranchInput[] | Prisma.FactoryCustomerUncheckedCreateWithoutBranchInput[]
   connectOrCreate?: Prisma.FactoryCustomerCreateOrConnectWithoutBranchInput | Prisma.FactoryCustomerCreateOrConnectWithoutBranchInput[]
   createMany?: Prisma.FactoryCustomerCreateManyBranchInputEnvelope
+  connect?: Prisma.FactoryCustomerWhereUniqueInput | Prisma.FactoryCustomerWhereUniqueInput[]
+}
+
+export type FactoryCustomerUncheckedCreateNestedManyWithoutAffiliateBranchInput = {
+  create?: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutAffiliateBranchInput, Prisma.FactoryCustomerUncheckedCreateWithoutAffiliateBranchInput> | Prisma.FactoryCustomerCreateWithoutAffiliateBranchInput[] | Prisma.FactoryCustomerUncheckedCreateWithoutAffiliateBranchInput[]
+  connectOrCreate?: Prisma.FactoryCustomerCreateOrConnectWithoutAffiliateBranchInput | Prisma.FactoryCustomerCreateOrConnectWithoutAffiliateBranchInput[]
+  createMany?: Prisma.FactoryCustomerCreateManyAffiliateBranchInputEnvelope
   connect?: Prisma.FactoryCustomerWhereUniqueInput | Prisma.FactoryCustomerWhereUniqueInput[]
 }
 
@@ -496,6 +662,20 @@ export type FactoryCustomerUpdateManyWithoutBranchNestedInput = {
   deleteMany?: Prisma.FactoryCustomerScalarWhereInput | Prisma.FactoryCustomerScalarWhereInput[]
 }
 
+export type FactoryCustomerUpdateManyWithoutAffiliateBranchNestedInput = {
+  create?: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutAffiliateBranchInput, Prisma.FactoryCustomerUncheckedCreateWithoutAffiliateBranchInput> | Prisma.FactoryCustomerCreateWithoutAffiliateBranchInput[] | Prisma.FactoryCustomerUncheckedCreateWithoutAffiliateBranchInput[]
+  connectOrCreate?: Prisma.FactoryCustomerCreateOrConnectWithoutAffiliateBranchInput | Prisma.FactoryCustomerCreateOrConnectWithoutAffiliateBranchInput[]
+  upsert?: Prisma.FactoryCustomerUpsertWithWhereUniqueWithoutAffiliateBranchInput | Prisma.FactoryCustomerUpsertWithWhereUniqueWithoutAffiliateBranchInput[]
+  createMany?: Prisma.FactoryCustomerCreateManyAffiliateBranchInputEnvelope
+  set?: Prisma.FactoryCustomerWhereUniqueInput | Prisma.FactoryCustomerWhereUniqueInput[]
+  disconnect?: Prisma.FactoryCustomerWhereUniqueInput | Prisma.FactoryCustomerWhereUniqueInput[]
+  delete?: Prisma.FactoryCustomerWhereUniqueInput | Prisma.FactoryCustomerWhereUniqueInput[]
+  connect?: Prisma.FactoryCustomerWhereUniqueInput | Prisma.FactoryCustomerWhereUniqueInput[]
+  update?: Prisma.FactoryCustomerUpdateWithWhereUniqueWithoutAffiliateBranchInput | Prisma.FactoryCustomerUpdateWithWhereUniqueWithoutAffiliateBranchInput[]
+  updateMany?: Prisma.FactoryCustomerUpdateManyWithWhereWithoutAffiliateBranchInput | Prisma.FactoryCustomerUpdateManyWithWhereWithoutAffiliateBranchInput[]
+  deleteMany?: Prisma.FactoryCustomerScalarWhereInput | Prisma.FactoryCustomerScalarWhereInput[]
+}
+
 export type FactoryCustomerUncheckedUpdateManyWithoutBranchNestedInput = {
   create?: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutBranchInput, Prisma.FactoryCustomerUncheckedCreateWithoutBranchInput> | Prisma.FactoryCustomerCreateWithoutBranchInput[] | Prisma.FactoryCustomerUncheckedCreateWithoutBranchInput[]
   connectOrCreate?: Prisma.FactoryCustomerCreateOrConnectWithoutBranchInput | Prisma.FactoryCustomerCreateOrConnectWithoutBranchInput[]
@@ -507,6 +687,20 @@ export type FactoryCustomerUncheckedUpdateManyWithoutBranchNestedInput = {
   connect?: Prisma.FactoryCustomerWhereUniqueInput | Prisma.FactoryCustomerWhereUniqueInput[]
   update?: Prisma.FactoryCustomerUpdateWithWhereUniqueWithoutBranchInput | Prisma.FactoryCustomerUpdateWithWhereUniqueWithoutBranchInput[]
   updateMany?: Prisma.FactoryCustomerUpdateManyWithWhereWithoutBranchInput | Prisma.FactoryCustomerUpdateManyWithWhereWithoutBranchInput[]
+  deleteMany?: Prisma.FactoryCustomerScalarWhereInput | Prisma.FactoryCustomerScalarWhereInput[]
+}
+
+export type FactoryCustomerUncheckedUpdateManyWithoutAffiliateBranchNestedInput = {
+  create?: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutAffiliateBranchInput, Prisma.FactoryCustomerUncheckedCreateWithoutAffiliateBranchInput> | Prisma.FactoryCustomerCreateWithoutAffiliateBranchInput[] | Prisma.FactoryCustomerUncheckedCreateWithoutAffiliateBranchInput[]
+  connectOrCreate?: Prisma.FactoryCustomerCreateOrConnectWithoutAffiliateBranchInput | Prisma.FactoryCustomerCreateOrConnectWithoutAffiliateBranchInput[]
+  upsert?: Prisma.FactoryCustomerUpsertWithWhereUniqueWithoutAffiliateBranchInput | Prisma.FactoryCustomerUpsertWithWhereUniqueWithoutAffiliateBranchInput[]
+  createMany?: Prisma.FactoryCustomerCreateManyAffiliateBranchInputEnvelope
+  set?: Prisma.FactoryCustomerWhereUniqueInput | Prisma.FactoryCustomerWhereUniqueInput[]
+  disconnect?: Prisma.FactoryCustomerWhereUniqueInput | Prisma.FactoryCustomerWhereUniqueInput[]
+  delete?: Prisma.FactoryCustomerWhereUniqueInput | Prisma.FactoryCustomerWhereUniqueInput[]
+  connect?: Prisma.FactoryCustomerWhereUniqueInput | Prisma.FactoryCustomerWhereUniqueInput[]
+  update?: Prisma.FactoryCustomerUpdateWithWhereUniqueWithoutAffiliateBranchInput | Prisma.FactoryCustomerUpdateWithWhereUniqueWithoutAffiliateBranchInput[]
+  updateMany?: Prisma.FactoryCustomerUpdateManyWithWhereWithoutAffiliateBranchInput | Prisma.FactoryCustomerUpdateManyWithWhereWithoutAffiliateBranchInput[]
   deleteMany?: Prisma.FactoryCustomerScalarWhereInput | Prisma.FactoryCustomerScalarWhereInput[]
 }
 
@@ -538,6 +732,120 @@ export type FactoryCustomerUpdateOneRequiredWithoutReservationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.FactoryCustomerUpdateToOneWithWhereWithoutReservationsInput, Prisma.FactoryCustomerUpdateWithoutReservationsInput>, Prisma.FactoryCustomerUncheckedUpdateWithoutReservationsInput>
 }
 
+export type FactoryCustomerCreateNestedOneWithoutOrderRequestsInput = {
+  create?: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutOrderRequestsInput, Prisma.FactoryCustomerUncheckedCreateWithoutOrderRequestsInput>
+  connectOrCreate?: Prisma.FactoryCustomerCreateOrConnectWithoutOrderRequestsInput
+  connect?: Prisma.FactoryCustomerWhereUniqueInput
+}
+
+export type FactoryCustomerUpdateOneRequiredWithoutOrderRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutOrderRequestsInput, Prisma.FactoryCustomerUncheckedCreateWithoutOrderRequestsInput>
+  connectOrCreate?: Prisma.FactoryCustomerCreateOrConnectWithoutOrderRequestsInput
+  upsert?: Prisma.FactoryCustomerUpsertWithoutOrderRequestsInput
+  connect?: Prisma.FactoryCustomerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.FactoryCustomerUpdateToOneWithWhereWithoutOrderRequestsInput, Prisma.FactoryCustomerUpdateWithoutOrderRequestsInput>, Prisma.FactoryCustomerUncheckedUpdateWithoutOrderRequestsInput>
+}
+
+export type FactoryCustomerCreateWithoutUserInput = {
+  id?: string
+  name: string
+  phone?: string | null
+  contactName?: string | null
+  companyName?: string | null
+  email?: string | null
+  notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutFactoryCustomersInput
+  affiliateBranch?: Prisma.BranchCreateNestedOneWithoutFactoryCustomersAsAffiliateInput
+  credits?: Prisma.FactoryCreditCreateNestedManyWithoutCustomerInput
+  reservations?: Prisma.FactoryReservationCreateNestedManyWithoutCustomerInput
+  orderRequests?: Prisma.FactoryOrderRequestCreateNestedManyWithoutCustomerInput
+}
+
+export type FactoryCustomerUncheckedCreateWithoutUserInput = {
+  id?: string
+  branchId: string
+  name: string
+  phone?: string | null
+  contactName?: string | null
+  companyName?: string | null
+  email?: string | null
+  notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  affiliateBranchId?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  credits?: Prisma.FactoryCreditUncheckedCreateNestedManyWithoutCustomerInput
+  reservations?: Prisma.FactoryReservationUncheckedCreateNestedManyWithoutCustomerInput
+  orderRequests?: Prisma.FactoryOrderRequestUncheckedCreateNestedManyWithoutCustomerInput
+}
+
+export type FactoryCustomerCreateOrConnectWithoutUserInput = {
+  where: Prisma.FactoryCustomerWhereUniqueInput
+  create: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutUserInput, Prisma.FactoryCustomerUncheckedCreateWithoutUserInput>
+}
+
+export type FactoryCustomerUpsertWithoutUserInput = {
+  update: Prisma.XOR<Prisma.FactoryCustomerUpdateWithoutUserInput, Prisma.FactoryCustomerUncheckedUpdateWithoutUserInput>
+  create: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutUserInput, Prisma.FactoryCustomerUncheckedCreateWithoutUserInput>
+  where?: Prisma.FactoryCustomerWhereInput
+}
+
+export type FactoryCustomerUpdateToOneWithWhereWithoutUserInput = {
+  where?: Prisma.FactoryCustomerWhereInput
+  data: Prisma.XOR<Prisma.FactoryCustomerUpdateWithoutUserInput, Prisma.FactoryCustomerUncheckedUpdateWithoutUserInput>
+}
+
+export type FactoryCustomerUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutFactoryCustomersNestedInput
+  affiliateBranch?: Prisma.BranchUpdateOneWithoutFactoryCustomersAsAffiliateNestedInput
+  credits?: Prisma.FactoryCreditUpdateManyWithoutCustomerNestedInput
+  reservations?: Prisma.FactoryReservationUpdateManyWithoutCustomerNestedInput
+  orderRequests?: Prisma.FactoryOrderRequestUpdateManyWithoutCustomerNestedInput
+}
+
+export type FactoryCustomerUncheckedUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  affiliateBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  credits?: Prisma.FactoryCreditUncheckedUpdateManyWithoutCustomerNestedInput
+  reservations?: Prisma.FactoryReservationUncheckedUpdateManyWithoutCustomerNestedInput
+  orderRequests?: Prisma.FactoryOrderRequestUncheckedUpdateManyWithoutCustomerNestedInput
+}
+
 export type FactoryCustomerCreateWithoutBranchInput = {
   id?: string
   name: string
@@ -546,11 +854,17 @@ export type FactoryCustomerCreateWithoutBranchInput = {
   companyName?: string | null
   email?: string | null
   notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  affiliateBranch?: Prisma.BranchCreateNestedOneWithoutFactoryCustomersAsAffiliateInput
+  user?: Prisma.UserCreateNestedOneWithoutFactoryCustomerInput
   credits?: Prisma.FactoryCreditCreateNestedManyWithoutCustomerInput
   reservations?: Prisma.FactoryReservationCreateNestedManyWithoutCustomerInput
+  orderRequests?: Prisma.FactoryOrderRequestCreateNestedManyWithoutCustomerInput
 }
 
 export type FactoryCustomerUncheckedCreateWithoutBranchInput = {
@@ -561,11 +875,17 @@ export type FactoryCustomerUncheckedCreateWithoutBranchInput = {
   companyName?: string | null
   email?: string | null
   notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  affiliateBranchId?: string | null
+  userId?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   credits?: Prisma.FactoryCreditUncheckedCreateNestedManyWithoutCustomerInput
   reservations?: Prisma.FactoryReservationUncheckedCreateNestedManyWithoutCustomerInput
+  orderRequests?: Prisma.FactoryOrderRequestUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type FactoryCustomerCreateOrConnectWithoutBranchInput = {
@@ -575,6 +895,58 @@ export type FactoryCustomerCreateOrConnectWithoutBranchInput = {
 
 export type FactoryCustomerCreateManyBranchInputEnvelope = {
   data: Prisma.FactoryCustomerCreateManyBranchInput | Prisma.FactoryCustomerCreateManyBranchInput[]
+  skipDuplicates?: boolean
+}
+
+export type FactoryCustomerCreateWithoutAffiliateBranchInput = {
+  id?: string
+  name: string
+  phone?: string | null
+  contactName?: string | null
+  companyName?: string | null
+  email?: string | null
+  notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutFactoryCustomersInput
+  user?: Prisma.UserCreateNestedOneWithoutFactoryCustomerInput
+  credits?: Prisma.FactoryCreditCreateNestedManyWithoutCustomerInput
+  reservations?: Prisma.FactoryReservationCreateNestedManyWithoutCustomerInput
+  orderRequests?: Prisma.FactoryOrderRequestCreateNestedManyWithoutCustomerInput
+}
+
+export type FactoryCustomerUncheckedCreateWithoutAffiliateBranchInput = {
+  id?: string
+  branchId: string
+  name: string
+  phone?: string | null
+  contactName?: string | null
+  companyName?: string | null
+  email?: string | null
+  notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  userId?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  credits?: Prisma.FactoryCreditUncheckedCreateNestedManyWithoutCustomerInput
+  reservations?: Prisma.FactoryReservationUncheckedCreateNestedManyWithoutCustomerInput
+  orderRequests?: Prisma.FactoryOrderRequestUncheckedCreateNestedManyWithoutCustomerInput
+}
+
+export type FactoryCustomerCreateOrConnectWithoutAffiliateBranchInput = {
+  where: Prisma.FactoryCustomerWhereUniqueInput
+  create: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutAffiliateBranchInput, Prisma.FactoryCustomerUncheckedCreateWithoutAffiliateBranchInput>
+}
+
+export type FactoryCustomerCreateManyAffiliateBranchInputEnvelope = {
+  data: Prisma.FactoryCustomerCreateManyAffiliateBranchInput | Prisma.FactoryCustomerCreateManyAffiliateBranchInput[]
   skipDuplicates?: boolean
 }
 
@@ -606,9 +978,30 @@ export type FactoryCustomerScalarWhereInput = {
   companyName?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
   email?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
   notes?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
+  deliveryAddress?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
+  deliveryCity?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
+  affiliateBranchId?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
+  userId?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
+  notifyPrefs?: Prisma.JsonNullableFilter<"FactoryCustomer">
   active?: Prisma.BoolFilter<"FactoryCustomer"> | boolean
   createdAt?: Prisma.DateTimeFilter<"FactoryCustomer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FactoryCustomer"> | Date | string
+}
+
+export type FactoryCustomerUpsertWithWhereUniqueWithoutAffiliateBranchInput = {
+  where: Prisma.FactoryCustomerWhereUniqueInput
+  update: Prisma.XOR<Prisma.FactoryCustomerUpdateWithoutAffiliateBranchInput, Prisma.FactoryCustomerUncheckedUpdateWithoutAffiliateBranchInput>
+  create: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutAffiliateBranchInput, Prisma.FactoryCustomerUncheckedCreateWithoutAffiliateBranchInput>
+}
+
+export type FactoryCustomerUpdateWithWhereUniqueWithoutAffiliateBranchInput = {
+  where: Prisma.FactoryCustomerWhereUniqueInput
+  data: Prisma.XOR<Prisma.FactoryCustomerUpdateWithoutAffiliateBranchInput, Prisma.FactoryCustomerUncheckedUpdateWithoutAffiliateBranchInput>
+}
+
+export type FactoryCustomerUpdateManyWithWhereWithoutAffiliateBranchInput = {
+  where: Prisma.FactoryCustomerScalarWhereInput
+  data: Prisma.XOR<Prisma.FactoryCustomerUpdateManyMutationInput, Prisma.FactoryCustomerUncheckedUpdateManyWithoutAffiliateBranchInput>
 }
 
 export type FactoryCustomerCreateWithoutCreditsInput = {
@@ -619,11 +1012,17 @@ export type FactoryCustomerCreateWithoutCreditsInput = {
   companyName?: string | null
   email?: string | null
   notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutFactoryCustomersInput
+  affiliateBranch?: Prisma.BranchCreateNestedOneWithoutFactoryCustomersAsAffiliateInput
+  user?: Prisma.UserCreateNestedOneWithoutFactoryCustomerInput
   reservations?: Prisma.FactoryReservationCreateNestedManyWithoutCustomerInput
+  orderRequests?: Prisma.FactoryOrderRequestCreateNestedManyWithoutCustomerInput
 }
 
 export type FactoryCustomerUncheckedCreateWithoutCreditsInput = {
@@ -635,10 +1034,16 @@ export type FactoryCustomerUncheckedCreateWithoutCreditsInput = {
   companyName?: string | null
   email?: string | null
   notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  affiliateBranchId?: string | null
+  userId?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   reservations?: Prisma.FactoryReservationUncheckedCreateNestedManyWithoutCustomerInput
+  orderRequests?: Prisma.FactoryOrderRequestUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type FactoryCustomerCreateOrConnectWithoutCreditsInput = {
@@ -665,11 +1070,17 @@ export type FactoryCustomerUpdateWithoutCreditsInput = {
   companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutFactoryCustomersNestedInput
+  affiliateBranch?: Prisma.BranchUpdateOneWithoutFactoryCustomersAsAffiliateNestedInput
+  user?: Prisma.UserUpdateOneWithoutFactoryCustomerNestedInput
   reservations?: Prisma.FactoryReservationUpdateManyWithoutCustomerNestedInput
+  orderRequests?: Prisma.FactoryOrderRequestUpdateManyWithoutCustomerNestedInput
 }
 
 export type FactoryCustomerUncheckedUpdateWithoutCreditsInput = {
@@ -681,10 +1092,16 @@ export type FactoryCustomerUncheckedUpdateWithoutCreditsInput = {
   companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  affiliateBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reservations?: Prisma.FactoryReservationUncheckedUpdateManyWithoutCustomerNestedInput
+  orderRequests?: Prisma.FactoryOrderRequestUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type FactoryCustomerCreateWithoutReservationsInput = {
@@ -695,11 +1112,17 @@ export type FactoryCustomerCreateWithoutReservationsInput = {
   companyName?: string | null
   email?: string | null
   notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutFactoryCustomersInput
+  affiliateBranch?: Prisma.BranchCreateNestedOneWithoutFactoryCustomersAsAffiliateInput
+  user?: Prisma.UserCreateNestedOneWithoutFactoryCustomerInput
   credits?: Prisma.FactoryCreditCreateNestedManyWithoutCustomerInput
+  orderRequests?: Prisma.FactoryOrderRequestCreateNestedManyWithoutCustomerInput
 }
 
 export type FactoryCustomerUncheckedCreateWithoutReservationsInput = {
@@ -711,10 +1134,16 @@ export type FactoryCustomerUncheckedCreateWithoutReservationsInput = {
   companyName?: string | null
   email?: string | null
   notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  affiliateBranchId?: string | null
+  userId?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   credits?: Prisma.FactoryCreditUncheckedCreateNestedManyWithoutCustomerInput
+  orderRequests?: Prisma.FactoryOrderRequestUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type FactoryCustomerCreateOrConnectWithoutReservationsInput = {
@@ -741,11 +1170,17 @@ export type FactoryCustomerUpdateWithoutReservationsInput = {
   companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutFactoryCustomersNestedInput
+  affiliateBranch?: Prisma.BranchUpdateOneWithoutFactoryCustomersAsAffiliateNestedInput
+  user?: Prisma.UserUpdateOneWithoutFactoryCustomerNestedInput
   credits?: Prisma.FactoryCreditUpdateManyWithoutCustomerNestedInput
+  orderRequests?: Prisma.FactoryOrderRequestUpdateManyWithoutCustomerNestedInput
 }
 
 export type FactoryCustomerUncheckedUpdateWithoutReservationsInput = {
@@ -757,10 +1192,116 @@ export type FactoryCustomerUncheckedUpdateWithoutReservationsInput = {
   companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  affiliateBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   credits?: Prisma.FactoryCreditUncheckedUpdateManyWithoutCustomerNestedInput
+  orderRequests?: Prisma.FactoryOrderRequestUncheckedUpdateManyWithoutCustomerNestedInput
+}
+
+export type FactoryCustomerCreateWithoutOrderRequestsInput = {
+  id?: string
+  name: string
+  phone?: string | null
+  contactName?: string | null
+  companyName?: string | null
+  email?: string | null
+  notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutFactoryCustomersInput
+  affiliateBranch?: Prisma.BranchCreateNestedOneWithoutFactoryCustomersAsAffiliateInput
+  user?: Prisma.UserCreateNestedOneWithoutFactoryCustomerInput
+  credits?: Prisma.FactoryCreditCreateNestedManyWithoutCustomerInput
+  reservations?: Prisma.FactoryReservationCreateNestedManyWithoutCustomerInput
+}
+
+export type FactoryCustomerUncheckedCreateWithoutOrderRequestsInput = {
+  id?: string
+  branchId: string
+  name: string
+  phone?: string | null
+  contactName?: string | null
+  companyName?: string | null
+  email?: string | null
+  notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  affiliateBranchId?: string | null
+  userId?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  credits?: Prisma.FactoryCreditUncheckedCreateNestedManyWithoutCustomerInput
+  reservations?: Prisma.FactoryReservationUncheckedCreateNestedManyWithoutCustomerInput
+}
+
+export type FactoryCustomerCreateOrConnectWithoutOrderRequestsInput = {
+  where: Prisma.FactoryCustomerWhereUniqueInput
+  create: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutOrderRequestsInput, Prisma.FactoryCustomerUncheckedCreateWithoutOrderRequestsInput>
+}
+
+export type FactoryCustomerUpsertWithoutOrderRequestsInput = {
+  update: Prisma.XOR<Prisma.FactoryCustomerUpdateWithoutOrderRequestsInput, Prisma.FactoryCustomerUncheckedUpdateWithoutOrderRequestsInput>
+  create: Prisma.XOR<Prisma.FactoryCustomerCreateWithoutOrderRequestsInput, Prisma.FactoryCustomerUncheckedCreateWithoutOrderRequestsInput>
+  where?: Prisma.FactoryCustomerWhereInput
+}
+
+export type FactoryCustomerUpdateToOneWithWhereWithoutOrderRequestsInput = {
+  where?: Prisma.FactoryCustomerWhereInput
+  data: Prisma.XOR<Prisma.FactoryCustomerUpdateWithoutOrderRequestsInput, Prisma.FactoryCustomerUncheckedUpdateWithoutOrderRequestsInput>
+}
+
+export type FactoryCustomerUpdateWithoutOrderRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutFactoryCustomersNestedInput
+  affiliateBranch?: Prisma.BranchUpdateOneWithoutFactoryCustomersAsAffiliateNestedInput
+  user?: Prisma.UserUpdateOneWithoutFactoryCustomerNestedInput
+  credits?: Prisma.FactoryCreditUpdateManyWithoutCustomerNestedInput
+  reservations?: Prisma.FactoryReservationUpdateManyWithoutCustomerNestedInput
+}
+
+export type FactoryCustomerUncheckedUpdateWithoutOrderRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  affiliateBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  credits?: Prisma.FactoryCreditUncheckedUpdateManyWithoutCustomerNestedInput
+  reservations?: Prisma.FactoryReservationUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type FactoryCustomerCreateManyBranchInput = {
@@ -771,6 +1312,29 @@ export type FactoryCustomerCreateManyBranchInput = {
   companyName?: string | null
   email?: string | null
   notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  affiliateBranchId?: string | null
+  userId?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type FactoryCustomerCreateManyAffiliateBranchInput = {
+  id?: string
+  branchId: string
+  name: string
+  phone?: string | null
+  contactName?: string | null
+  companyName?: string | null
+  email?: string | null
+  notes?: string | null
+  deliveryAddress?: string | null
+  deliveryCity?: string | null
+  userId?: string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -784,11 +1348,17 @@ export type FactoryCustomerUpdateWithoutBranchInput = {
   companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  affiliateBranch?: Prisma.BranchUpdateOneWithoutFactoryCustomersAsAffiliateNestedInput
+  user?: Prisma.UserUpdateOneWithoutFactoryCustomerNestedInput
   credits?: Prisma.FactoryCreditUpdateManyWithoutCustomerNestedInput
   reservations?: Prisma.FactoryReservationUpdateManyWithoutCustomerNestedInput
+  orderRequests?: Prisma.FactoryOrderRequestUpdateManyWithoutCustomerNestedInput
 }
 
 export type FactoryCustomerUncheckedUpdateWithoutBranchInput = {
@@ -799,11 +1369,17 @@ export type FactoryCustomerUncheckedUpdateWithoutBranchInput = {
   companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  affiliateBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   credits?: Prisma.FactoryCreditUncheckedUpdateManyWithoutCustomerNestedInput
   reservations?: Prisma.FactoryReservationUncheckedUpdateManyWithoutCustomerNestedInput
+  orderRequests?: Prisma.FactoryOrderRequestUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type FactoryCustomerUncheckedUpdateManyWithoutBranchInput = {
@@ -814,6 +1390,71 @@ export type FactoryCustomerUncheckedUpdateManyWithoutBranchInput = {
   companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  affiliateBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type FactoryCustomerUpdateWithoutAffiliateBranchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutFactoryCustomersNestedInput
+  user?: Prisma.UserUpdateOneWithoutFactoryCustomerNestedInput
+  credits?: Prisma.FactoryCreditUpdateManyWithoutCustomerNestedInput
+  reservations?: Prisma.FactoryReservationUpdateManyWithoutCustomerNestedInput
+  orderRequests?: Prisma.FactoryOrderRequestUpdateManyWithoutCustomerNestedInput
+}
+
+export type FactoryCustomerUncheckedUpdateWithoutAffiliateBranchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  credits?: Prisma.FactoryCreditUncheckedUpdateManyWithoutCustomerNestedInput
+  reservations?: Prisma.FactoryReservationUncheckedUpdateManyWithoutCustomerNestedInput
+  orderRequests?: Prisma.FactoryOrderRequestUncheckedUpdateManyWithoutCustomerNestedInput
+}
+
+export type FactoryCustomerUncheckedUpdateManyWithoutAffiliateBranchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -827,11 +1468,13 @@ export type FactoryCustomerUncheckedUpdateManyWithoutBranchInput = {
 export type FactoryCustomerCountOutputType = {
   credits: number
   reservations: number
+  orderRequests: number
 }
 
 export type FactoryCustomerCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   credits?: boolean | FactoryCustomerCountOutputTypeCountCreditsArgs
   reservations?: boolean | FactoryCustomerCountOutputTypeCountReservationsArgs
+  orderRequests?: boolean | FactoryCustomerCountOutputTypeCountOrderRequestsArgs
 }
 
 /**
@@ -858,6 +1501,13 @@ export type FactoryCustomerCountOutputTypeCountReservationsArgs<ExtArgs extends 
   where?: Prisma.FactoryReservationWhereInput
 }
 
+/**
+ * FactoryCustomerCountOutputType without action
+ */
+export type FactoryCustomerCountOutputTypeCountOrderRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FactoryOrderRequestWhereInput
+}
+
 
 export type FactoryCustomerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -868,12 +1518,20 @@ export type FactoryCustomerSelect<ExtArgs extends runtime.Types.Extensions.Inter
   companyName?: boolean
   email?: boolean
   notes?: boolean
+  deliveryAddress?: boolean
+  deliveryCity?: boolean
+  affiliateBranchId?: boolean
+  userId?: boolean
+  notifyPrefs?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  affiliateBranch?: boolean | Prisma.FactoryCustomer$affiliateBranchArgs<ExtArgs>
+  user?: boolean | Prisma.FactoryCustomer$userArgs<ExtArgs>
   credits?: boolean | Prisma.FactoryCustomer$creditsArgs<ExtArgs>
   reservations?: boolean | Prisma.FactoryCustomer$reservationsArgs<ExtArgs>
+  orderRequests?: boolean | Prisma.FactoryCustomer$orderRequestsArgs<ExtArgs>
   _count?: boolean | Prisma.FactoryCustomerCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["factoryCustomer"]>
 
@@ -886,10 +1544,17 @@ export type FactoryCustomerSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   companyName?: boolean
   email?: boolean
   notes?: boolean
+  deliveryAddress?: boolean
+  deliveryCity?: boolean
+  affiliateBranchId?: boolean
+  userId?: boolean
+  notifyPrefs?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  affiliateBranch?: boolean | Prisma.FactoryCustomer$affiliateBranchArgs<ExtArgs>
+  user?: boolean | Prisma.FactoryCustomer$userArgs<ExtArgs>
 }, ExtArgs["result"]["factoryCustomer"]>
 
 export type FactoryCustomerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -901,10 +1566,17 @@ export type FactoryCustomerSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   companyName?: boolean
   email?: boolean
   notes?: boolean
+  deliveryAddress?: boolean
+  deliveryCity?: boolean
+  affiliateBranchId?: boolean
+  userId?: boolean
+  notifyPrefs?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  affiliateBranch?: boolean | Prisma.FactoryCustomer$affiliateBranchArgs<ExtArgs>
+  user?: boolean | Prisma.FactoryCustomer$userArgs<ExtArgs>
 }, ExtArgs["result"]["factoryCustomer"]>
 
 export type FactoryCustomerSelectScalar = {
@@ -916,31 +1588,46 @@ export type FactoryCustomerSelectScalar = {
   companyName?: boolean
   email?: boolean
   notes?: boolean
+  deliveryAddress?: boolean
+  deliveryCity?: boolean
+  affiliateBranchId?: boolean
+  userId?: boolean
+  notifyPrefs?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type FactoryCustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "name" | "phone" | "contactName" | "companyName" | "email" | "notes" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["factoryCustomer"]>
+export type FactoryCustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "name" | "phone" | "contactName" | "companyName" | "email" | "notes" | "deliveryAddress" | "deliveryCity" | "affiliateBranchId" | "userId" | "notifyPrefs" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["factoryCustomer"]>
 export type FactoryCustomerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  affiliateBranch?: boolean | Prisma.FactoryCustomer$affiliateBranchArgs<ExtArgs>
+  user?: boolean | Prisma.FactoryCustomer$userArgs<ExtArgs>
   credits?: boolean | Prisma.FactoryCustomer$creditsArgs<ExtArgs>
   reservations?: boolean | Prisma.FactoryCustomer$reservationsArgs<ExtArgs>
+  orderRequests?: boolean | Prisma.FactoryCustomer$orderRequestsArgs<ExtArgs>
   _count?: boolean | Prisma.FactoryCustomerCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type FactoryCustomerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  affiliateBranch?: boolean | Prisma.FactoryCustomer$affiliateBranchArgs<ExtArgs>
+  user?: boolean | Prisma.FactoryCustomer$userArgs<ExtArgs>
 }
 export type FactoryCustomerIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  affiliateBranch?: boolean | Prisma.FactoryCustomer$affiliateBranchArgs<ExtArgs>
+  user?: boolean | Prisma.FactoryCustomer$userArgs<ExtArgs>
 }
 
 export type $FactoryCustomerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "FactoryCustomer"
   objects: {
     branch: Prisma.$BranchPayload<ExtArgs>
+    affiliateBranch: Prisma.$BranchPayload<ExtArgs> | null
+    user: Prisma.$UserPayload<ExtArgs> | null
     credits: Prisma.$FactoryCreditPayload<ExtArgs>[]
     reservations: Prisma.$FactoryReservationPayload<ExtArgs>[]
+    orderRequests: Prisma.$FactoryOrderRequestPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -951,6 +1638,20 @@ export type $FactoryCustomerPayload<ExtArgs extends runtime.Types.Extensions.Int
     companyName: string | null
     email: string | null
     notes: string | null
+    deliveryAddress: string | null
+    deliveryCity: string | null
+    /**
+     * Branche Coccinelle affiliée (BOUTIQUE / RESTAURANT), null si client externe.
+     */
+    affiliateBranchId: string | null
+    /**
+     * Compte portail optionnel.
+     */
+    userId: string | null
+    /**
+     * Préférences notifs : { families?: ("EAU"|"VIN")[], waPromo?: boolean, waStock?: boolean }
+     */
+    notifyPrefs: runtime.JsonValue | null
     active: boolean
     createdAt: Date
     updatedAt: Date
@@ -1349,8 +2050,11 @@ readonly fields: FactoryCustomerFieldRefs;
 export interface Prisma__FactoryCustomerClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  affiliateBranch<T extends Prisma.FactoryCustomer$affiliateBranchArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FactoryCustomer$affiliateBranchArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  user<T extends Prisma.FactoryCustomer$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FactoryCustomer$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   credits<T extends Prisma.FactoryCustomer$creditsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FactoryCustomer$creditsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactoryCreditPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reservations<T extends Prisma.FactoryCustomer$reservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FactoryCustomer$reservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactoryReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  orderRequests<T extends Prisma.FactoryCustomer$orderRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FactoryCustomer$orderRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactoryOrderRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1388,6 +2092,11 @@ export interface FactoryCustomerFieldRefs {
   readonly companyName: Prisma.FieldRef<"FactoryCustomer", 'String'>
   readonly email: Prisma.FieldRef<"FactoryCustomer", 'String'>
   readonly notes: Prisma.FieldRef<"FactoryCustomer", 'String'>
+  readonly deliveryAddress: Prisma.FieldRef<"FactoryCustomer", 'String'>
+  readonly deliveryCity: Prisma.FieldRef<"FactoryCustomer", 'String'>
+  readonly affiliateBranchId: Prisma.FieldRef<"FactoryCustomer", 'String'>
+  readonly userId: Prisma.FieldRef<"FactoryCustomer", 'String'>
+  readonly notifyPrefs: Prisma.FieldRef<"FactoryCustomer", 'Json'>
   readonly active: Prisma.FieldRef<"FactoryCustomer", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"FactoryCustomer", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"FactoryCustomer", 'DateTime'>
@@ -1792,6 +2501,44 @@ export type FactoryCustomerDeleteManyArgs<ExtArgs extends runtime.Types.Extensio
 }
 
 /**
+ * FactoryCustomer.affiliateBranch
+ */
+export type FactoryCustomer$affiliateBranchArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Branch
+   */
+  select?: Prisma.BranchSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Branch
+   */
+  omit?: Prisma.BranchOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BranchInclude<ExtArgs> | null
+  where?: Prisma.BranchWhereInput
+}
+
+/**
+ * FactoryCustomer.user
+ */
+export type FactoryCustomer$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
  * FactoryCustomer.credits
  */
 export type FactoryCustomer$creditsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1837,6 +2584,30 @@ export type FactoryCustomer$reservationsArgs<ExtArgs extends runtime.Types.Exten
   take?: number
   skip?: number
   distinct?: Prisma.FactoryReservationScalarFieldEnum | Prisma.FactoryReservationScalarFieldEnum[]
+}
+
+/**
+ * FactoryCustomer.orderRequests
+ */
+export type FactoryCustomer$orderRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FactoryOrderRequest
+   */
+  select?: Prisma.FactoryOrderRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FactoryOrderRequest
+   */
+  omit?: Prisma.FactoryOrderRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FactoryOrderRequestInclude<ExtArgs> | null
+  where?: Prisma.FactoryOrderRequestWhereInput
+  orderBy?: Prisma.FactoryOrderRequestOrderByWithRelationInput | Prisma.FactoryOrderRequestOrderByWithRelationInput[]
+  cursor?: Prisma.FactoryOrderRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FactoryOrderRequestScalarFieldEnum | Prisma.FactoryOrderRequestScalarFieldEnum[]
 }
 
 /**
