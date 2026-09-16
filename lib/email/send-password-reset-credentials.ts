@@ -1,5 +1,5 @@
 import { sendMail, isSmtpConfigured, getDefaultMailFrom } from "./mailer";
-import { sendResetPasswordWhatsApp } from "@/lib/zindua";
+import { sendResetPasswordWhatsApp } from "@/lib/klambo-whatsapp";
 import { logNotification } from "@/lib/notifications/log";
 
 const APP_NAME = process.env.APP_NAME ?? "Coccinelle";

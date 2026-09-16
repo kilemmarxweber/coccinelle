@@ -1,4 +1,4 @@
-import { sendBranchWhatsAppMessage } from "@/lib/zindua";
+import { sendBranchWhatsAppMessage } from "@/lib/klambo-whatsapp";
 import { resolveNotificationBranch } from "@/lib/notifications/branch-context";
 import { collectBranchPhones } from "@/lib/notifications/collect-branch-phones";
 import { logNotification } from "@/lib/notifications/log";

@@ -294,7 +294,7 @@ export async function inviteFactoryCustomerAccountAction(input: {
     const {
       notifyFactoryAffiliatePortalAccess,
     } = await import("@/lib/factory/notifications");
-    const { isZinduaConfigured } = await import("@/lib/zindua");
+    const { isKlamboWhatsAppConfigured } = await import("@/lib/klambo-whatsapp");
 
     const resolvedEmail = await resolveMemberEmail({
       email: customer.email ?? "",
@@ -345,7 +345,7 @@ export async function inviteFactoryCustomerAccountAction(input: {
       });
 
       let whatsappSent = false;
-      if (isZinduaConfigured()) {
+      if (isKlamboWhatsAppConfigured()) {
         await notifyFactoryAffiliatePortalAccess({
           branchId: input.branchId,
           customerId: customer.id,
@@ -419,7 +419,7 @@ export async function inviteFactoryCustomerAccountAction(input: {
         ok: true,
         email: emailLower,
         temporaryPassword: password,
-        whatsappSent: Boolean(customer.phone?.trim() && isZinduaConfigured()),
+        whatsappSent: Boolean(customer.phone?.trim() && isKlamboWhatsAppConfigured()),
       };
     } catch (e) {
       const { consumeAdminCreatedUserPlainPassword } = await import(

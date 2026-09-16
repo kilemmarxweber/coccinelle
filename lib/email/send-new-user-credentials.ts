@@ -1,5 +1,5 @@
 import { sendMail, isSmtpConfigured, getDefaultMailFrom } from "./mailer";
-import { sendNewUserCredentialsWhatsApp } from "@/lib/zindua";
+import { sendNewUserCredentialsWhatsApp } from "@/lib/klambo-whatsapp";
 import { logNotification } from "@/lib/notifications/log";
 
 const APP_NAME = process.env.APP_NAME ?? "Coccinelle";

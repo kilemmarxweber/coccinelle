@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { resolveWhatsAppTo } from "@/lib/zindua";
+import { resolveWhatsAppTo } from "@/lib/klambo-whatsapp";
 
 /** Téléphones clients / occupants / partenaires d’une branche (E.164 uniques). */
 export async function collectBranchPhones(

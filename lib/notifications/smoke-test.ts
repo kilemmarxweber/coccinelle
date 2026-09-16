@@ -2,12 +2,12 @@
 
 import { isSmtpConfigured, sendMail, getDefaultMailFrom } from "@/lib/email/mailer";
 import {
-  isZinduaConfigured,
+  isKlamboWhatsAppConfigured,
   sendBranchWhatsAppMessage,
-} from "@/lib/zindua";
+} from "@/lib/klambo-whatsapp";
 
 /**
- * Smoke test SMTP + Zindua (dev / admin).
+ * Smoke test SMTP + KlamboWhatsApp (dev / admin).
  * Ne pas exposer en UI publique.
  */
 export async function sendNotificationSmokeTestAction(input: {
@@ -17,7 +17,7 @@ export async function sendNotificationSmokeTestAction(input: {
 }): Promise<{
   ok: true;
   smtp: boolean;
-  zindua: boolean;
+  whatsapp: boolean;
   emailSent: boolean;
   whatsappSent: boolean;
 }> {
@@ -39,7 +39,7 @@ export async function sendNotificationSmokeTestAction(input: {
     emailSent = true;
   }
 
-  if (input.phone?.trim() && isZinduaConfigured()) {
+  if (input.phone?.trim() && isKlamboWhatsAppConfigured()) {
     const wa = await sendBranchWhatsAppMessage({
       to: input.phone,
       name: "Test",
@@ -52,7 +52,7 @@ export async function sendNotificationSmokeTestAction(input: {
   return {
     ok: true,
     smtp: isSmtpConfigured(),
-    zindua: isZinduaConfigured(),
+    whatsapp: isKlamboWhatsAppConfigured(),
     emailSent,
     whatsappSent,
   };

@@ -1,5 +1,5 @@
 import { sendMail, isSmtpConfigured, getDefaultMailFrom } from "@/lib/email/mailer";
-import { sendBranchWhatsAppMessage } from "@/lib/zindua";
+import { sendBranchWhatsAppMessage } from "@/lib/klambo-whatsapp";
 import {
   branchContactLines,
   resolveNotificationBranch,

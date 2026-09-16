@@ -1,12 +1,22 @@
-import { Zindua, type ZinduaSendResult } from "@zindua/sdk";
-
 export const DEFAULT_WHATSAPP_TO = "+243971651881";
 
-export const ZINDUA_MAIL_MIRROR_TEMPLATE =
-  process.env.ZINDUA_WHATSAPP_MAIL_TEMPLATE?.trim() || "notification";
+export const KLAMBO_WHATSAPP_MAIL_TEMPLATE =
+  process.env.KLAMBO_WHATSAPP_MAIL_TEMPLATE?.trim() || "notification";
 
 const APP_NAME = process.env.APP_NAME?.trim() || "Coccinelle";
 const WHATSAPP_CODE_MAX = 3500;
+const DEFAULT_BASE_URL = "https://whatsapp-api.klambocore.com";
+
+export type KlamboSendResult = {
+  id: string;
+  status: string;
+  channel?: string;
+  to?: string;
+  provider_message_id?: string | null;
+  created_at?: string;
+  /** Alias de `id` (compat logs historiques). */
+  logId: string;
+};
 
 function sanitizeWhatsAppVariable(value: string): string {
   return value
@@ -25,36 +35,18 @@ function truncateWhatsAppCode(value: string): string {
 }
 
 function getApiKey(): string | null {
-  return process.env.ZINDUA_API_KEY?.trim() || null;
+  return process.env.KLAMBO_WHATSAPP_API_KEY?.trim() || null;
 }
 
-function getSiteUrl(): string | undefined {
+function getBaseUrl(): string {
   return (
-    process.env.ZINDUA_SITE_URL?.replace(/\/$/, "") ||
-    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
-    process.env.BETTER_AUTH_URL?.replace(/\/$/, "") ||
-    undefined
+    process.env.KLAMBO_WHATSAPP_BASE_URL?.replace(/\/$/, "") ||
+    DEFAULT_BASE_URL
   );
 }
 
-export function isZinduaConfigured(): boolean {
+export function isKlamboWhatsAppConfigured(): boolean {
   return Boolean(getApiKey());
-}
-
-let client: Zindua | null = null;
-
-export function getZindua(): Zindua {
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    throw new Error("ZINDUA_API_KEY manquante dans l'environnement.");
-  }
-  if (!client) {
-    client = new Zindua({
-      apiKey,
-      siteUrl: getSiteUrl(),
-    });
-  }
-  return client;
 }
 
 /** Normalise vers E.164 (formats RDC courants). */
@@ -98,12 +90,40 @@ type SendWhatsAppOptions = {
     [key: string]: string | undefined;
   };
   lang?: string;
+  channel?: "whatsapp" | "sms";
+  idempotencyKey?: string;
 };
+
+async function klamboFetch<T>(
+  path: string,
+  init: RequestInit = {},
+): Promise<T> {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    throw new Error("KLAMBO_WHATSAPP_API_KEY manquante dans l'environnement.");
+  }
+
+  const headers = new Headers(init.headers);
+  headers.set("Authorization", `Bearer ${apiKey}`);
+  if (init.body && !(init.body instanceof FormData) && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  const res = await fetch(`${getBaseUrl()}${path}`, {
+    ...init,
+    headers,
+  });
+  const text = await res.text();
+  if (!res.ok) {
+    throw new Error(text || `HTTP ${res.status}`);
+  }
+  return (text ? JSON.parse(text) : {}) as T;
+}
 
 export async function sendWhatsApp(
   options: SendWhatsAppOptions,
-): Promise<ZinduaSendResult> {
-  const template = options.template ?? ZINDUA_MAIL_MIRROR_TEMPLATE;
+): Promise<KlamboSendResult> {
+  const template = options.template ?? KLAMBO_WHATSAPP_MAIL_TEMPLATE;
   const to = toE164Phone(options.to ?? DEFAULT_WHATSAPP_TO);
   const raw = options.variables ?? {};
   const variables: Record<string, string> = {};
@@ -114,13 +134,32 @@ export async function sendWhatsApp(
     }
   }
 
-  return getZindua().send({
-    to,
-    channel: "whatsapp",
-    template,
-    lang: options.lang ?? "fr",
-    variables,
+  const result = await klamboFetch<{
+    id: string;
+    status: string;
+    channel?: string;
+    to?: string;
+    provider_message_id?: string | null;
+    created_at?: string;
+  }>("/v1/send", {
+    method: "POST",
+    body: JSON.stringify({
+      to,
+      channel: options.channel ?? "whatsapp",
+      type: "template",
+      template,
+      lang: options.lang ?? "fr",
+      variables,
+      idempotency_key:
+        options.idempotencyKey ??
+        `wa-${to}-${template}-${Date.now()}`,
+    }),
   });
+
+  return {
+    ...result,
+    logId: result.id,
+  };
 }
 
 export async function mirrorEmailToWhatsApp(options: {
@@ -129,12 +168,12 @@ export async function mirrorEmailToWhatsApp(options: {
   body: string;
   name?: string | null;
   lang?: string;
-}): Promise<ZinduaSendResult | null> {
-  if (!isZinduaConfigured()) {
+}): Promise<KlamboSendResult | null> {
+  if (!isKlamboWhatsAppConfigured()) {
     if (process.env.NODE_ENV === "development") {
       // eslint-disable-next-line no-console
       console.info(
-        `[mirrorEmailToWhatsApp] Zindua off — skip to=${options.to}`,
+        `[mirrorEmailToWhatsApp] KlamboWhatsApp off — skip to=${options.to}`,
       );
     }
     return null;
@@ -156,7 +195,7 @@ export async function mirrorEmailToWhatsApp(options: {
   try {
     const result = await sendWhatsApp({
       to,
-      template: ZINDUA_MAIL_MIRROR_TEMPLATE,
+      template: KLAMBO_WHATSAPP_MAIL_TEMPLATE,
       lang: options.lang ?? "fr",
       variables: {
         appName: APP_NAME,
@@ -166,7 +205,7 @@ export async function mirrorEmailToWhatsApp(options: {
     });
     // eslint-disable-next-line no-console
     console.info(
-      `[mirrorEmailToWhatsApp] ok to=${to} logId=${result.logId} status=${result.status}`,
+      `[mirrorEmailToWhatsApp] ok to=${to} id=${result.id} status=${result.status}`,
     );
     return result;
   } catch (error) {
@@ -207,7 +246,7 @@ export async function sendNewUserCredentialsWhatsApp(options: {
   organizationName?: string | null;
   branchName?: string | null;
   loginUrl?: string;
-}): Promise<ZinduaSendResult | null> {
+}): Promise<KlamboSendResult | null> {
   const to = resolveWhatsAppTo(options.to);
   if (!to) {
     // eslint-disable-next-line no-console
@@ -216,7 +255,7 @@ export async function sendNewUserCredentialsWhatsApp(options: {
     );
     return null;
   }
-  if (!isZinduaConfigured()) return null;
+  if (!isKlamboWhatsAppConfigured()) return null;
 
   const loginUrl = resolveWhatsAppLoginUrl(options.loginUrl);
   const displayName = options.name.trim() || "Utilisateur";
@@ -240,7 +279,7 @@ export async function sendNewUserCredentialsWhatsApp(options: {
   try {
     const result = await sendWhatsApp({
       to,
-      template: ZINDUA_MAIL_MIRROR_TEMPLATE,
+      template: KLAMBO_WHATSAPP_MAIL_TEMPLATE,
       lang: "fr",
       variables: {
         appName: APP_NAME,
@@ -250,7 +289,7 @@ export async function sendNewUserCredentialsWhatsApp(options: {
     });
     // eslint-disable-next-line no-console
     console.info(
-      `[sendNewUserCredentialsWhatsApp] ok to=${to} logId=${result.logId}`,
+      `[sendNewUserCredentialsWhatsApp] ok to=${to} id=${result.id}`,
     );
     return result;
   } catch (error) {
@@ -270,9 +309,9 @@ export async function sendResetPasswordWhatsApp(options: {
   email: string;
   loginUrl?: string;
   branchName?: string | null;
-}): Promise<ZinduaSendResult | null> {
+}): Promise<KlamboSendResult | null> {
   const to = resolveWhatsAppTo(options.to);
-  if (!to || !isZinduaConfigured()) return null;
+  if (!to || !isKlamboWhatsAppConfigured()) return null;
 
   const loginUrl = resolveWhatsAppLoginUrl(options.loginUrl);
   const branchLabel = options.branchName?.trim() || null;
@@ -312,9 +351,9 @@ export async function sendBranchWhatsAppMessage(options: {
   name?: string | null;
   branchName?: string | null;
   parts: Array<string | null | undefined>;
-}): Promise<ZinduaSendResult | null> {
+}): Promise<KlamboSendResult | null> {
   const to = resolveWhatsAppTo(options.to);
-  if (!to || !isZinduaConfigured()) return null;
+  if (!to || !isKlamboWhatsAppConfigured()) return null;
 
   const branchLabel = options.branchName?.trim() || null;
   const message = buildWhatsAppBody([

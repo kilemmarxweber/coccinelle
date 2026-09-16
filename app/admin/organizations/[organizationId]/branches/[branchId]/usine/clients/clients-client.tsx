@@ -106,7 +106,7 @@ export function UsineClientsClient(props: {
       }
       const wa = res.whatsappSent
         ? " · WhatsApp envoyé"
-        : " · WhatsApp non envoyé (vérifiez Zindua)";
+        : " · WhatsApp non envoyé (vérifiez KlamboWhatsApp)";
       toast.success(
         `Compte : ${res.email} · MDP : ${res.temporaryPassword}${wa}`,
         { duration: 14_000 },

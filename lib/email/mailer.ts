@@ -8,7 +8,7 @@ export type MailPayload = {
   subject: string;
   text: string;
   html?: string;
-  /** Miroir WhatsApp (Zindua) — indépendant du SMTP. */
+  /** Miroir WhatsApp (KlamboWhatsApp) — indépendant du SMTP. */
   whatsappTo?: string | null;
   whatsappName?: string | null;
 };
@@ -91,7 +91,7 @@ export async function deliverMail(payload: {
 function queueWhatsAppMirror(payload: MailPayload): void {
   const phone = payload.whatsappTo?.trim();
   if (!phone) return;
-  void import("@/lib/zindua")
+  void import("@/lib/klambo-whatsapp")
     .then(({ mirrorEmailToWhatsApp }) =>
       mirrorEmailToWhatsApp({
         to: phone,
