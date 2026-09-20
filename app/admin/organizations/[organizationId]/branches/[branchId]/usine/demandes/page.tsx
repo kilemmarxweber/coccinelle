@@ -1,6 +1,9 @@
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { DASH_CARD } from "@/lib/branch/ops-roles";
-import { listFactoryOrderRequestsAction } from "@/lib/factory/actions";
+import {
+  listFactoryFloatProductsAction,
+  listFactoryOrderRequestsAction,
+} from "@/lib/factory/actions";
 import { UsineDemandesClient } from "./demandes-client";
 
 type PageProps = {
@@ -15,16 +18,16 @@ export default async function UsineDemandesPage({ params }: PageProps) {
     requireModule: "usine",
     requireDashCard: DASH_CARD.USINE_CLIENTS,
   });
-  const requests = await listFactoryOrderRequestsAction(
-    organizationId,
-    branchId,
-    "ALL",
-  );
+  const [requests, floatProducts] = await Promise.all([
+    listFactoryOrderRequestsAction(organizationId, branchId, "ALL"),
+    listFactoryFloatProductsAction(organizationId, branchId),
+  ]);
   return (
     <UsineDemandesClient
       organizationId={organizationId}
       branchId={branchId}
       requests={requests}
+      floatProducts={floatProducts}
     />
   );
 }

@@ -1194,7 +1194,8 @@ export async function approveFactoryOrderRequestAction(input: {
   branchId: string;
   requestId: string;
   dueAt: string;
-  lines?: { shopProductId: string; qty: number; unitPriceUsd: number }[];
+  /** Quantités à livrer (peut être partielle). Lignes absentes / qty 0 = non livrées. */
+  lines?: { shopProductId: string; qty: number; unitPriceUsd?: number }[];
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
   const req = await prisma.factoryOrderRequest.findFirst({
@@ -1204,30 +1205,62 @@ export async function approveFactoryOrderRequestAction(input: {
   if (!req) throw new Error("Demande introuvable.");
   if (req.status !== "PENDING") throw new Error("Demande déjà traitée.");
 
+  const floatProducts = await listFactoryFloatProductsAction(
+    input.organizationId,
+    input.branchId,
+  );
+  const freeById = new Map(floatProducts.map((p) => [p.id, p.free]));
+  const priceById = new Map(floatProducts.map((p) => [p.id, p.price]));
+
   const products = await prisma.shopProduct.findMany({
     where: {
       branchId: input.branchId,
       productKind: "FINISHED",
       id: {
-        in: (input.lines ?? req.lines).map((l) => l.shopProductId),
+        in: (input.lines?.length ? input.lines : req.lines).map(
+          (l) => l.shopProductId,
+        ),
       },
     },
   });
   const byId = new Map(products.map((p) => [p.id, p]));
 
-  const creditLines = (input.lines ?? req.lines).map((l) => {
+  const sourceLines = input.lines?.length
+    ? input.lines
+    : req.lines.map((l) => ({
+        shopProductId: l.shopProductId,
+        qty: l.qty,
+        unitPriceUsd: l.unitPriceUsd ?? undefined,
+      }));
+
+  const creditLines: {
+    shopProductId: string;
+    qty: number;
+    unitPriceUsd: number;
+  }[] = [];
+
+  for (const l of sourceLines) {
     const p = byId.get(l.shopProductId);
     if (!p) throw new Error("Produit fini introuvable.");
-    const qty = Math.max(1, Math.floor(l.qty));
-    const unitPriceUsd =
-      "unitPriceUsd" in l && typeof l.unitPriceUsd === "number"
-        ? roundMoney(l.unitPriceUsd)
-        : roundMoney(
-            (l as { unitPriceUsd?: number | null }).unitPriceUsd ??
-              p.price,
-          );
-    return { shopProductId: p.id, qty, unitPriceUsd };
-  });
+    const requested = Math.max(0, Math.floor(Number(l.qty) || 0));
+    if (requested <= 0) continue;
+    const free = freeById.get(p.id) ?? 0;
+    if (free <= 0) continue;
+    const qty = Math.min(requested, free);
+    if (qty <= 0) continue;
+    const unitPriceUsd = roundMoney(
+      typeof l.unitPriceUsd === "number" && Number.isFinite(l.unitPriceUsd)
+        ? l.unitPriceUsd
+        : (priceById.get(p.id) ?? p.price),
+    );
+    creditLines.push({ shopProductId: p.id, qty, unitPriceUsd });
+  }
+
+  if (!creditLines.length) {
+    throw new Error(
+      "Aucune quantité livrable sur le float. Réassortissez ou baissez les quantités.",
+    );
+  }
 
   const credit = await createFactoryCreditAction({
     organizationId: input.organizationId,
