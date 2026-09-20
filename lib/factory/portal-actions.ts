@@ -171,6 +171,11 @@ export async function createAffiliateOrderRequestAction(input: {
   notes?: string;
 }) {
   const { customer, org } = await requireAffiliateCustomer(input.orgSlug);
+  if (!customer.phone?.trim()) {
+    throw new Error(
+      "Téléphone manquant sur votre fiche affilié — contactez l’usine avant de commander.",
+    );
+  }
   if (!input.lines.length) throw new Error("Ajoutez au moins un produit.");
 
   const products = await prisma.shopProduct.findMany({
@@ -182,17 +187,28 @@ export async function createAffiliateOrderRequestAction(input: {
     },
   });
   const byId = new Map(products.map((p) => [p.id, p]));
-  const lines = input.lines.map((l) => {
+  const merged = new Map<
+    string,
+    { shopProductId: string; nameSnapshot: string; qty: number; unitPriceUsd: number }
+  >();
+  for (const l of input.lines) {
     const p = byId.get(l.shopProductId);
     if (!p) throw new Error("Produit introuvable.");
-    const qty = Math.max(1, Math.floor(l.qty));
-    return {
-      shopProductId: p.id,
-      nameSnapshot: p.name,
-      qty,
-      unitPriceUsd: p.price,
-    };
-  });
+    const qty = Math.floor(Number(l.qty) || 0);
+    if (qty < 1) throw new Error(`Quantité invalide pour « ${p.name} ».`);
+    const prev = merged.get(p.id);
+    if (prev) {
+      prev.qty += qty;
+    } else {
+      merged.set(p.id, {
+        shopProductId: p.id,
+        nameSnapshot: p.name,
+        qty,
+        unitPriceUsd: p.price,
+      });
+    }
+  }
+  const lines = [...merged.values()];
 
   let requestedDeliveryAt: Date | null = null;
   if (input.requestedDeliveryAt) {
@@ -232,6 +248,32 @@ export async function createAffiliateOrderRequestAction(input: {
   revalidatePath(`${portalBase(input.orgSlug)}/demande`);
   revalidatePath(usineRoutes.demandes(org.id, customer.branchId));
   return req;
+}
+
+export async function cancelAffiliateOrderRequestAction(input: {
+  orgSlug: string;
+  requestId: string;
+}) {
+  const { customer, org } = await requireAffiliateCustomer(input.orgSlug);
+  const updated = await prisma.factoryOrderRequest.updateMany({
+    where: {
+      id: input.requestId,
+      customerId: customer.id,
+      branchId: customer.branchId,
+      status: "PENDING",
+    },
+    data: {
+      status: "CANCELLED",
+      reviewedAt: new Date(),
+      rejectReason: "Annulée par l’affilié",
+    },
+  });
+  if (updated.count !== 1) {
+    throw new Error("Demande introuvable ou déjà traitée.");
+  }
+  revalidatePath(portalBase(input.orgSlug));
+  revalidatePath(usineRoutes.demandes(org.id, customer.branchId));
+  return { ok: true as const };
 }
 
 export async function updateAffiliateNotifyPrefsAction(input: {

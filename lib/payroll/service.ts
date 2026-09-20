@@ -26,8 +26,12 @@ import {
   advanceCeilingUsd,
   attendancePayLabel,
   computePayslipTotals,
+  countPaidWorkdaysToDate,
+  countUnpaidWorkdays,
   defaultPayTreatment,
+  resolveWorkdayUiStatus,
   usdToCdf,
+  workdayUiLabel,
   type AttendanceKindCode,
 } from "@/lib/payroll/engine";
 import {
@@ -742,13 +746,64 @@ function earnedToDateUsd(input: {
   todayYmd: string;
   dailyRateUsd: number;
 }): number {
-  const paid = input.workYmds.filter((ymd) => {
-    if (ymd > input.todayYmd) return false;
-    const day = input.days.find((d) => d.workDate === ymd);
-    if (!day) return false;
-    return day.payTreatment === "PAID";
-  }).length;
+  const paid = countPaidWorkdaysToDate({
+    workYmds: input.workYmds,
+    days: input.days,
+    asOfYmd: input.todayYmd,
+  });
   return roundMoney(paid * input.dailyRateUsd);
+}
+
+function summarizeAgent(input: {
+  agent: AgentRow;
+  workYmds: string[];
+  days: AttendanceDto[];
+  advancesUsd: number;
+  payslip: PayslipDto | null;
+  asOfYmd: string;
+}): MonthAgentSummary {
+  const byDate = new Map(input.days.map((d) => [d.workDate, d]));
+  let presentDays = 0;
+  let leaveDays = 0;
+  let notifiedDays = 0;
+  let justifiedDays = 0;
+  for (const ymd of input.workYmds) {
+    const day = byDate.get(ymd);
+    if (!day) continue;
+    if (day.kind === "PRESENT") presentDays += 1;
+    if (day.kind === "LEAVE") leaveDays += 1;
+    if (day.kind === "ABSENT_NOTIFIED") notifiedDays += 1;
+    if (day.kind === "ABSENT" && day.payTreatment === "PAID") justifiedDays += 1;
+  }
+  const unpaidDays = countUnpaidWorkdays({
+    workYmds: input.workYmds,
+    days: input.days,
+    asOfYmd: input.asOfYmd,
+  });
+  const totals = computePayslipTotals({
+    expectedDays: input.workYmds.length,
+    unpaidAbsenceDays: unpaidDays,
+    dailyRateUsd: input.agent.profile.effectiveDailyRateUsd,
+    advancesUsd: input.advancesUsd,
+  });
+  return {
+    branchMemberId: input.agent.branchMemberId,
+    name: input.agent.name,
+    dailyRateUsd: input.agent.profile.effectiveDailyRateUsd,
+    expectedDays: input.workYmds.length,
+    presentDays,
+    leaveDays,
+    notifiedDays,
+    justifiedDays,
+    unpaidDays,
+    grossUsd: totals.grossUsd,
+    absenceDeductionUsd: totals.absenceDeductionUsd,
+    advancesUsd: totals.advancesUsd,
+    netUsd: totals.netUsd,
+    payoutMethod: input.agent.profile.payoutMethod,
+    payoutReady: payoutReady(input.agent.profile),
+    payslip: input.payslip,
+  };
 }
 
 export async function requestAdvance(input: {
@@ -1030,54 +1085,6 @@ export async function listLeaveAndAdvances(branchId: string, periodId?: string) 
   };
 }
 
-function summarizeAgent(input: {
-  agent: AgentRow;
-  workYmds: string[];
-  days: AttendanceDto[];
-  advancesUsd: number;
-  payslip: PayslipDto | null;
-}): MonthAgentSummary {
-  const byDate = new Map(input.days.map((d) => [d.workDate, d]));
-  let presentDays = 0;
-  let leaveDays = 0;
-  let notifiedDays = 0;
-  let justifiedDays = 0;
-  let unpaidDays = 0;
-  for (const ymd of input.workYmds) {
-    const day = byDate.get(ymd);
-    if (!day) continue;
-    if (day.kind === "PRESENT") presentDays += 1;
-    if (day.kind === "LEAVE") leaveDays += 1;
-    if (day.kind === "ABSENT_NOTIFIED") notifiedDays += 1;
-    if (day.kind === "ABSENT" && day.payTreatment === "PAID") justifiedDays += 1;
-    if (day.payTreatment === "UNPAID") unpaidDays += 1;
-  }
-  const totals = computePayslipTotals({
-    expectedDays: input.workYmds.length,
-    unpaidAbsenceDays: unpaidDays,
-    dailyRateUsd: input.agent.profile.effectiveDailyRateUsd,
-    advancesUsd: input.advancesUsd,
-  });
-  return {
-    branchMemberId: input.agent.branchMemberId,
-    name: input.agent.name,
-    dailyRateUsd: input.agent.profile.effectiveDailyRateUsd,
-    expectedDays: input.workYmds.length,
-    presentDays,
-    leaveDays,
-    notifiedDays,
-    justifiedDays,
-    unpaidDays,
-    grossUsd: totals.grossUsd,
-    absenceDeductionUsd: totals.absenceDeductionUsd,
-    advancesUsd: totals.advancesUsd,
-    netUsd: totals.netUsd,
-    payoutMethod: input.agent.profile.payoutMethod,
-    payoutReady: payoutReady(input.agent.profile),
-    payslip: input.payslip,
-  };
-}
-
 export async function getMonthPayload(input: {
   branchId: string;
   year?: number;
@@ -1147,6 +1154,10 @@ export async function getMonthPayload(input: {
             sentAt: slip.sentAt?.toISOString() ?? null,
           }
         : null,
+      asOfYmd:
+        period.status === "LOCKED" || period.status === "PAID"
+          ? workYmds[workYmds.length - 1] ?? todayYmd(tz)
+          : todayYmd(tz),
     });
   });
 
@@ -1271,7 +1282,11 @@ export async function setPeriodStatus(input: {
       .filter((d) => d.branchMemberId === agent.branchMemberId)
       .map(mapAttendance);
     const agentAdv = advances.filter((a) => a.branchMemberId === agent.branchMemberId);
-    const unpaidDays = agentDays.filter((d) => d.payTreatment === "UNPAID").length;
+    const unpaidDays = countUnpaidWorkdays({
+      workYmds,
+      days: agentDays,
+      asOfYmd: workYmds[workYmds.length - 1] ?? todayYmd(input.timezone),
+    });
     const totals = computePayslipTotals({
       expectedDays: workYmds.length,
       unpaidAbsenceDays: unpaidDays,
@@ -1536,13 +1551,14 @@ export async function getSelfPayload(input: {
     take: 12,
   });
   const mappedDays = days.map(mapAttendance);
+  const today = todayYmd(tz);
   const paidAdv = advances
     .filter((a) => a.status === "PAID")
     .reduce((s, a) => s + a.amountUsd, 0);
   const earned = earnedToDateUsd({
     days: mappedDays,
     workYmds,
-    todayYmd: todayYmd(tz),
+    todayYmd: today,
     dailyRateUsd: rate,
   });
   const cap = advanceCeilingUsd({
@@ -1550,18 +1566,50 @@ export async function getSelfPayload(input: {
     alreadyAdvancedUsd: paidAdv,
     advanceCapPct: settings.advanceCapPct,
   });
-  const unpaid = mappedDays.filter((d) => d.payTreatment === "UNPAID").length;
+  const unpaidOpen = countUnpaidWorkdays({
+    workYmds,
+    days: mappedDays,
+    asOfYmd: today,
+  });
+  const paidToDate = countPaidWorkdaysToDate({
+    workYmds,
+    days: mappedDays,
+    asOfYmd: today,
+  });
+  const expectedToDate = workYmds.filter((d) => d <= today).length;
   const live = computePayslipTotals({
-    expectedDays: workYmds.filter((d) => d <= todayYmd(tz)).length,
-    unpaidAbsenceDays: mappedDays.filter(
-      (d) => d.payTreatment === "UNPAID" && d.workDate <= todayYmd(tz),
-    ).length,
+    expectedDays: workYmds.length,
+    unpaidAbsenceDays: unpaidOpen,
     dailyRateUsd: rate,
     advancesUsd: paidAdv,
+  });
+  const byDate = new Map(mappedDays.map((d) => [d.workDate, d]));
+  const calendar = workYmds.map((ymd) => {
+    const day = byDate.get(ymd) ?? null;
+    const status = resolveWorkdayUiStatus({
+      ymd,
+      todayYmd: today,
+      day,
+    });
+    const payLabel =
+      day?.payLabel ??
+      (status === "ABSENT_MISSING"
+        ? `−${rate.toFixed(2)} $`
+        : status === "FUTURE"
+          ? "—"
+          : workdayUiLabel(status));
+    return {
+      ymd,
+      status,
+      statusLabel: workdayUiLabel(status),
+      payLabel,
+      day,
+    };
   });
   return {
     branchName: branch.name,
     timezone: tz,
+    todayYmd: today,
     settings,
     period: periodDto(period),
     member: {
@@ -1573,10 +1621,16 @@ export async function getSelfPayload(input: {
     },
     days: mappedDays,
     workYmds,
-    unpaidOpen: unpaid,
+    calendar,
+    expectedDaysMonth: workYmds.length,
+    expectedDaysToDate: expectedToDate,
+    paidDaysToDate: paidToDate,
+    unpaidOpen,
     earnedUsd: earned,
     advancesUsd: paidAdv,
     remainingUsd: live.netUsd,
+    absenceDeductionUsd: live.absenceDeductionUsd,
+    grossUsd: live.grossUsd,
     advanceCapUsd: cap,
     advances: advances.map(
       (a): AdvanceDto => ({

@@ -3,7 +3,10 @@ import { describe, it } from "node:test";
 import {
   advanceCeilingUsd,
   computePayslipTotals,
+  countPaidWorkdaysToDate,
+  countUnpaidWorkdays,
   defaultPayTreatment,
+  resolveWorkdayUiStatus,
 } from "./engine";
 import { canNotifyAbsence, parseWorkWeek, workingYmdsInMonth } from "./dates";
 import { DEFAULT_WORK_WEEK } from "./constants";
@@ -114,6 +117,55 @@ describe("paie journalière — formules §4", () => {
         notifyBeforeHour: 18,
       }),
       false,
+    );
+  });
+
+  it("jours non pointés ≤ aujourd’hui comptent comme UNPAID", () => {
+    const workYmds = ["2026-09-18", "2026-09-19", "2026-09-20", "2026-09-21"];
+    const days = [{ workDate: "2026-09-18", payTreatment: "PAID" as const }];
+    assert.equal(
+      countUnpaidWorkdays({ workYmds, days, asOfYmd: "2026-09-20" }),
+      2,
+    );
+    assert.equal(
+      countPaidWorkdaysToDate({ workYmds, days, asOfYmd: "2026-09-20" }),
+      1,
+    );
+    assert.equal(
+      resolveWorkdayUiStatus({
+        ymd: "2026-09-20",
+        todayYmd: "2026-09-20",
+        day: null,
+      }),
+      "ABSENT_MISSING",
+    );
+    assert.equal(
+      resolveWorkdayUiStatus({
+        ymd: "2026-09-18",
+        todayYmd: "2026-09-20",
+        day: { kind: "PRESENT", payTreatment: "PAID" },
+      }),
+      "PRESENT",
+    );
+    assert.equal(
+      resolveWorkdayUiStatus({
+        ymd: "2026-09-19",
+        todayYmd: "2026-09-20",
+        day: { kind: "LEAVE", payTreatment: "PAID" },
+      }),
+      "LEAVE",
+    );
+    assert.equal(
+      resolveWorkdayUiStatus({
+        ymd: "2026-09-19",
+        todayYmd: "2026-09-20",
+        day: {
+          kind: "ABSENT",
+          payTreatment: "PAID",
+          justificationStatus: "ACCEPTED",
+        },
+      }),
+      "ABSENT_JUSTIFIED",
     );
   });
 });

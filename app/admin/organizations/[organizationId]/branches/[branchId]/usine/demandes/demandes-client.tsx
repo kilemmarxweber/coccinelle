@@ -156,7 +156,14 @@ export function UsineDemandesClient(props: {
         if (line.shopProductId !== shopProductId) return line;
         const next = { ...line, ...patch };
         if (typeof patch.qty === "number") {
-          next.qty = Math.max(0, Math.min(line.free, Math.floor(patch.qty) || 0));
+          next.qty = Math.max(
+            0,
+            Math.min(
+              line.requestedQty,
+              line.free,
+              Math.floor(patch.qty) || 0,
+            ),
+          );
         }
         if (patch.selected === true) {
           next.selected = true;
@@ -229,7 +236,11 @@ export function UsineDemandesClient(props: {
           dueAt,
           lines,
         });
-        toast.success(`Demande validée · crédit ${credit.number}`);
+        toast.success(
+          credit.residualRequestId
+            ? `Demande validée · crédit ${credit.number} · reliquat créé`
+            : `Demande validée · crédit ${credit.number}`,
+        );
         setDraftsByRequest((prev) => {
           const next = { ...prev };
           delete next[requestId];

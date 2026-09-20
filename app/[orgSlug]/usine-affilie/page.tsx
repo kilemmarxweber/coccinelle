@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getPublicOrganizationBySlug } from "@/lib/pwa/org";
 import { getAffiliateDashboardAction, getAffiliatePortalContextAction } from "@/lib/factory/portal-actions";
 import { AffilieSignInPrompt } from "./sign-in-prompt";
+import { AffilieCancelRequestButton } from "./cancel-request-button";
 
 type PageProps = {
   params: Promise<{ orgSlug: string }>;
@@ -108,7 +109,15 @@ export default async function UsineAffilieHomePage({ params }: PageProps) {
                   <span>
                     {r.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}
                   </span>
-                  <span className="text-muted-foreground">{r.status}</span>
+                  <span className="flex items-center gap-2 text-muted-foreground">
+                    {r.status}
+                    {r.status === "PENDING" ? (
+                      <AffilieCancelRequestButton
+                        orgSlug={orgSlug}
+                        requestId={r.id}
+                      />
+                    ) : null}
+                  </span>
                 </div>
                 {r.rejectReason ? (
                   <p className="mt-1 text-xs text-destructive">{r.rejectReason}</p>

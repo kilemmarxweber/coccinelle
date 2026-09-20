@@ -1558,7 +1558,7 @@ export async function consumeShopServiceFloatInTx(
   tx: Prisma.TransactionClient,
   branchId: string,
   lines: { productId: string; quantity: number; name?: string }[],
-  opts?: { excludeSaleId?: string },
+  opts?: { excludeSaleId?: string; excludeReservationId?: string },
 ) {
   const session = await tx.serviceStockSession.findFirst({
     where: {
@@ -1599,7 +1599,15 @@ export async function consumeShopServiceFloatInTx(
     }
   }
   const reservationHolds = await tx.factoryReservationLine.findMany({
-    where: { reservation: { branchId, status: "HOLD" } },
+    where: {
+      reservation: {
+        branchId,
+        status: "HOLD",
+        ...(opts?.excludeReservationId
+          ? { id: { not: opts.excludeReservationId } }
+          : {}),
+      },
+    },
   });
   for (const h of reservationHolds) {
     heldMap.set(
@@ -1616,10 +1624,11 @@ export async function consumeShopServiceFloatInTx(
   const needed = new Map<string, number>();
   for (const line of lines) {
     if (!line.productId) continue;
-    needed.set(
-      line.productId,
-      (needed.get(line.productId) ?? 0) + Math.max(1, line.quantity),
-    );
+    const qty = Math.floor(Number(line.quantity) || 0);
+    if (qty <= 0) {
+      throw new Error("Quantité float invalide (doit être ≥ 1).");
+    }
+    needed.set(line.productId, (needed.get(line.productId) ?? 0) + qty);
   }
 
   for (const [productId, qty] of needed) {
@@ -1633,20 +1642,44 @@ export async function consumeShopServiceFloatInTx(
         `« ${name} » n’est pas sur le float — attribuez-le via Service stock.`,
       );
     }
-    const rem = remainingFloat(fl) - (heldMap.get(productId) ?? 0);
+
+    const locked = await tx.$queryRaw<
+      Array<{
+        id: string;
+        qtyAttributed: number;
+        qtySold: number;
+        qtyLoss: number;
+      }>
+    >`
+      SELECT id, "qtyAttributed", "qtySold", "qtyLoss"
+      FROM "ServiceStockLine"
+      WHERE id = ${fl.id}
+      FOR UPDATE
+    `;
+    const row = locked[0];
+    if (!row) {
+      throw new Error(`Ligne float introuvable pour « ${name} ».`);
+    }
+    const rem =
+      remainingFloat(row) - (heldMap.get(productId) ?? 0);
     if (rem < qty) {
       throw new Error(
         `Float insuffisant pour « ${name} » (restant ${Math.max(0, rem)}). Demandez un réassort.`,
       );
     }
-  }
 
-  for (const [productId, qty] of needed) {
-    const fl = floatLines.get(productId)!;
-    await tx.serviceStockLine.update({
-      where: { id: fl.id },
-      data: { qtySold: fl.qtySold + qty },
+    const updated = await tx.serviceStockLine.updateMany({
+      where: {
+        id: row.id,
+        qtySold: row.qtySold,
+      },
+      data: { qtySold: row.qtySold + qty },
     });
+    if (updated.count !== 1) {
+      throw new Error(
+        `Conflit de stock float pour « ${name} ». Réessayez.`,
+      );
+    }
   }
 
   return session.id;
