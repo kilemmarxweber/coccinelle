@@ -18,7 +18,14 @@ export default async function OrgPwaLayout({
   if (!org) notFound();
 
   return (
-    <div className="min-h-svh bg-background">
+    <div
+      className="min-h-svh bg-background"
+      style={
+        org.customerUiEnabled
+          ? ({ backgroundColor: org.customerUiTheme.background } as const)
+          : undefined
+      }
+    >
       <ApplyCustomerUiTheme
         theme={org.customerUiTheme}
         enabled={org.customerUiEnabled}

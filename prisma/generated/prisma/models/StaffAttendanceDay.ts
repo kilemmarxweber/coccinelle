@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model StaffAttendanceDay
- * Un jour × un agent. Jamais supprimé.
+ * Un jour × un agent. Jamais supprimé (sauf correction avant clôture).
  */
 export type StaffAttendanceDayModel = runtime.Types.Result.DefaultSelection<Prisma.$StaffAttendanceDayPayload>
 
@@ -43,6 +43,8 @@ export type StaffAttendanceDayMinAggregateOutputType = {
   kind: $Enums.AttendanceKind | null
   payTreatment: $Enums.PayTreatment | null
   dailyRateUsd: number | null
+  checkIn: Date | null
+  checkOut: Date | null
   justificationStatus: $Enums.JustificationStatus | null
   justificationNote: string | null
   absenceNoticeSentAt: Date | null
@@ -61,6 +63,8 @@ export type StaffAttendanceDayMaxAggregateOutputType = {
   kind: $Enums.AttendanceKind | null
   payTreatment: $Enums.PayTreatment | null
   dailyRateUsd: number | null
+  checkIn: Date | null
+  checkOut: Date | null
   justificationStatus: $Enums.JustificationStatus | null
   justificationNote: string | null
   absenceNoticeSentAt: Date | null
@@ -79,6 +83,8 @@ export type StaffAttendanceDayCountAggregateOutputType = {
   kind: number
   payTreatment: number
   dailyRateUsd: number
+  checkIn: number
+  checkOut: number
   justificationStatus: number
   justificationNote: number
   absenceNoticeSentAt: number
@@ -107,6 +113,8 @@ export type StaffAttendanceDayMinAggregateInputType = {
   kind?: true
   payTreatment?: true
   dailyRateUsd?: true
+  checkIn?: true
+  checkOut?: true
   justificationStatus?: true
   justificationNote?: true
   absenceNoticeSentAt?: true
@@ -125,6 +133,8 @@ export type StaffAttendanceDayMaxAggregateInputType = {
   kind?: true
   payTreatment?: true
   dailyRateUsd?: true
+  checkIn?: true
+  checkOut?: true
   justificationStatus?: true
   justificationNote?: true
   absenceNoticeSentAt?: true
@@ -143,6 +153,8 @@ export type StaffAttendanceDayCountAggregateInputType = {
   kind?: true
   payTreatment?: true
   dailyRateUsd?: true
+  checkIn?: true
+  checkOut?: true
   justificationStatus?: true
   justificationNote?: true
   absenceNoticeSentAt?: true
@@ -248,6 +260,8 @@ export type StaffAttendanceDayGroupByOutputType = {
   kind: $Enums.AttendanceKind
   payTreatment: $Enums.PayTreatment
   dailyRateUsd: number
+  checkIn: Date | null
+  checkOut: Date | null
   justificationStatus: $Enums.JustificationStatus | null
   justificationNote: string | null
   absenceNoticeSentAt: Date | null
@@ -289,6 +303,8 @@ export type StaffAttendanceDayWhereInput = {
   kind?: Prisma.EnumAttendanceKindFilter<"StaffAttendanceDay"> | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentFilter<"StaffAttendanceDay"> | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatFilter<"StaffAttendanceDay"> | number
+  checkIn?: Prisma.DateTimeNullableFilter<"StaffAttendanceDay"> | Date | string | null
+  checkOut?: Prisma.DateTimeNullableFilter<"StaffAttendanceDay"> | Date | string | null
   justificationStatus?: Prisma.EnumJustificationStatusNullableFilter<"StaffAttendanceDay"> | $Enums.JustificationStatus | null
   justificationNote?: Prisma.StringNullableFilter<"StaffAttendanceDay"> | string | null
   absenceNoticeSentAt?: Prisma.DateTimeNullableFilter<"StaffAttendanceDay"> | Date | string | null
@@ -310,6 +326,8 @@ export type StaffAttendanceDayOrderByWithRelationInput = {
   kind?: Prisma.SortOrder
   payTreatment?: Prisma.SortOrder
   dailyRateUsd?: Prisma.SortOrder
+  checkIn?: Prisma.SortOrderInput | Prisma.SortOrder
+  checkOut?: Prisma.SortOrderInput | Prisma.SortOrder
   justificationStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   justificationNote?: Prisma.SortOrderInput | Prisma.SortOrder
   absenceNoticeSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -335,6 +353,8 @@ export type StaffAttendanceDayWhereUniqueInput = Prisma.AtLeast<{
   kind?: Prisma.EnumAttendanceKindFilter<"StaffAttendanceDay"> | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentFilter<"StaffAttendanceDay"> | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatFilter<"StaffAttendanceDay"> | number
+  checkIn?: Prisma.DateTimeNullableFilter<"StaffAttendanceDay"> | Date | string | null
+  checkOut?: Prisma.DateTimeNullableFilter<"StaffAttendanceDay"> | Date | string | null
   justificationStatus?: Prisma.EnumJustificationStatusNullableFilter<"StaffAttendanceDay"> | $Enums.JustificationStatus | null
   justificationNote?: Prisma.StringNullableFilter<"StaffAttendanceDay"> | string | null
   absenceNoticeSentAt?: Prisma.DateTimeNullableFilter<"StaffAttendanceDay"> | Date | string | null
@@ -356,6 +376,8 @@ export type StaffAttendanceDayOrderByWithAggregationInput = {
   kind?: Prisma.SortOrder
   payTreatment?: Prisma.SortOrder
   dailyRateUsd?: Prisma.SortOrder
+  checkIn?: Prisma.SortOrderInput | Prisma.SortOrder
+  checkOut?: Prisma.SortOrderInput | Prisma.SortOrder
   justificationStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   justificationNote?: Prisma.SortOrderInput | Prisma.SortOrder
   absenceNoticeSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -382,6 +404,8 @@ export type StaffAttendanceDayScalarWhereWithAggregatesInput = {
   kind?: Prisma.EnumAttendanceKindWithAggregatesFilter<"StaffAttendanceDay"> | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentWithAggregatesFilter<"StaffAttendanceDay"> | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatWithAggregatesFilter<"StaffAttendanceDay"> | number
+  checkIn?: Prisma.DateTimeNullableWithAggregatesFilter<"StaffAttendanceDay"> | Date | string | null
+  checkOut?: Prisma.DateTimeNullableWithAggregatesFilter<"StaffAttendanceDay"> | Date | string | null
   justificationStatus?: Prisma.EnumJustificationStatusNullableWithAggregatesFilter<"StaffAttendanceDay"> | $Enums.JustificationStatus | null
   justificationNote?: Prisma.StringNullableWithAggregatesFilter<"StaffAttendanceDay"> | string | null
   absenceNoticeSentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"StaffAttendanceDay"> | Date | string | null
@@ -397,6 +421,8 @@ export type StaffAttendanceDayCreateInput = {
   kind: $Enums.AttendanceKind
   payTreatment: $Enums.PayTreatment
   dailyRateUsd: number
+  checkIn?: Date | string | null
+  checkOut?: Date | string | null
   justificationStatus?: $Enums.JustificationStatus | null
   justificationNote?: string | null
   absenceNoticeSentAt?: Date | string | null
@@ -418,6 +444,8 @@ export type StaffAttendanceDayUncheckedCreateInput = {
   kind: $Enums.AttendanceKind
   payTreatment: $Enums.PayTreatment
   dailyRateUsd: number
+  checkIn?: Date | string | null
+  checkOut?: Date | string | null
   justificationStatus?: $Enums.JustificationStatus | null
   justificationNote?: string | null
   absenceNoticeSentAt?: Date | string | null
@@ -433,6 +461,8 @@ export type StaffAttendanceDayUpdateInput = {
   kind?: Prisma.EnumAttendanceKindFieldUpdateOperationsInput | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentFieldUpdateOperationsInput | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  checkIn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkOut?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   justificationStatus?: Prisma.NullableEnumJustificationStatusFieldUpdateOperationsInput | $Enums.JustificationStatus | null
   justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   absenceNoticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -454,6 +484,8 @@ export type StaffAttendanceDayUncheckedUpdateInput = {
   kind?: Prisma.EnumAttendanceKindFieldUpdateOperationsInput | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentFieldUpdateOperationsInput | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  checkIn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkOut?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   justificationStatus?: Prisma.NullableEnumJustificationStatusFieldUpdateOperationsInput | $Enums.JustificationStatus | null
   justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   absenceNoticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -472,6 +504,8 @@ export type StaffAttendanceDayCreateManyInput = {
   kind: $Enums.AttendanceKind
   payTreatment: $Enums.PayTreatment
   dailyRateUsd: number
+  checkIn?: Date | string | null
+  checkOut?: Date | string | null
   justificationStatus?: $Enums.JustificationStatus | null
   justificationNote?: string | null
   absenceNoticeSentAt?: Date | string | null
@@ -487,6 +521,8 @@ export type StaffAttendanceDayUpdateManyMutationInput = {
   kind?: Prisma.EnumAttendanceKindFieldUpdateOperationsInput | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentFieldUpdateOperationsInput | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  checkIn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkOut?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   justificationStatus?: Prisma.NullableEnumJustificationStatusFieldUpdateOperationsInput | $Enums.JustificationStatus | null
   justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   absenceNoticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -505,6 +541,8 @@ export type StaffAttendanceDayUncheckedUpdateManyInput = {
   kind?: Prisma.EnumAttendanceKindFieldUpdateOperationsInput | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentFieldUpdateOperationsInput | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  checkIn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkOut?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   justificationStatus?: Prisma.NullableEnumJustificationStatusFieldUpdateOperationsInput | $Enums.JustificationStatus | null
   justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   absenceNoticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -538,6 +576,8 @@ export type StaffAttendanceDayCountOrderByAggregateInput = {
   kind?: Prisma.SortOrder
   payTreatment?: Prisma.SortOrder
   dailyRateUsd?: Prisma.SortOrder
+  checkIn?: Prisma.SortOrder
+  checkOut?: Prisma.SortOrder
   justificationStatus?: Prisma.SortOrder
   justificationNote?: Prisma.SortOrder
   absenceNoticeSentAt?: Prisma.SortOrder
@@ -560,6 +600,8 @@ export type StaffAttendanceDayMaxOrderByAggregateInput = {
   kind?: Prisma.SortOrder
   payTreatment?: Prisma.SortOrder
   dailyRateUsd?: Prisma.SortOrder
+  checkIn?: Prisma.SortOrder
+  checkOut?: Prisma.SortOrder
   justificationStatus?: Prisma.SortOrder
   justificationNote?: Prisma.SortOrder
   absenceNoticeSentAt?: Prisma.SortOrder
@@ -578,6 +620,8 @@ export type StaffAttendanceDayMinOrderByAggregateInput = {
   kind?: Prisma.SortOrder
   payTreatment?: Prisma.SortOrder
   dailyRateUsd?: Prisma.SortOrder
+  checkIn?: Prisma.SortOrder
+  checkOut?: Prisma.SortOrder
   justificationStatus?: Prisma.SortOrder
   justificationNote?: Prisma.SortOrder
   absenceNoticeSentAt?: Prisma.SortOrder
@@ -735,6 +779,8 @@ export type StaffAttendanceDayCreateWithoutBranchInput = {
   kind: $Enums.AttendanceKind
   payTreatment: $Enums.PayTreatment
   dailyRateUsd: number
+  checkIn?: Date | string | null
+  checkOut?: Date | string | null
   justificationStatus?: $Enums.JustificationStatus | null
   justificationNote?: string | null
   absenceNoticeSentAt?: Date | string | null
@@ -754,6 +800,8 @@ export type StaffAttendanceDayUncheckedCreateWithoutBranchInput = {
   kind: $Enums.AttendanceKind
   payTreatment: $Enums.PayTreatment
   dailyRateUsd: number
+  checkIn?: Date | string | null
+  checkOut?: Date | string | null
   justificationStatus?: $Enums.JustificationStatus | null
   justificationNote?: string | null
   absenceNoticeSentAt?: Date | string | null
@@ -801,6 +849,8 @@ export type StaffAttendanceDayScalarWhereInput = {
   kind?: Prisma.EnumAttendanceKindFilter<"StaffAttendanceDay"> | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentFilter<"StaffAttendanceDay"> | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatFilter<"StaffAttendanceDay"> | number
+  checkIn?: Prisma.DateTimeNullableFilter<"StaffAttendanceDay"> | Date | string | null
+  checkOut?: Prisma.DateTimeNullableFilter<"StaffAttendanceDay"> | Date | string | null
   justificationStatus?: Prisma.EnumJustificationStatusNullableFilter<"StaffAttendanceDay"> | $Enums.JustificationStatus | null
   justificationNote?: Prisma.StringNullableFilter<"StaffAttendanceDay"> | string | null
   absenceNoticeSentAt?: Prisma.DateTimeNullableFilter<"StaffAttendanceDay"> | Date | string | null
@@ -816,6 +866,8 @@ export type StaffAttendanceDayCreateWithoutBranchMemberInput = {
   kind: $Enums.AttendanceKind
   payTreatment: $Enums.PayTreatment
   dailyRateUsd: number
+  checkIn?: Date | string | null
+  checkOut?: Date | string | null
   justificationStatus?: $Enums.JustificationStatus | null
   justificationNote?: string | null
   absenceNoticeSentAt?: Date | string | null
@@ -835,6 +887,8 @@ export type StaffAttendanceDayUncheckedCreateWithoutBranchMemberInput = {
   kind: $Enums.AttendanceKind
   payTreatment: $Enums.PayTreatment
   dailyRateUsd: number
+  checkIn?: Date | string | null
+  checkOut?: Date | string | null
   justificationStatus?: $Enums.JustificationStatus | null
   justificationNote?: string | null
   absenceNoticeSentAt?: Date | string | null
@@ -876,6 +930,8 @@ export type StaffAttendanceDayCreateWithoutPeriodInput = {
   kind: $Enums.AttendanceKind
   payTreatment: $Enums.PayTreatment
   dailyRateUsd: number
+  checkIn?: Date | string | null
+  checkOut?: Date | string | null
   justificationStatus?: $Enums.JustificationStatus | null
   justificationNote?: string | null
   absenceNoticeSentAt?: Date | string | null
@@ -895,6 +951,8 @@ export type StaffAttendanceDayUncheckedCreateWithoutPeriodInput = {
   kind: $Enums.AttendanceKind
   payTreatment: $Enums.PayTreatment
   dailyRateUsd: number
+  checkIn?: Date | string | null
+  checkOut?: Date | string | null
   justificationStatus?: $Enums.JustificationStatus | null
   justificationNote?: string | null
   absenceNoticeSentAt?: Date | string | null
@@ -938,6 +996,8 @@ export type StaffAttendanceDayCreateManyBranchInput = {
   kind: $Enums.AttendanceKind
   payTreatment: $Enums.PayTreatment
   dailyRateUsd: number
+  checkIn?: Date | string | null
+  checkOut?: Date | string | null
   justificationStatus?: $Enums.JustificationStatus | null
   justificationNote?: string | null
   absenceNoticeSentAt?: Date | string | null
@@ -953,6 +1013,8 @@ export type StaffAttendanceDayUpdateWithoutBranchInput = {
   kind?: Prisma.EnumAttendanceKindFieldUpdateOperationsInput | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentFieldUpdateOperationsInput | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  checkIn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkOut?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   justificationStatus?: Prisma.NullableEnumJustificationStatusFieldUpdateOperationsInput | $Enums.JustificationStatus | null
   justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   absenceNoticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -972,6 +1034,8 @@ export type StaffAttendanceDayUncheckedUpdateWithoutBranchInput = {
   kind?: Prisma.EnumAttendanceKindFieldUpdateOperationsInput | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentFieldUpdateOperationsInput | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  checkIn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkOut?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   justificationStatus?: Prisma.NullableEnumJustificationStatusFieldUpdateOperationsInput | $Enums.JustificationStatus | null
   justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   absenceNoticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -989,6 +1053,8 @@ export type StaffAttendanceDayUncheckedUpdateManyWithoutBranchInput = {
   kind?: Prisma.EnumAttendanceKindFieldUpdateOperationsInput | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentFieldUpdateOperationsInput | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  checkIn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkOut?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   justificationStatus?: Prisma.NullableEnumJustificationStatusFieldUpdateOperationsInput | $Enums.JustificationStatus | null
   justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   absenceNoticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1006,6 +1072,8 @@ export type StaffAttendanceDayCreateManyBranchMemberInput = {
   kind: $Enums.AttendanceKind
   payTreatment: $Enums.PayTreatment
   dailyRateUsd: number
+  checkIn?: Date | string | null
+  checkOut?: Date | string | null
   justificationStatus?: $Enums.JustificationStatus | null
   justificationNote?: string | null
   absenceNoticeSentAt?: Date | string | null
@@ -1021,6 +1089,8 @@ export type StaffAttendanceDayUpdateWithoutBranchMemberInput = {
   kind?: Prisma.EnumAttendanceKindFieldUpdateOperationsInput | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentFieldUpdateOperationsInput | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  checkIn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkOut?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   justificationStatus?: Prisma.NullableEnumJustificationStatusFieldUpdateOperationsInput | $Enums.JustificationStatus | null
   justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   absenceNoticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1040,6 +1110,8 @@ export type StaffAttendanceDayUncheckedUpdateWithoutBranchMemberInput = {
   kind?: Prisma.EnumAttendanceKindFieldUpdateOperationsInput | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentFieldUpdateOperationsInput | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  checkIn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkOut?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   justificationStatus?: Prisma.NullableEnumJustificationStatusFieldUpdateOperationsInput | $Enums.JustificationStatus | null
   justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   absenceNoticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1057,6 +1129,8 @@ export type StaffAttendanceDayUncheckedUpdateManyWithoutBranchMemberInput = {
   kind?: Prisma.EnumAttendanceKindFieldUpdateOperationsInput | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentFieldUpdateOperationsInput | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  checkIn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkOut?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   justificationStatus?: Prisma.NullableEnumJustificationStatusFieldUpdateOperationsInput | $Enums.JustificationStatus | null
   justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   absenceNoticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1074,6 +1148,8 @@ export type StaffAttendanceDayCreateManyPeriodInput = {
   kind: $Enums.AttendanceKind
   payTreatment: $Enums.PayTreatment
   dailyRateUsd: number
+  checkIn?: Date | string | null
+  checkOut?: Date | string | null
   justificationStatus?: $Enums.JustificationStatus | null
   justificationNote?: string | null
   absenceNoticeSentAt?: Date | string | null
@@ -1089,6 +1165,8 @@ export type StaffAttendanceDayUpdateWithoutPeriodInput = {
   kind?: Prisma.EnumAttendanceKindFieldUpdateOperationsInput | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentFieldUpdateOperationsInput | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  checkIn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkOut?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   justificationStatus?: Prisma.NullableEnumJustificationStatusFieldUpdateOperationsInput | $Enums.JustificationStatus | null
   justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   absenceNoticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1108,6 +1186,8 @@ export type StaffAttendanceDayUncheckedUpdateWithoutPeriodInput = {
   kind?: Prisma.EnumAttendanceKindFieldUpdateOperationsInput | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentFieldUpdateOperationsInput | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  checkIn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkOut?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   justificationStatus?: Prisma.NullableEnumJustificationStatusFieldUpdateOperationsInput | $Enums.JustificationStatus | null
   justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   absenceNoticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1125,6 +1205,8 @@ export type StaffAttendanceDayUncheckedUpdateManyWithoutPeriodInput = {
   kind?: Prisma.EnumAttendanceKindFieldUpdateOperationsInput | $Enums.AttendanceKind
   payTreatment?: Prisma.EnumPayTreatmentFieldUpdateOperationsInput | $Enums.PayTreatment
   dailyRateUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  checkIn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkOut?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   justificationStatus?: Prisma.NullableEnumJustificationStatusFieldUpdateOperationsInput | $Enums.JustificationStatus | null
   justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   absenceNoticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1145,6 +1227,8 @@ export type StaffAttendanceDaySelect<ExtArgs extends runtime.Types.Extensions.In
   kind?: boolean
   payTreatment?: boolean
   dailyRateUsd?: boolean
+  checkIn?: boolean
+  checkOut?: boolean
   justificationStatus?: boolean
   justificationNote?: boolean
   absenceNoticeSentAt?: boolean
@@ -1166,6 +1250,8 @@ export type StaffAttendanceDaySelectCreateManyAndReturn<ExtArgs extends runtime.
   kind?: boolean
   payTreatment?: boolean
   dailyRateUsd?: boolean
+  checkIn?: boolean
+  checkOut?: boolean
   justificationStatus?: boolean
   justificationNote?: boolean
   absenceNoticeSentAt?: boolean
@@ -1187,6 +1273,8 @@ export type StaffAttendanceDaySelectUpdateManyAndReturn<ExtArgs extends runtime.
   kind?: boolean
   payTreatment?: boolean
   dailyRateUsd?: boolean
+  checkIn?: boolean
+  checkOut?: boolean
   justificationStatus?: boolean
   justificationNote?: boolean
   absenceNoticeSentAt?: boolean
@@ -1208,6 +1296,8 @@ export type StaffAttendanceDaySelectScalar = {
   kind?: boolean
   payTreatment?: boolean
   dailyRateUsd?: boolean
+  checkIn?: boolean
+  checkOut?: boolean
   justificationStatus?: boolean
   justificationNote?: boolean
   absenceNoticeSentAt?: boolean
@@ -1217,7 +1307,7 @@ export type StaffAttendanceDaySelectScalar = {
   updatedAt?: boolean
 }
 
-export type StaffAttendanceDayOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "branchMemberId" | "periodId" | "workDate" | "kind" | "payTreatment" | "dailyRateUsd" | "justificationStatus" | "justificationNote" | "absenceNoticeSentAt" | "followUpNoticeSentAt" | "source" | "createdAt" | "updatedAt", ExtArgs["result"]["staffAttendanceDay"]>
+export type StaffAttendanceDayOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "branchMemberId" | "periodId" | "workDate" | "kind" | "payTreatment" | "dailyRateUsd" | "checkIn" | "checkOut" | "justificationStatus" | "justificationNote" | "absenceNoticeSentAt" | "followUpNoticeSentAt" | "source" | "createdAt" | "updatedAt", ExtArgs["result"]["staffAttendanceDay"]>
 export type StaffAttendanceDayInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   branchMember?: boolean | Prisma.BranchMemberDefaultArgs<ExtArgs>
@@ -1250,6 +1340,14 @@ export type $StaffAttendanceDayPayload<ExtArgs extends runtime.Types.Extensions.
     kind: $Enums.AttendanceKind
     payTreatment: $Enums.PayTreatment
     dailyRateUsd: number
+    /**
+     * Pointage arrivée (comme Eteyelo personnel).
+     */
+    checkIn: Date | null
+    /**
+     * Pointage sortie.
+     */
+    checkOut: Date | null
     justificationStatus: $Enums.JustificationStatus | null
     justificationNote: string | null
     absenceNoticeSentAt: Date | null
@@ -1691,6 +1789,8 @@ export interface StaffAttendanceDayFieldRefs {
   readonly kind: Prisma.FieldRef<"StaffAttendanceDay", 'AttendanceKind'>
   readonly payTreatment: Prisma.FieldRef<"StaffAttendanceDay", 'PayTreatment'>
   readonly dailyRateUsd: Prisma.FieldRef<"StaffAttendanceDay", 'Float'>
+  readonly checkIn: Prisma.FieldRef<"StaffAttendanceDay", 'DateTime'>
+  readonly checkOut: Prisma.FieldRef<"StaffAttendanceDay", 'DateTime'>
   readonly justificationStatus: Prisma.FieldRef<"StaffAttendanceDay", 'JustificationStatus'>
   readonly justificationNote: Prisma.FieldRef<"StaffAttendanceDay", 'String'>
   readonly absenceNoticeSentAt: Prisma.FieldRef<"StaffAttendanceDay", 'DateTime'>

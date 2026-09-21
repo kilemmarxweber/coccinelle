@@ -21,6 +21,7 @@ import {
   payAdvanceAction,
   payPayrollAction,
   preparePayrollAction,
+  reopenPayrollAction,
   reviewAdvanceAction,
   reviewJustificationAction,
   reviewLeaveAction,
@@ -153,6 +154,25 @@ export function PaieMoisClient({
                 }
               >
                 Verser tout
+              </Button>
+            ) : null}
+            {period.status === "REVIEW" || period.status === "LOCKED" ? (
+              <Button
+                disabled={pending}
+                className={boutiqueOutlineBtn()}
+                onClick={() =>
+                  run(
+                    () =>
+                      reopenPayrollAction({
+                        organizationId,
+                        branchId,
+                        periodId: period.id,
+                      }),
+                    "Période rouverte.",
+                  )
+                }
+              >
+                Rouvrir
               </Button>
             ) : null}
           </>

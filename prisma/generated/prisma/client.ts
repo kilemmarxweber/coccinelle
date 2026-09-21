@@ -332,7 +332,7 @@ export type StaffPayrollProfile = Prisma.StaffPayrollProfileModel
 export type PayrollPeriod = Prisma.PayrollPeriodModel
 /**
  * Model StaffAttendanceDay
- * Un jour × un agent. Jamais supprimé.
+ * Un jour × un agent. Jamais supprimé (sauf correction avant clôture).
  */
 export type StaffAttendanceDay = Prisma.StaffAttendanceDayModel
 /**

@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { UserRound } from "lucide-react";
+import { LogIn, LogOut, UserRound } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { branchDashboardPath, boutiqueRoutes } from "@/lib/branch/paths";
 import {
+  clockInSelfAction,
+  clockOutSelfAction,
   markNotifiedAbsenceAction,
   requestAdvanceAction,
   requestLeaveAction,
@@ -62,6 +64,18 @@ function dayToneClass(status: WorkdayUiStatus): string {
       return "border-border bg-muted/40 text-muted-foreground";
     default:
       return "border-border bg-card";
+  }
+}
+
+function formatClock(iso: string | null) {
+  if (!iso) return "—";
+  try {
+    return new Date(iso).toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return "—";
   }
 }
 
@@ -119,6 +133,49 @@ export function MoiClient({
           />
         }
       />
+
+      <BoutiquePanel title="Aujourd’hui" eyebrow={data.clock.ymd}>
+        <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-medium text-foreground">
+              Arrivée {formatClock(data.clock.checkIn)} · Sortie{" "}
+              {formatClock(data.clock.checkOut)}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Pointez vous-même, comme le personnel Eteyelo. Le gérant peut
+              encore corriger la grille.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              className={boutiquePrimaryBtn("h-10")}
+              disabled={pending || !data.clock.canClockIn}
+              onClick={() =>
+                run(
+                  () => clockInSelfAction(organizationId, branchId),
+                  "Arrivée pointée.",
+                )
+              }
+            >
+              <LogIn className="size-4" />
+              Pointer l’arrivée
+            </Button>
+            <Button
+              className={boutiqueOutlineBtn("h-10")}
+              disabled={pending || !data.clock.canClockOut}
+              onClick={() =>
+                run(
+                  () => clockOutSelfAction(organizationId, branchId),
+                  "Sortie pointée.",
+                )
+              }
+            >
+              <LogOut className="size-4" />
+              Pointer la sortie
+            </Button>
+          </div>
+        </div>
+      </BoutiquePanel>
 
       <BoutiqueKpis
         items={[

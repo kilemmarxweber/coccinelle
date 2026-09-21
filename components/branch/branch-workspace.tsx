@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, type ReactNode } from "react";
+import { Suspense, useEffect, type CSSProperties, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { BranchSidebar } from "@/components/branch/branch-sidebar";
@@ -25,9 +25,28 @@ export function BranchWorkspace(props: {
   children: ReactNode;
 }) {
   return (
-    <Suspense fallback={<div className="min-h-svh bg-background" />}>
-      <BranchWorkspaceShell {...props} />
-    </Suspense>
+    <>
+      <ApplyCustomerUiTheme
+        theme={props.customerUiTheme}
+        enabled={props.customerUiEnabled}
+      />
+      <Suspense
+        fallback={
+          <div
+            className="min-h-svh bg-background"
+            style={
+              props.customerUiEnabled
+                ? ({
+                    backgroundColor: props.customerUiTheme.background,
+                  } satisfies CSSProperties)
+                : undefined
+            }
+          />
+        }
+      >
+        <BranchWorkspaceShell {...props} />
+      </Suspense>
+    </>
   );
 }
 
@@ -60,10 +79,6 @@ function BranchWorkspaceShell(props: {
 
   return (
     <SidebarProvider className="branch-shell min-h-svh min-w-0 overflow-x-hidden">
-      <ApplyCustomerUiTheme
-        theme={props.customerUiTheme}
-        enabled={props.customerUiEnabled}
-      />
       <BranchSidebar
         organizationId={props.organizationId}
         branchId={props.branchId}

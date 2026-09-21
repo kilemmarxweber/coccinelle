@@ -2,12 +2,13 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarDays, CheckCheck } from "lucide-react";
+import { CalendarDays, CheckCheck, Eraser } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { branchDashboardPath } from "@/lib/branch/paths";
 import {
+  clearAttendanceDayAction,
   markAttendanceAction,
   markNotifiedAbsenceAction,
   markTeamPresentAction,
@@ -30,9 +31,12 @@ type Agent = {
   opsRole: string;
   profile: { effectiveDailyRateUsd: number };
   attendance: {
+    id: string;
     kind: AttendanceKind;
     payTreatment: string;
     payLabel: string;
+    checkIn: string | null;
+    checkOut: string | null;
     justificationStatus: string | null;
   } | null;
 };
@@ -56,6 +60,18 @@ const KINDS: { id: AttendanceKind; label: string }[] = [
   { id: "LEAVE", label: "Congé" },
   { id: "REST", label: "Repos" },
 ];
+
+function formatClock(iso: string | null | undefined) {
+  if (!iso) return null;
+  try {
+    return new Date(iso).toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return null;
+  }
+}
 
 function kindTone(kind: AttendanceKind | undefined) {
   switch (kind) {
@@ -130,6 +146,22 @@ export function PresencesClient({
     });
   }
 
+  function clearDay(attendanceId: string) {
+    start(async () => {
+      try {
+        await clearAttendanceDayAction({
+          organizationId,
+          branchId,
+          attendanceId,
+        });
+        toast.success("Pointage annulé.");
+        router.refresh();
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Action impossible.");
+      }
+    });
+  }
+
   return (
     <BoutiquePage>
       <BoutiqueHero
@@ -186,6 +218,12 @@ export function PresencesClient({
                 <p className="font-semibold text-foreground">{a.name}</p>
                 <p className="text-xs text-muted-foreground">
                   {a.profile.effectiveDailyRateUsd.toFixed(2)} USD / jour
+                  {formatClock(a.attendance?.checkIn)
+                    ? ` · in ${formatClock(a.attendance?.checkIn)}`
+                    : ""}
+                  {formatClock(a.attendance?.checkOut)
+                    ? ` · out ${formatClock(a.attendance?.checkOut)}`
+                    : ""}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -209,6 +247,19 @@ export function PresencesClient({
                     {k.label}
                   </Button>
                 ))}
+                {a.attendance ? (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className={boutiqueOutlineBtn("h-9")}
+                    disabled={pending || locked}
+                    onClick={() => clearDay(a.attendance!.id)}
+                  >
+                    <Eraser className="size-3.5" />
+                    Effacer
+                  </Button>
+                ) : null}
               </div>
             </li>
           ))}

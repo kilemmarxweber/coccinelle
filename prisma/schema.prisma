@@ -1743,7 +1743,7 @@ model PayrollPeriod {
   @@index([branchId, status])
 }
 
-/// Un jour × un agent. Jamais supprimé.
+/// Un jour × un agent. Jamais supprimé (sauf correction avant clôture).
 model StaffAttendanceDay {
   id                   String               @id @default(uuid())
   branchId             String
@@ -1753,6 +1753,10 @@ model StaffAttendanceDay {
   kind                 AttendanceKind
   payTreatment         PayTreatment
   dailyRateUsd         Float
+  /// Pointage arrivée (comme Eteyelo personnel).
+  checkIn              DateTime?
+  /// Pointage sortie.
+  checkOut             DateTime?
   justificationStatus  JustificationStatus?
   justificationNote    String?
   absenceNoticeSentAt  DateTime?

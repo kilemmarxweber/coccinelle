@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Banknote, CalendarDays, Settings, UserRound } from "lucide-react";
+import { Banknote, CalendarDays, Receipt, Settings, UserRound } from "lucide-react";
 import { boutiqueRoutes } from "@/lib/branch/paths";
 import { cn } from "@/lib/utils";
 
 type Props = {
   organizationId: string;
   branchId: string;
-  active: "presences" | "mois" | "moi" | "parametres";
+  active: "presences" | "mois" | "moi" | "transactions" | "parametres";
   showManage?: boolean;
   showPoint?: boolean;
 };
@@ -36,6 +36,14 @@ export function PaieSectionNav({
           href: r.paie(organizationId, branchId),
           label: "Paie du mois",
           icon: Banknote,
+        }
+      : null,
+    showManage
+      ? {
+          id: "transactions" as const,
+          href: r.paieTransactions(organizationId, branchId),
+          label: "Transactions",
+          icon: Receipt,
         }
       : null,
     {
@@ -68,7 +76,7 @@ export function PaieSectionNav({
         const on = active === item.id;
         return (
           <Link
-            key={item.id}
+            key={item.href}
             href={item.href}
             aria-current={on ? "page" : undefined}
             className={cn(

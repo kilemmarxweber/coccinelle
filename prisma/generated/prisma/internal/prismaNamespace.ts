@@ -6948,6 +6948,8 @@ export const StaffAttendanceDayScalarFieldEnum = {
   kind: 'kind',
   payTreatment: 'payTreatment',
   dailyRateUsd: 'dailyRateUsd',
+  checkIn: 'checkIn',
+  checkOut: 'checkOut',
   justificationStatus: 'justificationStatus',
   justificationNote: 'justificationNote',
   absenceNoticeSentAt: 'absenceNoticeSentAt',

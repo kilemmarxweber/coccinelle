@@ -10,6 +10,9 @@ import {
   autoMarkPresentFromActivity,
   assertCommerceBranch,
   capabilitiesFromOpsRole,
+  clearAttendanceDay,
+  clockInSelf,
+  clockOutSelf,
   findBranchMemberForUser,
   getMonthPayload,
   getPayslip,
@@ -22,6 +25,7 @@ import {
   markTeamPresent,
   payAdvance,
   payAllPayslips,
+  reopenPayrollPeriod,
   requestAdvance,
   requestLeave,
   reviewAdvance,
@@ -32,8 +36,17 @@ import {
   updateSettings,
   updateStaffProfile,
 } from "@/lib/payroll/service";
+import {
+  deletePayrollTransaction,
+  listPayrollTransactions,
+  updatePayrollTransaction,
+} from "@/lib/payroll/transactions";
 import { ATTENDANCE_SOURCE } from "@/lib/payroll/constants";
-import type { AttendanceKind, StaffPayoutMethod } from "@/lib/payroll/types";
+import type {
+  AttendanceKind,
+  PayrollTransactionKind,
+  StaffPayoutMethod,
+} from "@/lib/payroll/types";
 
 async function ctx(organizationId: string, branchId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -61,6 +74,7 @@ function revalidatePayroll(organizationId: string, branchId: string) {
   revalidatePath(r.paie(organizationId, branchId));
   revalidatePath(r.paiePresences(organizationId, branchId));
   revalidatePath(r.paieMoi(organizationId, branchId));
+  revalidatePath(r.paieTransactions(organizationId, branchId));
   revalidatePath(r.paieParametres(organizationId, branchId));
 }
 
@@ -405,4 +419,117 @@ export async function hintPresentFromActivityAction(
     branchId,
     userId: session.user.id,
   });
+}
+
+export async function clockInSelfAction(
+  organizationId: string,
+  branchId: string,
+) {
+  const { user, branch } = await ctx(organizationId, branchId);
+  const row = await clockInSelf({
+    branchId,
+    userId: user.id,
+    timezone: branch.timezone,
+  });
+  revalidatePayroll(organizationId, branchId);
+  return row;
+}
+
+export async function clockOutSelfAction(
+  organizationId: string,
+  branchId: string,
+) {
+  const { user, branch } = await ctx(organizationId, branchId);
+  const row = await clockOutSelf({
+    branchId,
+    userId: user.id,
+    timezone: branch.timezone,
+  });
+  revalidatePayroll(organizationId, branchId);
+  return row;
+}
+
+export async function clearAttendanceDayAction(input: {
+  organizationId: string;
+  branchId: string;
+  attendanceId: string;
+}) {
+  const { caps } = await ctx(input.organizationId, input.branchId);
+  if (!caps.canPoint) throw new Error("Permission insuffisante.");
+  await clearAttendanceDay({
+    branchId: input.branchId,
+    attendanceId: input.attendanceId,
+  });
+  revalidatePayroll(input.organizationId, input.branchId);
+}
+
+export async function reopenPayrollAction(input: {
+  organizationId: string;
+  branchId: string;
+  periodId: string;
+}) {
+  const { caps } = await ctx(input.organizationId, input.branchId);
+  if (!caps.canManage) throw new Error("Permission insuffisante.");
+  await reopenPayrollPeriod({
+    branchId: input.branchId,
+    periodId: input.periodId,
+  });
+  revalidatePayroll(input.organizationId, input.branchId);
+}
+
+export async function listPayrollTransactionsAction(input: {
+  organizationId: string;
+  branchId: string;
+  mode?: "day" | "all" | "period";
+  day?: string;
+  startDate?: string;
+  endDate?: string;
+  kind?: PayrollTransactionKind;
+  search?: string;
+}) {
+  const { caps } = await ctx(input.organizationId, input.branchId);
+  if (!caps.canManage) throw new Error("Permission insuffisante.");
+  return listPayrollTransactions({
+    branchId: input.branchId,
+    mode: input.mode,
+    day: input.day,
+    startDate: input.startDate,
+    endDate: input.endDate,
+    kind: input.kind,
+    search: input.search,
+  });
+}
+
+export async function updatePayrollTransactionAction(input: {
+  organizationId: string;
+  branchId: string;
+  expenseId: string;
+  amountUsd?: number;
+  note?: string | null;
+  method?: "CASH" | "MOBILE_MONEY" | "BANK";
+}) {
+  const { caps } = await ctx(input.organizationId, input.branchId);
+  if (!caps.canManage) throw new Error("Permission insuffisante.");
+  await updatePayrollTransaction({
+    branchId: input.branchId,
+    expenseId: input.expenseId,
+    amountUsd: input.amountUsd,
+    note: input.note,
+    method: input.method,
+  });
+  revalidatePayroll(input.organizationId, input.branchId);
+}
+
+export async function deletePayrollTransactionAction(input: {
+  organizationId: string;
+  branchId: string;
+  expenseId: string;
+}) {
+  const { caps } = await ctx(input.organizationId, input.branchId);
+  if (!caps.canManage) throw new Error("Permission insuffisante.");
+  await deletePayrollTransaction({
+    branchId: input.branchId,
+    expenseId: input.expenseId,
+  });
+  revalidatePayroll(input.organizationId, input.branchId);
 }

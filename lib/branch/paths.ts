@@ -165,6 +165,8 @@ export const boutiqueRoutes = {
     `${branchModulePath(orgId, branchId, "boutique")}/paie/presences`,
   paieMoi: (orgId: string, branchId: string) =>
     `${branchModulePath(orgId, branchId, "boutique")}/paie/moi`,
+  paieTransactions: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "boutique")}/paie/transactions`,
   paieParametres: (orgId: string, branchId: string) =>
     `${branchModulePath(orgId, branchId, "boutique")}/paie/parametres`,
   paieBulletin: (orgId: string, branchId: string, payslipId: string) =>

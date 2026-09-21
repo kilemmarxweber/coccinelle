@@ -109,6 +109,8 @@ function mapAttendance(row: {
   kind: AttendanceKind;
   payTreatment: PayTreatment;
   dailyRateUsd: number;
+  checkIn?: Date | null;
+  checkOut?: Date | null;
   justificationStatus: AttendanceDto["justificationStatus"];
   justificationNote: string | null;
   source: string;
@@ -120,6 +122,8 @@ function mapAttendance(row: {
     kind: row.kind,
     payTreatment: row.payTreatment,
     dailyRateUsd: row.dailyRateUsd,
+    checkIn: row.checkIn?.toISOString() ?? null,
+    checkOut: row.checkOut?.toISOString() ?? null,
     justificationStatus: row.justificationStatus,
     justificationNote: row.justificationNote,
     source: row.source,
@@ -393,6 +397,10 @@ export async function upsertAttendanceDay(input: {
     return mapAttendance(existing);
   }
 
+  const now = new Date();
+  const stampIn = kind === "PRESENT" ? (existing?.checkIn ?? now) : null;
+  const stampOut = kind === "PRESENT" ? (existing?.checkOut ?? null) : null;
+
   const row = await prisma.staffAttendanceDay.upsert({
     where: {
       branchMemberId_workDate: {
@@ -408,6 +416,8 @@ export async function upsertAttendanceDay(input: {
       kind,
       payTreatment,
       dailyRateUsd: rate,
+      checkIn: stampIn,
+      checkOut: stampOut,
       justificationStatus: kind === "ABSENT" ? "PENDING" : null,
       source: input.source,
     },
@@ -415,6 +425,8 @@ export async function upsertAttendanceDay(input: {
       kind,
       payTreatment,
       dailyRateUsd: existing ? existing.dailyRateUsd : rate,
+      checkIn: stampIn,
+      checkOut: stampOut,
       justificationStatus:
         kind === "ABSENT"
           ? existing?.justificationStatus ?? "PENDING"
@@ -569,6 +581,117 @@ export async function markNotifiedAbsence(input: {
     payTreatment: "PAID",
     source: input.source,
     overwrite: true,
+  });
+}
+
+export async function clockInSelf(input: {
+  branchId: string;
+  userId: string;
+  timezone: string;
+}) {
+  const member = await findBranchMemberForUser(input.branchId, input.userId);
+  if (!member) throw new Error("Vous n’êtes pas rattaché à cette branche.");
+  const settings = await loadSettings(input.branchId);
+  const ymd = todayYmd(input.timezone);
+  const weekday = weekdayOfYmd(ymd, input.timezone);
+  if (!isWorkday(weekday, parseWorkWeek(settings.workWeek))) {
+    throw new Error("Aujourd’hui n’est pas un jour ouvré.");
+  }
+  const row = await upsertAttendanceDay({
+    branchId: input.branchId,
+    branchMemberId: member.id,
+    workYmd: ymd,
+    kind: "PRESENT",
+    source: ATTENDANCE_SOURCE.SELF,
+    timezone: input.timezone,
+    overwrite: true,
+  });
+  if (!row.checkIn) {
+    const updated = await prisma.staffAttendanceDay.update({
+      where: { id: row.id },
+      data: { checkIn: new Date() },
+    });
+    return mapAttendance(updated);
+  }
+  return row;
+}
+
+export async function clockOutSelf(input: {
+  branchId: string;
+  userId: string;
+  timezone: string;
+}) {
+  const member = await findBranchMemberForUser(input.branchId, input.userId);
+  if (!member) throw new Error("Vous n’êtes pas rattaché à cette branche.");
+  const ymd = todayYmd(input.timezone);
+  const existing = await prisma.staffAttendanceDay.findUnique({
+    where: {
+      branchMemberId_workDate: {
+        branchMemberId: member.id,
+        workDate: ymdToDate(ymd),
+      },
+    },
+    include: { period: { select: { status: true } } },
+  });
+  if (!existing || existing.kind !== "PRESENT" || !existing.checkIn) {
+    throw new Error("Pointez d’abord l’arrivée.");
+  }
+  assertPeriodEditable(existing.period.status as PayrollPeriodStatus);
+  if (existing.checkOut) throw new Error("La sortie est déjà pointée.");
+  const now = new Date();
+  if (now.getTime() < existing.checkIn.getTime()) {
+    throw new Error("L’heure de sortie est invalide.");
+  }
+  const updated = await prisma.staffAttendanceDay.update({
+    where: { id: existing.id },
+    data: { checkOut: now, source: ATTENDANCE_SOURCE.SELF },
+  });
+  return mapAttendance(updated);
+}
+
+export async function clearAttendanceDay(input: {
+  branchId: string;
+  attendanceId: string;
+}) {
+  const row = await prisma.staffAttendanceDay.findFirst({
+    where: { id: input.attendanceId, branchId: input.branchId },
+    include: { period: { select: { status: true } } },
+  });
+  if (!row) throw new Error("Pointage introuvable.");
+  assertPeriodEditable(row.period.status as PayrollPeriodStatus, false);
+  await prisma.staffAttendanceDay.delete({ where: { id: row.id } });
+}
+
+export async function reopenPayrollPeriod(input: {
+  branchId: string;
+  periodId: string;
+}) {
+  const period = await prisma.payrollPeriod.findFirst({
+    where: { id: input.periodId, branchId: input.branchId },
+  });
+  if (!period) throw new Error("Période introuvable.");
+  if (period.status === "PAID") {
+    throw new Error("Période déjà versée : annulez d’abord les transactions salaire.");
+  }
+  if (period.status !== "LOCKED" && period.status !== "REVIEW") {
+    throw new Error("Seule une période en revue ou clôturée peut être rouverte.");
+  }
+  const paidCount = await prisma.payslip.count({
+    where: { periodId: period.id, expenseId: { not: null } },
+  });
+  if (paidCount > 0) {
+    throw new Error(
+      "Des bulletins sont déjà versés. Supprimez d’abord ces transactions.",
+    );
+  }
+  await prisma.$transaction(async (tx) => {
+    await tx.payslip.deleteMany({
+      where: { periodId: period.id, expenseId: null },
+    });
+    await tx.payrollPeriod.update({
+      where: { id: period.id },
+      data: { status: "OPEN", closedAt: null, exchangeRateUsed: null },
+    });
   });
 }
 
@@ -1612,6 +1735,20 @@ export async function getSelfPayload(input: {
     todayYmd: today,
     settings,
     period: periodDto(period),
+    clock: {
+      ymd: today,
+      checkIn: byDate.get(today)?.checkIn ?? null,
+      checkOut: byDate.get(today)?.checkOut ?? null,
+      kind: byDate.get(today)?.kind ?? null,
+      canClockIn:
+        period.status === "OPEN" &&
+        workYmds.includes(today) &&
+        !byDate.get(today)?.checkIn,
+      canClockOut:
+        period.status === "OPEN" &&
+        Boolean(byDate.get(today)?.checkIn) &&
+        !byDate.get(today)?.checkOut,
+    },
     member: {
       branchMemberId: member.id,
       name: member.member.user.name,

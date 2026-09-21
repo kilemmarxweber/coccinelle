@@ -71,10 +71,33 @@ export type AttendanceDto = {
   kind: AttendanceKind;
   payTreatment: PayTreatment;
   dailyRateUsd: number;
+  checkIn: string | null;
+  checkOut: string | null;
   justificationStatus: JustificationStatus | null;
   justificationNote: string | null;
   source: string;
   payLabel: string;
+};
+
+export type PayrollTransactionKind = "SALAIRE" | "AVANCE_SALAIRE";
+
+export type PayrollTransactionDto = {
+  id: string;
+  kind: PayrollTransactionKind;
+  number: string;
+  label: string;
+  beneficiary: string | null;
+  amountUsd: number;
+  note: string | null;
+  createdAt: string;
+  paymentId: string | null;
+  receiptNumber: string | null;
+  method: string | null;
+  agentName: string | null;
+  payslipId: string | null;
+  advanceId: string | null;
+  periodLabel: string | null;
+  periodStatus: PayrollPeriodStatus | null;
 };
 
 export type PeriodDto = {

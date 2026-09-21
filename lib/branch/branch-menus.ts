@@ -270,6 +270,15 @@ function personnelPaieSection(
         iconColor: "text-amber-500",
       },
       {
+        id: DASH_CARD.PAIE,
+        title: "Transactions",
+        description: "Salaires et avances — voir, modifier, supprimer.",
+        href: boutiqueRoutes.paieTransactions(organizationId, branchId),
+        icon: Receipt,
+        iconBg: "bg-rose-500/15",
+        iconColor: "text-rose-400",
+      },
+      {
         id: DASH_CARD.PAIE_MOI,
         title: "Mes jours",
         description: "Vos présences, justificatifs, congés et avances.",
