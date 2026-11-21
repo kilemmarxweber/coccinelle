@@ -217,10 +217,10 @@ export function PcaClient({ organizationId, orgName, data }: Props) {
             />
           </div>
         </article>
-        <article className="flex min-h-0 flex-col rounded-xl border border-border bg-card p-3 shadow-sm lg:col-span-2">
-          <h2 className="text-sm font-semibold">CA par département</h2>
+        <article className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-card p-3 shadow-sm lg:col-span-2">
+          <h2 className="mb-2 shrink-0 text-sm font-semibold">CA par département</h2>
           <div className="min-h-0 flex-1">
-            <DonutChart data={mix} />
+            <DonutChart data={mix} compact />
           </div>
         </article>
       </section>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,23 +25,37 @@ import {
   type FirstLoginPasswordValues,
   type SignInValues,
 } from "@/app/auth/schema";
-import { completeFirstLoginPasswordAction } from "@/app/auth/sign-in/actions";
+import { completeFirstLoginPasswordAction, confirmTurnstileAction } from "@/app/auth/sign-in/actions";
+import { TurnstileWidget } from "./turnstile-widget";
 import { cn } from "@/lib/utils";
 
 const fieldClass =
-  "h-11 rounded-xl border-primary bg-input pl-10 text-foreground placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-primary/30";
+  "h-12 rounded-2xl border-transparent bg-[#f3f6f4] pl-11 text-[#10231a] shadow-none placeholder:text-[#8a978f] focus-visible:border-[#1b9a4b] focus-visible:ring-[#1b9a4b]/20";
 
 type SignInFormProps = {
   /** Retour PWA (checkout / confirmation) — chemin relatif validé côté page. */
   callbackUrl?: string;
+  /** Nom affiché : l'unique organisation, ou le produit s'il n'y en a pas. */
+  brandName: string;
+  /** `APP_NAME` / `NEXT_PUBLIC_APP_NAME` depuis `.env`. */
   appName: string;
 };
 
-export function SignInForm({ callbackUrl, appName }: SignInFormProps) {
+function useHydrated() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
+
+export function SignInForm({ callbackUrl, brandName, appName }: SignInFormProps) {
   const router = useRouter();
   const [step, setStep] = useState<"sign-in" | "first-login">("sign-in");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileKey, setTurnstileKey] = useState(0);
 
   const form = useForm<SignInValues>({
     resolver: zodResolver(signInSchema),
@@ -62,6 +76,8 @@ export function SignInForm({ callbackUrl, appName }: SignInFormProps) {
   });
 
   const { isSubmitting } = form.formState;
+  const hydrated = useHydrated();
+  const loginBlocked = !hydrated || isSubmitting || !turnstileToken;
   const firstLoginSubmitting = firstLoginForm.formState.isSubmitting;
 
   useEffect(() => {
@@ -93,6 +109,21 @@ export function SignInForm({ callbackUrl, appName }: SignInFormProps) {
 
   async function onSubmit(values: SignInValues) {
     form.clearErrors("root");
+    if (!turnstileToken) {
+      form.setError("root", {
+        type: "server",
+        message: "Confirmez que vous êtes humain.",
+      });
+      return;
+    }
+    const gate = await confirmTurnstileAction(turnstileToken);
+    if (!gate.ok) {
+      setTurnstileToken(null);
+      setTurnstileKey((value) => value + 1);
+      form.setError("root", { type: "server", message: gate.message });
+      toast.error(gate.message);
+      return;
+    }
     try {
       const { error } = await authClient.signIn.email({
         email: values.email,
@@ -101,6 +132,8 @@ export function SignInForm({ callbackUrl, appName }: SignInFormProps) {
       });
 
       if (error) {
+        setTurnstileToken(null);
+        setTurnstileKey((value) => value + 1);
         form.setError("root", {
           type: "server",
           message:
@@ -130,6 +163,8 @@ export function SignInForm({ callbackUrl, appName }: SignInFormProps) {
       toast.success("Bienvenue !");
       await goAfterLogin();
     } catch (cause) {
+      setTurnstileToken(null);
+      setTurnstileKey((value) => value + 1);
       const message =
         cause instanceof Error ? cause.message : "Erreur réseau.";
       form.setError("root", {
@@ -156,30 +191,25 @@ export function SignInForm({ callbackUrl, appName }: SignInFormProps) {
     await goAfterLogin();
   }
 
-  function notifySocialSoon() {
-    toast.message("Connexion sociale bientôt disponible.");
-  }
-
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex w-full max-w-md flex-col" data-org={brandName}>
       <Link href="/" className="mb-5 inline-flex items-center gap-2 self-start">
         <span className="flex size-8 items-center justify-center overflow-hidden rounded-lg">
           <img src="/favicon.ico" alt="" className="size-8" />
         </span>
         <span className="leading-tight">
-          <span className="block text-sm font-bold tracking-[0.12em] text-foreground">
+          <span className="block text-sm font-bold tracking-[0.12em] text-[#10231a]">
             {appName}
           </span>
           <span className="block text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
-            Ops
+            {appName}
           </span>
         </span>
       </Link>
-
       {step === "first-login" ? (
         <>
           <div className="mb-4 space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            <h1 className="text-2xl font-bold tracking-tight text-[#10231a]">
               Première connexion
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -243,32 +273,17 @@ export function SignInForm({ callbackUrl, appName }: SignInFormProps) {
         </>
       ) : (
         <>
-          <div className="mb-4 space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          <div className="mb-7 space-y-1.5">
+            <p className="flex items-center gap-2 text-xs font-medium text-[#157a3c]">
+              <span className="size-1.5 rounded-full bg-[#1b9a4b]" />
+              Connexion sécurisée
+            </p>
+            <h1 className="text-3xl font-bold tracking-tight text-[#10231a]">
               Bon retour
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-center text-sm text-muted-foreground lg:text-left">
               Connectez-vous pour gérer réservations, caisse et équipes.
             </p>
-          </div>
-
-          <div className="mb-4">
-            <button
-              type="button"
-              onClick={notifySocialSoon}
-              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border bg-input text-sm font-medium text-foreground transition hover:bg-muted"
-            >
-              <GoogleIcon />
-              Google
-            </button>
-          </div>
-
-          <div className="mb-4 flex items-center gap-3">
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-xs text-muted-foreground">
-              ou continuer avec l&apos;email
-            </span>
-            <div className="h-px flex-1 bg-border" />
           </div>
 
           <Form {...form}>
@@ -347,12 +362,12 @@ export function SignInForm({ callbackUrl, appName }: SignInFormProps) {
                 )}
               />
 
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
                 <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
                   <Checkbox
                     checked={rememberMe}
                     onCheckedChange={(checked) => setRememberMe(checked === true)}
-                    className="border-white/20 data-checked:border-primary data-checked:bg-primary"
+                    className="border-[#1b9a4b]/40 data-checked:border-[#1b9a4b] data-checked:bg-[#1b9a4b]"
                   />
                   Se souvenir de moi
                 </label>
@@ -363,22 +378,28 @@ export function SignInForm({ callbackUrl, appName }: SignInFormProps) {
                       "Réinitialisation du mot de passe bientôt disponible.",
                     )
                   }
-                  className="text-sm font-medium text-primary transition hover:text-primary/80"
+                  className="text-sm font-medium text-[#157a3c] transition hover:text-[#0e6b3c]"
                 >
                   Mot de passe oublié ?
                 </button>
               </div>
 
+              <TurnstileWidget
+                key={turnstileKey}
+                onToken={setTurnstileToken}
+              />
+
               {form.formState.errors.root?.message ? (
-                <p className="text-xs text-rose-400" role="alert">
+                <p className="text-center text-xs text-rose-500 lg:text-left" role="alert">
                   {String(form.formState.errors.root.message)}
                 </p>
               ) : null}
 
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:opacity-60"
+                disabled={loginBlocked}
+                suppressHydrationWarning
+                className="inline-flex h-12 w-full items-center justify-center rounded-2xl bg-[#1b9a4b] text-sm font-semibold text-white transition hover:bg-[#157a3c] disabled:opacity-60"
               >
                 {isSubmitting ? "Connexion…" : "Se connecter"}
               </button>
@@ -449,26 +470,4 @@ function PasswordField({
   );
 }
 
-function GoogleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="size-4" aria-hidden>
-      <path
-        fill="#EA4335"
-        d="M12 10.2v3.6h5.1c-.2 1.2-.9 2.3-1.9 3l3.1 2.4c1.8-1.7 2.9-4.1 2.9-7 0-.7-.1-1.3-.2-1.9H12z"
-      />
-      <path
-        fill="#34A853"
-        d="M6.6 14.3l-.7.5-2.4 1.9C5.2 19.4 8.4 21.4 12 21.4c2.4 0 4.4-.8 5.9-2.2l-3.1-2.4c-.8.6-1.9.9-2.8.9-2.2 0-4-1.5-4.7-3.4z"
-      />
-      <path
-        fill="#4A90E2"
-        d="M3.5 7.3C2.7 8.9 2.3 10.6 2.3 12.4s.4 3.5 1.2 5.1l3.1-2.4c-.2-.6-.3-1.2-.3-1.8s.1-1.2.3-1.8L3.5 7.3z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M12 5.3c1.3 0 2.5.5 3.4 1.3l2.5-2.5C16.4 2.6 14.4 1.8 12 1.8 8.4 1.8 5.2 3.8 3.5 7.3l3.1 2.4C7.3 7.7 9.1 5.3 12 5.3z"
-      />
-    </svg>
-  );
-}
 

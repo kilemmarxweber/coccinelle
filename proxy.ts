@@ -5,6 +5,8 @@ import { getUserOrganizationMembership } from "@/lib/auth/org-membership";
 import { resolvePostLoginPath } from "@/lib/auth/post-login-redirect";
 import { sessionMustChangePassword } from "@/lib/auth/must-change-password";
 import { APP_ROLE, isAppAdminRole } from "@/lib/permissions";
+import { TURNSTILE_COOKIE } from "@/lib/auth/turnstile";
+import { loginInputError } from "@/lib/auth/login-input";
 
 const SIGN_IN_PATH = "/auth/sign-in";
 
@@ -54,6 +56,37 @@ async function getSession(request: NextRequest) {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (
+    request.method === "POST" &&
+    pathname.startsWith("/api/auth/sign-in")
+  ) {
+    let payload: { email?: unknown; password?: unknown } | null = null;
+    try {
+      payload = (await request.clone().json()) as {
+        email?: unknown;
+        password?: unknown;
+      };
+    } catch {
+      payload = null;
+    }
+    if (payload && ("email" in payload || "password" in payload)) {
+      const problem = loginInputError(payload.email, payload.password);
+      if (problem) {
+        return NextResponse.json({ message: problem }, { status: 400 });
+      }
+    }
+    if (request.cookies.get(TURNSTILE_COOKIE)?.value !== "1") {
+      return NextResponse.json(
+        { message: "Confirmez que vous êtes humain." },
+        { status: 403 },
+      );
+    }
+    const response = NextResponse.next();
+    response.cookies.set(TURNSTILE_COOKIE, "", { path: "/", maxAge: 0 });
+    return response;
+  }
+
   const session = await getSession(request);
   const isAuthenticated = Boolean(session?.user);
 

@@ -1,11 +1,32 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { APIError } from "better-auth/api";
 import { auth } from "@/lib/auth";
 import { firstLoginPasswordSchema } from "@/app/auth/schema";
 import { sessionMustChangePassword } from "@/lib/auth/must-change-password";
+import { TURNSTILE_COOKIE, verifyTurnstileToken } from "@/lib/auth/turnstile";
 import prisma from "@/lib/prisma";
+
+export async function confirmTurnstileAction(
+  token: string,
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  const headerList = await headers();
+  const ip = headerList.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+  const ok = await verifyTurnstileToken(token, ip);
+  if (!ok) {
+    return { ok: false, message: "Confirmez que vous êtes humain." };
+  }
+  const jar = await cookies();
+  jar.set(TURNSTILE_COOKIE, "1", {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 120,
+    secure: process.env.NODE_ENV === "production",
+  });
+  return { ok: true };
+}
 
 export async function completeFirstLoginPasswordAction(input: {
   currentPassword: string;

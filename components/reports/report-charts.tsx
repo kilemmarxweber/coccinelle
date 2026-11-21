@@ -120,7 +120,11 @@ export function SimpleBarChart(props: {
   );
 }
 
-export function DonutChart(props: { data: { name: string; value: number }[] }) {
+export function DonutChart(props: {
+  data: { name: string; value: number }[];
+  /** Donut et légende côte à côte, pour une carte basse. */
+  compact?: boolean;
+}) {
   const data = props.data
     .map((d) => ({
       name: String(d.name ?? "").trim() || "Autre",
@@ -138,7 +142,13 @@ export function DonutChart(props: { data: { name: string; value: number }[] }) {
 
   if (slices.length === 0 || !(total > 0)) {
     return (
-      <p className="flex h-full min-h-[240px] items-center justify-center text-sm text-muted-foreground">
+      <p
+        className={
+          props.compact
+            ? "flex h-full min-h-24 items-center justify-center text-sm text-muted-foreground"
+            : "flex h-full min-h-[240px] items-center justify-center text-sm text-muted-foreground"
+        }
+      >
         Aucune donnée sur la période.
       </p>
     );
@@ -155,40 +165,67 @@ export function DonutChart(props: { data: { name: string; value: number }[] }) {
     })
     .join(", ");
 
+  const ring = (
+    <div
+      className={
+        props.compact
+          ? "size-24 shrink-0 rounded-full sm:size-[6.5rem]"
+          : "size-36 shrink-0 rounded-full sm:size-40"
+      }
+      style={{
+        background: `conic-gradient(${gradient})`,
+        WebkitMask:
+          "radial-gradient(circle at center, transparent 48%, #000 49%)",
+        mask: "radial-gradient(circle at center, transparent 48%, #000 49%)",
+      }}
+      aria-hidden
+    />
+  );
+
+  const legend = (
+    <ul
+      className={
+        props.compact
+          ? "flex max-h-full min-h-0 min-w-0 flex-1 flex-col justify-center gap-1 overflow-y-auto text-[11px] leading-4"
+          : "flex w-full max-w-xs flex-col gap-1.5 text-xs"
+      }
+    >
+      {slices.map((d, i) => {
+        const pct = Math.round((d.value / total) * 1000) / 10;
+        return (
+          <li
+            key={`${d.name}-${i}`}
+            className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-2"
+          >
+            <span
+              className="size-2 shrink-0 rounded-full"
+              style={{ background: COLORS[i % COLORS.length] }}
+            />
+            <span className="truncate font-medium" title={d.name}>
+              {d.name}
+            </span>
+            <span className="shrink-0 tabular-nums text-muted-foreground">
+              {pct}% · {d.value.toLocaleString("fr-FR", { maximumFractionDigits: 2 })}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+
+  if (props.compact) {
+    return (
+      <div className="flex h-full min-h-24 w-full items-center gap-3">
+        {ring}
+        {legend}
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full min-h-[240px] w-full flex-col items-center justify-center gap-4 px-2">
-      <div
-        className="size-36 shrink-0 rounded-full sm:size-40"
-        style={{
-          background: `conic-gradient(${gradient})`,
-          WebkitMask:
-            "radial-gradient(circle at center, transparent 48%, #000 49%)",
-          mask: "radial-gradient(circle at center, transparent 48%, #000 49%)",
-        }}
-        aria-hidden
-      />
-      <ul className="flex w-full max-w-xs flex-col gap-1.5 text-xs">
-        {slices.map((d, i) => {
-          const pct = Math.round((d.value / total) * 1000) / 10;
-          return (
-            <li
-              key={`${d.name}-${i}`}
-              className="flex items-center justify-between gap-2"
-            >
-              <span className="flex min-w-0 items-center gap-2">
-                <span
-                  className="size-2.5 shrink-0 rounded-full"
-                  style={{ background: COLORS[i % COLORS.length] }}
-                />
-                <span className="truncate font-medium">{d.name}</span>
-              </span>
-              <span className="shrink-0 tabular-nums text-muted-foreground">
-                {pct}% · {d.value.toLocaleString("fr-FR", { maximumFractionDigits: 2 })}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
+      {ring}
+      {legend}
     </div>
   );
 }

@@ -13,13 +13,21 @@ export const SIGN_UP_ADMIN_CODE = "Coccinellev041191";
 export const SIGN_UP_ADMIN_CODE_ERROR =
   "Veuillez contacter l’administrateur du système.";
 
+const EMAIL_INJECTION = /[\0\r\n'"\\;]|--|\/\*|\*\//;
+
 export const signInSchema = z.object({
   email: z
     .string()
     .trim()
     .min(1, "L’email est requis.")
-    .email("Adresse email invalide."),
-  password: z.string().min(1, "Le mot de passe est requis."),
+    .max(254, "Adresse email invalide.")
+    .email("Adresse email invalide.")
+    .refine((value) => !EMAIL_INJECTION.test(value), "Adresse email invalide."),
+  password: z
+    .string()
+    .min(1, "Le mot de passe est requis.")
+    .max(256, "Le mot de passe est trop long.")
+    .refine((value) => !value.includes("\0"), "Mot de passe invalide."),
 });
 
 export const signUpSchema = z.object({
