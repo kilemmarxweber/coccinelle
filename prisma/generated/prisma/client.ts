@@ -410,3 +410,58 @@ export type FactoryOrderRequest = Prisma.FactoryOrderRequestModel
  * 
  */
 export type FactoryOrderRequestLine = Prisma.FactoryOrderRequestLineModel
+/**
+ * Model OrgCashAccount
+ * Compte coffre / caisse centrale d’une organisation.
+ */
+export type OrgCashAccount = Prisma.OrgCashAccountModel
+/**
+ * Model CashRemittance
+ * Versement d’une caisse départementale vers la caisse centrale.
+ */
+export type CashRemittance = Prisma.CashRemittanceModel
+/**
+ * Model CentralCashEntry
+ * Journal du coffre (entrées / sorties / versements reçus).
+ */
+export type CentralCashEntry = Prisma.CentralCashEntryModel
+/**
+ * Model AuditEvent
+ * Piste d’audit interne (auteur, ancienne/nouvelle valeur, motif).
+ */
+export type AuditEvent = Prisma.AuditEventModel
+/**
+ * Model IntegrityFinding
+ * Constat d'intégrité. Ne modifie jamais la donnée métier source.
+ */
+export type IntegrityFinding = Prisma.IntegrityFindingModel
+/**
+ * Model BiaIncident
+ * Dossier de suivi d'un constat. La clôture n'écrit pas dans les ventes ni les caisses.
+ */
+export type BiaIncident = Prisma.BiaIncidentModel
+/**
+ * Model BiaIncidentEvent
+ * 
+ */
+export type BiaIncidentEvent = Prisma.BiaIncidentEventModel
+/**
+ * Model DeptCustomer
+ * Client crédit d’un département commerce (hors usine).
+ */
+export type DeptCustomer = Prisma.DeptCustomerModel
+/**
+ * Model DeptCredit
+ * 
+ */
+export type DeptCredit = Prisma.DeptCreditModel
+/**
+ * Model DeptCreditLine
+ * 
+ */
+export type DeptCreditLine = Prisma.DeptCreditLineModel
+/**
+ * Model BranchProfitTarget
+ * 
+ */
+export type BranchProfitTarget = Prisma.BranchProfitTargetModel

@@ -20,8 +20,18 @@ export type FactoryCustomerModel = runtime.Types.Result.DefaultSelection<Prisma.
 
 export type AggregateFactoryCustomer = {
   _count: FactoryCustomerCountAggregateOutputType | null
+  _avg: FactoryCustomerAvgAggregateOutputType | null
+  _sum: FactoryCustomerSumAggregateOutputType | null
   _min: FactoryCustomerMinAggregateOutputType | null
   _max: FactoryCustomerMaxAggregateOutputType | null
+}
+
+export type FactoryCustomerAvgAggregateOutputType = {
+  creditLimitUsd: number | null
+}
+
+export type FactoryCustomerSumAggregateOutputType = {
+  creditLimitUsd: number | null
 }
 
 export type FactoryCustomerMinAggregateOutputType = {
@@ -37,6 +47,7 @@ export type FactoryCustomerMinAggregateOutputType = {
   deliveryCity: string | null
   affiliateBranchId: string | null
   userId: string | null
+  creditLimitUsd: number | null
   active: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -55,6 +66,7 @@ export type FactoryCustomerMaxAggregateOutputType = {
   deliveryCity: string | null
   affiliateBranchId: string | null
   userId: string | null
+  creditLimitUsd: number | null
   active: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -74,12 +86,21 @@ export type FactoryCustomerCountAggregateOutputType = {
   affiliateBranchId: number
   userId: number
   notifyPrefs: number
+  creditLimitUsd: number
   active: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type FactoryCustomerAvgAggregateInputType = {
+  creditLimitUsd?: true
+}
+
+export type FactoryCustomerSumAggregateInputType = {
+  creditLimitUsd?: true
+}
 
 export type FactoryCustomerMinAggregateInputType = {
   id?: true
@@ -94,6 +115,7 @@ export type FactoryCustomerMinAggregateInputType = {
   deliveryCity?: true
   affiliateBranchId?: true
   userId?: true
+  creditLimitUsd?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -112,6 +134,7 @@ export type FactoryCustomerMaxAggregateInputType = {
   deliveryCity?: true
   affiliateBranchId?: true
   userId?: true
+  creditLimitUsd?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -131,6 +154,7 @@ export type FactoryCustomerCountAggregateInputType = {
   affiliateBranchId?: true
   userId?: true
   notifyPrefs?: true
+  creditLimitUsd?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -175,6 +199,18 @@ export type FactoryCustomerAggregateArgs<ExtArgs extends runtime.Types.Extension
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: FactoryCustomerAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: FactoryCustomerSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: FactoryCustomerMinAggregateInputType
@@ -205,6 +241,8 @@ export type FactoryCustomerGroupByArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   _count?: FactoryCustomerCountAggregateInputType | true
+  _avg?: FactoryCustomerAvgAggregateInputType
+  _sum?: FactoryCustomerSumAggregateInputType
   _min?: FactoryCustomerMinAggregateInputType
   _max?: FactoryCustomerMaxAggregateInputType
 }
@@ -223,10 +261,13 @@ export type FactoryCustomerGroupByOutputType = {
   affiliateBranchId: string | null
   userId: string | null
   notifyPrefs: runtime.JsonValue | null
+  creditLimitUsd: number
   active: boolean
   createdAt: Date
   updatedAt: Date
   _count: FactoryCustomerCountAggregateOutputType | null
+  _avg: FactoryCustomerAvgAggregateOutputType | null
+  _sum: FactoryCustomerSumAggregateOutputType | null
   _min: FactoryCustomerMinAggregateOutputType | null
   _max: FactoryCustomerMaxAggregateOutputType | null
 }
@@ -263,6 +304,7 @@ export type FactoryCustomerWhereInput = {
   affiliateBranchId?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
   userId?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
   notifyPrefs?: Prisma.JsonNullableFilter<"FactoryCustomer">
+  creditLimitUsd?: Prisma.FloatFilter<"FactoryCustomer"> | number
   active?: Prisma.BoolFilter<"FactoryCustomer"> | boolean
   createdAt?: Prisma.DateTimeFilter<"FactoryCustomer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FactoryCustomer"> | Date | string
@@ -288,6 +330,7 @@ export type FactoryCustomerOrderByWithRelationInput = {
   affiliateBranchId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   notifyPrefs?: Prisma.SortOrderInput | Prisma.SortOrder
+  creditLimitUsd?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -316,6 +359,7 @@ export type FactoryCustomerWhereUniqueInput = Prisma.AtLeast<{
   deliveryCity?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
   affiliateBranchId?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
   notifyPrefs?: Prisma.JsonNullableFilter<"FactoryCustomer">
+  creditLimitUsd?: Prisma.FloatFilter<"FactoryCustomer"> | number
   active?: Prisma.BoolFilter<"FactoryCustomer"> | boolean
   createdAt?: Prisma.DateTimeFilter<"FactoryCustomer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FactoryCustomer"> | Date | string
@@ -341,12 +385,15 @@ export type FactoryCustomerOrderByWithAggregationInput = {
   affiliateBranchId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   notifyPrefs?: Prisma.SortOrderInput | Prisma.SortOrder
+  creditLimitUsd?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.FactoryCustomerCountOrderByAggregateInput
+  _avg?: Prisma.FactoryCustomerAvgOrderByAggregateInput
   _max?: Prisma.FactoryCustomerMaxOrderByAggregateInput
   _min?: Prisma.FactoryCustomerMinOrderByAggregateInput
+  _sum?: Prisma.FactoryCustomerSumOrderByAggregateInput
 }
 
 export type FactoryCustomerScalarWhereWithAggregatesInput = {
@@ -366,6 +413,7 @@ export type FactoryCustomerScalarWhereWithAggregatesInput = {
   affiliateBranchId?: Prisma.StringNullableWithAggregatesFilter<"FactoryCustomer"> | string | null
   userId?: Prisma.StringNullableWithAggregatesFilter<"FactoryCustomer"> | string | null
   notifyPrefs?: Prisma.JsonNullableWithAggregatesFilter<"FactoryCustomer">
+  creditLimitUsd?: Prisma.FloatWithAggregatesFilter<"FactoryCustomer"> | number
   active?: Prisma.BoolWithAggregatesFilter<"FactoryCustomer"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"FactoryCustomer"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"FactoryCustomer"> | Date | string
@@ -382,6 +430,7 @@ export type FactoryCustomerCreateInput = {
   deliveryAddress?: string | null
   deliveryCity?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -407,6 +456,7 @@ export type FactoryCustomerUncheckedCreateInput = {
   affiliateBranchId?: string | null
   userId?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -426,6 +476,7 @@ export type FactoryCustomerUpdateInput = {
   deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -451,6 +502,7 @@ export type FactoryCustomerUncheckedUpdateInput = {
   affiliateBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -473,6 +525,7 @@ export type FactoryCustomerCreateManyInput = {
   affiliateBranchId?: string | null
   userId?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -489,6 +542,7 @@ export type FactoryCustomerUpdateManyMutationInput = {
   deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -508,6 +562,7 @@ export type FactoryCustomerUncheckedUpdateManyInput = {
   affiliateBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -542,9 +597,14 @@ export type FactoryCustomerCountOrderByAggregateInput = {
   affiliateBranchId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   notifyPrefs?: Prisma.SortOrder
+  creditLimitUsd?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type FactoryCustomerAvgOrderByAggregateInput = {
+  creditLimitUsd?: Prisma.SortOrder
 }
 
 export type FactoryCustomerMaxOrderByAggregateInput = {
@@ -560,6 +620,7 @@ export type FactoryCustomerMaxOrderByAggregateInput = {
   deliveryCity?: Prisma.SortOrder
   affiliateBranchId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  creditLimitUsd?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -578,9 +639,14 @@ export type FactoryCustomerMinOrderByAggregateInput = {
   deliveryCity?: Prisma.SortOrder
   affiliateBranchId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  creditLimitUsd?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type FactoryCustomerSumOrderByAggregateInput = {
+  creditLimitUsd?: Prisma.SortOrder
 }
 
 export type FactoryCustomerScalarRelationFilter = {
@@ -757,6 +823,7 @@ export type FactoryCustomerCreateWithoutUserInput = {
   deliveryAddress?: string | null
   deliveryCity?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -780,6 +847,7 @@ export type FactoryCustomerUncheckedCreateWithoutUserInput = {
   deliveryCity?: string | null
   affiliateBranchId?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -815,6 +883,7 @@ export type FactoryCustomerUpdateWithoutUserInput = {
   deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -838,6 +907,7 @@ export type FactoryCustomerUncheckedUpdateWithoutUserInput = {
   deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   affiliateBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -857,6 +927,7 @@ export type FactoryCustomerCreateWithoutBranchInput = {
   deliveryAddress?: string | null
   deliveryCity?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -880,6 +951,7 @@ export type FactoryCustomerUncheckedCreateWithoutBranchInput = {
   affiliateBranchId?: string | null
   userId?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -909,6 +981,7 @@ export type FactoryCustomerCreateWithoutAffiliateBranchInput = {
   deliveryAddress?: string | null
   deliveryCity?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -932,6 +1005,7 @@ export type FactoryCustomerUncheckedCreateWithoutAffiliateBranchInput = {
   deliveryCity?: string | null
   userId?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -983,6 +1057,7 @@ export type FactoryCustomerScalarWhereInput = {
   affiliateBranchId?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
   userId?: Prisma.StringNullableFilter<"FactoryCustomer"> | string | null
   notifyPrefs?: Prisma.JsonNullableFilter<"FactoryCustomer">
+  creditLimitUsd?: Prisma.FloatFilter<"FactoryCustomer"> | number
   active?: Prisma.BoolFilter<"FactoryCustomer"> | boolean
   createdAt?: Prisma.DateTimeFilter<"FactoryCustomer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FactoryCustomer"> | Date | string
@@ -1015,6 +1090,7 @@ export type FactoryCustomerCreateWithoutCreditsInput = {
   deliveryAddress?: string | null
   deliveryCity?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1039,6 +1115,7 @@ export type FactoryCustomerUncheckedCreateWithoutCreditsInput = {
   affiliateBranchId?: string | null
   userId?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1073,6 +1150,7 @@ export type FactoryCustomerUpdateWithoutCreditsInput = {
   deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1097,6 +1175,7 @@ export type FactoryCustomerUncheckedUpdateWithoutCreditsInput = {
   affiliateBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1115,6 +1194,7 @@ export type FactoryCustomerCreateWithoutReservationsInput = {
   deliveryAddress?: string | null
   deliveryCity?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1139,6 +1219,7 @@ export type FactoryCustomerUncheckedCreateWithoutReservationsInput = {
   affiliateBranchId?: string | null
   userId?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1173,6 +1254,7 @@ export type FactoryCustomerUpdateWithoutReservationsInput = {
   deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1197,6 +1279,7 @@ export type FactoryCustomerUncheckedUpdateWithoutReservationsInput = {
   affiliateBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1215,6 +1298,7 @@ export type FactoryCustomerCreateWithoutOrderRequestsInput = {
   deliveryAddress?: string | null
   deliveryCity?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1239,6 +1323,7 @@ export type FactoryCustomerUncheckedCreateWithoutOrderRequestsInput = {
   affiliateBranchId?: string | null
   userId?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1273,6 +1358,7 @@ export type FactoryCustomerUpdateWithoutOrderRequestsInput = {
   deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1297,6 +1383,7 @@ export type FactoryCustomerUncheckedUpdateWithoutOrderRequestsInput = {
   affiliateBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1317,6 +1404,7 @@ export type FactoryCustomerCreateManyBranchInput = {
   affiliateBranchId?: string | null
   userId?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1335,6 +1423,7 @@ export type FactoryCustomerCreateManyAffiliateBranchInput = {
   deliveryCity?: string | null
   userId?: string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1351,6 +1440,7 @@ export type FactoryCustomerUpdateWithoutBranchInput = {
   deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1374,6 +1464,7 @@ export type FactoryCustomerUncheckedUpdateWithoutBranchInput = {
   affiliateBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1395,6 +1486,7 @@ export type FactoryCustomerUncheckedUpdateManyWithoutBranchInput = {
   affiliateBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1411,6 +1503,7 @@ export type FactoryCustomerUpdateWithoutAffiliateBranchInput = {
   deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1434,6 +1527,7 @@ export type FactoryCustomerUncheckedUpdateWithoutAffiliateBranchInput = {
   deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1455,6 +1549,7 @@ export type FactoryCustomerUncheckedUpdateManyWithoutAffiliateBranchInput = {
   deliveryCity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifyPrefs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  creditLimitUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1523,6 +1618,7 @@ export type FactoryCustomerSelect<ExtArgs extends runtime.Types.Extensions.Inter
   affiliateBranchId?: boolean
   userId?: boolean
   notifyPrefs?: boolean
+  creditLimitUsd?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1549,6 +1645,7 @@ export type FactoryCustomerSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   affiliateBranchId?: boolean
   userId?: boolean
   notifyPrefs?: boolean
+  creditLimitUsd?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1571,6 +1668,7 @@ export type FactoryCustomerSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   affiliateBranchId?: boolean
   userId?: boolean
   notifyPrefs?: boolean
+  creditLimitUsd?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1593,12 +1691,13 @@ export type FactoryCustomerSelectScalar = {
   affiliateBranchId?: boolean
   userId?: boolean
   notifyPrefs?: boolean
+  creditLimitUsd?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type FactoryCustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "name" | "phone" | "contactName" | "companyName" | "email" | "notes" | "deliveryAddress" | "deliveryCity" | "affiliateBranchId" | "userId" | "notifyPrefs" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["factoryCustomer"]>
+export type FactoryCustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "name" | "phone" | "contactName" | "companyName" | "email" | "notes" | "deliveryAddress" | "deliveryCity" | "affiliateBranchId" | "userId" | "notifyPrefs" | "creditLimitUsd" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["factoryCustomer"]>
 export type FactoryCustomerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   affiliateBranch?: boolean | Prisma.FactoryCustomer$affiliateBranchArgs<ExtArgs>
@@ -1652,6 +1751,10 @@ export type $FactoryCustomerPayload<ExtArgs extends runtime.Types.Extensions.Int
      * Préférences notifs : { families?: ("EAU"|"VIN")[], waPromo?: boolean, waStock?: boolean }
      */
     notifyPrefs: runtime.JsonValue | null
+    /**
+     * Plafond de crédit (USD). 0 = pas de crédit autorisé.
+     */
+    creditLimitUsd: number
     active: boolean
     createdAt: Date
     updatedAt: Date
@@ -2097,6 +2200,7 @@ export interface FactoryCustomerFieldRefs {
   readonly affiliateBranchId: Prisma.FieldRef<"FactoryCustomer", 'String'>
   readonly userId: Prisma.FieldRef<"FactoryCustomer", 'String'>
   readonly notifyPrefs: Prisma.FieldRef<"FactoryCustomer", 'Json'>
+  readonly creditLimitUsd: Prisma.FieldRef<"FactoryCustomer", 'Float'>
   readonly active: Prisma.FieldRef<"FactoryCustomer", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"FactoryCustomer", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"FactoryCustomer", 'DateTime'>

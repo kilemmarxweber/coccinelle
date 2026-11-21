@@ -195,7 +195,10 @@ export type FactoryProductKind = (typeof FactoryProductKind)[keyof typeof Factor
 
 export const FactoryFinishedFamily = {
   EAU: 'EAU',
-  VIN: 'VIN'
+  VIN: 'VIN',
+  CHARCUTERIE: 'CHARCUTERIE',
+  CREME: 'CREME',
+  AUTRE: 'AUTRE'
 } as const
 
 export type FactoryFinishedFamily = (typeof FactoryFinishedFamily)[keyof typeof FactoryFinishedFamily]
@@ -253,7 +256,8 @@ export const ShopSaleStatus = {
   BROUILLON: 'BROUILLON',
   EN_ATTENTE: 'EN_ATTENTE',
   ENCAISSEE: 'ENCAISSEE',
-  ANNULEE: 'ANNULEE'
+  ANNULEE: 'ANNULEE',
+  CORRIGEE: 'CORRIGEE'
 } as const
 
 export type ShopSaleStatus = (typeof ShopSaleStatus)[keyof typeof ShopSaleStatus]
@@ -270,7 +274,10 @@ export type ShopStockMovementKind = (typeof ShopStockMovementKind)[keyof typeof 
 
 export const WarehouseProductType = {
   BOUTIQUE: 'BOUTIQUE',
-  DIVERS: 'DIVERS'
+  DIVERS: 'DIVERS',
+  MARCHANDISE: 'MARCHANDISE',
+  MATIERE_PREMIERE: 'MATIERE_PREMIERE',
+  PRODUIT_FINI: 'PRODUIT_FINI'
 } as const
 
 export type WarehouseProductType = (typeof WarehouseProductType)[keyof typeof WarehouseProductType]
@@ -280,7 +287,11 @@ export const WarehouseMovementKind = {
   ENTREE: 'ENTREE',
   SORTIE: 'SORTIE',
   AJUSTEMENT: 'AJUSTEMENT',
-  TRANSFERT: 'TRANSFERT'
+  TRANSFERT: 'TRANSFERT',
+  PERTE: 'PERTE',
+  CONSO: 'CONSO',
+  RETOUR: 'RETOUR',
+  INVENTAIRE: 'INVENTAIRE'
 } as const
 
 export type WarehouseMovementKind = (typeof WarehouseMovementKind)[keyof typeof WarehouseMovementKind]
@@ -337,6 +348,33 @@ export const PaymentMethod = {
 } as const
 
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
+
+
+export const PaymentConfirmationStatus = {
+  CONFIRMED: 'CONFIRMED',
+  PENDING: 'PENDING',
+  REJECTED: 'REJECTED'
+} as const
+
+export type PaymentConfirmationStatus = (typeof PaymentConfirmationStatus)[keyof typeof PaymentConfirmationStatus]
+
+
+export const CashRemittanceStatus = {
+  PREPARED: 'PREPARED',
+  RECEIVED: 'RECEIVED',
+  DISPUTED: 'DISPUTED'
+} as const
+
+export type CashRemittanceStatus = (typeof CashRemittanceStatus)[keyof typeof CashRemittanceStatus]
+
+
+export const CentralCashKind = {
+  REMITTANCE_IN: 'REMITTANCE_IN',
+  ENTRY: 'ENTRY',
+  EXIT: 'EXIT'
+} as const
+
+export type CentralCashKind = (typeof CentralCashKind)[keyof typeof CentralCashKind]
 
 
 export const BranchPartnerStatus = {
@@ -509,3 +547,33 @@ export const LeaveRequestStatus = {
 } as const
 
 export type LeaveRequestStatus = (typeof LeaveRequestStatus)[keyof typeof LeaveRequestStatus]
+
+
+export const BiaSeverity = {
+  INFO: 'INFO',
+  MOYENNE: 'MOYENNE',
+  ELEVEE: 'ELEVEE',
+  CRITIQUE: 'CRITIQUE'
+} as const
+
+export type BiaSeverity = (typeof BiaSeverity)[keyof typeof BiaSeverity]
+
+
+export const IntegrityFindingStatus = {
+  OUVERT: 'OUVERT',
+  QUALIFIE: 'QUALIFIE',
+  RESOLU: 'RESOLU',
+  CLOS: 'CLOS'
+} as const
+
+export type IntegrityFindingStatus = (typeof IntegrityFindingStatus)[keyof typeof IntegrityFindingStatus]
+
+
+export const BiaIncidentStatus = {
+  OUVERT: 'OUVERT',
+  EN_COURS: 'EN_COURS',
+  RESOLU: 'RESOLU',
+  CLOS: 'CLOS'
+} as const
+
+export type BiaIncidentStatus = (typeof BiaIncidentStatus)[keyof typeof BiaIncidentStatus]

@@ -162,15 +162,21 @@ export async function getOpenCashDrawerSummary(
     getActiveExchangeRate(branchId),
     prisma.payment.findMany({
       where: { cashSessionId: session.id },
-      select: { amountCdf: true, amountForeign: true, method: true },
+      select: {
+        amountCdf: true,
+        amountForeign: true,
+        method: true,
+        confirmationStatus: true,
+      },
     }),
   ]);
 
   const usdRate = rateRow?.rate && rateRow.rate > 0 ? rateRow.rate : null;
   let movementsUsd = 0;
   for (const p of payments) {
-    // Virement / banque : hors float cash physique
+    // Banque / MM en attente : hors float espèces physique
     if (p.method === "BANK") continue;
+    if (p.confirmationStatus === "PENDING") continue;
     if (p.amountForeign != null && p.amountForeign !== 0) {
       movementsUsd += p.amountForeign;
     } else if (usdRate) {
@@ -224,6 +230,8 @@ export async function closeCashSessionAction(input: {
   organizationId: string;
   branchId: string;
   closingCash?: number;
+  declaredCashUsd?: number;
+  prepareRemittance?: boolean;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
   const open = await getOpenCashSession(input.branchId, user.id);
@@ -232,17 +240,65 @@ export async function closeCashSessionAction(input: {
       "Aucune session de caisse ouverte pour vous. Une session d’un autre caissier reste la sienne jusqu’à sa clôture.",
     );
   }
+  const summary = await getOpenCashDrawerSummary(input.branchId, user.id);
+  const expectedUsd = summary?.balanceUsd ?? open.openingFloat;
+  const declaredUsd =
+    input.declaredCashUsd ?? input.closingCash ?? expectedUsd;
+  const varianceUsd = Math.round((expectedUsd - declaredUsd) * 100) / 100;
+
   const session = await prisma.cashSession.update({
     where: { id: open.id },
     data: {
       status: "CLOSED",
       closedAt: new Date(),
       closedByUserId: user.id,
-      closingCash: input.closingCash ?? undefined,
+      closingCash: declaredUsd,
+      expectedCashUsd: expectedUsd,
+      declaredCashUsd: declaredUsd,
+      varianceUsd,
     },
   });
+
+  const { writeAuditEvent } = await import("@/lib/audit/log");
+  await writeAuditEvent({
+    organizationId: input.organizationId,
+    branchId: input.branchId,
+    entityType: "CASH",
+    entityId: session.id,
+    action: "CLOSE",
+    actorUserId: user.id,
+    actorName: user.name || user.email || "Caissier",
+    reason: `Clôture caisse · théorique ${expectedUsd} · déclaré ${declaredUsd} · écart ${varianceUsd}`,
+    oldValue: { status: "OPEN", openingFloat: open.openingFloat },
+    newValue: { expectedUsd, declaredUsd, varianceUsd },
+  });
+
+  let remittanceNumber: string | null = null;
+  if (input.prepareRemittance !== false && declaredUsd > 0) {
+    const { prepareRemittanceFromSession } = await import(
+      "@/lib/central-cash/service"
+    );
+    const rem = await prepareRemittanceFromSession({
+      organizationId: input.organizationId,
+      branchId: input.branchId,
+      cashSessionId: session.id,
+      expectedUsd,
+      declaredUsd,
+      userId: user.id,
+    });
+    remittanceNumber = rem.number;
+  }
+
   revalidateBranch(input.organizationId, input.branchId);
-  return session;
+  return { ...session, remittanceNumber, expectedUsd, declaredUsd, varianceUsd };
+}
+
+export async function getOpenCashDrawerSummaryAction(
+  organizationId: string,
+  branchId: string,
+) {
+  const { user } = await ctx(organizationId, branchId);
+  return getOpenCashDrawerSummary(branchId, user.id);
 }
 
 async function nextReceiptNumber(branchId: string) {

@@ -322,6 +322,7 @@ export async function upsertWarehouseProductAction(input: {
   minQty?: number;
   unitCostUsd?: number;
   stockQty?: number;
+  expiresAt?: string | null;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
   const name = input.name.trim();
@@ -358,6 +359,7 @@ export async function upsertWarehouseProductAction(input: {
         unit: input.unit?.trim() || "pcs",
         minQty: Math.max(0, input.minQty ?? 5),
         unitCostUsd: Math.max(0, input.unitCostUsd ?? 0),
+        expiresAt: input.expiresAt ? new Date(input.expiresAt) : null,
         ...locData,
         ...(input.sku?.trim() ? { sku: input.sku.trim().toUpperCase() } : {}),
       },
@@ -381,6 +383,7 @@ export async function upsertWarehouseProductAction(input: {
         unit: input.unit?.trim() || "pcs",
         minQty: Math.max(0, input.minQty ?? 5),
         unitCostUsd: Math.max(0, input.unitCostUsd ?? 0),
+        expiresAt: input.expiresAt ? new Date(input.expiresAt) : null,
         stockQty: opening,
         ...locData,
       },
@@ -482,13 +485,21 @@ export async function adjustWarehouseStockAction(input: {
   organizationId: string;
   branchId: string;
   productId: string;
-  kind: "ENTREE" | "SORTIE" | "AJUSTEMENT";
+  kind: "ENTREE" | "SORTIE" | "AJUSTEMENT" | "PERTE" | "CONSO" | "RETOUR" | "INVENTAIRE";
   quantity: number;
   note?: string;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId);
   const qty = Math.floor(input.quantity);
   if (!(qty > 0)) throw new Error("Quantité invalide.");
+  if (
+    (input.kind === "PERTE" ||
+      input.kind === "INVENTAIRE" ||
+      input.kind === "AJUSTEMENT") &&
+    !input.note?.trim()
+  ) {
+    throw new Error("Motif obligatoire pour un écart de stock.");
+  }
 
   await prisma.$transaction(async (tx) => {
     const p = await tx.warehouseProduct.findFirst({
@@ -496,8 +507,12 @@ export async function adjustWarehouseStockAction(input: {
     });
     if (!p) throw new Error("Produit introuvable.");
     let after = p.stockQty;
-    if (input.kind === "ENTREE") after = p.stockQty + qty;
-    else if (input.kind === "SORTIE") {
+    if (input.kind === "ENTREE" || input.kind === "RETOUR") after = p.stockQty + qty;
+    else if (
+      input.kind === "SORTIE" ||
+      input.kind === "PERTE" ||
+      input.kind === "CONSO"
+    ) {
       if (p.stockQty < qty) throw new Error("Stock insuffisant.");
       after = p.stockQty - qty;
     } else {
@@ -520,6 +535,18 @@ export async function adjustWarehouseStockAction(input: {
         createdByUserId: user.id,
       },
     });
+  });
+  const { writeAuditEvent } = await import("@/lib/audit/log");
+  await writeAuditEvent({
+    organizationId: input.organizationId,
+    branchId: input.branchId,
+    entityType: "STOCK",
+    entityId: input.productId,
+    action: input.kind,
+    actorUserId: user.id,
+    actorName: user.name || user.email || "Stock",
+    reason: input.note?.trim() || null,
+    newValue: { kind: input.kind, quantity: qty },
   });
   revalidateStock(input.organizationId, input.branchId);
 }

@@ -73,6 +73,7 @@ type Props = {
   organizationId: string;
   orgName: string;
   branches: OrgBranchOption[];
+  hideOccupancy?: boolean;
 };
 
 const TABS: { id: TabId; label: string }[] = [
@@ -85,6 +86,9 @@ const TABS: { id: TabId; label: string }[] = [
 ];
 
 export function OrgRapportsClient(props: Props) {
+  const tabs = props.hideOccupancy
+    ? TABS.filter((t) => t.id !== "occupation")
+    : TABS;
   const fallback = defaultReportRange(30);
   const [tab, setTab] = useState<TabId>("ventes");
   const [selected, setSelected] = useState<string[]>(() =>
@@ -1064,7 +1068,7 @@ export function OrgRapportsClient(props: Props) {
       </section>
 
       <nav className="flex flex-wrap gap-1.5">
-        {TABS.map((item) => (
+        {tabs.map((item) => (
           <button
             key={item.id}
             type="button"

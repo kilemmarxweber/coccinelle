@@ -50,7 +50,7 @@ type Product = {
   name: string;
   price: number;
   free: number;
-  finishedFamily?: "EAU" | "VIN" | null;
+  finishedFamily?: "EAU" | "VIN" | "CHARCUTERIE" | "CREME" | "AUTRE" | null;
 };
 
 function parseLines(raw?: string): Record<string, number> {
@@ -74,9 +74,12 @@ function defaultDueDate() {
   return `${y}-${m}-${day}`;
 }
 
-function familyLabel(family?: "EAU" | "VIN" | null) {
+function familyLabel(family?: "EAU" | "VIN" | "CHARCUTERIE" | "CREME" | "AUTRE" | null) {
   if (family === "EAU") return "Eau";
   if (family === "VIN") return "Vins";
+  if (family === "CHARCUTERIE") return "Charcuterie";
+  if (family === "CREME") return "Crème";
+  if (family === "AUTRE") return "Autre";
   return "—";
 }
 

@@ -30,12 +30,14 @@ export type PurchaseOrderAvgAggregateOutputType = {
   totalAmountUsd: number | null
   fundsReleasedUsd: number | null
   validatedAmountUsd: number | null
+  buyerAdvanceUsd: number | null
 }
 
 export type PurchaseOrderSumAggregateOutputType = {
   totalAmountUsd: number | null
   fundsReleasedUsd: number | null
   validatedAmountUsd: number | null
+  buyerAdvanceUsd: number | null
 }
 
 export type PurchaseOrderMinAggregateOutputType = {
@@ -49,6 +51,10 @@ export type PurchaseOrderMinAggregateOutputType = {
   totalAmountUsd: number | null
   fundsReleasedUsd: number | null
   validatedAmountUsd: number | null
+  isPurchaseRequest: boolean | null
+  buyerAdvanceUsd: number | null
+  justificationMissing: boolean | null
+  justificationNote: string | null
   createdByUserId: string | null
   validatedByUserId: string | null
   validatedAt: Date | null
@@ -67,6 +73,10 @@ export type PurchaseOrderMaxAggregateOutputType = {
   totalAmountUsd: number | null
   fundsReleasedUsd: number | null
   validatedAmountUsd: number | null
+  isPurchaseRequest: boolean | null
+  buyerAdvanceUsd: number | null
+  justificationMissing: boolean | null
+  justificationNote: string | null
   createdByUserId: string | null
   validatedByUserId: string | null
   validatedAt: Date | null
@@ -85,6 +95,10 @@ export type PurchaseOrderCountAggregateOutputType = {
   totalAmountUsd: number
   fundsReleasedUsd: number
   validatedAmountUsd: number
+  isPurchaseRequest: number
+  buyerAdvanceUsd: number
+  justificationMissing: number
+  justificationNote: number
   createdByUserId: number
   validatedByUserId: number
   validatedAt: number
@@ -98,12 +112,14 @@ export type PurchaseOrderAvgAggregateInputType = {
   totalAmountUsd?: true
   fundsReleasedUsd?: true
   validatedAmountUsd?: true
+  buyerAdvanceUsd?: true
 }
 
 export type PurchaseOrderSumAggregateInputType = {
   totalAmountUsd?: true
   fundsReleasedUsd?: true
   validatedAmountUsd?: true
+  buyerAdvanceUsd?: true
 }
 
 export type PurchaseOrderMinAggregateInputType = {
@@ -117,6 +133,10 @@ export type PurchaseOrderMinAggregateInputType = {
   totalAmountUsd?: true
   fundsReleasedUsd?: true
   validatedAmountUsd?: true
+  isPurchaseRequest?: true
+  buyerAdvanceUsd?: true
+  justificationMissing?: true
+  justificationNote?: true
   createdByUserId?: true
   validatedByUserId?: true
   validatedAt?: true
@@ -135,6 +155,10 @@ export type PurchaseOrderMaxAggregateInputType = {
   totalAmountUsd?: true
   fundsReleasedUsd?: true
   validatedAmountUsd?: true
+  isPurchaseRequest?: true
+  buyerAdvanceUsd?: true
+  justificationMissing?: true
+  justificationNote?: true
   createdByUserId?: true
   validatedByUserId?: true
   validatedAt?: true
@@ -153,6 +177,10 @@ export type PurchaseOrderCountAggregateInputType = {
   totalAmountUsd?: true
   fundsReleasedUsd?: true
   validatedAmountUsd?: true
+  isPurchaseRequest?: true
+  buyerAdvanceUsd?: true
+  justificationMissing?: true
+  justificationNote?: true
   createdByUserId?: true
   validatedByUserId?: true
   validatedAt?: true
@@ -258,6 +286,10 @@ export type PurchaseOrderGroupByOutputType = {
   totalAmountUsd: number
   fundsReleasedUsd: number
   validatedAmountUsd: number | null
+  isPurchaseRequest: boolean
+  buyerAdvanceUsd: number
+  justificationMissing: boolean
+  justificationNote: string | null
   createdByUserId: string
   validatedByUserId: string | null
   validatedAt: Date | null
@@ -299,6 +331,10 @@ export type PurchaseOrderWhereInput = {
   totalAmountUsd?: Prisma.FloatFilter<"PurchaseOrder"> | number
   fundsReleasedUsd?: Prisma.FloatFilter<"PurchaseOrder"> | number
   validatedAmountUsd?: Prisma.FloatNullableFilter<"PurchaseOrder"> | number | null
+  isPurchaseRequest?: Prisma.BoolFilter<"PurchaseOrder"> | boolean
+  buyerAdvanceUsd?: Prisma.FloatFilter<"PurchaseOrder"> | number
+  justificationMissing?: Prisma.BoolFilter<"PurchaseOrder"> | boolean
+  justificationNote?: Prisma.StringNullableFilter<"PurchaseOrder"> | string | null
   createdByUserId?: Prisma.StringFilter<"PurchaseOrder"> | string
   validatedByUserId?: Prisma.StringNullableFilter<"PurchaseOrder"> | string | null
   validatedAt?: Prisma.DateTimeNullableFilter<"PurchaseOrder"> | Date | string | null
@@ -321,6 +357,10 @@ export type PurchaseOrderOrderByWithRelationInput = {
   totalAmountUsd?: Prisma.SortOrder
   fundsReleasedUsd?: Prisma.SortOrder
   validatedAmountUsd?: Prisma.SortOrderInput | Prisma.SortOrder
+  isPurchaseRequest?: Prisma.SortOrder
+  buyerAdvanceUsd?: Prisma.SortOrder
+  justificationMissing?: Prisma.SortOrder
+  justificationNote?: Prisma.SortOrderInput | Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   validatedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   validatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -347,6 +387,10 @@ export type PurchaseOrderWhereUniqueInput = Prisma.AtLeast<{
   totalAmountUsd?: Prisma.FloatFilter<"PurchaseOrder"> | number
   fundsReleasedUsd?: Prisma.FloatFilter<"PurchaseOrder"> | number
   validatedAmountUsd?: Prisma.FloatNullableFilter<"PurchaseOrder"> | number | null
+  isPurchaseRequest?: Prisma.BoolFilter<"PurchaseOrder"> | boolean
+  buyerAdvanceUsd?: Prisma.FloatFilter<"PurchaseOrder"> | number
+  justificationMissing?: Prisma.BoolFilter<"PurchaseOrder"> | boolean
+  justificationNote?: Prisma.StringNullableFilter<"PurchaseOrder"> | string | null
   createdByUserId?: Prisma.StringFilter<"PurchaseOrder"> | string
   validatedByUserId?: Prisma.StringNullableFilter<"PurchaseOrder"> | string | null
   validatedAt?: Prisma.DateTimeNullableFilter<"PurchaseOrder"> | Date | string | null
@@ -369,6 +413,10 @@ export type PurchaseOrderOrderByWithAggregationInput = {
   totalAmountUsd?: Prisma.SortOrder
   fundsReleasedUsd?: Prisma.SortOrder
   validatedAmountUsd?: Prisma.SortOrderInput | Prisma.SortOrder
+  isPurchaseRequest?: Prisma.SortOrder
+  buyerAdvanceUsd?: Prisma.SortOrder
+  justificationMissing?: Prisma.SortOrder
+  justificationNote?: Prisma.SortOrderInput | Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   validatedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   validatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -395,6 +443,10 @@ export type PurchaseOrderScalarWhereWithAggregatesInput = {
   totalAmountUsd?: Prisma.FloatWithAggregatesFilter<"PurchaseOrder"> | number
   fundsReleasedUsd?: Prisma.FloatWithAggregatesFilter<"PurchaseOrder"> | number
   validatedAmountUsd?: Prisma.FloatNullableWithAggregatesFilter<"PurchaseOrder"> | number | null
+  isPurchaseRequest?: Prisma.BoolWithAggregatesFilter<"PurchaseOrder"> | boolean
+  buyerAdvanceUsd?: Prisma.FloatWithAggregatesFilter<"PurchaseOrder"> | number
+  justificationMissing?: Prisma.BoolWithAggregatesFilter<"PurchaseOrder"> | boolean
+  justificationNote?: Prisma.StringNullableWithAggregatesFilter<"PurchaseOrder"> | string | null
   createdByUserId?: Prisma.StringWithAggregatesFilter<"PurchaseOrder"> | string
   validatedByUserId?: Prisma.StringNullableWithAggregatesFilter<"PurchaseOrder"> | string | null
   validatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PurchaseOrder"> | Date | string | null
@@ -411,6 +463,10 @@ export type PurchaseOrderCreateInput = {
   totalAmountUsd?: number
   fundsReleasedUsd?: number
   validatedAmountUsd?: number | null
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: number
+  justificationMissing?: boolean
+  justificationNote?: string | null
   createdByUserId: string
   validatedByUserId?: string | null
   validatedAt?: Date | string | null
@@ -433,6 +489,10 @@ export type PurchaseOrderUncheckedCreateInput = {
   totalAmountUsd?: number
   fundsReleasedUsd?: number
   validatedAmountUsd?: number | null
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: number
+  justificationMissing?: boolean
+  justificationNote?: string | null
   createdByUserId: string
   validatedByUserId?: string | null
   validatedAt?: Date | string | null
@@ -451,6 +511,10 @@ export type PurchaseOrderUpdateInput = {
   totalAmountUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   fundsReleasedUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   validatedAmountUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  isPurchaseRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  buyerAdvanceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  justificationMissing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -473,6 +537,10 @@ export type PurchaseOrderUncheckedUpdateInput = {
   totalAmountUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   fundsReleasedUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   validatedAmountUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  isPurchaseRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  buyerAdvanceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  justificationMissing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -493,6 +561,10 @@ export type PurchaseOrderCreateManyInput = {
   totalAmountUsd?: number
   fundsReleasedUsd?: number
   validatedAmountUsd?: number | null
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: number
+  justificationMissing?: boolean
+  justificationNote?: string | null
   createdByUserId: string
   validatedByUserId?: string | null
   validatedAt?: Date | string | null
@@ -509,6 +581,10 @@ export type PurchaseOrderUpdateManyMutationInput = {
   totalAmountUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   fundsReleasedUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   validatedAmountUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  isPurchaseRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  buyerAdvanceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  justificationMissing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -527,6 +603,10 @@ export type PurchaseOrderUncheckedUpdateManyInput = {
   totalAmountUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   fundsReleasedUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   validatedAmountUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  isPurchaseRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  buyerAdvanceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  justificationMissing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -565,6 +645,10 @@ export type PurchaseOrderCountOrderByAggregateInput = {
   totalAmountUsd?: Prisma.SortOrder
   fundsReleasedUsd?: Prisma.SortOrder
   validatedAmountUsd?: Prisma.SortOrder
+  isPurchaseRequest?: Prisma.SortOrder
+  buyerAdvanceUsd?: Prisma.SortOrder
+  justificationMissing?: Prisma.SortOrder
+  justificationNote?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   validatedByUserId?: Prisma.SortOrder
   validatedAt?: Prisma.SortOrder
@@ -576,6 +660,7 @@ export type PurchaseOrderAvgOrderByAggregateInput = {
   totalAmountUsd?: Prisma.SortOrder
   fundsReleasedUsd?: Prisma.SortOrder
   validatedAmountUsd?: Prisma.SortOrder
+  buyerAdvanceUsd?: Prisma.SortOrder
 }
 
 export type PurchaseOrderMaxOrderByAggregateInput = {
@@ -589,6 +674,10 @@ export type PurchaseOrderMaxOrderByAggregateInput = {
   totalAmountUsd?: Prisma.SortOrder
   fundsReleasedUsd?: Prisma.SortOrder
   validatedAmountUsd?: Prisma.SortOrder
+  isPurchaseRequest?: Prisma.SortOrder
+  buyerAdvanceUsd?: Prisma.SortOrder
+  justificationMissing?: Prisma.SortOrder
+  justificationNote?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   validatedByUserId?: Prisma.SortOrder
   validatedAt?: Prisma.SortOrder
@@ -607,6 +696,10 @@ export type PurchaseOrderMinOrderByAggregateInput = {
   totalAmountUsd?: Prisma.SortOrder
   fundsReleasedUsd?: Prisma.SortOrder
   validatedAmountUsd?: Prisma.SortOrder
+  isPurchaseRequest?: Prisma.SortOrder
+  buyerAdvanceUsd?: Prisma.SortOrder
+  justificationMissing?: Prisma.SortOrder
+  justificationNote?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   validatedByUserId?: Prisma.SortOrder
   validatedAt?: Prisma.SortOrder
@@ -618,6 +711,7 @@ export type PurchaseOrderSumOrderByAggregateInput = {
   totalAmountUsd?: Prisma.SortOrder
   fundsReleasedUsd?: Prisma.SortOrder
   validatedAmountUsd?: Prisma.SortOrder
+  buyerAdvanceUsd?: Prisma.SortOrder
 }
 
 export type PurchaseOrderScalarRelationFilter = {
@@ -752,6 +846,10 @@ export type PurchaseOrderCreateWithoutBranchInput = {
   totalAmountUsd?: number
   fundsReleasedUsd?: number
   validatedAmountUsd?: number | null
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: number
+  justificationMissing?: boolean
+  justificationNote?: string | null
   createdByUserId: string
   validatedByUserId?: string | null
   validatedAt?: Date | string | null
@@ -772,6 +870,10 @@ export type PurchaseOrderUncheckedCreateWithoutBranchInput = {
   totalAmountUsd?: number
   fundsReleasedUsd?: number
   validatedAmountUsd?: number | null
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: number
+  justificationMissing?: boolean
+  justificationNote?: string | null
   createdByUserId: string
   validatedByUserId?: string | null
   validatedAt?: Date | string | null
@@ -821,6 +923,10 @@ export type PurchaseOrderScalarWhereInput = {
   totalAmountUsd?: Prisma.FloatFilter<"PurchaseOrder"> | number
   fundsReleasedUsd?: Prisma.FloatFilter<"PurchaseOrder"> | number
   validatedAmountUsd?: Prisma.FloatNullableFilter<"PurchaseOrder"> | number | null
+  isPurchaseRequest?: Prisma.BoolFilter<"PurchaseOrder"> | boolean
+  buyerAdvanceUsd?: Prisma.FloatFilter<"PurchaseOrder"> | number
+  justificationMissing?: Prisma.BoolFilter<"PurchaseOrder"> | boolean
+  justificationNote?: Prisma.StringNullableFilter<"PurchaseOrder"> | string | null
   createdByUserId?: Prisma.StringFilter<"PurchaseOrder"> | string
   validatedByUserId?: Prisma.StringNullableFilter<"PurchaseOrder"> | string | null
   validatedAt?: Prisma.DateTimeNullableFilter<"PurchaseOrder"> | Date | string | null
@@ -837,6 +943,10 @@ export type PurchaseOrderCreateWithoutPaymentsInput = {
   totalAmountUsd?: number
   fundsReleasedUsd?: number
   validatedAmountUsd?: number | null
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: number
+  justificationMissing?: boolean
+  justificationNote?: string | null
   createdByUserId: string
   validatedByUserId?: string | null
   validatedAt?: Date | string | null
@@ -858,6 +968,10 @@ export type PurchaseOrderUncheckedCreateWithoutPaymentsInput = {
   totalAmountUsd?: number
   fundsReleasedUsd?: number
   validatedAmountUsd?: number | null
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: number
+  justificationMissing?: boolean
+  justificationNote?: string | null
   createdByUserId: string
   validatedByUserId?: string | null
   validatedAt?: Date | string | null
@@ -891,6 +1005,10 @@ export type PurchaseOrderUpdateWithoutPaymentsInput = {
   totalAmountUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   fundsReleasedUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   validatedAmountUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  isPurchaseRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  buyerAdvanceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  justificationMissing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -912,6 +1030,10 @@ export type PurchaseOrderUncheckedUpdateWithoutPaymentsInput = {
   totalAmountUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   fundsReleasedUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   validatedAmountUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  isPurchaseRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  buyerAdvanceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  justificationMissing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -929,6 +1051,10 @@ export type PurchaseOrderCreateWithoutItemsInput = {
   totalAmountUsd?: number
   fundsReleasedUsd?: number
   validatedAmountUsd?: number | null
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: number
+  justificationMissing?: boolean
+  justificationNote?: string | null
   createdByUserId: string
   validatedByUserId?: string | null
   validatedAt?: Date | string | null
@@ -950,6 +1076,10 @@ export type PurchaseOrderUncheckedCreateWithoutItemsInput = {
   totalAmountUsd?: number
   fundsReleasedUsd?: number
   validatedAmountUsd?: number | null
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: number
+  justificationMissing?: boolean
+  justificationNote?: string | null
   createdByUserId: string
   validatedByUserId?: string | null
   validatedAt?: Date | string | null
@@ -983,6 +1113,10 @@ export type PurchaseOrderUpdateWithoutItemsInput = {
   totalAmountUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   fundsReleasedUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   validatedAmountUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  isPurchaseRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  buyerAdvanceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  justificationMissing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1004,6 +1138,10 @@ export type PurchaseOrderUncheckedUpdateWithoutItemsInput = {
   totalAmountUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   fundsReleasedUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   validatedAmountUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  isPurchaseRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  buyerAdvanceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  justificationMissing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1021,6 +1159,10 @@ export type PurchaseOrderCreateWithoutSupplierInput = {
   totalAmountUsd?: number
   fundsReleasedUsd?: number
   validatedAmountUsd?: number | null
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: number
+  justificationMissing?: boolean
+  justificationNote?: string | null
   createdByUserId: string
   validatedByUserId?: string | null
   validatedAt?: Date | string | null
@@ -1041,6 +1183,10 @@ export type PurchaseOrderUncheckedCreateWithoutSupplierInput = {
   totalAmountUsd?: number
   fundsReleasedUsd?: number
   validatedAmountUsd?: number | null
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: number
+  justificationMissing?: boolean
+  justificationNote?: string | null
   createdByUserId: string
   validatedByUserId?: string | null
   validatedAt?: Date | string | null
@@ -1086,6 +1232,10 @@ export type PurchaseOrderCreateManyBranchInput = {
   totalAmountUsd?: number
   fundsReleasedUsd?: number
   validatedAmountUsd?: number | null
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: number
+  justificationMissing?: boolean
+  justificationNote?: string | null
   createdByUserId: string
   validatedByUserId?: string | null
   validatedAt?: Date | string | null
@@ -1102,6 +1252,10 @@ export type PurchaseOrderUpdateWithoutBranchInput = {
   totalAmountUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   fundsReleasedUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   validatedAmountUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  isPurchaseRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  buyerAdvanceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  justificationMissing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1122,6 +1276,10 @@ export type PurchaseOrderUncheckedUpdateWithoutBranchInput = {
   totalAmountUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   fundsReleasedUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   validatedAmountUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  isPurchaseRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  buyerAdvanceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  justificationMissing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1141,6 +1299,10 @@ export type PurchaseOrderUncheckedUpdateManyWithoutBranchInput = {
   totalAmountUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   fundsReleasedUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   validatedAmountUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  isPurchaseRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  buyerAdvanceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  justificationMissing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1158,6 +1320,10 @@ export type PurchaseOrderCreateManySupplierInput = {
   totalAmountUsd?: number
   fundsReleasedUsd?: number
   validatedAmountUsd?: number | null
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: number
+  justificationMissing?: boolean
+  justificationNote?: string | null
   createdByUserId: string
   validatedByUserId?: string | null
   validatedAt?: Date | string | null
@@ -1174,6 +1340,10 @@ export type PurchaseOrderUpdateWithoutSupplierInput = {
   totalAmountUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   fundsReleasedUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   validatedAmountUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  isPurchaseRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  buyerAdvanceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  justificationMissing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1194,6 +1364,10 @@ export type PurchaseOrderUncheckedUpdateWithoutSupplierInput = {
   totalAmountUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   fundsReleasedUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   validatedAmountUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  isPurchaseRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  buyerAdvanceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  justificationMissing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1213,6 +1387,10 @@ export type PurchaseOrderUncheckedUpdateManyWithoutSupplierInput = {
   totalAmountUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   fundsReleasedUsd?: Prisma.FloatFieldUpdateOperationsInput | number
   validatedAmountUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  isPurchaseRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  buyerAdvanceUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  justificationMissing?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  justificationNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1271,6 +1449,10 @@ export type PurchaseOrderSelect<ExtArgs extends runtime.Types.Extensions.Interna
   totalAmountUsd?: boolean
   fundsReleasedUsd?: boolean
   validatedAmountUsd?: boolean
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: boolean
+  justificationMissing?: boolean
+  justificationNote?: boolean
   createdByUserId?: boolean
   validatedByUserId?: boolean
   validatedAt?: boolean
@@ -1294,6 +1476,10 @@ export type PurchaseOrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   totalAmountUsd?: boolean
   fundsReleasedUsd?: boolean
   validatedAmountUsd?: boolean
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: boolean
+  justificationMissing?: boolean
+  justificationNote?: boolean
   createdByUserId?: boolean
   validatedByUserId?: boolean
   validatedAt?: boolean
@@ -1314,6 +1500,10 @@ export type PurchaseOrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   totalAmountUsd?: boolean
   fundsReleasedUsd?: boolean
   validatedAmountUsd?: boolean
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: boolean
+  justificationMissing?: boolean
+  justificationNote?: boolean
   createdByUserId?: boolean
   validatedByUserId?: boolean
   validatedAt?: boolean
@@ -1334,6 +1524,10 @@ export type PurchaseOrderSelectScalar = {
   totalAmountUsd?: boolean
   fundsReleasedUsd?: boolean
   validatedAmountUsd?: boolean
+  isPurchaseRequest?: boolean
+  buyerAdvanceUsd?: boolean
+  justificationMissing?: boolean
+  justificationNote?: boolean
   createdByUserId?: boolean
   validatedByUserId?: boolean
   validatedAt?: boolean
@@ -1341,7 +1535,7 @@ export type PurchaseOrderSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PurchaseOrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "number" | "status" | "supplierName" | "supplierId" | "note" | "totalAmountUsd" | "fundsReleasedUsd" | "validatedAmountUsd" | "createdByUserId" | "validatedByUserId" | "validatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["purchaseOrder"]>
+export type PurchaseOrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "number" | "status" | "supplierName" | "supplierId" | "note" | "totalAmountUsd" | "fundsReleasedUsd" | "validatedAmountUsd" | "isPurchaseRequest" | "buyerAdvanceUsd" | "justificationMissing" | "justificationNote" | "createdByUserId" | "validatedByUserId" | "validatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["purchaseOrder"]>
 export type PurchaseOrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   supplier?: boolean | Prisma.PurchaseOrder$supplierArgs<ExtArgs>
@@ -1386,6 +1580,13 @@ export type $PurchaseOrderPayload<ExtArgs extends runtime.Types.Extensions.Inter
      * Total validé reçu (USD).
      */
     validatedAmountUsd: number | null
+    /**
+     * Demande d’achat (DA) vs bon de commande fournisseur.
+     */
+    isPurchaseRequest: boolean
+    buyerAdvanceUsd: number
+    justificationMissing: boolean
+    justificationNote: string | null
     createdByUserId: string
     validatedByUserId: string | null
     validatedAt: Date | null
@@ -1828,6 +2029,10 @@ export interface PurchaseOrderFieldRefs {
   readonly totalAmountUsd: Prisma.FieldRef<"PurchaseOrder", 'Float'>
   readonly fundsReleasedUsd: Prisma.FieldRef<"PurchaseOrder", 'Float'>
   readonly validatedAmountUsd: Prisma.FieldRef<"PurchaseOrder", 'Float'>
+  readonly isPurchaseRequest: Prisma.FieldRef<"PurchaseOrder", 'Boolean'>
+  readonly buyerAdvanceUsd: Prisma.FieldRef<"PurchaseOrder", 'Float'>
+  readonly justificationMissing: Prisma.FieldRef<"PurchaseOrder", 'Boolean'>
+  readonly justificationNote: Prisma.FieldRef<"PurchaseOrder", 'String'>
   readonly createdByUserId: Prisma.FieldRef<"PurchaseOrder", 'String'>
   readonly validatedByUserId: Prisma.FieldRef<"PurchaseOrder", 'String'>
   readonly validatedAt: Prisma.FieldRef<"PurchaseOrder", 'DateTime'>

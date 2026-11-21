@@ -249,43 +249,38 @@ export function UsineDashboard(props: {
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-3 py-5 sm:px-5 lg:px-6">
-      <section className="dash-fade-up relative overflow-hidden rounded-3xl bg-primary px-5 py-6 text-primary-foreground shadow-lg sm:px-8 sm:py-8">
-        <div className="dash-orb pointer-events-none absolute -top-16 -right-10 size-56 rounded-full bg-white/15 blur-2xl" />
-        <div
-          className="dash-orb pointer-events-none absolute -bottom-20 left-10 size-48 rounded-full bg-emerald-400/25 blur-2xl"
-          style={{ animationDelay: "1.4s" }}
-        />
-        <div className="relative z-10 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+      <section className="dash-fade-up rounded-lg border border-border bg-card px-5 py-6 shadow-sm sm:px-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <div className="mb-3 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-[11px] font-medium tracking-wide uppercase">
-                <span className="dash-pulse size-1.5 rounded-full bg-emerald-300" />
+              <span className="inline-flex items-center gap-2 text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+                <span className="size-1.5 rounded-full bg-[#16a34a]" />
                 Usine · {data.roleLabel}
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[11px] font-medium">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">
                 {data.hasEau ? <Droplets className="size-3.5" /> : null}
                 {data.hasVin ? <Wine className="size-3.5" /> : null}
                 {modules}
               </span>
             </div>
-            <h1 className="flex items-center gap-2.5 text-2xl font-semibold tracking-tight sm:text-3xl">
-              <Factory className="size-7 shrink-0 opacity-90 sm:size-8" />
+            <h1 className="flex items-center gap-2.5 text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]">
+              <Factory className="size-6 shrink-0 text-primary sm:size-7" />
               {now ? greeting(now, data.userName) : props.greetingText}
             </h1>
-            <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/85 sm:text-[15px]">
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
               {data.mission}
             </p>
           </div>
-          <div className="flex flex-col items-start gap-1 text-sm text-white/80 lg:items-end">
+          <div className="flex flex-col items-start gap-1 text-sm text-muted-foreground lg:items-end">
             <p className="capitalize">{now ? dateLabel(now) : props.dateText}</p>
-            <p className="font-medium text-white">{data.branchName}</p>
+            <p className="font-medium text-foreground">{data.branchName}</p>
             {data.cashSessionOpen != null ? (
               <p
                 className={cn(
                   "mt-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
                   data.cashSessionOpen
-                    ? "bg-emerald-400/20 text-emerald-100"
-                    : "bg-white/10 text-white/80",
+                    ? "bg-[#16a34a]/10 text-[#15803d]"
+                    : "bg-muted text-muted-foreground",
                 )}
               >
                 Caisse {data.cashSessionOpen ? "ouverte" : "fermée"}
@@ -322,13 +317,13 @@ export function UsineDashboard(props: {
                 >
                   <Link
                     href={step.href}
-                    className="group flex h-full items-start gap-3 rounded-2xl border border-border/80 bg-gradient-to-br from-emerald-500/10 via-card to-sky-500/[0.06] p-4 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-emerald-500/35 hover:shadow-md"
+                    className="group flex h-full items-start gap-3 rounded-lg border border-border bg-card p-4 shadow-sm transition hover:border-primary/40 hover:shadow-md"
                   >
-                    <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-sm font-semibold text-emerald-700 transition group-hover:bg-emerald-600 group-hover:text-white dark:text-emerald-300">
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/12 text-sm font-semibold text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
                       {i + 1}
                     </span>
                     <div className="min-w-0 pt-0.5">
-                      <p className="flex items-center gap-1.5 font-semibold text-foreground group-hover:text-emerald-700 dark:group-hover:text-emerald-300">
+                      <p className="flex items-center gap-1.5 font-semibold text-foreground group-hover:text-primary">
                         <Icon className="size-4 shrink-0 opacity-70" />
                         {step.title}
                         <ArrowRight className="size-3.5 opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-100" />

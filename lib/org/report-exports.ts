@@ -19,6 +19,7 @@ export type OrgExportMeta = {
 };
 
 export type OrgExportTable = {
+  title?: string;
   headers: string[];
   rows: (string | number)[][];
 };
@@ -44,7 +45,11 @@ function headerBlock(meta: OrgExportMeta) {
 }
 
 function tableHtml(table: OrgExportTable) {
+  const heading = table.title
+    ? `<h3 style="margin:20px 0 8px;font-size:14px">${escapeHtml(table.title)}</h3>`
+    : "";
   return `
+    ${heading}
     <table>
       <thead>
         <tr>${table.headers.map((h) => `<th>${escapeHtml(h)}</th>`).join("")}</tr>
@@ -80,10 +85,12 @@ function tableHtml(table: OrgExportTable) {
 export function exportOrgReportPdf(
   meta: OrgExportMeta,
   table: OrgExportTable,
+  extraTables: OrgExportTable[] = [],
 ) {
   const win = openBlankPrintWindow();
   if (!win) return false;
   const title = `${meta.orgName} — ${meta.reportTitle}`;
+  const tables = [table, ...extraTables].map(tableHtml).join("");
   win.document.open();
   win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${escapeHtml(title)}</title>
   <style>
@@ -97,7 +104,7 @@ export function exportOrgReportPdf(
   </style>
   </head><body>
   ${headerBlock(meta)}
-  ${tableHtml(table)}
+  ${tables}
   <p style="margin-top:24px;font-size:11px;color:#a3a3a3">Document généré le ${escapeHtml(new Date().toLocaleString("fr-FR"))}</p>
   </body></html>`);
   win.document.close();
@@ -122,19 +129,10 @@ function fileSlug(value: string, max = 40) {
     .slice(0, max);
 }
 
-/** Export Excel (.xls HTML) — en-tête avec nom d’organisation. */
-export function exportOrgReportExcel(
-  meta: OrgExportMeta,
-  table: OrgExportTable,
-) {
-  const kpiRows =
-    meta.kpis
-      ?.map(
-        (k) =>
-          `<tr><td><b>${escapeHtml(k.label)}</b></td><td>${escapeHtml(k.value)}</td></tr>`,
-      )
-      .join("") ?? "";
-
+function excelTableBlock(table: OrgExportTable) {
+  const titleRow = table.title
+    ? `<tr><td colspan="${Math.max(table.headers.length, 2)}"><b>${escapeHtml(table.title)}</b></td></tr>`
+    : "";
   const bodyRows =
     table.rows.length === 0
       ? `<tr><td colspan="${table.headers.length}">Aucune ligne</td></tr>`
@@ -146,6 +144,28 @@ export function exportOrgReportExcel(
                 .join("")}</tr>`,
           )
           .join("");
+  return `${titleRow}
+  <tr>${table.headers.map((h) => `<th>${escapeHtml(h)}</th>`).join("")}</tr>
+  ${bodyRows}
+  <tr><td colspan="${Math.max(table.headers.length, 2)}"></td></tr>`;
+}
+
+/** Export Excel (.xls HTML) — en-tête avec nom d’organisation. */
+export function exportOrgReportExcel(
+  meta: OrgExportMeta,
+  table: OrgExportTable,
+  extraTables: OrgExportTable[] = [],
+) {
+  const kpiRows =
+    meta.kpis
+      ?.map(
+        (k) =>
+          `<tr><td><b>${escapeHtml(k.label)}</b></td><td>${escapeHtml(k.value)}</td></tr>`,
+      )
+      .join("") ?? "";
+
+  const sheets = [table, ...extraTables].map(excelTableBlock).join("");
+  const cols = Math.max(table.headers.length, 2);
 
   const html = `<!DOCTYPE html>
 <html xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -154,16 +174,15 @@ export function exportOrgReportExcel(
 <head><meta charset="utf-8"/></head>
 <body>
 <table>
-  <tr><td colspan="${Math.max(table.headers.length, 2)}"><b>Organisation</b></td></tr>
-  <tr><td colspan="${Math.max(table.headers.length, 2)}"><b>${escapeHtml(meta.orgName)}</b></td></tr>
-  <tr><td colspan="${Math.max(table.headers.length, 2)}">${escapeHtml(meta.reportTitle)}</td></tr>
+  <tr><td colspan="${cols}"><b>Organisation</b></td></tr>
+  <tr><td colspan="${cols}"><b>${escapeHtml(meta.orgName)}</b></td></tr>
+  <tr><td colspan="${cols}">${escapeHtml(meta.reportTitle)}</td></tr>
   <tr><td>Période</td><td>${escapeHtml(`${meta.from} → ${meta.to}`)}</td></tr>
   <tr><td>Branches</td><td>${escapeHtml(meta.branchNames.join(", ") || "—")}</td></tr>
   ${meta.rateBanner ? `<tr><td>Taux</td><td>${escapeHtml(meta.rateBanner)}</td></tr>` : ""}
   ${kpiRows}
-  <tr><td colspan="${Math.max(table.headers.length, 2)}"></td></tr>
-  <tr>${table.headers.map((h) => `<th>${escapeHtml(h)}</th>`).join("")}</tr>
-  ${bodyRows}
+  <tr><td colspan="${cols}"></td></tr>
+  ${sheets}
 </table>
 </body></html>`;
 

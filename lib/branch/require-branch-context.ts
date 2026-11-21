@@ -58,7 +58,9 @@ export async function requireBranchContext(
   if (opts.requireModule) {
     const actual = moduleForBranchType(branch.type);
     if (actual !== opts.requireModule) {
-      redirect(hub);
+      const productionOnHospitality =
+        opts.requireModule === "usine" && branch.hasProduction;
+      if (!productionOnHospitality) redirect(hub);
     }
   }
 

@@ -54,22 +54,18 @@ export function AuthShell({ mode, children, className, appName }: AuthShellProps
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklab,var(--primary)_18%,transparent),_transparent_55%),radial-gradient(ellipse_at_bottom_right,_color-mix(in_oklab,var(--primary)_8%,transparent),_transparent_40%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_10%_0%,rgb(196_122_74/0.12),transparent_55%)]"
       />
 
-      <div className="relative z-10 w-full max-w-[26.5rem] overflow-hidden rounded-2xl border border-border shadow-2xl shadow-black/50 sm:max-w-xl md:max-w-[52rem] md:grid md:grid-cols-[1.1fr_0.9fr] md:rounded-[1.5rem]">
+      <div className="relative z-10 w-full max-w-[26.5rem] overflow-hidden rounded-xl border border-border bg-card shadow-md sm:max-w-xl md:max-w-[52rem] md:grid md:grid-cols-[1.1fr_0.9fr]">
         <div className="bg-card px-5 py-5 sm:px-7 sm:py-6 lg:px-8 lg:py-7">
           {children}
         </div>
 
-        <aside className="relative hidden overflow-hidden bg-gradient-to-br from-primary via-primary to-blue-800 p-6 text-primary-foreground md:flex md:flex-col md:justify-between lg:p-7">
+        <aside className="relative hidden overflow-hidden bg-[#0f172a] p-6 text-slate-50 md:flex md:flex-col md:justify-between lg:p-7">
           <div
             aria-hidden
-            className="pointer-events-none absolute -top-16 -right-10 size-56 rounded-full bg-white/10"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -bottom-20 -left-10 size-64 rounded-full bg-blue-400/40"
+            className="pointer-events-none absolute top-0 right-0 h-1 w-full bg-[#c47a4a]"
           />
 
           <div className="relative space-y-4">

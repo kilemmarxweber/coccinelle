@@ -123,7 +123,18 @@ export const ModelName = {
   FactoryReservation: 'FactoryReservation',
   FactoryReservationLine: 'FactoryReservationLine',
   FactoryOrderRequest: 'FactoryOrderRequest',
-  FactoryOrderRequestLine: 'FactoryOrderRequestLine'
+  FactoryOrderRequestLine: 'FactoryOrderRequestLine',
+  OrgCashAccount: 'OrgCashAccount',
+  CashRemittance: 'CashRemittance',
+  CentralCashEntry: 'CentralCashEntry',
+  AuditEvent: 'AuditEvent',
+  IntegrityFinding: 'IntegrityFinding',
+  BiaIncident: 'BiaIncident',
+  BiaIncidentEvent: 'BiaIncidentEvent',
+  DeptCustomer: 'DeptCustomer',
+  DeptCredit: 'DeptCredit',
+  DeptCreditLine: 'DeptCreditLine',
+  BranchProfitTarget: 'BranchProfitTarget'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -446,6 +457,8 @@ export const BranchScalarFieldEnum = {
   hasAlimentation: 'hasAlimentation',
   hasEau: 'hasEau',
   hasVin: 'hasVin',
+  hasProduction: 'hasProduction',
+  salesTargetUsd: 'salesTargetUsd',
   imageUrl: 'imageUrl',
   address: 'address',
   city: 'city',
@@ -629,8 +642,12 @@ export const ShopSaleScalarFieldEnum = {
   anonymousCode: 'anonymousCode',
   totalAmount: 'totalAmount',
   cashierUserId: 'cashierUserId',
+  cashierName: 'cashierName',
   heldAt: 'heldAt',
   paidAt: 'paidAt',
+  correctionReason: 'correctionReason',
+  correctedByUserId: 'correctedByUserId',
+  correctedAt: 'correctedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -691,6 +708,9 @@ export const CashSessionScalarFieldEnum = {
   status: 'status',
   openingFloat: 'openingFloat',
   closingCash: 'closingCash',
+  expectedCashUsd: 'expectedCashUsd',
+  declaredCashUsd: 'declaredCashUsd',
+  varianceUsd: 'varianceUsd',
   openedAt: 'openedAt',
   closedAt: 'closedAt',
   notes: 'notes',
@@ -785,6 +805,7 @@ export const PaymentScalarFieldEnum = {
   installmentKind: 'installmentKind',
   receiptNumber: 'receiptNumber',
   method: 'method',
+  confirmationStatus: 'confirmationStatus',
   amountCdf: 'amountCdf',
   amountForeign: 'amountForeign',
   foreignCurrency: 'foreignCurrency',
@@ -793,6 +814,7 @@ export const PaymentScalarFieldEnum = {
   paidAt: 'paidAt',
   cashierUserId: 'cashierUserId',
   note: 'note',
+  deptCreditId: 'deptCreditId',
   createdAt: 'createdAt'
 } as const
 
@@ -962,6 +984,10 @@ export const PurchaseOrderScalarFieldEnum = {
   totalAmountUsd: 'totalAmountUsd',
   fundsReleasedUsd: 'fundsReleasedUsd',
   validatedAmountUsd: 'validatedAmountUsd',
+  isPurchaseRequest: 'isPurchaseRequest',
+  buyerAdvanceUsd: 'buyerAdvanceUsd',
+  justificationMissing: 'justificationMissing',
+  justificationNote: 'justificationNote',
   createdByUserId: 'createdByUserId',
   validatedByUserId: 'validatedByUserId',
   validatedAt: 'validatedAt',
@@ -1051,6 +1077,7 @@ export const WarehouseProductScalarFieldEnum = {
   stockQty: 'stockQty',
   minQty: 'minQty',
   unitCostUsd: 'unitCostUsd',
+  expiresAt: 'expiresAt',
   shopProductId: 'shopProductId',
   active: 'active',
   createdAt: 'createdAt',
@@ -1274,6 +1301,7 @@ export const FactoryCustomerScalarFieldEnum = {
   affiliateBranchId: 'affiliateBranchId',
   userId: 'userId',
   notifyPrefs: 'notifyPrefs',
+  creditLimitUsd: 'creditLimitUsd',
   active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1368,6 +1396,10 @@ export const FactoryBatchScalarFieldEnum = {
   multiplier: 'multiplier',
   outputProductId: 'outputProductId',
   outputQty: 'outputQty',
+  actualOutputQty: 'actualOutputQty',
+  wasteQty: 'wasteQty',
+  theoreticalCostUsd: 'theoreticalCostUsd',
+  actualCostUsd: 'actualCostUsd',
   notes: 'notes',
   producedAt: 'producedAt',
   validatedByUserId: 'validatedByUserId',
@@ -1434,6 +1466,180 @@ export const FactoryOrderRequestLineScalarFieldEnum = {
 } as const
 
 export type FactoryOrderRequestLineScalarFieldEnum = (typeof FactoryOrderRequestLineScalarFieldEnum)[keyof typeof FactoryOrderRequestLineScalarFieldEnum]
+
+
+export const OrgCashAccountScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  balanceUsd: 'balanceUsd',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrgCashAccountScalarFieldEnum = (typeof OrgCashAccountScalarFieldEnum)[keyof typeof OrgCashAccountScalarFieldEnum]
+
+
+export const CashRemittanceScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  fromBranchId: 'fromBranchId',
+  cashSessionId: 'cashSessionId',
+  number: 'number',
+  status: 'status',
+  expectedUsd: 'expectedUsd',
+  declaredUsd: 'declaredUsd',
+  receivedUsd: 'receivedUsd',
+  varianceDeclaredUsd: 'varianceDeclaredUsd',
+  varianceReceivedUsd: 'varianceReceivedUsd',
+  preparedByUserId: 'preparedByUserId',
+  receivedByUserId: 'receivedByUserId',
+  receivedAt: 'receivedAt',
+  note: 'note',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CashRemittanceScalarFieldEnum = (typeof CashRemittanceScalarFieldEnum)[keyof typeof CashRemittanceScalarFieldEnum]
+
+
+export const CentralCashEntryScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  number: 'number',
+  kind: 'kind',
+  amountUsd: 'amountUsd',
+  remittanceId: 'remittanceId',
+  justification: 'justification',
+  createdByUserId: 'createdByUserId',
+  approvedByUserId: 'approvedByUserId',
+  createdAt: 'createdAt'
+} as const
+
+export type CentralCashEntryScalarFieldEnum = (typeof CentralCashEntryScalarFieldEnum)[keyof typeof CentralCashEntryScalarFieldEnum]
+
+
+export const AuditEventScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  branchId: 'branchId',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  action: 'action',
+  actorUserId: 'actorUserId',
+  actorName: 'actorName',
+  reason: 'reason',
+  oldValue: 'oldValue',
+  newValue: 'newValue',
+  approvedByUserId: 'approvedByUserId',
+  createdAt: 'createdAt'
+} as const
+
+export type AuditEventScalarFieldEnum = (typeof AuditEventScalarFieldEnum)[keyof typeof AuditEventScalarFieldEnum]
+
+
+export const IntegrityFindingScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  branchId: 'branchId',
+  ruleCode: 'ruleCode',
+  severity: 'severity',
+  status: 'status',
+  title: 'title',
+  detail: 'detail',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  fingerprint: 'fingerprint',
+  detectedAt: 'detectedAt',
+  resolvedAt: 'resolvedAt'
+} as const
+
+export type IntegrityFindingScalarFieldEnum = (typeof IntegrityFindingScalarFieldEnum)[keyof typeof IntegrityFindingScalarFieldEnum]
+
+
+export const BiaIncidentScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  findingId: 'findingId',
+  title: 'title',
+  severity: 'severity',
+  status: 'status',
+  assigneeName: 'assigneeName',
+  openedByUserId: 'openedByUserId',
+  openedByName: 'openedByName',
+  closedAt: 'closedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BiaIncidentScalarFieldEnum = (typeof BiaIncidentScalarFieldEnum)[keyof typeof BiaIncidentScalarFieldEnum]
+
+
+export const BiaIncidentEventScalarFieldEnum = {
+  id: 'id',
+  incidentId: 'incidentId',
+  action: 'action',
+  actorName: 'actorName',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type BiaIncidentEventScalarFieldEnum = (typeof BiaIncidentEventScalarFieldEnum)[keyof typeof BiaIncidentEventScalarFieldEnum]
+
+
+export const DeptCustomerScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  name: 'name',
+  phone: 'phone',
+  creditLimitUsd: 'creditLimitUsd',
+  notes: 'notes',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DeptCustomerScalarFieldEnum = (typeof DeptCustomerScalarFieldEnum)[keyof typeof DeptCustomerScalarFieldEnum]
+
+
+export const DeptCreditScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  customerId: 'customerId',
+  shopSaleId: 'shopSaleId',
+  number: 'number',
+  status: 'status',
+  dueAt: 'dueAt',
+  totalUsd: 'totalUsd',
+  paidUsd: 'paidUsd',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DeptCreditScalarFieldEnum = (typeof DeptCreditScalarFieldEnum)[keyof typeof DeptCreditScalarFieldEnum]
+
+
+export const DeptCreditLineScalarFieldEnum = {
+  id: 'id',
+  creditId: 'creditId',
+  nameSnapshot: 'nameSnapshot',
+  qty: 'qty',
+  unitPriceUsd: 'unitPriceUsd',
+  lineTotalUsd: 'lineTotalUsd'
+} as const
+
+export type DeptCreditLineScalarFieldEnum = (typeof DeptCreditLineScalarFieldEnum)[keyof typeof DeptCreditLineScalarFieldEnum]
+
+
+export const BranchProfitTargetScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  year: 'year',
+  month: 'month',
+  salesTargetUsd: 'salesTargetUsd',
+  marginTargetPct: 'marginTargetPct'
+} as const
+
+export type BranchProfitTargetScalarFieldEnum = (typeof BranchProfitTargetScalarFieldEnum)[keyof typeof BranchProfitTargetScalarFieldEnum]
 
 
 export const SortOrder = {

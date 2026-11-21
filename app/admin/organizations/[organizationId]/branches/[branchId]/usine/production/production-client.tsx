@@ -83,9 +83,9 @@ export function UsineProductionClient(props: {
   return (
     <BoutiquePage>
       <BoutiqueHero
-        kicker="Usine"
-        title="Production"
-        subtitle="Définissez la recette (consommables → fini), puis validez un lot pour alimenter le dépôt."
+        kicker="Production"
+        title="Recettes et lots"
+        subtitle="Consommation MP vs théorique, rebuts, rendement. Unités libres (ex. 30 kg bœuf / 20 kg porc). Mini Market et Boissons n’utilisent pas cet écran."
         icon={Factory}
         backHref={branchDashboardPath(props.organizationId, props.branchId)}
       />
@@ -140,7 +140,9 @@ export function UsineProductionClient(props: {
                 </select>
               </div>
               <div className="grid gap-1.5">
-                <Label htmlFor="prod-qty">Quantité produite (1× recette)</Label>
+                <Label htmlFor="prod-qty">
+                  Quantité produite (1× recette, kg ou pcs selon la fiche)
+                </Label>
                 <Input
                   id="prod-qty"
                   type="number"

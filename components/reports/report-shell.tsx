@@ -151,9 +151,15 @@ export function KpiGrid(props: {
     delta?: number | null;
     hint?: string;
   }[];
+  className?: string;
 }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div
+      className={cn(
+        "grid gap-3 sm:grid-cols-2 lg:grid-cols-4",
+        props.className,
+      )}
+    >
       {props.items.map((k) => (
         <div
           key={k.label}
@@ -199,6 +205,7 @@ export function ChartCard(props: {
   description?: string;
   children: ReactNode;
   className?: string;
+  bodyClassName?: string;
 }) {
   return (
     <div
@@ -213,7 +220,9 @@ export function ChartCard(props: {
           <p className="text-xs text-muted-foreground">{props.description}</p>
         ) : null}
       </div>
-      <div className="h-64 w-full min-w-0">{props.children}</div>
+      <div className={cn("h-64 w-full min-w-0", props.bodyClassName)}>
+        {props.children}
+      </div>
     </div>
   );
 }

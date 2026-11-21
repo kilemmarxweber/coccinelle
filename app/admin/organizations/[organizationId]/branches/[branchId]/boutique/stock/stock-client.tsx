@@ -130,6 +130,7 @@ export function BoutiqueStockClient(props: {
     minQty: "5",
     unitCostUsd: "0",
     stockQty: "0",
+    expiresAt: "",
   });
 
   const [catForm, setCatForm] = useState({
@@ -145,7 +146,14 @@ export function BoutiqueStockClient(props: {
 
   const [moveForm, setMoveForm] = useState({
     productId: "",
-    kind: "ENTREE" as "ENTREE" | "SORTIE" | "AJUSTEMENT",
+    kind: "ENTREE" as
+      | "ENTREE"
+      | "SORTIE"
+      | "AJUSTEMENT"
+      | "PERTE"
+      | "CONSO"
+      | "RETOUR"
+      | "INVENTAIRE",
     quantity: "1",
     note: "",
   });
@@ -796,6 +804,18 @@ export function BoutiqueStockClient(props: {
                   />
                 </Field>
               </div>
+              <Field label="Péremption (optionnel)">
+                <Input
+                  type="date"
+                  value={productForm.expiresAt}
+                  onChange={(e) =>
+                    setProductForm((f) => ({
+                      ...f,
+                      expiresAt: e.target.value,
+                    }))
+                  }
+                />
+              </Field>
               <Button
                 type="button"
                 disabled={pending || !productForm.name.trim()}
@@ -814,6 +834,7 @@ export function BoutiqueStockClient(props: {
                         minQty: Number(productForm.minQty) || 5,
                         unitCostUsd: Number(productForm.unitCostUsd) || 0,
                         stockQty: Number(productForm.stockQty) || 0,
+                        expiresAt: productForm.expiresAt || null,
                       }),
                     "Produit créé",
                   )
@@ -855,7 +876,11 @@ export function BoutiqueStockClient(props: {
                   >
                     <option value="ENTREE">Entrée</option>
                     <option value="SORTIE">Sortie</option>
-                    <option value="AJUSTEMENT">Ajustement</option>
+                    <option value="AJUSTEMENT">Ajustement / inventaire</option>
+                    <option value="PERTE">Perte</option>
+                    <option value="CONSO">Consommation</option>
+                    <option value="RETOUR">Retour</option>
+                    <option value="INVENTAIRE">Inventaire (qté constatée)</option>
                   </select>
                   <Input
                     value={moveForm.quantity}

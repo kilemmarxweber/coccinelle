@@ -20,11 +20,68 @@ import {
 } from "@/lib/permissions";
 import { seedOrganizationRolePresets } from "@/lib/org/seed-org-roles";
 
+function resolveAuthBaseURL() {
+  const port = process.env.PORT?.trim() || "3000";
+  const localFallback = `http://localhost:${port}`;
+  const fromEnv =
+    process.env.NEXT_PUBLIC_BETTER_AUTH_URL?.trim() ||
+    process.env.BETTER_AUTH_URL?.trim();
+  if (!fromEnv) return localFallback;
+  const cleaned = fromEnv.replace(/\/$/, "");
+  // En local : si BETTER_AUTH_URL pointe un autre port que PORT (ex. 3011 vs 3000),
+  // Next ne recharge pas .env par-dessus la variable système → on suit le PORT réel.
+  if (process.env.NODE_ENV !== "production") {
+    try {
+      const u = new URL(cleaned);
+      if (
+        (u.hostname === "localhost" || u.hostname === "127.0.0.1") &&
+        u.port &&
+        u.port !== port
+      ) {
+        return localFallback;
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+  return cleaned;
+}
+
+const authBaseURL = resolveAuthBaseURL();
+
+/** Origines locales usuelles (localhost ↔ 127.0.0.1, PORT). */
+function localDevOrigins(baseURL: string): string[] {
+  const origins = new Set<string>([baseURL]);
+  try {
+    const u = new URL(baseURL);
+    if (u.hostname === "localhost" || u.hostname === "127.0.0.1") {
+      const port = u.port || (u.protocol === "https:" ? "443" : "80");
+      origins.add(`http://localhost:${port}`);
+      origins.add(`http://127.0.0.1:${port}`);
+      origins.add(`https://localhost:${port}`);
+      origins.add(`https://127.0.0.1:${port}`);
+    }
+  } catch {
+    /* ignore */
+  }
+  const port = process.env.PORT?.trim();
+  if (port) {
+    origins.add(`http://localhost:${port}`);
+    origins.add(`http://127.0.0.1:${port}`);
+  }
+  // Toujours accepter 3000 en dev (cas BETTER_AUTH_URL désaligné)
+  if (process.env.NODE_ENV !== "production") {
+    origins.add("http://localhost:3000");
+    origins.add("http://127.0.0.1:3000");
+  }
+  return [...origins];
+}
+
 const authOptions = {
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
+  baseURL: authBaseURL,
   secret: process.env.BETTER_AUTH_SECRET,
   emailAndPassword: {
     enabled: true,
@@ -32,7 +89,7 @@ const authOptions = {
     minPasswordLength: 1,
     maxPasswordLength: 256,
   },
-  trustedOrigins: [process.env.BETTER_AUTH_URL || "http://localhost:3000"],
+  trustedOrigins: localDevOrigins(authBaseURL),
   user: {
     changeEmail: {
       enabled: true,

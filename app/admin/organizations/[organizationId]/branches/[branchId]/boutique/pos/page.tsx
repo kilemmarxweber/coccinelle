@@ -12,6 +12,7 @@ import {
 import {
   listHeldSalesAction,
   listShopProductsAction,
+  listTodayEncaissedSalesAction,
 } from "@/lib/boutique/actions";
 import { listPendingPosReceptionsAction } from "@/lib/warehouse/actions";
 import {
@@ -44,6 +45,7 @@ export default async function BoutiquePosPage({ params }: PageProps) {
   const [
     productsRaw,
     heldSales,
+    todaySales,
     cashSession,
     foreignCashSessions,
     pendingReceptions,
@@ -53,6 +55,7 @@ export default async function BoutiquePosPage({ params }: PageProps) {
   ] = await Promise.all([
     listShopProductsAction(organizationId, branchId, { activeOnly: true }),
     listHeldSalesAction(organizationId, branchId),
+    listTodayEncaissedSalesAction(organizationId, branchId),
     getOpenCashSession(branchId, userId),
     getForeignOpenCashSessions(branchId, userId),
     listPendingPosReceptionsAction(organizationId, branchId),
@@ -108,6 +111,15 @@ export default async function BoutiquePosPage({ params }: PageProps) {
         branchName={branch.name}
         products={products}
         heldSales={heldSales}
+        todaySales={todaySales.map((s) => ({
+          id: s.id,
+          ticketNumber: s.ticketNumber,
+          status: s.status,
+          totalAmount: Number(s.totalAmount),
+          cashierName: s.cashierName,
+          paidAt: s.paidAt?.toISOString() ?? null,
+          correctionReason: s.correctionReason,
+        }))}
         cashSession={cashSession}
         foreignCashSessions={foreignCashSessions}
         pendingReceptions={pendingReceptions}

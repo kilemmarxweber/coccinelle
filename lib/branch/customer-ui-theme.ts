@@ -10,8 +10,8 @@ export type CustomerUiTheme = {
 };
 
 export const DEFAULT_CUSTOMER_UI_THEME: CustomerUiTheme = {
-  primary: "#E8871A",
-  background: "#F3F3F3",
+  primary: "#1B9A4B",
+  background: "#F4F6F5",
   card: "#FFFFFF",
 };
 
@@ -19,32 +19,41 @@ export type CustomerUiPreset = {
   id: string;
   label: string;
   theme: CustomerUiTheme;
-  /** Orange Coccinelle : colonnes NULL, tokens CSS d’origine. */
+  /** Vert : colonnes NULL, tokens CSS d’origine. */
   systemDefault?: boolean;
 };
 
 export const CUSTOMER_UI_PRESETS: CustomerUiPreset[] = [
   {
-    id: "orange",
-    label: "Orange",
+    id: "vert",
+    label: "Vert",
     theme: DEFAULT_CUSTOMER_UI_THEME,
     systemDefault: true,
+  },
+  {
+    id: "cuivre",
+    label: "Cuivre",
+    theme: {
+      primary: "#C47A4A",
+      background: "#F4F6F5",
+      card: "#FFFFFF",
+    },
+  },
+  {
+    id: "orange",
+    label: "Orange",
+    theme: {
+      primary: "#E8871A",
+      background: "#F7F8F9",
+      card: "#FFFFFF",
+    },
   },
   {
     id: "bleu",
     label: "Bleu",
     theme: {
       primary: "#2563EB",
-      background: "#F3F3F3",
-      card: "#FFFFFF",
-    },
-  },
-  {
-    id: "vert",
-    label: "Vert",
-    theme: {
-      primary: "#15803D",
-      background: "#F3F3F3",
+      background: "#F7F8F9",
       card: "#FFFFFF",
     },
   },
@@ -53,7 +62,7 @@ export const CUSTOMER_UI_PRESETS: CustomerUiPreset[] = [
     label: "Rouge",
     theme: {
       primary: "#DC2626",
-      background: "#F3F3F3",
+      background: "#F7F8F9",
       card: "#FFFFFF",
     },
   },
@@ -62,7 +71,7 @@ export const CUSTOMER_UI_PRESETS: CustomerUiPreset[] = [
     label: "Violet",
     theme: {
       primary: "#7C3AED",
-      background: "#F3F3F3",
+      background: "#F7F8F9",
       card: "#FFFFFF",
     },
   },
@@ -71,7 +80,7 @@ export const CUSTOMER_UI_PRESETS: CustomerUiPreset[] = [
     label: "Ardoise",
     theme: {
       primary: "#334155",
-      background: "#F3F3F3",
+      background: "#F7F8F9",
       card: "#FFFFFF",
     },
   },

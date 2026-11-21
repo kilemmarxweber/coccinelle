@@ -9,6 +9,7 @@ import {
   Minus,
   Package,
   Plus,
+  Search,
   Trash2,
   Wine,
   X,
@@ -126,7 +127,7 @@ export type PosMenuItem = {
   stockQty?: number;
   barcode?: string | null;
   sku?: string | null;
-  family?: "EAU" | "VIN" | null;
+  family?: "EAU" | "VIN" | "CHARCUTERIE" | "CREME" | "AUTRE" | null;
   promoLive?: boolean;
   /** Prix catalogue hors promo (affichage barré). */
   basePrice?: number;
@@ -139,24 +140,18 @@ export type PosCartLine = {
   quantity: number;
 };
 
-const TILE_TONES = [
-  "from-orange-600/90 via-orange-500/70 to-amber-700/90",
-  "from-emerald-700/90 via-teal-600/70 to-cyan-800/90",
-  "from-sky-700/90 via-blue-600/70 to-indigo-800/90",
-  "from-rose-700/90 via-pink-600/70 to-fuchsia-800/90",
-  "from-lime-700/90 via-green-600/70 to-emerald-800/90",
-  "from-amber-700/90 via-yellow-600/70 to-orange-800/90",
-] as const;
-
 function toneFor(seed: string) {
   let h = 0;
-  for (let i = 0; i < seed.length; i++) h = (h + seed.charCodeAt(i) * (i + 1)) % TILE_TONES.length;
-  return TILE_TONES[h]!;
+  for (let i = 0; i < seed.length; i++) h = (h + seed.charCodeAt(i)) % 2;
+  return h === 0 ? "bg-[#0f172a]" : "bg-[#c47a4a]";
 }
 
-function familyLabel(family?: "EAU" | "VIN" | null) {
+function familyLabel(family?: "EAU" | "VIN" | "CHARCUTERIE" | "CREME" | "AUTRE" | null) {
   if (family === "EAU") return "Eau";
   if (family === "VIN") return "Vins";
+  if (family === "CHARCUTERIE") return "Charcuterie";
+  if (family === "CREME") return "Crème";
+  if (family === "AUTRE") return "Autre";
   return null;
 }
 
@@ -260,6 +255,13 @@ type Props = {
   catalogLayout?: "tiles" | "list";
   /** Bandeau statut / filtres collé juste au-dessus du catalogue. */
   catalogStatus?: ReactNode;
+  /**
+   * `counter` : menu photo + panier facture, comme une caisse commerce.
+   * Le scan code-barres reste sur le champ de recherche.
+   */
+  presentation?: "classic" | "counter";
+  /** Écran actif quand `presentation` vaut `counter`. */
+  counterPane?: "menu" | "panier";
 };
 
 export function PosTerminal({
@@ -281,6 +283,8 @@ export function PosTerminal({
   paginateCart = true,
   catalogLayout = "tiles",
   catalogStatus,
+  presentation = "classic",
+  counterPane = "menu",
 }: Props) {
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -461,6 +465,304 @@ export function PosTerminal({
     const t = window.setTimeout(() => setScanFlash(null), 700);
     return () => window.clearTimeout(t);
   }, [scanFlash]);
+
+  if (presentation === "counter") {
+    const counts = new Map<string, number>();
+    for (const item of items) {
+      const cat = item.category || "Autres";
+      counts.set(cat, (counts.get(cat) ?? 0) + 1);
+    }
+    const showCatalog = counterPane === "menu";
+    const showCart = counterPane === "panier" || counterPane === "menu";
+
+    return (
+      <div className={cn("@container flex min-h-0 flex-1 flex-col", className)}>
+      <div
+        className={cn(
+          "grid h-full min-h-0 flex-1 gap-3",
+          counterPane === "menu" &&
+            "@min-[720px]:grid-cols-[minmax(0,1fr)_minmax(260px,340px)]",
+        )}
+      >
+        {showCatalog ? (
+          <section className="flex min-h-0 min-w-0 flex-col gap-3 overflow-hidden">
+            {catalogStatus}
+            <div className="flex gap-1.5 overflow-x-auto">
+              {categories.map((cat) => {
+                const active = cat === category;
+                const count =
+                  cat === "Tous" ? items.length : (counts.get(cat) ?? 0);
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setCategory(cat)}
+                    className={cn(
+                      "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition",
+                      active
+                        ? "border-[#16a34a] bg-[#16a34a] text-white"
+                        : "border-border bg-card text-foreground hover:border-[#16a34a]/40",
+                    )}
+                  >
+                    {cat}
+                    <span
+                      className={cn(
+                        "tabular-nums",
+                        active ? "text-white/80" : "text-muted-foreground",
+                      )}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div
+                className={cn(
+                  "relative flex min-w-0 flex-1 items-center gap-2 rounded-lg border bg-card px-3",
+                  !scanFlash && "border-border",
+                  scanFlash === "ok" && "border-[#16a34a] ring-2 ring-[#16a34a]/30",
+                  scanFlash === "err" && "border-rose-500 ring-2 ring-rose-500/30",
+                )}
+              >
+                <Barcode className="size-4 shrink-0 text-muted-foreground" />
+                <Input
+                  ref={scan.inputRef}
+                  value={scan.value}
+                  onChange={(e) => scan.setValue(e.target.value)}
+                  onKeyDown={onSearchKeyDown}
+                  onBlur={() => {
+                    window.setTimeout(() => {
+                      const tag = document.activeElement?.tagName;
+                      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") {
+                        return;
+                      }
+                      if (
+                        (document.activeElement as HTMLElement | null)
+                          ?.isContentEditable
+                      ) {
+                        return;
+                      }
+                      scan.focus();
+                    }, 120);
+                  }}
+                  placeholder="Nom, SKU ou code-barres…"
+                  className="h-10 border-0 bg-transparent px-0 shadow-none focus-visible:ring-0"
+                  autoComplete="off"
+                  aria-label="Recherche et scan code-barres"
+                />
+                {scan.value ? (
+                  <button
+                    type="button"
+                    className="text-muted-foreground hover:text-foreground"
+                    aria-label="Effacer"
+                    onClick={() => {
+                      scan.clear();
+                      scan.focus();
+                    }}
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                ) : null}
+              </div>
+              <button
+                type="button"
+                className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg bg-[#0f172a] px-3 text-sm font-medium text-white"
+                onClick={() => scan.focus()}
+              >
+                <Search className="size-4" />
+                Chercher
+              </button>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+              {filtered.length === 0 ? (
+                <p className="py-16 text-center text-sm text-muted-foreground">
+                  Aucun article dans cette catégorie.
+                </p>
+              ) : (
+                <div className="grid grid-cols-3 gap-2 xl:grid-cols-4">
+                  {filtered.map((item) => {
+                    const rem = liveStock(item);
+                    const soldOut = rem === 0;
+                    return (
+                      <article
+                        key={item.id}
+                        className={cn(
+                          "flex flex-col rounded-lg border border-border bg-card p-2",
+                          soldOut && "opacity-60",
+                        )}
+                      >
+                        <div className="flex h-14 items-center justify-center overflow-hidden rounded-md bg-[#f7f8f9]">
+                          {item.imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={item.imageUrl}
+                              alt=""
+                              className="size-full object-contain"
+                            />
+                          ) : (
+                            <Package className="size-4 text-[#94a3b8]" />
+                          )}
+                        </div>
+                        <p className="mt-1 line-clamp-1 text-xs font-medium leading-tight">
+                          {item.name}
+                        </p>
+                        {rem !== null ? (
+                          <p className="text-[10px] leading-4 text-muted-foreground">
+                            {soldOut ? "Rupture" : `${rem} en stock`}
+                          </p>
+                        ) : (
+                          <p className="text-[10px] leading-4 text-transparent">.</p>
+                        )}
+                        <div className="mt-1 flex items-center justify-between gap-1">
+                          <p className="min-w-0 truncate text-xs font-semibold text-[#16a34a] tabular-nums">
+                            {formatPrice(item.price)}
+                            {item.basePrice != null &&
+                            item.promoLive &&
+                            item.basePrice !== item.price ? (
+                              <span className="ml-1 text-[10px] font-normal text-muted-foreground line-through">
+                                {formatPrice(item.basePrice)}
+                              </span>
+                            ) : null}
+                          </p>
+                          <button
+                            type="button"
+                            disabled={soldOut}
+                            onClick={() => tryAdd(item)}
+                            className="inline-flex h-6 shrink-0 items-center rounded px-2 text-[11px] font-medium bg-[#16a34a] text-white hover:bg-[#15803d] disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
+                          >
+                            {soldOut ? "Rupture" : "Ajouter"}
+                          </button>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </section>
+        ) : null}
+
+        {showCart ? (
+          <aside
+            className={cn(
+              "flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm",
+              counterPane === "panier" && "mx-auto w-full max-w-3xl",
+            )}
+          >
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <div>
+                <p className="font-semibold">Mon panier</p>
+                <p className="text-xs text-muted-foreground">
+                  {linesCount} article{linesCount === 1 ? "" : "s"}
+                </p>
+              </div>
+              {cart.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={onClear}
+                  className="text-xs font-medium text-muted-foreground hover:text-foreground"
+                >
+                  Vider
+                </button>
+              ) : null}
+            </div>
+            {ticketMeta ? (
+              <div className="border-b border-border px-4 py-3">{ticketMeta}</div>
+            ) : null}
+            <div className="min-h-0 flex-1 overflow-y-auto px-3 py-2">
+              {cart.length === 0 ? (
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  {emptyHint}
+                </p>
+              ) : (
+                <ul className="space-y-2">
+                  {cart.map((line) => {
+                    const item = itemById.get(line.menuItemId);
+                    const atCap =
+                      item && typeof item.stockQty === "number"
+                        ? line.quantity >= item.stockQty
+                        : false;
+                    return (
+                      <li
+                        key={line.menuItemId}
+                        className="flex items-center gap-2 rounded-lg border border-border px-2 py-2"
+                      >
+                        <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md bg-[#f7f8f9]">
+                          {item?.imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={item.imageUrl}
+                              alt=""
+                              className="size-full object-contain"
+                            />
+                          ) : (
+                            <Package className="size-4 text-[#94a3b8]" />
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium">{line.name}</p>
+                          <p className="text-[11px] text-muted-foreground tabular-nums">
+                            {formatPrice(line.price)}
+                          </p>
+                        </div>
+                        <QtyStepper
+                          quantity={line.quantity}
+                          onDec={() =>
+                            trySetQty(line.menuItemId, line.quantity - 1)
+                          }
+                          onInc={() =>
+                            trySetQty(line.menuItemId, line.quantity + 1)
+                          }
+                          incDisabled={atCap}
+                        />
+                        <p className="w-16 shrink-0 text-right text-sm font-semibold tabular-nums">
+                          {lineLabel(line)}
+                        </p>
+                        <button
+                          type="button"
+                          className="text-muted-foreground hover:text-rose-600"
+                          aria-label="Retirer"
+                          onClick={() => trySetQty(line.menuItemId, 0)}
+                        >
+                          <Trash2 className="size-3.5" />
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+            <div className="shrink-0 space-y-2 border-t border-border bg-card px-3 py-3">
+              <div className="space-y-1 text-sm">
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Sous-total</span>
+                  <span className="tabular-nums text-foreground">{totalLabel}</span>
+                </div>
+                <div className="flex justify-between text-base font-semibold">
+                  <span>Total</span>
+                  <span className="tabular-nums">{totalLabel}</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={onClear}
+                disabled={cart.length === 0}
+                className="h-9 w-full rounded-lg bg-[#f97316] text-sm font-semibold text-white hover:bg-[#ea580c] disabled:opacity-40"
+              >
+                Annuler
+              </button>
+              {actions}
+            </div>
+          </aside>
+        ) : null}
+      </div>
+      </div>
+    );
+  }
 
   const categoryNav = (
     <nav
@@ -811,9 +1113,8 @@ export function PosTerminal({
                       disabled={soldOut}
                       aria-disabled={soldOut}
                       className={cn(
-                        "group relative aspect-[4/5] overflow-hidden rounded-xl text-left shadow-sm transition",
+                        "group relative aspect-[4/5] overflow-hidden rounded-lg text-left shadow-sm transition",
                         "ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                        "bg-gradient-to-br",
                         toneFor(item.id + item.category),
                         soldOut
                           ? "cursor-not-allowed grayscale opacity-45"
@@ -830,9 +1131,7 @@ export function PosTerminal({
                             soldOut && "grayscale",
                           )}
                         />
-                      ) : (
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.22),transparent_55%)]" />
-                      )}
+                      ) : null}
                       <div
                         className={cn(
                           "absolute inset-0",

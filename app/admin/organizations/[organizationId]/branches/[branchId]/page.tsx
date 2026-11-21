@@ -4,7 +4,9 @@ import { auth } from "@/lib/auth";
 import { canAccessBranch } from "@/lib/branch/user-branches";
 import { requireBranchContext } from "@/lib/branch/require-branch-context";
 import { getBranchRoleDashboardAction } from "@/lib/branch/dashboard-actions";
+import { getDepartmentOverview } from "@/lib/branch/department-overview";
 import { BranchDashboard } from "./branch-dashboard";
+import { DepartmentDashboard } from "./department-dashboard";
 import { UsineDashboard } from "./usine-dashboard";
 
 type PageProps = {
@@ -62,6 +64,17 @@ export default async function BranchDashboardPage({ params }: PageProps) {
 
   if (data.branchType === "USINE") {
     return <UsineDashboard {...dashProps} />;
+  }
+
+  if (data.branchType === "BOUTIQUE") {
+    const overview = await getDepartmentOverview(organizationId, branchId);
+    return (
+      <DepartmentDashboard
+        organizationId={organizationId}
+        branchId={branchId}
+        overview={overview}
+      />
+    );
   }
 
   return <BranchDashboard {...dashProps} />;

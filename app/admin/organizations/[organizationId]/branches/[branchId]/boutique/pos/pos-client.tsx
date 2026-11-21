@@ -7,7 +7,6 @@ import {
   ArrowLeft,
   Clock3,
   Pause,
-  ShoppingBag,
   Wallet,
   X,
 } from "lucide-react";
@@ -42,6 +41,7 @@ import {
   holdShopSaleAction,
   type ShopProductDto,
 } from "@/lib/boutique/actions";
+import { VentesClient } from "../ventes/ventes-client";
 import {
   closeCashSessionAction,
   openCashSessionAction,
@@ -54,7 +54,6 @@ import {
 } from "@/lib/branch/paths";
 import type { PendingPosReception } from "@/lib/warehouse/actions";
 import {
-  BoutiqueHero,
   BoutiquePage,
   boutiqueOutlineBtn,
   boutiquePrimaryBtn,
@@ -87,6 +86,15 @@ type Props = {
   branchName: string;
   products: ShopProductDto[];
   heldSales: HeldSale[];
+  todaySales?: {
+    id: string;
+    ticketNumber: string;
+    status: string;
+    totalAmount: number;
+    cashierName: string | null;
+    paidAt: string | null;
+    correctionReason: string | null;
+  }[];
   cashSession: CashSession;
   foreignCashSessions?: {
     id: string;
@@ -135,6 +143,8 @@ export function BoutiquePosClient(props: Props) {
   const [sessionDialogOpen, setSessionDialogOpen] = useState(
     !props.cashSession,
   );
+  const [closeOpen, setCloseOpen] = useState(false);
+  const [declaredCash, setDeclaredCash] = useState("");
   const [float, setFloat] = useState("0");
   const [holdOpen, setHoldOpen] = useState(false);
   const [holdLabel, setHoldLabel] = useState("");
@@ -142,6 +152,39 @@ export function BoutiquePosClient(props: Props) {
   const [clientOpen, setClientOpen] = useState(false);
   const [clientLabel, setClientLabel] = useState("");
   const [clientPhone, setClientPhone] = useState("");
+  const [screen, setScreen] = useState<
+    "menu" | "panier" | "commandes" | "preparation" | "rapports"
+  >("menu");
+  const prepKey = `pos-prep:${props.branchId}`;
+  const [prep, setPrep] = useState<
+    Record<string, "EN_ATTENTE" | "EN_PREPARATION" | "PRETE">
+  >({});
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(prepKey);
+      if (!raw) return;
+      setPrep(
+        JSON.parse(raw) as Record<
+          string,
+          "EN_ATTENTE" | "EN_PREPARATION" | "PRETE"
+        >,
+      );
+    } catch {
+      /* stockage local illisible */
+    }
+  }, [prepKey]);
+
+  function setPrepStatus(
+    saleId: string,
+    status: "EN_ATTENTE" | "EN_PREPARATION" | "PRETE",
+  ) {
+    setPrep((prev) => {
+      const next = { ...prev, [saleId]: status };
+      localStorage.setItem(prepKey, JSON.stringify(next));
+      return next;
+    });
+  }
 
   useEffect(() => {
     if (!props.cashSession) setSessionDialogOpen(true);
@@ -216,11 +259,18 @@ export function BoutiquePosClient(props: Props) {
   function closeSession() {
     start(async () => {
       try {
-        await closeCashSessionAction({
+        const declared = Number(declaredCash);
+        const res = await closeCashSessionAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
+          declaredCashUsd: Number.isFinite(declared) ? declared : undefined,
+          prepareRemittance: true,
         });
-        toast.success("Caisse clôturée");
+        setCloseOpen(false);
+        toast.success(
+          `Caisse clôturée · écart ${(res.varianceUsd ?? 0).toFixed(2)} $` +
+            (res.remittanceNumber ? ` · ${res.remittanceNumber}` : ""),
+        );
         router.refresh();
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Erreur");
@@ -379,7 +429,7 @@ export function BoutiquePosClient(props: Props) {
         variant="outline"
         size="sm"
         className={boutiqueOutlineBtn()}
-        onClick={() => setHeldOpen(true)}
+        onClick={() => setScreen("commandes")}
       >
         <Clock3 className="size-4" />
         En attente ({props.heldSales.length})
@@ -390,7 +440,7 @@ export function BoutiquePosClient(props: Props) {
           size="sm"
           className={boutiqueOutlineBtn()}
           disabled={pending}
-          onClick={closeSession}
+          onClick={() => setCloseOpen(true)}
         >
           <Wallet className="size-4" />
           Clôturer caisse
@@ -482,7 +532,7 @@ export function BoutiquePosClient(props: Props) {
               disabled={!cart.length || !props.cashSession || !stockReady}
               pending={pending}
               onClick={charge}
-              className="h-12 rounded-2xl bg-emerald-700 text-white hover:bg-emerald-700/90"
+              className="h-10 rounded-lg bg-[#16a34a] text-white hover:bg-[#15803d]"
             />
           </div>
         </div>
@@ -491,7 +541,17 @@ export function BoutiquePosClient(props: Props) {
   );
 
   return (
-    <BoutiquePage wide={usine}>
+    <BoutiquePage
+      wide={usine}
+      fill={!usine}
+      className={
+        !usine && (screen === "menu" || screen === "panier")
+          ? stockReady
+            ? "h-[calc(100svh-4rem)] max-h-[calc(100svh-4rem)] min-h-0 overflow-hidden"
+            : "h-[calc(100svh-9rem)] max-h-[calc(100svh-9rem)] min-h-0 overflow-hidden"
+          : undefined
+      }
+    >
       {usine ? (
         <div className="flex flex-col gap-2 rounded-xl border border-border bg-card px-3 py-2.5 shadow-sm sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-1.5">
@@ -567,68 +627,7 @@ export function BoutiquePosClient(props: Props) {
             </Button>
           </div>
         </div>
-      ) : (
-        <BoutiqueHero
-          kicker={`${props.branchName} · caisse`}
-          title="Point de vente"
-          subtitle="Le stock vendu est le float du service — ouvrez-le depuis le stock auxiliaire."
-          icon={ShoppingBag}
-          backHref={branchDashboardPath(props.organizationId, props.branchId)}
-          actions={
-            <>
-              {heldAndCashButtons}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="rounded-full"
-                render={
-                  <Link
-                    href={boutiqueRoutes.serviceStock(
-                      props.organizationId,
-                      props.branchId,
-                    )}
-                  />
-                }
-              >
-                Service stock
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="rounded-full"
-                render={
-                  <Link
-                    href={boutiqueRoutes.produits(
-                      props.organizationId,
-                      props.branchId,
-                    )}
-                  />
-                }
-              >
-                Produits
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="rounded-full"
-                render={
-                  <Link
-                    href={
-                      props.depotHref ??
-                      boutiqueRoutes.stock(
-                        props.organizationId,
-                        props.branchId,
-                      )
-                    }
-                  />
-                }
-              >
-                Stock
-              </Button>
-            </>
-          }
-        />
-      )}
+      ) : null}
 
       {(props.foreignCashSessions?.length ?? 0) > 0 ? (
         <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-sm">
@@ -645,22 +644,38 @@ export function BoutiquePosClient(props: Props) {
       />
 
       {usine ? null : (
-        <div className="flex flex-wrap gap-1.5">
-          {(["ALL", "ARTICLE", "PLAT"] as const).map((k) => (
-            <button
-              key={k}
-              type="button"
-              onClick={() => setKindFilter(k)}
-              className={cn(
-                "rounded-full border px-3.5 py-1.5 text-xs font-semibold transition",
-                kindFilter === k
-                  ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                  : "border-border bg-card text-muted-foreground hover:bg-muted",
-              )}
-            >
-              {k === "ALL" ? "Tous" : k === "ARTICLE" ? "Articles" : "Plats"}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex gap-1 rounded-lg bg-muted p-1">
+            {(
+              [
+                ["menu", "Menu"],
+                ["panier", "Mon panier"],
+                ["commandes", "Commandes"],
+                ["preparation", "Préparation"],
+                ["rapports", "Rapports"],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setScreen(id)}
+                className={cn(
+                  "rounded-md px-3 py-1.5 text-sm font-medium transition",
+                  screen === id
+                    ? "bg-[#16a34a] text-white"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {label}
+                {id === "commandes" && props.heldSales.length > 0
+                  ? ` (${props.heldSales.length})`
+                  : ""}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {heldAndCashButtons}
+          </div>
         </div>
       )}
 
@@ -706,22 +721,241 @@ export function BoutiquePosClient(props: Props) {
           formatPrice={(n) => `${n.toFixed(2)} $`}
           actions={posActions}
         />
+      ) : screen === "commandes" ? (
+        <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {props.heldSales.length === 0 ? (
+            <p className="col-span-full rounded-xl border border-dashed border-border bg-card px-4 py-16 text-center text-sm text-muted-foreground">
+              Aucune nouvelle commande.
+            </p>
+          ) : (
+            props.heldSales.map((sale) => (
+              <article
+                key={sale.id}
+                className="flex flex-col rounded-xl border border-border bg-card p-4 shadow-sm"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="font-semibold">
+                      {sale.holdLabel || sale.ticketNumber}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {sale.ticketNumber}
+                    </p>
+                  </div>
+                  <p className="text-sm font-semibold tabular-nums text-[#16a34a]">
+                    {sale.totalAmount.toFixed(2)} $
+                  </p>
+                </div>
+                <ul className="mt-3 flex-1 space-y-1.5 border-t border-border pt-3 text-sm">
+                  {sale.items.map((item) => (
+                    <li
+                      key={item.id}
+                      className="flex justify-between gap-3"
+                    >
+                      <span className="min-w-0 truncate">
+                        {item.name}
+                        <span className="text-muted-foreground">
+                          {" "}
+                          × {item.quantity}
+                        </span>
+                      </span>
+                      <span className="shrink-0 tabular-nums">
+                        {(item.unitPrice * item.quantity).toFixed(2)} $
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => cancelHold(sale.id)}
+                  >
+                    Annuler
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="bg-[#16a34a] text-white hover:bg-[#15803d]"
+                    onClick={() => {
+                      resumeHold(sale);
+                      setScreen("panier");
+                    }}
+                  >
+                    Reprendre
+                  </Button>
+                </div>
+              </article>
+            ))
+          )}
+        </section>
+      ) : screen === "preparation" ? (
+        <section className="grid gap-3 lg:grid-cols-3">
+          {(
+            [
+              ["EN_ATTENTE", "En attente"],
+              ["EN_PREPARATION", "En préparation"],
+              ["PRETE", "Prête"],
+            ] as const
+          ).map(([status, label]) => {
+            const column = props.heldSales.filter(
+              (sale) => (prep[sale.id] ?? "EN_ATTENTE") === status,
+            );
+            return (
+              <div
+                key={status}
+                className="flex min-h-[420px] flex-col rounded-xl border border-border bg-card"
+              >
+                <div className="flex items-center justify-between border-b border-border px-4 py-3">
+                  <h2 className="text-sm font-semibold">{label}</h2>
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                    {column.length}
+                  </span>
+                </div>
+                <div className="flex flex-1 flex-col gap-2 p-3">
+                  {column.length === 0 ? (
+                    <p className="py-8 text-center text-xs text-muted-foreground">
+                      Rien ici
+                    </p>
+                  ) : (
+                    column.map((sale) => (
+                      <article
+                        key={sale.id}
+                        className="rounded-lg border border-border p-3"
+                      >
+                        <p className="text-sm font-semibold">
+                          {sale.holdLabel || sale.ticketNumber}
+                        </p>
+                        <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                          {sale.items.map((item) => (
+                            <li key={item.id}>
+                              {item.quantity} × {item.name}
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {status !== "EN_ATTENTE" ? (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() =>
+                                setPrepStatus(
+                                  sale.id,
+                                  status === "PRETE"
+                                    ? "EN_PREPARATION"
+                                    : "EN_ATTENTE",
+                                )
+                              }
+                            >
+                              Reculer
+                            </Button>
+                          ) : null}
+                          {status !== "PRETE" ? (
+                            <Button
+                              type="button"
+                              size="sm"
+                              className="bg-[#16a34a] text-white hover:bg-[#15803d]"
+                              onClick={() =>
+                                setPrepStatus(
+                                  sale.id,
+                                  status === "EN_ATTENTE"
+                                    ? "EN_PREPARATION"
+                                    : "PRETE",
+                                )
+                              }
+                            >
+                              {status === "EN_ATTENTE"
+                                ? "Préparer"
+                                : "Marquer prête"}
+                            </Button>
+                          ) : null}
+                        </div>
+                      </article>
+                    ))
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </section>
+      ) : screen === "rapports" ? (
+        <VentesClient
+          embedded
+          organizationId={props.organizationId}
+          branchId={props.branchId}
+          sales={props.todaySales ?? []}
+        />
       ) : (
-        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-          <PosTerminal
-            items={posItems}
-            cart={cart}
-            onAdd={addItem}
-            onSetQty={setQty}
-            onClear={clear}
-            catalogLayout="tiles"
-            ticketTitle="Ticket commerce"
-            emptyHint="Scannez ou cherchez un article / plat"
-            formatPrice={(n) => `${n.toFixed(2)} $`}
-            actions={posActions}
-          />
-        </div>
+        <PosTerminal
+          className="min-h-0 flex-1"
+          presentation="counter"
+          counterPane={screen === "panier" ? "panier" : "menu"}
+          items={posItems}
+          cart={cart}
+          onAdd={addItem}
+          onSetQty={setQty}
+          onClear={clear}
+          catalogStatus={
+            <div className="flex flex-wrap gap-1.5">
+              {(["ALL", "ARTICLE", "PLAT"] as const).map((k) => (
+                <button
+                  key={k}
+                  type="button"
+                  onClick={() => setKindFilter(k)}
+                  className={cn(
+                    "h-7 rounded-full border px-2.5 text-[11px] font-semibold",
+                    kindFilter === k
+                      ? "border-[#16a34a] bg-[#16a34a] text-white"
+                      : "border-border bg-card text-muted-foreground",
+                  )}
+                >
+                  {k === "ALL" ? "Tout" : k === "ARTICLE" ? "Articles" : "Plats"}
+                </button>
+              ))}
+            </div>
+          }
+          emptyHint="Scannez un code ou ajoutez un article"
+          formatPrice={(n) => `${n.toFixed(2)} $`}
+          actions={posActions}
+        />
       )}
+
+      <Dialog open={closeOpen} onOpenChange={setCloseOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Clôturer la caisse</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Saisissez le montant physique constaté. L’écart = théorique −
+            constaté. Un versement vers la caisse centrale est préparé.
+          </p>
+          <div className="grid gap-1.5">
+            <Label>Montant déclaré (USD)</Label>
+            <Input
+              type="number"
+              min={0}
+              step="0.01"
+              value={declaredCash}
+              onChange={(e) => setDeclaredCash(e.target.value)}
+              className="h-11"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCloseOpen(false)}>
+              Annuler
+            </Button>
+            <Button
+              className="h-11"
+              disabled={pending || !declaredCash.trim()}
+              onClick={closeSession}
+            >
+              Clôturer et verser
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Session caisse */}
       <Dialog
@@ -886,7 +1120,7 @@ export function BoutiquePosClient(props: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {usine ? null : props.stockCanOperate && !props.stockForeignSession ? (
+      {usine || screen === "menu" || screen === "panier" || screen === "rapports" ? null : props.stockCanOperate && !props.stockForeignSession ? (
         <ServiceStockOpsPanel
           organizationId={props.organizationId}
           branchId={props.branchId}

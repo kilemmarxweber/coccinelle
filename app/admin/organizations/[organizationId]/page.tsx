@@ -17,6 +17,7 @@ import {
   DashboardSection,
 } from "@/components/ui/dashboard-menu-card";
 import { APP_ROLE } from "@/lib/permissions";
+import { YayoPilotage } from "./yayo-pilotage";
 
 export default function AdminOrganizationHomePage() {
   const params = useParams();
@@ -100,8 +101,8 @@ export default function AdminOrganizationHomePage() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <DashboardMenuCard
                 href={`${base}/branches`}
-                title="Branches"
-                description="Agence, Hôtel ou Boutique — créer et ouvrir un dashboard."
+                title="Branches / départements"
+                description="Sites d’exploitation — pour CAFE YAYO : Mini Market, Buffet, etc."
                 icon={GitBranch}
                 iconBg="bg-emerald-500/15"
                 iconColor="text-emerald-400"
@@ -133,6 +134,8 @@ export default function AdminOrganizationHomePage() {
               />
             </div>
           </DashboardSection>
+
+          <YayoPilotage organizationId={id} />
         </>
       )}
     </div>

@@ -49,7 +49,9 @@ async function ctx(
   if (!branch || branch.organizationId !== organizationId) {
     throw new Error("Branche inaccessible.");
   }
-  if (!isUsine(branch.type)) throw new Error("Module usine requis.");
+  if (!isUsine(branch.type) && !branch.hasProduction) {
+    throw new Error("Module production requis.");
+  }
   if (privilege) {
     await assertBranchPrivilege({
       organizationId,
@@ -243,6 +245,7 @@ export async function upsertFactoryCustomerAction(input: {
   deliveryCity?: string;
   affiliateBranchId?: string | null;
   active?: boolean;
+  creditLimitUsd?: number;
 }) {
   const { branch } = await ctx(input.organizationId, input.branchId, { resource: DASH_CARD.USINE_CLIENTS, action: 'UPDATE' });
   const name = input.name.trim();
@@ -278,6 +281,9 @@ export async function upsertFactoryCustomerAction(input: {
     deliveryAddress: input.deliveryAddress?.trim() || null,
     deliveryCity: input.deliveryCity?.trim() || null,
     ...(affiliateBranchId !== undefined ? { affiliateBranchId } : {}),
+    ...(input.creditLimitUsd != null
+      ? { creditLimitUsd: Math.max(0, input.creditLimitUsd) }
+      : {}),
     active: input.active !== false,
   };
   const isCreate = !input.id;
@@ -601,6 +607,8 @@ export async function validateFactoryBatchAction(input: {
   recipeId: string;
   multiplier?: number;
   notes?: string;
+  actualOutputQty?: number;
+  wasteQty?: number;
 }) {
   const { user } = await ctx(input.organizationId, input.branchId, { resource: DASH_CARD.USINE_PRODUCTION, action: 'CREATE' });
   const multiplier = Math.max(1, input.multiplier ?? 1);
@@ -613,6 +621,11 @@ export async function validateFactoryBatchAction(input: {
   });
   if (!recipe) throw new Error("Recette introuvable.");
   const outputQty = Math.round(recipe.outputQty * multiplier);
+  const actualOutputQty =
+    input.actualOutputQty != null
+      ? Math.max(0, Math.round(input.actualOutputQty))
+      : outputQty;
+  const wasteQty = Math.max(0, input.wasteQty ?? 0);
 
   const batch = await prisma.$transaction(async (tx) => {
     for (const line of recipe.lines) {
@@ -638,7 +651,7 @@ export async function validateFactoryBatchAction(input: {
 
     await tx.shopProduct.update({
       where: { id: recipe.shopProductId },
-      data: { stockQty: { increment: outputQty } },
+      data: { stockQty: { increment: actualOutputQty } },
     });
 
     let number = await nextNumber(input.branchId, "LOT", tx);
@@ -653,6 +666,8 @@ export async function validateFactoryBatchAction(input: {
             multiplier,
             outputProductId: recipe.shopProductId,
             outputQty,
+            actualOutputQty,
+            wasteQty,
             notes: input.notes?.trim() || null,
             producedAt: new Date(),
             validatedByUserId: user.id,
@@ -675,8 +690,8 @@ export async function validateFactoryBatchAction(input: {
             branchId: input.branchId,
             productId: recipe.shopProductId,
             kind: "ENTREE",
-            quantity: outputQty,
-            note: `Lot ${number}`,
+            quantity: actualOutputQty,
+            note: `Lot ${number}${wasteQty ? ` · rebuts ${wasteQty}` : ""}`,
           },
         });
         return created;
@@ -843,6 +858,22 @@ export async function createFactoryCreditAction(input: {
     };
   });
   const totalUsd = roundMoney(lines.reduce((s, l) => s + l.lineTotalUsd, 0));
+  if (customer.creditLimitUsd > 0) {
+    const open = await prisma.factoryCredit.aggregate({
+      where: {
+        customerId: customer.id,
+        status: { in: ["OPEN", "PARTIAL"] },
+      },
+      _sum: { totalUsd: true, paidUsd: true },
+    });
+    const outstanding =
+      (open._sum.totalUsd ?? 0) - (open._sum.paidUsd ?? 0) + totalUsd;
+    if (outstanding > customer.creditLimitUsd + 0.01) {
+      throw new Error(
+        `Plafond crédit dépassé (${customer.creditLimitUsd.toFixed(2)} USD).`,
+      );
+    }
+  }
   const rate = await getActiveExchangeRate(input.branchId);
   const marketerDisplayName =
     user.name?.trim() || user.email || "Marketeur";

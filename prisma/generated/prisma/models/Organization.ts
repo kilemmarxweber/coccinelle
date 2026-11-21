@@ -196,6 +196,12 @@ export type OrganizationWhereInput = {
   trajets?: Prisma.TrajetListRelationFilter
   reservationDrafts?: Prisma.ReservationDraftListRelationFilter
   branches?: Prisma.BranchListRelationFilter
+  cashRemittances?: Prisma.CashRemittanceListRelationFilter
+  centralCashEntries?: Prisma.CentralCashEntryListRelationFilter
+  auditEvents?: Prisma.AuditEventListRelationFilter
+  integrityFindings?: Prisma.IntegrityFindingListRelationFilter
+  biaIncidents?: Prisma.BiaIncidentListRelationFilter
+  orgCashAccount?: Prisma.XOR<Prisma.OrgCashAccountNullableScalarRelationFilter, Prisma.OrgCashAccountWhereInput> | null
 }
 
 export type OrganizationOrderByWithRelationInput = {
@@ -211,6 +217,12 @@ export type OrganizationOrderByWithRelationInput = {
   trajets?: Prisma.TrajetOrderByRelationAggregateInput
   reservationDrafts?: Prisma.ReservationDraftOrderByRelationAggregateInput
   branches?: Prisma.BranchOrderByRelationAggregateInput
+  cashRemittances?: Prisma.CashRemittanceOrderByRelationAggregateInput
+  centralCashEntries?: Prisma.CentralCashEntryOrderByRelationAggregateInput
+  auditEvents?: Prisma.AuditEventOrderByRelationAggregateInput
+  integrityFindings?: Prisma.IntegrityFindingOrderByRelationAggregateInput
+  biaIncidents?: Prisma.BiaIncidentOrderByRelationAggregateInput
+  orgCashAccount?: Prisma.OrgCashAccountOrderByWithRelationInput
 }
 
 export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -229,6 +241,12 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   trajets?: Prisma.TrajetListRelationFilter
   reservationDrafts?: Prisma.ReservationDraftListRelationFilter
   branches?: Prisma.BranchListRelationFilter
+  cashRemittances?: Prisma.CashRemittanceListRelationFilter
+  centralCashEntries?: Prisma.CentralCashEntryListRelationFilter
+  auditEvents?: Prisma.AuditEventListRelationFilter
+  integrityFindings?: Prisma.IntegrityFindingListRelationFilter
+  biaIncidents?: Prisma.BiaIncidentListRelationFilter
+  orgCashAccount?: Prisma.XOR<Prisma.OrgCashAccountNullableScalarRelationFilter, Prisma.OrgCashAccountWhereInput> | null
 }, "id" | "slug">
 
 export type OrganizationOrderByWithAggregationInput = {
@@ -268,6 +286,12 @@ export type OrganizationCreateInput = {
   trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountCreateNestedOneWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateInput = {
@@ -283,6 +307,12 @@ export type OrganizationUncheckedCreateInput = {
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedCreateNestedOneWithoutOrganizationInput
 }
 
 export type OrganizationUpdateInput = {
@@ -298,6 +328,12 @@ export type OrganizationUpdateInput = {
   trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUpdateOneWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateInput = {
@@ -313,6 +349,12 @@ export type OrganizationUncheckedUpdateInput = {
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedUpdateOneWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateManyInput = {
@@ -458,6 +500,90 @@ export type OrganizationUpdateOneRequiredWithoutBranchesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutBranchesInput, Prisma.OrganizationUpdateWithoutBranchesInput>, Prisma.OrganizationUncheckedUpdateWithoutBranchesInput>
 }
 
+export type OrganizationCreateNestedOneWithoutOrgCashAccountInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutOrgCashAccountInput, Prisma.OrganizationUncheckedCreateWithoutOrgCashAccountInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutOrgCashAccountInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutOrgCashAccountNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutOrgCashAccountInput, Prisma.OrganizationUncheckedCreateWithoutOrgCashAccountInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutOrgCashAccountInput
+  upsert?: Prisma.OrganizationUpsertWithoutOrgCashAccountInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutOrgCashAccountInput, Prisma.OrganizationUpdateWithoutOrgCashAccountInput>, Prisma.OrganizationUncheckedUpdateWithoutOrgCashAccountInput>
+}
+
+export type OrganizationCreateNestedOneWithoutCashRemittancesInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutCashRemittancesInput, Prisma.OrganizationUncheckedCreateWithoutCashRemittancesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutCashRemittancesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutCashRemittancesNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutCashRemittancesInput, Prisma.OrganizationUncheckedCreateWithoutCashRemittancesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutCashRemittancesInput
+  upsert?: Prisma.OrganizationUpsertWithoutCashRemittancesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutCashRemittancesInput, Prisma.OrganizationUpdateWithoutCashRemittancesInput>, Prisma.OrganizationUncheckedUpdateWithoutCashRemittancesInput>
+}
+
+export type OrganizationCreateNestedOneWithoutCentralCashEntriesInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutCentralCashEntriesInput, Prisma.OrganizationUncheckedCreateWithoutCentralCashEntriesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutCentralCashEntriesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutCentralCashEntriesNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutCentralCashEntriesInput, Prisma.OrganizationUncheckedCreateWithoutCentralCashEntriesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutCentralCashEntriesInput
+  upsert?: Prisma.OrganizationUpsertWithoutCentralCashEntriesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutCentralCashEntriesInput, Prisma.OrganizationUpdateWithoutCentralCashEntriesInput>, Prisma.OrganizationUncheckedUpdateWithoutCentralCashEntriesInput>
+}
+
+export type OrganizationCreateNestedOneWithoutAuditEventsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutAuditEventsInput, Prisma.OrganizationUncheckedCreateWithoutAuditEventsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutAuditEventsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutAuditEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutAuditEventsInput, Prisma.OrganizationUncheckedCreateWithoutAuditEventsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutAuditEventsInput
+  upsert?: Prisma.OrganizationUpsertWithoutAuditEventsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutAuditEventsInput, Prisma.OrganizationUpdateWithoutAuditEventsInput>, Prisma.OrganizationUncheckedUpdateWithoutAuditEventsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutIntegrityFindingsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutIntegrityFindingsInput, Prisma.OrganizationUncheckedCreateWithoutIntegrityFindingsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutIntegrityFindingsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutIntegrityFindingsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutIntegrityFindingsInput, Prisma.OrganizationUncheckedCreateWithoutIntegrityFindingsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutIntegrityFindingsInput
+  upsert?: Prisma.OrganizationUpsertWithoutIntegrityFindingsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutIntegrityFindingsInput, Prisma.OrganizationUpdateWithoutIntegrityFindingsInput>, Prisma.OrganizationUncheckedUpdateWithoutIntegrityFindingsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutBiaIncidentsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutBiaIncidentsInput, Prisma.OrganizationUncheckedCreateWithoutBiaIncidentsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutBiaIncidentsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutBiaIncidentsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutBiaIncidentsInput, Prisma.OrganizationUncheckedCreateWithoutBiaIncidentsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutBiaIncidentsInput
+  upsert?: Prisma.OrganizationUpsertWithoutBiaIncidentsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutBiaIncidentsInput, Prisma.OrganizationUpdateWithoutBiaIncidentsInput>, Prisma.OrganizationUncheckedUpdateWithoutBiaIncidentsInput>
+}
+
 export type OrganizationCreateWithoutOrganizationrolesInput = {
   id: string
   name: string
@@ -470,6 +596,12 @@ export type OrganizationCreateWithoutOrganizationrolesInput = {
   trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountCreateNestedOneWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutOrganizationrolesInput = {
@@ -484,6 +616,12 @@ export type OrganizationUncheckedCreateWithoutOrganizationrolesInput = {
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedCreateNestedOneWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutOrganizationrolesInput = {
@@ -514,6 +652,12 @@ export type OrganizationUpdateWithoutOrganizationrolesInput = {
   trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUpdateOneWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutOrganizationrolesInput = {
@@ -528,6 +672,12 @@ export type OrganizationUncheckedUpdateWithoutOrganizationrolesInput = {
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedUpdateOneWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutMembersInput = {
@@ -542,6 +692,12 @@ export type OrganizationCreateWithoutMembersInput = {
   trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountCreateNestedOneWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutMembersInput = {
@@ -556,6 +712,12 @@ export type OrganizationUncheckedCreateWithoutMembersInput = {
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedCreateNestedOneWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutMembersInput = {
@@ -586,6 +748,12 @@ export type OrganizationUpdateWithoutMembersInput = {
   trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUpdateOneWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutMembersInput = {
@@ -600,6 +768,12 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedUpdateOneWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutInvitationsInput = {
@@ -614,6 +788,12 @@ export type OrganizationCreateWithoutInvitationsInput = {
   trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountCreateNestedOneWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutInvitationsInput = {
@@ -628,6 +808,12 @@ export type OrganizationUncheckedCreateWithoutInvitationsInput = {
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedCreateNestedOneWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutInvitationsInput = {
@@ -658,6 +844,12 @@ export type OrganizationUpdateWithoutInvitationsInput = {
   trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUpdateOneWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
@@ -672,6 +864,12 @@ export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedUpdateOneWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutTrajetsInput = {
@@ -686,6 +884,12 @@ export type OrganizationCreateWithoutTrajetsInput = {
   organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountCreateNestedOneWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutTrajetsInput = {
@@ -700,6 +904,12 @@ export type OrganizationUncheckedCreateWithoutTrajetsInput = {
   organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedCreateNestedOneWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutTrajetsInput = {
@@ -730,6 +940,12 @@ export type OrganizationUpdateWithoutTrajetsInput = {
   organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUpdateOneWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutTrajetsInput = {
@@ -744,6 +960,12 @@ export type OrganizationUncheckedUpdateWithoutTrajetsInput = {
   organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedUpdateOneWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutReservationDraftsInput = {
@@ -758,6 +980,12 @@ export type OrganizationCreateWithoutReservationDraftsInput = {
   organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
   trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountCreateNestedOneWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutReservationDraftsInput = {
@@ -772,6 +1000,12 @@ export type OrganizationUncheckedCreateWithoutReservationDraftsInput = {
   organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedCreateNestedOneWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutReservationDraftsInput = {
@@ -802,6 +1036,12 @@ export type OrganizationUpdateWithoutReservationDraftsInput = {
   organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
   trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUpdateOneWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutReservationDraftsInput = {
@@ -816,6 +1056,12 @@ export type OrganizationUncheckedUpdateWithoutReservationDraftsInput = {
   organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
   branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedUpdateOneWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutBranchesInput = {
@@ -830,6 +1076,12 @@ export type OrganizationCreateWithoutBranchesInput = {
   organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
   trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountCreateNestedOneWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutBranchesInput = {
@@ -844,6 +1096,12 @@ export type OrganizationUncheckedCreateWithoutBranchesInput = {
   organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
   trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedCreateNestedOneWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutBranchesInput = {
@@ -874,6 +1132,12 @@ export type OrganizationUpdateWithoutBranchesInput = {
   organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
   trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUpdateOneWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutBranchesInput = {
@@ -888,6 +1152,588 @@ export type OrganizationUncheckedUpdateWithoutBranchesInput = {
   organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
   trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
   reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedUpdateOneWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutOrgCashAccountInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
+  branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutOrgCashAccountInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
+  branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutOrgCashAccountInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutOrgCashAccountInput, Prisma.OrganizationUncheckedCreateWithoutOrgCashAccountInput>
+}
+
+export type OrganizationUpsertWithoutOrgCashAccountInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutOrgCashAccountInput, Prisma.OrganizationUncheckedUpdateWithoutOrgCashAccountInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutOrgCashAccountInput, Prisma.OrganizationUncheckedCreateWithoutOrgCashAccountInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutOrgCashAccountInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutOrgCashAccountInput, Prisma.OrganizationUncheckedUpdateWithoutOrgCashAccountInput>
+}
+
+export type OrganizationUpdateWithoutOrgCashAccountInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
+  branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutOrgCashAccountInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+  branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutCashRemittancesInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
+  branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountCreateNestedOneWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutCashRemittancesInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
+  branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedCreateNestedOneWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutCashRemittancesInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCashRemittancesInput, Prisma.OrganizationUncheckedCreateWithoutCashRemittancesInput>
+}
+
+export type OrganizationUpsertWithoutCashRemittancesInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutCashRemittancesInput, Prisma.OrganizationUncheckedUpdateWithoutCashRemittancesInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCashRemittancesInput, Prisma.OrganizationUncheckedCreateWithoutCashRemittancesInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutCashRemittancesInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutCashRemittancesInput, Prisma.OrganizationUncheckedUpdateWithoutCashRemittancesInput>
+}
+
+export type OrganizationUpdateWithoutCashRemittancesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
+  branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUpdateOneWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutCashRemittancesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+  branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedUpdateOneWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutCentralCashEntriesInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
+  branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountCreateNestedOneWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutCentralCashEntriesInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
+  branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedCreateNestedOneWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutCentralCashEntriesInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCentralCashEntriesInput, Prisma.OrganizationUncheckedCreateWithoutCentralCashEntriesInput>
+}
+
+export type OrganizationUpsertWithoutCentralCashEntriesInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutCentralCashEntriesInput, Prisma.OrganizationUncheckedUpdateWithoutCentralCashEntriesInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCentralCashEntriesInput, Prisma.OrganizationUncheckedCreateWithoutCentralCashEntriesInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutCentralCashEntriesInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutCentralCashEntriesInput, Prisma.OrganizationUncheckedUpdateWithoutCentralCashEntriesInput>
+}
+
+export type OrganizationUpdateWithoutCentralCashEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
+  branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUpdateOneWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutCentralCashEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+  branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedUpdateOneWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutAuditEventsInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
+  branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountCreateNestedOneWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutAuditEventsInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
+  branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedCreateNestedOneWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutAuditEventsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutAuditEventsInput, Prisma.OrganizationUncheckedCreateWithoutAuditEventsInput>
+}
+
+export type OrganizationUpsertWithoutAuditEventsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutAuditEventsInput, Prisma.OrganizationUncheckedUpdateWithoutAuditEventsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutAuditEventsInput, Prisma.OrganizationUncheckedCreateWithoutAuditEventsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutAuditEventsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutAuditEventsInput, Prisma.OrganizationUncheckedUpdateWithoutAuditEventsInput>
+}
+
+export type OrganizationUpdateWithoutAuditEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
+  branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUpdateOneWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutAuditEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+  branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedUpdateOneWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutIntegrityFindingsInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
+  branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountCreateNestedOneWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutIntegrityFindingsInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
+  branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedCreateNestedOneWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutIntegrityFindingsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutIntegrityFindingsInput, Prisma.OrganizationUncheckedCreateWithoutIntegrityFindingsInput>
+}
+
+export type OrganizationUpsertWithoutIntegrityFindingsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutIntegrityFindingsInput, Prisma.OrganizationUncheckedUpdateWithoutIntegrityFindingsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutIntegrityFindingsInput, Prisma.OrganizationUncheckedCreateWithoutIntegrityFindingsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutIntegrityFindingsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutIntegrityFindingsInput, Prisma.OrganizationUncheckedUpdateWithoutIntegrityFindingsInput>
+}
+
+export type OrganizationUpdateWithoutIntegrityFindingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
+  branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUpdateOneWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutIntegrityFindingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+  branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  biaIncidents?: Prisma.BiaIncidentUncheckedUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedUpdateOneWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutBiaIncidentsInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftCreateNestedManyWithoutOrganizationInput
+  branches?: Prisma.BranchCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountCreateNestedOneWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutBiaIncidentsInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
+  trajets?: Prisma.TrajetUncheckedCreateNestedManyWithoutOrganizationInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedCreateNestedManyWithoutOrganizationInput
+  branches?: Prisma.BranchUncheckedCreateNestedManyWithoutOrganizationInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedCreateNestedManyWithoutOrganizationInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  auditEvents?: Prisma.AuditEventUncheckedCreateNestedManyWithoutOrganizationInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedCreateNestedManyWithoutOrganizationInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedCreateNestedOneWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutBiaIncidentsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutBiaIncidentsInput, Prisma.OrganizationUncheckedCreateWithoutBiaIncidentsInput>
+}
+
+export type OrganizationUpsertWithoutBiaIncidentsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutBiaIncidentsInput, Prisma.OrganizationUncheckedUpdateWithoutBiaIncidentsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutBiaIncidentsInput, Prisma.OrganizationUncheckedCreateWithoutBiaIncidentsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutBiaIncidentsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutBiaIncidentsInput, Prisma.OrganizationUncheckedUpdateWithoutBiaIncidentsInput>
+}
+
+export type OrganizationUpdateWithoutBiaIncidentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUpdateManyWithoutOrganizationNestedInput
+  branches?: Prisma.BranchUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUpdateOneWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutBiaIncidentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  organizationroles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  trajets?: Prisma.TrajetUncheckedUpdateManyWithoutOrganizationNestedInput
+  reservationDrafts?: Prisma.ReservationDraftUncheckedUpdateManyWithoutOrganizationNestedInput
+  branches?: Prisma.BranchUncheckedUpdateManyWithoutOrganizationNestedInput
+  cashRemittances?: Prisma.CashRemittanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  centralCashEntries?: Prisma.CentralCashEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  auditEvents?: Prisma.AuditEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  integrityFindings?: Prisma.IntegrityFindingUncheckedUpdateManyWithoutOrganizationNestedInput
+  orgCashAccount?: Prisma.OrgCashAccountUncheckedUpdateOneWithoutOrganizationNestedInput
 }
 
 
@@ -902,6 +1748,11 @@ export type OrganizationCountOutputType = {
   trajets: number
   reservationDrafts: number
   branches: number
+  cashRemittances: number
+  centralCashEntries: number
+  auditEvents: number
+  integrityFindings: number
+  biaIncidents: number
 }
 
 export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -911,6 +1762,11 @@ export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Exte
   trajets?: boolean | OrganizationCountOutputTypeCountTrajetsArgs
   reservationDrafts?: boolean | OrganizationCountOutputTypeCountReservationDraftsArgs
   branches?: boolean | OrganizationCountOutputTypeCountBranchesArgs
+  cashRemittances?: boolean | OrganizationCountOutputTypeCountCashRemittancesArgs
+  centralCashEntries?: boolean | OrganizationCountOutputTypeCountCentralCashEntriesArgs
+  auditEvents?: boolean | OrganizationCountOutputTypeCountAuditEventsArgs
+  integrityFindings?: boolean | OrganizationCountOutputTypeCountIntegrityFindingsArgs
+  biaIncidents?: boolean | OrganizationCountOutputTypeCountBiaIncidentsArgs
 }
 
 /**
@@ -965,6 +1821,41 @@ export type OrganizationCountOutputTypeCountBranchesArgs<ExtArgs extends runtime
   where?: Prisma.BranchWhereInput
 }
 
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountCashRemittancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CashRemittanceWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountCentralCashEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CentralCashEntryWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountAuditEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AuditEventWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountIntegrityFindingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.IntegrityFindingWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountBiaIncidentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BiaIncidentWhereInput
+}
+
 
 export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -979,6 +1870,12 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   trajets?: boolean | Prisma.Organization$trajetsArgs<ExtArgs>
   reservationDrafts?: boolean | Prisma.Organization$reservationDraftsArgs<ExtArgs>
   branches?: boolean | Prisma.Organization$branchesArgs<ExtArgs>
+  cashRemittances?: boolean | Prisma.Organization$cashRemittancesArgs<ExtArgs>
+  centralCashEntries?: boolean | Prisma.Organization$centralCashEntriesArgs<ExtArgs>
+  auditEvents?: boolean | Prisma.Organization$auditEventsArgs<ExtArgs>
+  integrityFindings?: boolean | Prisma.Organization$integrityFindingsArgs<ExtArgs>
+  biaIncidents?: boolean | Prisma.Organization$biaIncidentsArgs<ExtArgs>
+  orgCashAccount?: boolean | Prisma.Organization$orgCashAccountArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organization"]>
 
@@ -1017,6 +1914,12 @@ export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   trajets?: boolean | Prisma.Organization$trajetsArgs<ExtArgs>
   reservationDrafts?: boolean | Prisma.Organization$reservationDraftsArgs<ExtArgs>
   branches?: boolean | Prisma.Organization$branchesArgs<ExtArgs>
+  cashRemittances?: boolean | Prisma.Organization$cashRemittancesArgs<ExtArgs>
+  centralCashEntries?: boolean | Prisma.Organization$centralCashEntriesArgs<ExtArgs>
+  auditEvents?: boolean | Prisma.Organization$auditEventsArgs<ExtArgs>
+  integrityFindings?: boolean | Prisma.Organization$integrityFindingsArgs<ExtArgs>
+  biaIncidents?: boolean | Prisma.Organization$biaIncidentsArgs<ExtArgs>
+  orgCashAccount?: boolean | Prisma.Organization$orgCashAccountArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1031,6 +1934,12 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     trajets: Prisma.$TrajetPayload<ExtArgs>[]
     reservationDrafts: Prisma.$ReservationDraftPayload<ExtArgs>[]
     branches: Prisma.$BranchPayload<ExtArgs>[]
+    cashRemittances: Prisma.$CashRemittancePayload<ExtArgs>[]
+    centralCashEntries: Prisma.$CentralCashEntryPayload<ExtArgs>[]
+    auditEvents: Prisma.$AuditEventPayload<ExtArgs>[]
+    integrityFindings: Prisma.$IntegrityFindingPayload<ExtArgs>[]
+    biaIncidents: Prisma.$BiaIncidentPayload<ExtArgs>[]
+    orgCashAccount: Prisma.$OrgCashAccountPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1439,6 +2348,12 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   trajets<T extends Prisma.Organization$trajetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$trajetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrajetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reservationDrafts<T extends Prisma.Organization$reservationDraftsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$reservationDraftsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationDraftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   branches<T extends Prisma.Organization$branchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$branchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  cashRemittances<T extends Prisma.Organization$cashRemittancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$cashRemittancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashRemittancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  centralCashEntries<T extends Prisma.Organization$centralCashEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$centralCashEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CentralCashEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  auditEvents<T extends Prisma.Organization$auditEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$auditEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  integrityFindings<T extends Prisma.Organization$integrityFindingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$integrityFindingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IntegrityFindingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  biaIncidents<T extends Prisma.Organization$biaIncidentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$biaIncidentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BiaIncidentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  orgCashAccount<T extends Prisma.Organization$orgCashAccountArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$orgCashAccountArgs<ExtArgs>>): Prisma.Prisma__OrgCashAccountClient<runtime.Types.Result.GetResult<Prisma.$OrgCashAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2008,6 +2923,145 @@ export type Organization$branchesArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.BranchScalarFieldEnum | Prisma.BranchScalarFieldEnum[]
+}
+
+/**
+ * Organization.cashRemittances
+ */
+export type Organization$cashRemittancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CashRemittance
+   */
+  select?: Prisma.CashRemittanceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CashRemittance
+   */
+  omit?: Prisma.CashRemittanceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashRemittanceInclude<ExtArgs> | null
+  where?: Prisma.CashRemittanceWhereInput
+  orderBy?: Prisma.CashRemittanceOrderByWithRelationInput | Prisma.CashRemittanceOrderByWithRelationInput[]
+  cursor?: Prisma.CashRemittanceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CashRemittanceScalarFieldEnum | Prisma.CashRemittanceScalarFieldEnum[]
+}
+
+/**
+ * Organization.centralCashEntries
+ */
+export type Organization$centralCashEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CentralCashEntry
+   */
+  select?: Prisma.CentralCashEntrySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CentralCashEntry
+   */
+  omit?: Prisma.CentralCashEntryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CentralCashEntryInclude<ExtArgs> | null
+  where?: Prisma.CentralCashEntryWhereInput
+  orderBy?: Prisma.CentralCashEntryOrderByWithRelationInput | Prisma.CentralCashEntryOrderByWithRelationInput[]
+  cursor?: Prisma.CentralCashEntryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CentralCashEntryScalarFieldEnum | Prisma.CentralCashEntryScalarFieldEnum[]
+}
+
+/**
+ * Organization.auditEvents
+ */
+export type Organization$auditEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AuditEvent
+   */
+  select?: Prisma.AuditEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AuditEvent
+   */
+  omit?: Prisma.AuditEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AuditEventInclude<ExtArgs> | null
+  where?: Prisma.AuditEventWhereInput
+  orderBy?: Prisma.AuditEventOrderByWithRelationInput | Prisma.AuditEventOrderByWithRelationInput[]
+  cursor?: Prisma.AuditEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AuditEventScalarFieldEnum | Prisma.AuditEventScalarFieldEnum[]
+}
+
+/**
+ * Organization.integrityFindings
+ */
+export type Organization$integrityFindingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the IntegrityFinding
+   */
+  select?: Prisma.IntegrityFindingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the IntegrityFinding
+   */
+  omit?: Prisma.IntegrityFindingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.IntegrityFindingInclude<ExtArgs> | null
+  where?: Prisma.IntegrityFindingWhereInput
+  orderBy?: Prisma.IntegrityFindingOrderByWithRelationInput | Prisma.IntegrityFindingOrderByWithRelationInput[]
+  cursor?: Prisma.IntegrityFindingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.IntegrityFindingScalarFieldEnum | Prisma.IntegrityFindingScalarFieldEnum[]
+}
+
+/**
+ * Organization.biaIncidents
+ */
+export type Organization$biaIncidentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BiaIncident
+   */
+  select?: Prisma.BiaIncidentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BiaIncident
+   */
+  omit?: Prisma.BiaIncidentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BiaIncidentInclude<ExtArgs> | null
+  where?: Prisma.BiaIncidentWhereInput
+  orderBy?: Prisma.BiaIncidentOrderByWithRelationInput | Prisma.BiaIncidentOrderByWithRelationInput[]
+  cursor?: Prisma.BiaIncidentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BiaIncidentScalarFieldEnum | Prisma.BiaIncidentScalarFieldEnum[]
+}
+
+/**
+ * Organization.orgCashAccount
+ */
+export type Organization$orgCashAccountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OrgCashAccount
+   */
+  select?: Prisma.OrgCashAccountSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OrgCashAccount
+   */
+  omit?: Prisma.OrgCashAccountOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrgCashAccountInclude<ExtArgs> | null
+  where?: Prisma.OrgCashAccountWhereInput
 }
 
 /**

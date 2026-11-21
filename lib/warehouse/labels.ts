@@ -1,4 +1,10 @@
-export const WAREHOUSE_PRODUCT_TYPES = ["BOUTIQUE", "DIVERS"] as const;
+export const WAREHOUSE_PRODUCT_TYPES = [
+  "BOUTIQUE",
+  "DIVERS",
+  "MARCHANDISE",
+  "MATIERE_PREMIERE",
+  "PRODUIT_FINI",
+] as const;
 
 export type WarehouseProductTypeCode = (typeof WAREHOUSE_PRODUCT_TYPES)[number];
 
@@ -17,6 +23,9 @@ export const DEFAULT_WAREHOUSE_CATEGORIES: Record<
 > = {
   BOUTIQUE: ["Alimentaire", "Hygiène", "Boissons", "Divers"],
   DIVERS: ["Divers"],
+  MARCHANDISE: ["Alimentaire", "Boissons", "Divers"],
+  MATIERE_PREMIERE: ["Viandes", "Légumes", "Épices", "Divers"],
+  PRODUIT_FINI: ["Plats", "Charcuterie", "Glaces", "Divers"],
 };
 
 /** Emplacements de départ pour picking / livraison POS. */
@@ -37,6 +46,12 @@ export function warehouseProductTypeLabel(t: string) {
   switch (t) {
     case "BOUTIQUE":
       return "Boutique";
+    case "MARCHANDISE":
+      return "Marchandise";
+    case "MATIERE_PREMIERE":
+      return "Matière première";
+    case "PRODUIT_FINI":
+      return "Produit fini";
     default:
       return "Divers";
   }

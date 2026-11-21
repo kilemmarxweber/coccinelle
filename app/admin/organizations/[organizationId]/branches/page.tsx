@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { DashboardSection } from "@/components/ui/dashboard-menu-card";
 import prisma from "@/lib/prisma";
+import { isCafeYayoOrg, yayoSiteLabel } from "@/lib/org/yayo";
 import { listBranchesAction } from "./actions";
 import { BranchesListClient } from "./branches-list-client";
 
@@ -14,10 +15,12 @@ export default async function BranchesPage({ params }: PageProps) {
   const { organizationId } = await params;
   const org = await prisma.organization.findUnique({
     where: { id: organizationId },
-    select: { id: true, name: true },
+    select: { id: true, name: true, slug: true, metadata: true },
   });
   if (!org) notFound();
 
+  const cafeYayo = isCafeYayoOrg(org);
+  const labels = yayoSiteLabel(cafeYayo);
   const list = await listBranchesAction(organizationId);
   const branches = list.ok ? list.data : [];
 
@@ -37,11 +40,13 @@ export default async function BranchesPage({ params }: PageProps) {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <h2 className="text-2xl font-bold text-primary-foreground sm:text-3xl">
-                Branches
+                {labels.branches}
               </h2>
               <p className="mt-2 max-w-2xl text-sm text-primary-foreground/85 sm:text-base">
-                {org.name} — choisissez une branche pour ouvrir son dashboard, ou
-                gérez-la via le menu ⋯.
+                {org.name} —{" "}
+                {cafeYayo
+                  ? "chaque département a ses ventes, stocks et caisse. Suspendez un département sans le supprimer."
+                  : "choisissez une branche pour ouvrir son dashboard, ou gérez-la via le menu ⋯."}
               </p>
             </div>
             <Button
@@ -54,7 +59,7 @@ export default async function BranchesPage({ params }: PageProps) {
               }
             >
               <Plus className="size-4" />
-              Nouvelle branche
+              {labels.newBranch}
             </Button>
           </div>
         </section>
@@ -63,8 +68,12 @@ export default async function BranchesPage({ params }: PageProps) {
       {branches.length === 0 ? (
         <EmptyState
           icon={Building2}
-          title="Aucune branche"
-          description="Créez une Agence, une hôtellerie-restaurant ou un commerce pour commencer. Les éléments du type seront chargés automatiquement."
+          title={cafeYayo ? "Aucun département" : "Aucune branche"}
+          description={
+            cafeYayo
+              ? "Activez CAFE YAYO depuis l’accueil organisation pour créer Mini Market, Boissons, Fast Food, Buffet, Crèmerie et Charcuterie, ou ajoutez un département ici."
+              : "Créez une Agence, une hôtellerie-restaurant ou un commerce pour commencer. Les éléments du type seront chargés automatiquement."
+          }
           action={
             <Button
               render={
@@ -73,7 +82,7 @@ export default async function BranchesPage({ params }: PageProps) {
                 />
               }
             >
-              Créer une branche
+              {cafeYayo ? "Créer un département" : "Créer une branche"}
             </Button>
           }
         />

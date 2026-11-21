@@ -53,7 +53,7 @@ const PAGE_SIZE = 6;
 
 type Category = { id: string; name: string };
 type ProductKind = "FINISHED" | "CONSUMABLE";
-type FinishedFamily = "EAU" | "VIN";
+type FinishedFamily = "EAU" | "VIN" | "CHARCUTERIE" | "CREME" | "AUTRE";
 type UsineListFilter = "ALL" | ProductKind | FinishedFamily;
 
 type FormState = {
@@ -121,7 +121,13 @@ export function BoutiqueProduitsClient(props: Props) {
       if (usine) {
         if (usineFilter === "FINISHED" || usineFilter === "CONSUMABLE") {
           if ((p.productKind ?? "FINISHED") !== usineFilter) return false;
-        } else if (usineFilter === "EAU" || usineFilter === "VIN") {
+        } else if (
+          usineFilter === "EAU" ||
+          usineFilter === "VIN" ||
+          usineFilter === "CHARCUTERIE" ||
+          usineFilter === "CREME" ||
+          usineFilter === "AUTRE"
+        ) {
           if (p.finishedFamily !== usineFilter) return false;
         }
       } else if (kindFilter !== "ALL" && p.kind !== kindFilter) {
@@ -219,7 +225,7 @@ export function BoutiqueProduitsClient(props: Props) {
       return;
     }
     if (usine && form.productKind === "FINISHED" && !form.finishedFamily) {
-      toast.error("Famille requise (Eau ou Vin) pour un produit fini");
+      toast.error("Famille requise pour un produit fini");
       return;
     }
     start(async () => {
@@ -381,6 +387,9 @@ export function BoutiqueProduitsClient(props: Props) {
                 ["CONSUMABLE", "Consos"],
                 ["EAU", "Eau"],
                 ["VIN", "Vins"],
+                ["CHARCUTERIE", "Charcuterie"],
+                ["CREME", "Crème"],
+                ["AUTRE", "Autre"],
               ] as const
             ).map(([k, label]) => (
               <button
@@ -473,7 +482,15 @@ export function BoutiqueProduitsClient(props: Props) {
                           : "border-violet-300 bg-violet-50 text-violet-800 dark:border-violet-700 dark:bg-violet-950/50 dark:text-violet-200"
                       }
                     >
-                      {p.finishedFamily === "EAU" ? "Eau" : "Vin"}
+                      {p.finishedFamily === "EAU"
+                        ? "Eau"
+                        : p.finishedFamily === "VIN"
+                          ? "Vin"
+                          : p.finishedFamily === "CHARCUTERIE"
+                            ? "Charcuterie"
+                            : p.finishedFamily === "CREME"
+                              ? "Crème"
+                              : "Autre"}
                     </Badge>
                   ) : null}
                 </>
@@ -755,6 +772,9 @@ export function BoutiqueProduitsClient(props: Props) {
                   <option value="">— Choisir —</option>
                   <option value="EAU">Eau</option>
                   <option value="VIN">Vin</option>
+                  <option value="CHARCUTERIE">Charcuterie</option>
+                  <option value="CREME">Crème</option>
+                  <option value="AUTRE">Autre</option>
                 </select>
               </div>
             ) : null}

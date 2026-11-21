@@ -34,7 +34,7 @@ describe("customer-ui-theme", () => {
       },
     });
     assert.equal(theme.primary, "#2563EB");
-    assert.equal(theme.background, "#F3F3F3");
+    assert.equal(theme.background, "#F4F6F5");
   });
 
   it("lit settings.customerUi si les colonnes sont vides", () => {
@@ -42,7 +42,7 @@ describe("customer-ui-theme", () => {
       settings: {
         customerUi: {
           primary: "#7c3aed",
-          background: "#f3f3f3",
+          background: "#f7f8f9",
           card: "#ffffff",
         },
       },

@@ -16,6 +16,7 @@ export function BranchWorkspace(props: {
   branchType: string;
   hasStays: boolean;
   hasRestaurant: boolean;
+  hasProduction?: boolean;
   appName: string;
   opsRole: OpsRole;
   allowedCardIds?: string[] | "ALL";
@@ -57,6 +58,7 @@ function BranchWorkspaceShell(props: {
   branchType: string;
   hasStays: boolean;
   hasRestaurant: boolean;
+  hasProduction?: boolean;
   appName: string;
   opsRole: OpsRole;
   allowedCardIds?: string[] | "ALL";
@@ -86,11 +88,12 @@ function BranchWorkspaceShell(props: {
         branchType={props.branchType}
         hasStays={props.hasStays}
         hasRestaurant={props.hasRestaurant}
+        hasProduction={props.hasProduction}
         appName={props.appName}
         opsRole={props.opsRole}
         allowedCardIds={props.allowedCardIds}
       />
-      <SidebarInset className="min-h-svh max-h-svh min-w-0 overflow-hidden bg-muted/40">
+      <SidebarInset className="min-h-svh max-h-svh min-w-0 overflow-hidden bg-background">
         <BranchWorkspaceHeader
           organizationId={props.organizationId}
           branchId={props.branchId}

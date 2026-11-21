@@ -24,7 +24,6 @@ import {
   branchDashboardFingerprintAction,
   type BranchDashboardData,
   type DashboardIconKey,
-  type DashboardTone,
 } from "@/lib/branch/dashboard-actions";
 import { isLegacyCaissierRole } from "@/lib/branch/ops-roles";
 import { cn } from "@/lib/utils";
@@ -42,34 +41,6 @@ const ICONS: Record<DashboardIconKey, LucideIcon> = {
   activity: Activity,
   receipt: Receipt,
   calendar: CalendarDays,
-};
-
-const TONE: Record<DashboardTone, { wrap: string; value: string; icon: string }> = {
-  primary: {
-    wrap: "from-primary/12 via-card to-card",
-    value: "text-primary",
-    icon: "bg-primary/12 text-primary",
-  },
-  emerald: {
-    wrap: "from-emerald-500/12 via-card to-card",
-    value: "text-emerald-700 dark:text-emerald-400",
-    icon: "bg-emerald-500/12 text-emerald-700 dark:text-emerald-400",
-  },
-  amber: {
-    wrap: "from-amber-500/14 via-card to-card",
-    value: "text-amber-700 dark:text-amber-400",
-    icon: "bg-amber-500/12 text-amber-700 dark:text-amber-400",
-  },
-  sky: {
-    wrap: "from-sky-500/12 via-card to-card",
-    value: "text-sky-700 dark:text-sky-400",
-    icon: "bg-sky-500/12 text-sky-700 dark:text-sky-400",
-  },
-  rose: {
-    wrap: "from-rose-500/12 via-card to-card",
-    value: "text-rose-700 dark:text-rose-400",
-    icon: "bg-rose-500/12 text-rose-700 dark:text-rose-400",
-  },
 };
 
 function greeting(now: Date, name: string) {
@@ -112,41 +83,36 @@ export function BranchDashboard(props: {
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-3 py-5 sm:px-5 lg:px-6">
-      <section className="dash-fade-up relative overflow-hidden rounded-3xl bg-primary px-5 py-6 text-primary-foreground shadow-lg sm:px-8 sm:py-8">
-        <div className="dash-orb pointer-events-none absolute -top-16 -right-10 size-56 rounded-full bg-white/15 blur-2xl" />
-        <div
-          className="dash-orb pointer-events-none absolute -bottom-20 left-10 size-48 rounded-full bg-black/20 blur-2xl"
-          style={{ animationDelay: "1.4s" }}
-        />
-        <div className="relative z-10 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+      <section className="dash-fade-up rounded-lg border border-border bg-card px-5 py-6 shadow-sm sm:px-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-[11px] font-medium tracking-wide uppercase">
-              <span className="dash-pulse size-1.5 rounded-full bg-emerald-300" />
+            <div className="mb-3 inline-flex items-center gap-2 text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+              <span className="size-1.5 rounded-full bg-[#16a34a]" />
               Activité en direct · {data.roleLabel}
             </div>
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]">
               {now ? greeting(now, data.userName) : props.greetingText}
             </h1>
-            <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/85 sm:text-[15px]">
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
               {data.mission}
             </p>
             {isLegacyCaissierRole(data.opsRole) ? (
-              <p className="mt-3 max-w-xl text-xs text-amber-100/90">
+              <p className="mt-3 max-w-xl text-xs text-muted-foreground">
                 Profil caissier legacy : choisissez « Caissier séjours » ou
                 « Caissier restauration » dans l’équipe.
               </p>
             ) : null}
           </div>
-          <div className="flex flex-col items-start gap-1 text-sm text-white/80 lg:items-end">
+          <div className="flex flex-col items-start gap-1 text-sm text-muted-foreground lg:items-end">
             <p className="capitalize">{now ? dateLabel(now) : props.dateText}</p>
-            <p className="font-medium text-white">{data.branchName}</p>
+            <p className="font-medium text-foreground">{data.branchName}</p>
             {data.cashSessionOpen != null ? (
               <p
                 className={cn(
                   "mt-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
                   data.cashSessionOpen
-                    ? "bg-emerald-400/20 text-emerald-100"
-                    : "bg-white/10 text-white/80",
+                    ? "bg-[#16a34a]/10 text-[#15803d]"
+                    : "bg-muted text-muted-foreground",
                 )}
               >
                 Caisse {data.cashSessionOpen ? "ouverte" : "fermée"}
@@ -159,25 +125,16 @@ export function BranchDashboard(props: {
       {data.kpis.length > 0 ? (
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {data.kpis.map((kpi, i) => {
-            const tone = TONE[kpi.tone];
             return (
               <article
                 key={kpi.key}
-                className={cn(
-                  "dash-fade-up rounded-2xl border border-border bg-gradient-to-br p-4 shadow-sm",
-                  tone.wrap,
-                )}
+                className="dash-fade-up rounded-lg border border-border bg-card p-4 shadow-sm"
                 style={{ animationDelay: `${80 + i * 70}ms` }}
               >
-                <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+                <p className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
                   {kpi.label}
                 </p>
-                <p
-                  className={cn(
-                    "mt-2 text-2xl font-semibold tracking-tight tabular-nums sm:text-[1.7rem]",
-                    tone.value,
-                  )}
-                >
+                <p className="mt-2 text-2xl font-bold tracking-tight text-foreground tabular-nums sm:text-[1.7rem]">
                   {kpi.value}
                 </p>
                 <p className="mt-1.5 text-xs leading-snug text-muted-foreground">
@@ -202,7 +159,7 @@ export function BranchDashboard(props: {
               <Link
                 key={item.title}
                 href={item.href}
-                className="group flex items-center justify-between gap-4 rounded-2xl border border-primary/15 bg-primary/5 px-4 py-4 transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-primary/10"
+                className="group flex items-center justify-between gap-4 rounded-lg border border-border bg-card px-4 py-4 shadow-sm transition hover:border-primary/40"
               >
                 <div className="min-w-0">
                   <p className="font-semibold text-foreground">{item.title}</p>
@@ -234,7 +191,7 @@ export function BranchDashboard(props: {
                 <Link
                   key={item.href + item.title}
                   href={item.href}
-                  className="group flex items-start gap-3.5 rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-md"
+                  className="group flex items-start gap-3.5 rounded-lg border border-border bg-card p-4 shadow-sm transition hover:border-primary/40 hover:shadow-md"
                 >
                   <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
                     <Icon className="size-5" />

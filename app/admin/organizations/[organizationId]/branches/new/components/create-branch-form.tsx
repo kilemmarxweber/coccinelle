@@ -69,13 +69,20 @@ type BranchFormType = "AGENCE" | "HOTEL" | "BOUTIQUE" | "USINE";
 type Props = {
   organizationId: string;
   organizationName: string;
+  cafeYayo?: boolean;
 };
 
-export function CreateBranchForm({ organizationId, organizationName }: Props) {
+export function CreateBranchForm({
+  organizationId,
+  organizationName,
+  cafeYayo = false,
+}: Props) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
-  const [type, setType] = useState<BranchFormType>("AGENCE");
-  const [hasStays, setHasStays] = useState(true);
+  const [type, setType] = useState<BranchFormType>(
+    cafeYayo ? "BOUTIQUE" : "AGENCE",
+  );
+  const [hasStays, setHasStays] = useState(!cafeYayo);
   const [hasRestaurant, setHasRestaurant] = useState(true);
   const [hasAvion, setHasAvion] = useState(true);
   const [hasBus, setHasBus] = useState(true);
@@ -137,7 +144,7 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
       const res = await createBranchWithBootstrapAction({
         organizationId,
         type,
-        hasStays: type === "HOTEL" ? hasStays : undefined,
+        hasStays: type === "HOTEL" ? (cafeYayo ? false : hasStays) : undefined,
         hasRestaurant: type === "HOTEL" ? hasRestaurant : undefined,
         hasAvion: type === "AGENCE" ? hasAvion : undefined,
         hasBus: type === "AGENCE" ? hasBus : undefined,
@@ -145,6 +152,8 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
         hasPharmacie: type === "BOUTIQUE" ? hasPharmacie : undefined,
         hasShop: type === "BOUTIQUE" ? hasShop : undefined,
         hasAlimentation: type === "BOUTIQUE" ? hasAlimentation : undefined,
+        hasProduction:
+          type === "HOTEL" || type === "USINE" ? true : undefined,
         name,
         code,
         city: city || undefined,
@@ -196,24 +205,52 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
           }
         >
           <ArrowLeft className="size-4" />
-          Liste des branches
+          {cafeYayo ? "Liste des départements" : "Liste des branches"}
         </Button>
-        <h1 className="text-xl font-semibold">Nouvelle branche</h1>
+        <h1 className="text-xl font-semibold">
+          {cafeYayo ? "Nouveau département" : "Nouvelle branche"}
+        </h1>
         <p className="text-sm text-muted-foreground">
-          Organisation « {organizationName} » — choisissez le type puis les
-          modules métier.
+          Organisation « {organizationName} » —{" "}
+          {cafeYayo
+            ? "choisissez Commerce, Restauration ou Production (sans voyage ni chambres)."
+            : "choisissez le type puis les modules métier."}
         </p>
       </div>
 
       <div className="grid gap-3">
-        {TYPES.map((t) => {
+        {(cafeYayo
+          ? TYPES.filter((t) => t.value !== "AGENCE").map((t) =>
+              t.value === "HOTEL"
+                ? {
+                    ...t,
+                    label: "Restauration",
+                    description:
+                      "Fast Food, buffet, crèmerie — sans chambres ni séjours.",
+                    bootstrap: "Carte F&B et production si besoin",
+                  }
+                : t.value === "USINE"
+                  ? {
+                      ...t,
+                      label: "Production",
+                      description:
+                        "Charcuterie et lots — recettes en kg, pas d’eau/vins imposés.",
+                      bootstrap: "Recettes, lots, dépôt matières",
+                    }
+                  : t,
+            )
+          : TYPES
+        ).map((t) => {
           const Icon = t.icon;
           const selected = type === t.value;
           return (
             <button
               key={t.value}
               type="button"
-              onClick={() => setType(t.value)}
+              onClick={() => {
+                setType(t.value);
+                if (cafeYayo && t.value === "HOTEL") setHasStays(false);
+              }}
               className={cn(
                 "flex items-start gap-3 rounded-xl border p-4 text-left transition",
                 selected
@@ -233,7 +270,8 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
               </span>
             </button>
           );
-        })}
+        },
+        )}
       </div>
 
       {type === "AGENCE" ? (
@@ -282,19 +320,26 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
       {type === "HOTEL" ? (
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Modules hôtellerie-restaurant</CardTitle>
+            <CardTitle className="text-base">
+              {cafeYayo ? "Modules restauration" : "Modules hôtellerie-restaurant"}
+            </CardTitle>
             <CardDescription>
-              Au moins un module. Livraison stock commune. Type final :{" "}
-              <strong>
-                {!hasStays && hasRestaurant
-                  ? "Restaurant"
-                  : hasStays
-                    ? "Hôtel"
-                    : "—"}
-              </strong>
+              {cafeYayo
+                ? "Restauration uniquement — pas de séjours ni chambres."
+                : "Au moins un module. Livraison stock commune. Type final :"}{" "}
+              {cafeYayo ? null : (
+                <strong>
+                  {!hasStays && hasRestaurant
+                    ? "Restaurant"
+                    : hasStays
+                      ? "Hôtel"
+                      : "—"}
+                </strong>
+              )}
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2">
+            {cafeYayo ? null : (
             <label
               className={cn(
                 "flex cursor-pointer items-start gap-3 rounded-xl border p-3",
@@ -316,6 +361,7 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
                 </span>
               </span>
             </label>
+            )}
             <label
               className={cn(
                 "flex cursor-pointer items-start gap-3 rounded-xl border p-3",
@@ -364,20 +410,24 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
                   hasShop,
                   setHasShop,
                   Store,
-                  "Boutique",
-                  "Commerce général / accessoires",
+                  cafeYayo ? "Mini Market / boutique" : "Boutique",
+                  cafeYayo
+                    ? "Rayon épicerie, scan-first"
+                    : "Commerce général / accessoires",
                   "text-violet-500",
                 ],
                 [
                   hasAlimentation,
                   setHasAlimentation,
                   ShoppingBasket,
-                  "Alimentation",
-                  "Épicerie & denrées",
+                  cafeYayo ? "Boissons / alimentation" : "Alimentation",
+                  cafeYayo ? "Boissons et denrées" : "Épicerie & denrées",
                   "text-amber-600",
                 ],
               ] as const
-            ).map(([checked, set, Icon, label, hint, color]) => (
+            )
+              .filter((row) => !cafeYayo || row[3] !== "Pharmacie")
+              .map(([checked, set, Icon, label, hint, color]) => (
               <label
                 key={label}
                 className={cn(
@@ -407,7 +457,9 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Identité de la branche</CardTitle>
+          <CardTitle className="text-base">
+            {cafeYayo ? "Identité du département" : "Identité de la branche"}
+          </CardTitle>
           <CardDescription>
             Nom, code, logo et coordonnées (utilisés sur les rapports).
           </CardDescription>
@@ -551,7 +603,11 @@ export function CreateBranchForm({ organizationId, organizationName }: Props) {
           className="h-11"
           disabled={pending || !name.trim() || !code.trim() || !modulesOk}
         >
-          {pending ? "Création…" : "Créer la branche"}
+          {pending
+            ? "Création…"
+            : cafeYayo
+              ? "Créer le département"
+              : "Créer la branche"}
         </Button>
         <Button
           type="button"

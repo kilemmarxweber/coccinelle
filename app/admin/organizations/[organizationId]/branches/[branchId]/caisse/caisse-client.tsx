@@ -49,6 +49,7 @@ import {
   closeCashSessionAction,
   createPaymentAction,
   getCashierShiftReportAction,
+  getOpenCashDrawerSummaryAction,
   openCashSessionAction,
 } from "@/lib/cash/actions";
 import { createQuickSaleAction, advanceHotelOrderAction } from "@/lib/hotel/actions";
@@ -280,6 +281,10 @@ export function CaisseClient(props: Props) {
   >("COMPTANT");
   const [now, setNow] = useState<number | null>(null);
   const [sessionDialogOpen, setSessionDialogOpen] = useState(!props.cashSession);
+  const [closeOpen, setCloseOpen] = useState(false);
+  const [closeStep, setCloseStep] = useState<1 | 2 | 3>(1);
+  const [expectedUsd, setExpectedUsd] = useState<number | null>(null);
+  const [declaredCash, setDeclaredCash] = useState("");
   const { cart, addItem, setQty, clear, toPayload } = usePosCart();
 
   const activeStays = props.activeStays ?? [];
@@ -455,6 +460,25 @@ export function CaisseClient(props: Props) {
     });
   }
 
+  function openCloseDialog() {
+    setCloseStep(1);
+    setDeclaredCash("");
+    setExpectedUsd(null);
+    setCloseOpen(true);
+    start(async () => {
+      try {
+        const summary = await getOpenCashDrawerSummaryAction(
+          props.organizationId,
+          props.branchId,
+        );
+        setExpectedUsd(summary?.balanceUsd ?? 0);
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Erreur");
+        setCloseOpen(false);
+      }
+    });
+  }
+
   function closeSession() {
     start(async () => {
       try {
@@ -462,10 +486,14 @@ export function CaisseClient(props: Props) {
           props.organizationId,
           props.branchId,
         );
-        await closeCashSessionAction({
+        const declared = Number(declaredCash);
+        const closed = await closeCashSessionAction({
           organizationId: props.organizationId,
           branchId: props.branchId,
+          declaredCashUsd: Number.isFinite(declared) ? declared : undefined,
+          prepareRemittance: true,
         });
+        setCloseOpen(false);
         printHtml(
           buildCashierShiftReportHtml({
             ...report,
@@ -473,7 +501,10 @@ export function CaisseClient(props: Props) {
             formatMoney: (n) => fmt(n),
           }),
         );
-        toast.success("Caisse clôturée — rapport journalier envoyé à l’impression");
+        toast.success(
+          `Caisse clôturée · écart ${(closed.varianceUsd ?? 0).toFixed(2)} $` +
+            (closed.remittanceNumber ? ` · ${closed.remittanceNumber}` : ""),
+        );
         router.refresh();
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Erreur");
@@ -856,7 +887,7 @@ export function CaisseClient(props: Props) {
                 variant="destructive"
                 size="sm"
                 disabled={pending}
-                onClick={closeSession}
+                onClick={openCloseDialog}
               >
                 Clôturer
               </Button>
@@ -906,6 +937,97 @@ export function CaisseClient(props: Props) {
           title="Service stock à clôturer"
         />
       ) : null}
+
+      <Dialog open={closeOpen} onOpenChange={setCloseOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Clôturer la caisse</DialogTitle>
+            <DialogDescription>
+              {closeStep === 1
+                ? "1/3 — Montant théorique (fond + mouvements espèces)."
+                : closeStep === 2
+                  ? "2/3 — Saisissez le montant physique constaté."
+                  : "3/3 — Écart = théorique − constaté. Un versement est préparé."}
+            </DialogDescription>
+          </DialogHeader>
+          {closeStep === 1 ? (
+            <div className="rounded-xl border border-border bg-muted/40 p-4">
+              <p className="text-xs uppercase text-muted-foreground">
+                Théorique
+              </p>
+              <p className="text-2xl font-semibold tabular-nums">
+                {(expectedUsd ?? 0).toFixed(2)} $
+              </p>
+            </div>
+          ) : null}
+          {closeStep === 2 ? (
+            <div className="grid gap-2 py-2">
+              <Label htmlFor="declared-cash">Montant déclaré (USD)</Label>
+              <Input
+                id="declared-cash"
+                type="number"
+                min={0}
+                step="0.01"
+                value={declaredCash}
+                onChange={(e) => setDeclaredCash(e.target.value)}
+                className="h-11"
+              />
+            </div>
+          ) : null}
+          {closeStep === 3 ? (
+            <div className="space-y-2 py-2 text-sm">
+              <p>Théorique {(expectedUsd ?? 0).toFixed(2)} $</p>
+              <p>Déclaré {(Number(declaredCash) || 0).toFixed(2)} $</p>
+              <p
+                className={
+                  Math.abs((expectedUsd ?? 0) - (Number(declaredCash) || 0)) >
+                  0.009
+                    ? "font-semibold text-red-600"
+                    : "text-muted-foreground"
+                }
+              >
+                Écart{" "}
+                {(
+                  (expectedUsd ?? 0) - (Number(declaredCash) || 0)
+                ).toFixed(2)}{" "}
+                $
+              </p>
+            </div>
+          ) : null}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCloseOpen(false)}>
+              Annuler
+            </Button>
+            {closeStep === 1 ? (
+              <Button
+                className="h-11"
+                disabled={pending || expectedUsd == null}
+                onClick={() => setCloseStep(2)}
+              >
+                Saisir le physique
+              </Button>
+            ) : null}
+            {closeStep === 2 ? (
+              <Button
+                className="h-11"
+                disabled={pending || !declaredCash.trim()}
+                onClick={() => setCloseStep(3)}
+              >
+                Préparer le versement
+              </Button>
+            ) : null}
+            {closeStep === 3 ? (
+              <Button
+                className="h-11"
+                disabled={pending || !declaredCash.trim()}
+                onClick={closeSession}
+              >
+                Clôturer et verser
+              </Button>
+            ) : null}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         open={sessionDialogOpen && !props.cashSession}

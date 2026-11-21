@@ -38,6 +38,7 @@ import {
 import {
   cancelPurchaseOrderAction,
   createPurchaseOrderAction,
+  markPurchaseJustifiedAction,
   releasePurchaseOrderFundsAction,
   syncPurchaseOrderCatalogAction,
   validatePurchaseOrderAction,
@@ -75,6 +76,9 @@ type PurchaseOrder = {
   totalAmountUsd: number;
   fundsReleasedUsd: number;
   validatedAmountUsd: number | null;
+  isPurchaseRequest?: boolean;
+  buyerAdvanceUsd?: number;
+  justificationMissing?: boolean;
   createdAt: string | Date;
   items: PoItem[];
 };
@@ -213,6 +217,8 @@ export function BonsCommandeClient(props: {
   const [supplierName, setSupplierName] = useState("");
   const [supplierId, setSupplierId] = useState("");
   const [note, setNote] = useState("");
+  const [isPurchaseRequest, setIsPurchaseRequest] = useState(false);
+  const [buyerAdvanceUsd, setBuyerAdvanceUsd] = useState("");
   const defaultCategory = props.categories[0] ?? "Divers";
   const [categoryOptions, setCategoryOptions] = useState<string[]>(
     props.categories.length ? props.categories : ["Divers"],
@@ -318,12 +324,20 @@ export function BonsCommandeClient(props: {
           supplierName: supplierName || null,
           supplierId: supplierId || null,
           note: note || null,
+          isPurchaseRequest,
+          buyerAdvanceUsd: Number(buyerAdvanceUsd) || 0,
           lines: payload,
         });
-        toast.success("Bon de commande créé · en attente");
+        toast.success(
+          isPurchaseRequest
+            ? "Demande d’achat créée · en attente"
+            : "Bon de commande créé · en attente",
+        );
         setCreateOpen(false);
         setSupplierName("");
         setNote("");
+        setIsPurchaseRequest(false);
+        setBuyerAdvanceUsd("");
         setNewCategoryForKey(null);
         setNewCategoryName("");
         setLines([
@@ -456,12 +470,7 @@ export function BonsCommandeClient(props: {
   }, [validateTarget, recv, props.rate]);
 
   return (
-    <div
-      className="min-h-svh"
-      style={{
-        background: `radial-gradient(1200px 400px at 10% -10%, #dcfce7 0%, transparent 55%), #F3F3F3`,
-      }}
-    >
+    <div className="min-h-svh bg-background">
     <div className="mx-auto flex max-w-5xl flex-col gap-5 px-4 py-6">
       <header
         className="rounded-3xl border border-border bg-card px-4 py-4 shadow-sm sm:px-5"
@@ -584,6 +593,11 @@ export function BonsCommandeClient(props: {
                     {po.validatedAmountUsd != null
                       ? ` · validé ${money(po.validatedAmountUsd, props.rate)}`
                       : ""}
+                    {po.isPurchaseRequest ? " · DA" : ""}
+                    {po.buyerAdvanceUsd
+                      ? ` · avance ${money(po.buyerAdvanceUsd, props.rate)}`
+                      : ""}
+                    {po.justificationMissing ? " · justificatif manquant" : ""}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -624,6 +638,33 @@ export function BonsCommandeClient(props: {
                       </Button>
                     </>
                   )}
+                  {po.justificationMissing ? (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      disabled={pending}
+                      onClick={() =>
+                        start(async () => {
+                          try {
+                            await markPurchaseJustifiedAction({
+                              organizationId: props.organizationId,
+                              branchId: props.branchId,
+                              purchaseOrderId: po.id,
+                              note: note || "Justificatif reçu",
+                            });
+                            toast.success("Justificatif enregistré");
+                            router.refresh();
+                          } catch (e) {
+                            toast.error(
+                              e instanceof Error ? e.message : "Erreur",
+                            );
+                          }
+                        })
+                      }
+                    >
+                      Justifier
+                    </Button>
+                  ) : null}
                   {po.status === "VALIDE" &&
                   po.items.some(
                     (i) => (i.receivedQty ?? i.quantity) > 0,
@@ -732,11 +773,30 @@ export function BonsCommandeClient(props: {
               )}
             </div>
             <div className="grid gap-1.5">
-              <Label>Note</Label>
+              <Label>Note / justificatif</Label>
               <Input
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                placeholder="Optionnel"
+                placeholder="Requis si avance acheteur"
+              />
+            </div>
+            <label className="flex h-9 items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={isPurchaseRequest}
+                onChange={(e) => setIsPurchaseRequest(e.target.checked)}
+              />
+              Demande d’achat (DA)
+            </label>
+            <div className="grid gap-1.5">
+              <Label>Avance acheteur (USD)</Label>
+              <Input
+                type="number"
+                min={0}
+                step="0.01"
+                value={buyerAdvanceUsd}
+                onChange={(e) => setBuyerAdvanceUsd(e.target.value)}
+                placeholder="0"
               />
             </div>
           </div>

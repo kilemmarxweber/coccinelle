@@ -7,23 +7,25 @@ import { cn } from "@/lib/utils";
 /** Surfaces commerce + paie : mêmes couleurs de carte que Paramètres. */
 export const BQ = {
   page: "relative min-h-svh bg-background text-foreground",
-  wash:
-    "pointer-events-none absolute inset-0 bg-[radial-gradient(1100px_480px_at_-8%_-12%,color-mix(in_oklab,var(--primary)_10%,transparent),transparent_58%),radial-gradient(720px_340px_at_108%_0%,color-mix(in_oklab,var(--primary)_6%,transparent),transparent_46%)]",
+  wash: "hidden",
   ink: "text-foreground",
   muted: "text-muted-foreground",
   gold: "text-primary",
   line: "border-border",
   surface:
-    "rounded-xl bg-card text-card-foreground shadow-sm ring-1 ring-foreground/10",
+    "rounded-lg border border-border bg-card text-card-foreground shadow-[0_1px_2px_rgba(15,23,42,0.05)]",
 } as const;
 
 export function BoutiquePage({
   children,
   wide,
+  fill,
   className,
 }: {
   children: ReactNode;
   wide?: boolean;
+  /** Occupe toute la largeur du contenu, sans colonne étroite. */
+  fill?: boolean;
   className?: string;
 }) {
   return (
@@ -31,8 +33,11 @@ export function BoutiquePage({
       <div className={BQ.wash} />
       <div
         className={cn(
-          "relative mx-auto flex w-full flex-col gap-5 px-3 py-6 sm:px-6 sm:py-8",
-          wide ? "max-w-7xl" : "max-w-6xl",
+          "relative mx-auto flex w-full flex-col gap-4",
+          fill
+            ? "h-full min-h-0 max-w-none gap-2 overflow-hidden px-4 py-2 sm:px-5"
+            : "px-3 py-6 sm:px-6 sm:py-8",
+          !fill && (wide ? "max-w-7xl" : "max-w-6xl"),
         )}
       >
         {children}

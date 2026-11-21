@@ -13,6 +13,7 @@ import {
 import { deriveHospitalityBranch } from "@/lib/branch/hospitality";
 import { deriveFactoryFlags } from "@/lib/branch/usine";
 import prisma from "@/lib/prisma";
+import { isCafeYayoOrg } from "@/lib/org/yayo";
 
 const createBranchSchema = z
   .object({
@@ -29,6 +30,7 @@ const createBranchSchema = z
     hasAlimentation: z.boolean().optional(),
     hasEau: z.boolean().optional(),
     hasVin: z.boolean().optional(),
+    hasProduction: z.boolean().optional(),
     name: z.string().trim().min(2).max(120),
     code: z
       .string()
@@ -140,10 +142,18 @@ export async function createBranchWithBootstrapAction(raw: CreateBranchInput) {
 
   const org = await prisma.organization.findUnique({
     where: { id: input.organizationId },
-    select: { id: true },
+    select: { id: true, name: true, slug: true, metadata: true },
   });
   if (!org) {
     return { ok: false as const, message: "Organisation introuvable." };
+  }
+
+  const cafeYayo = isCafeYayoOrg(org);
+  if (cafeYayo && input.type === "AGENCE") {
+    return {
+      ok: false as const,
+      message: "CAFE YAYO n’utilise pas de département voyage.",
+    };
   }
 
   const code = input.code.toUpperCase();
@@ -172,16 +182,18 @@ export async function createBranchWithBootstrapAction(raw: CreateBranchInput) {
   let hasAlimentation = false;
   let hasEau = false;
   let hasVin = false;
+  let hasProduction = input.hasProduction === true;
 
   try {
     if (input.type === "HOTEL") {
       const derived = deriveHospitalityBranch(
-        input.hasStays === true,
-        input.hasRestaurant === true,
+        cafeYayo ? false : input.hasStays === true,
+        cafeYayo ? true : input.hasRestaurant === true,
       );
       branchType = derived.type;
       hasStays = derived.hasStays;
       hasRestaurant = derived.hasRestaurant;
+      if (cafeYayo) hasProduction = true;
     } else if (input.type === "AGENCE") {
       const derived = deriveAgencyFlags({
         hasAvion: input.hasAvion === true,
@@ -204,6 +216,7 @@ export async function createBranchWithBootstrapAction(raw: CreateBranchInput) {
       const derived = deriveFactoryFlags();
       hasEau = derived.hasEau;
       hasVin = derived.hasVin;
+      hasProduction = true;
     }
 
     const created = await prisma.$transaction(async (tx) => {
@@ -223,6 +236,7 @@ export async function createBranchWithBootstrapAction(raw: CreateBranchInput) {
           hasAlimentation,
           hasEau,
           hasVin,
+          hasProduction,
           city: input.city?.trim() || null,
           address: input.address?.trim() || null,
           phone: input.phone?.trim() || null,

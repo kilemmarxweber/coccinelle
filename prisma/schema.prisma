@@ -140,6 +140,9 @@ enum FactoryProductKind {
 enum FactoryFinishedFamily {
   EAU
   VIN
+  CHARCUTERIE
+  CREME
+  AUTRE
 }
 
 enum FactoryCreditStatus {
@@ -180,6 +183,7 @@ enum ShopSaleStatus {
   EN_ATTENTE
   ENCAISSEE
   ANNULEE
+  CORRIGEE
 }
 
 enum ShopStockMovementKind {
@@ -192,6 +196,9 @@ enum ShopStockMovementKind {
 enum WarehouseProductType {
   BOUTIQUE
   DIVERS
+  MARCHANDISE
+  MATIERE_PREMIERE
+  PRODUIT_FINI
 }
 
 enum WarehouseMovementKind {
@@ -199,6 +206,10 @@ enum WarehouseMovementKind {
   SORTIE
   AJUSTEMENT
   TRANSFERT
+  PERTE
+  CONSO
+  RETOUR
+  INVENTAIRE
 }
 
 enum WarehouseSlipKind {
@@ -238,6 +249,24 @@ enum PaymentMethod {
   MOBILE_MONEY
   CARTE
   BANK
+}
+
+enum PaymentConfirmationStatus {
+  CONFIRMED
+  PENDING
+  REJECTED
+}
+
+enum CashRemittanceStatus {
+  PREPARED
+  RECEIVED
+  DISPUTED
+}
+
+enum CentralCashKind {
+  REMITTANCE_IN
+  ENTRY
+  EXIT
 }
 
 enum BranchPartnerStatus {
@@ -406,6 +435,12 @@ model Organization {
   trajets           Trajet[]
   reservationDrafts ReservationDraft[]
   branches          Branch[]
+  cashRemittances   CashRemittance[]
+  centralCashEntries CentralCashEntry[]
+  auditEvents       AuditEvent[]
+  integrityFindings IntegrityFinding[]
+  biaIncidents      BiaIncident[]
+  orgCashAccount    OrgCashAccount?
 
   @@map("organization")
 }
@@ -689,6 +724,10 @@ model Branch {
   hasEau         Boolean       @default(false)
   /// Usine : production / vente vins.
   hasVin         Boolean       @default(false)
+  /// Production F&B (recettes / lots) — Buffet, Fast Food, Crèmerie, Charcuterie.
+  hasProduction  Boolean       @default(false)
+  /// Objectif CA mensuel (USD) pour le dashboard PCA.
+  salesTargetUsd Float?
   /// Logo / image de la branche (URL ou data URL), optionnel.
   imageUrl       String?
   address        String?
@@ -747,6 +786,12 @@ model Branch {
   factoryBatches       FactoryBatch[]
   factoryReservations  FactoryReservation[]
   factoryOrderRequests FactoryOrderRequest[]
+  cashRemittances      CashRemittance[]
+  deptCustomers        DeptCustomer[]
+  deptCredits          DeptCredit[]
+  profitTargets        BranchProfitTarget[]
+  auditEvents          AuditEvent[]
+  integrityFindings    IntegrityFinding[]
 
   @@unique([organizationId, code])
   @@index([organizationId, type])
@@ -974,14 +1019,19 @@ model ShopSale {
   anonymousCode  String?
   totalAmount    Float          @default(0)
   cashierUserId  String?
+  cashierName    String?
   heldAt         DateTime?
   paidAt         DateTime?
+  correctionReason String?
+  correctedByUserId String?
+  correctedAt    DateTime?
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   branch         Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
   items          ShopSaleItem[]
   payments       Payment[]
   stockMovements ShopStockMovement[]
+  deptCredits    DeptCredit[]
 
   @@unique([branchId, ticketNumber])
   @@index([branchId, status])
@@ -1048,6 +1098,12 @@ model CashSession {
   status       CashSessionStatus @default(OPEN)
   openingFloat Float             @default(0)
   closingCash  Float?
+  /// Solde théorique (fond + mouvements cash) au moment de la clôture.
+  expectedCashUsd Float?
+  /// Montant physique déclaré par le caissier.
+  declaredCashUsd Float?
+  /// Écart = théorique − constaté.
+  varianceUsd     Float?
   openedAt     DateTime          @default(now())
   closedAt     DateTime?
   notes        String?
@@ -1055,6 +1111,7 @@ model CashSession {
   updatedAt    DateTime          @updatedAt
   branch       Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
   payments     Payment[]
+  remittances  CashRemittance[]
 
   @@index([branchId, status])
 }
@@ -1169,6 +1226,7 @@ model Payment {
   installmentKind  FactoryInstallmentKind?
   receiptNumber    String
   method           PaymentMethod @default(CASH)
+  confirmationStatus PaymentConfirmationStatus @default(CONFIRMED)
   amountCdf        Float
   amountForeign    Float?
   foreignCurrency  String?
@@ -1177,6 +1235,7 @@ model Payment {
   paidAt           DateTime      @default(now())
   cashierUserId    String
   note             String?
+  deptCreditId     String?
   createdAt        DateTime      @default(now())
   branch           Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
   cashSession      CashSession?  @relation(fields: [cashSessionId], references: [id], onDelete: SetNull)
@@ -1188,6 +1247,7 @@ model Payment {
   partner          BranchPartner? @relation(fields: [partnerId], references: [id], onDelete: SetNull)
   partnerBooking   PartnerBooking? @relation(fields: [partnerBookingId], references: [id], onDelete: SetNull)
   factoryCredit    FactoryCredit? @relation(fields: [factoryCreditId], references: [id], onDelete: SetNull)
+  deptCredit       DeptCredit?    @relation(fields: [deptCreditId], references: [id], onDelete: SetNull)
 
   @@unique([branchId, receiptNumber])
   @@index([branchId, paidAt])
@@ -1198,6 +1258,7 @@ model Payment {
   @@index([partnerId])
   @@index([partnerBookingId])
   @@index([factoryCreditId])
+  @@index([deptCreditId])
 }
 
 /** Catalogue F&B / vente rapide / consommables hôtel. */
@@ -1425,6 +1486,11 @@ model PurchaseOrder {
   fundsReleasedUsd  Float               @default(0)
   /// Total validé reçu (USD).
   validatedAmountUsd Float?
+  /// Demande d’achat (DA) vs bon de commande fournisseur.
+  isPurchaseRequest Boolean           @default(false)
+  buyerAdvanceUsd   Float             @default(0)
+  justificationMissing Boolean        @default(false)
+  justificationNote String?
   createdByUserId   String
   validatedByUserId String?
   validatedAt       DateTime?
@@ -1548,6 +1614,8 @@ model WarehouseProduct {
   stockQty       Int                  @default(0)
   minQty         Int                  @default(5)
   unitCostUsd    Float                @default(0)
+  /// Date de péremption optionnelle (denrées).
+  expiresAt      DateTime?            @db.Date
   /// Lien optionnel vers catalogue POS (stock auxiliaire ShopProduct).
   shopProductId  String?
   active         Boolean              @default(true)
@@ -1873,6 +1941,8 @@ model FactoryCustomer {
   userId             String?               @unique
   /// Préférences notifs : { families?: ("EAU"|"VIN")[], waPromo?: boolean, waStock?: boolean }
   notifyPrefs        Json?
+  /// Plafond de crédit (USD). 0 = pas de crédit autorisé.
+  creditLimitUsd     Float                 @default(0)
   active             Boolean               @default(true)
   createdAt          DateTime              @default(now())
   updatedAt          DateTime              @updatedAt
@@ -1989,6 +2059,11 @@ model FactoryBatch {
   multiplier         Float              @default(1)
   outputProductId    String
   outputQty          Int
+  /// Quantité réelle déclarée (peut différer du théorique).
+  actualOutputQty    Int?
+  wasteQty           Float              @default(0)
+  theoreticalCostUsd Float?
+  actualCostUsd      Float?
   notes              String?
   producedAt         DateTime?
   validatedByUserId  String?
@@ -2070,5 +2145,229 @@ model FactoryOrderRequestLine {
   shopProduct   ShopProduct         @relation(fields: [shopProductId], references: [id], onDelete: Restrict)
 
   @@index([requestId])
+}
+
+/// Compte coffre / caisse centrale d’une organisation.
+model OrgCashAccount {
+  id               String       @id @default(uuid())
+  organizationId   String       @unique
+  balanceUsd       Float        @default(0)
+  updatedAt        DateTime     @updatedAt
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+/// Versement d’une caisse départementale vers la caisse centrale.
+model CashRemittance {
+  id                   String               @id @default(uuid())
+  organizationId       String
+  fromBranchId         String
+  cashSessionId        String?
+  number               String
+  status               CashRemittanceStatus @default(PREPARED)
+  expectedUsd          Float
+  declaredUsd          Float
+  receivedUsd          Float?
+  varianceDeclaredUsd  Float                @default(0)
+  varianceReceivedUsd  Float?
+  preparedByUserId     String
+  receivedByUserId     String?
+  receivedAt           DateTime?
+  note                 String?
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  organization         Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  fromBranch           Branch               @relation(fields: [fromBranchId], references: [id], onDelete: Cascade)
+  cashSession          CashSession?         @relation(fields: [cashSessionId], references: [id], onDelete: SetNull)
+  journalEntries       CentralCashEntry[]
+
+  @@unique([organizationId, number])
+  @@index([organizationId, status])
+  @@index([fromBranchId, createdAt])
+}
+
+/// Journal du coffre (entrées / sorties / versements reçus).
+model CentralCashEntry {
+  id               String          @id @default(uuid())
+  organizationId   String
+  number           String
+  kind             CentralCashKind
+  amountUsd        Float
+  remittanceId     String?
+  justification    String
+  createdByUserId  String
+  approvedByUserId String?
+  createdAt        DateTime        @default(now())
+  organization     Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  remittance       CashRemittance? @relation(fields: [remittanceId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, number])
+  @@index([organizationId, createdAt])
+}
+
+/// Piste d’audit interne (auteur, ancienne/nouvelle valeur, motif).
+model AuditEvent {
+  id               String       @id @default(uuid())
+  organizationId   String
+  branchId         String?
+  entityType       String
+  entityId         String
+  action           String
+  actorUserId      String
+  actorName        String
+  reason           String?
+  oldValue         Json?
+  newValue         Json?
+  approvedByUserId String?
+  createdAt        DateTime     @default(now())
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch           Branch?      @relation(fields: [branchId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@index([branchId, createdAt])
+  @@index([entityType, entityId])
+}
+
+enum BiaSeverity {
+  INFO
+  MOYENNE
+  ELEVEE
+  CRITIQUE
+}
+
+enum IntegrityFindingStatus {
+  OUVERT
+  QUALIFIE
+  RESOLU
+  CLOS
+}
+
+enum BiaIncidentStatus {
+  OUVERT
+  EN_COURS
+  RESOLU
+  CLOS
+}
+
+/// Constat d'intégrité. Ne modifie jamais la donnée métier source.
+model IntegrityFinding {
+  id             String                 @id @default(uuid())
+  organizationId String
+  branchId       String?
+  ruleCode       String
+  severity       BiaSeverity
+  status         IntegrityFindingStatus @default(OUVERT)
+  title          String
+  detail         String
+  entityType     String?
+  entityId       String?
+  fingerprint    String
+  detectedAt     DateTime               @default(now())
+  resolvedAt     DateTime?
+  organization   Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch         Branch?                @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  incident       BiaIncident?
+
+  @@unique([organizationId, fingerprint])
+  @@index([organizationId, status])
+  @@index([branchId])
+}
+
+/// Dossier de suivi d'un constat. La clôture n'écrit pas dans les ventes ni les caisses.
+model BiaIncident {
+  id              String            @id @default(uuid())
+  organizationId  String
+  findingId       String?           @unique
+  title           String
+  severity        BiaSeverity
+  status          BiaIncidentStatus @default(OUVERT)
+  assigneeName    String?
+  openedByUserId  String
+  openedByName    String
+  closedAt        DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  organization    Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  finding         IntegrityFinding? @relation(fields: [findingId], references: [id], onDelete: SetNull)
+  events          BiaIncidentEvent[]
+
+  @@index([organizationId, status])
+}
+
+model BiaIncidentEvent {
+  id         String      @id @default(uuid())
+  incidentId String
+  action     String
+  actorName  String
+  note       String?
+  createdAt  DateTime    @default(now())
+  incident   BiaIncident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+
+  @@index([incidentId, createdAt])
+}
+
+/// Client crédit d’un département commerce (hors usine).
+model DeptCustomer {
+  id             String      @id @default(uuid())
+  branchId       String
+  name           String
+  phone          String?
+  creditLimitUsd Float       @default(0)
+  notes          String?
+  active         Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  branch         Branch      @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  credits        DeptCredit[]
+
+  @@index([branchId, active])
+  @@index([branchId, name])
+}
+
+model DeptCredit {
+  id              String              @id @default(uuid())
+  branchId        String
+  customerId      String
+  shopSaleId      String?
+  number          String
+  status          FactoryCreditStatus @default(OPEN)
+  dueAt           DateTime            @db.Date
+  totalUsd        Float
+  paidUsd         Float               @default(0)
+  createdByUserId String
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  branch          Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  customer        DeptCustomer        @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  shopSale        ShopSale?           @relation(fields: [shopSaleId], references: [id], onDelete: SetNull)
+  lines           DeptCreditLine[]
+  payments        Payment[]
+
+  @@unique([branchId, number])
+  @@index([branchId, status])
+  @@index([customerId])
+}
+
+model DeptCreditLine {
+  id           String     @id @default(uuid())
+  creditId     String
+  nameSnapshot String
+  qty          Int
+  unitPriceUsd Float
+  lineTotalUsd Float
+  credit       DeptCredit @relation(fields: [creditId], references: [id], onDelete: Cascade)
+
+  @@index([creditId])
+}
+
+model BranchProfitTarget {
+  id              String   @id @default(uuid())
+  branchId        String
+  year            Int
+  month           Int
+  salesTargetUsd  Float
+  marginTargetPct Float?
+  branch          Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, year, month])
 }
 

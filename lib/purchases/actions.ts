@@ -84,7 +84,7 @@ function branchHasProductCatalog(type: string) {
 
 function factoryKindFromCategory(catName: string): {
   productKind: "FINISHED" | "CONSUMABLE";
-  finishedFamily: "EAU" | "VIN" | null;
+  finishedFamily: "EAU" | "VIN" | "CHARCUTERIE" | "CREME" | "AUTRE" | null;
 } {
   const n = catName.toLowerCase();
   if (n.includes("eau")) return { productKind: "FINISHED", finishedFamily: "EAU" };
@@ -305,6 +305,8 @@ export async function createPurchaseOrderAction(input: {
   supplierName?: string | null;
   supplierId?: string | null;
   note?: string | null;
+  isPurchaseRequest?: boolean;
+  buyerAdvanceUsd?: number;
   lines: PoLineInput[];
 }) {
   const { user, branch } = await ctx(input.organizationId, input.branchId, { bons_commande: ["ajouter"] });
@@ -322,6 +324,10 @@ export async function createPurchaseOrderAction(input: {
       supplierId: input.supplierId?.trim() || null,
       note: input.note?.trim() || null,
       totalAmountUsd,
+      isPurchaseRequest: input.isPurchaseRequest === true,
+      buyerAdvanceUsd: Math.max(0, input.buyerAdvanceUsd ?? 0),
+      justificationMissing:
+        (input.buyerAdvanceUsd ?? 0) > 0 && !input.note?.trim(),
       createdByUserId: user.id,
       items: {
         create: lines.map((l) => ({
@@ -341,6 +347,23 @@ export async function createPurchaseOrderAction(input: {
   });
   revalidatePurchases(input.organizationId, input.branchId);
   return po;
+}
+
+export async function markPurchaseJustifiedAction(input: {
+  organizationId: string;
+  branchId: string;
+  purchaseOrderId: string;
+  note?: string;
+}) {
+  await ctx(input.organizationId, input.branchId, { bons_commande: ["modifier"] });
+  await prisma.purchaseOrder.update({
+    where: { id: input.purchaseOrderId },
+    data: {
+      justificationMissing: false,
+      justificationNote: input.note?.trim() || null,
+    },
+  });
+  revalidatePurchases(input.organizationId, input.branchId);
 }
 
 /** Sortie de caisse du montant du bon (avant ou à la validation). */

@@ -3,10 +3,17 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, Plane, UserCircle } from "lucide-react";
+import { LogOut, Plane } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+}
 
 function formatDateTime(date: Date) {
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -59,25 +66,25 @@ export function DashboardNavbar({
   }
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-backdrop-filter:bg-card/80">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:h-16 sm:px-6 lg:px-8">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/85 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <Link
           href={titleHref}
           className="flex min-w-0 items-center gap-2.5"
           aria-label="Accueil"
         >
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground sm:size-9">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar text-white">
             <Plane className="size-4" aria-hidden />
           </span>
           {hasTitle || hasSubtitle ? (
             <span className="min-w-0">
               {hasTitle ? (
-                <span className="block truncate text-base font-bold tracking-tight text-primary sm:text-lg">
+                <span className="block truncate text-sm font-semibold tracking-tight text-foreground sm:text-base">
                   {title}
                 </span>
               ) : null}
               {hasSubtitle ? (
-                <span className="hidden truncate text-[10px] tracking-wide text-muted-foreground uppercase sm:block">
+                <span className="hidden truncate text-[11px] text-muted-foreground sm:block">
                   {subtitle}
                 </span>
               ) : null}
@@ -86,7 +93,7 @@ export function DashboardNavbar({
         </Link>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <div className="hidden rounded-full bg-muted px-3 py-1.5 text-xs text-muted-foreground tabular-nums md:block md:text-sm">
+          <div className="hidden text-xs text-muted-foreground tabular-nums md:block">
             {now ? formatDateTime(now) : "\u00A0"}
           </div>
 
@@ -95,21 +102,21 @@ export function DashboardNavbar({
           {actions}
 
           <div className="flex max-w-[9rem] items-center gap-2 sm:max-w-none">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <UserCircle className="size-5" />
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+              {isPending ? "…" : initials(userName)}
             </div>
-            <span className="truncate text-sm font-medium text-foreground">
+            <span className="truncate text-[13px] font-semibold text-foreground">
               {isPending ? "…" : userName}
             </span>
           </div>
 
           <Button
             type="button"
-            variant="destructive"
+            variant="ghost"
             size="sm"
             disabled={signingOut}
             onClick={handleSignOut}
-            className="gap-1.5"
+            className="gap-1.5 text-muted-foreground"
           >
             <LogOut className="size-3.5" />
             <span>{signingOut ? "…" : "Déconnexion"}</span>

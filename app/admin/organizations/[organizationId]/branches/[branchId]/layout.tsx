@@ -59,6 +59,7 @@ export default async function BranchWorkspaceLayout({
       branchType={branch.type}
       hasStays={branch.hasStays}
       hasRestaurant={branch.hasRestaurant}
+      hasProduction={branch.hasProduction}
       appName={appName()}
       opsRole={opsRole}
       allowedCardIds={allowedCardIds}

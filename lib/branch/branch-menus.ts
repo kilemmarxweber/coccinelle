@@ -56,6 +56,7 @@ import {
 export type BranchMenuFlags = {
   hasStays?: boolean;
   hasRestaurant?: boolean;
+  hasProduction?: boolean;
 };
 
 export type BranchMenuItem = {
@@ -407,6 +408,7 @@ export function menuSectionsForBranch(
   const hasStays = flags.hasStays ?? type === "HOTEL";
   const hasRestaurant =
     flags.hasRestaurant ?? (type === "HOTEL" || type === "RESTAURANT");
+  const hasProduction = flags.hasProduction === true;
   const shared = rapportsSections(organizationId, branchId, {
     includeMesCommandes: hasRestaurant,
     includeSejoursReport: hasStays,
@@ -515,6 +517,17 @@ export function menuSectionsForBranch(
           iconColor: "text-amber-500",
         },
       );
+      if (hasProduction) {
+        stockItems.push({
+          id: DASH_CARD.USINE_PRODUCTION,
+          title: "Production",
+          description: "Recettes, lots, rebuts et coût unitaire.",
+          href: usineRoutes.production(organizationId, branchId),
+          icon: Factory,
+          iconBg: "bg-emerald-500/15",
+          iconColor: "text-emerald-400",
+        });
+      }
     }
     stockItems.push({
       id: DASH_CARD.LIVRAISON,
@@ -561,16 +574,65 @@ export function menuSectionsForBranch(
         items: [
           {
             id: DASH_CARD.POS,
+            title: "Ventes",
+            description: "Tickets encaissés du département.",
+            href: boutiqueRoutes.ventes(organizationId, branchId),
+            icon: Receipt,
+            iconBg: "bg-primary/15",
+            iconColor: "text-primary",
+          },
+          {
+            id: DASH_CARD.POS,
             title: "Point de vente",
             description: "Panier rapide, tickets en attente et encaissement.",
             href: boutiqueRoutes.pos(organizationId, branchId),
             icon: ShoppingCart,
-            iconBg: "bg-emerald-500/15",
-            iconColor: "text-emerald-400",
+            iconBg: "bg-primary/15",
+            iconColor: "text-primary",
             primary: true,
           },
-          bonsCommandeCard(organizationId, branchId),
+          {
+            id: DASH_CARD.BOUTIQUE_STOCK,
+            title: "Stocks",
+            description: "Entrepôt et ravitaillement du département.",
+            href: boutiqueRoutes.stock(organizationId, branchId),
+            icon: Package,
+            iconBg: "bg-primary/15",
+            iconColor: "text-primary",
+          },
+          {
+            ...bonsCommandeCard(organizationId, branchId),
+            title: "Achats",
+            description: "Commandes fournisseur du département.",
+          },
+          {
+            id: DASH_CARD.CAISSE,
+            title: "Caisse départementale",
+            description: "Session, fond et clôture de la caisse du département.",
+            href: branchCaissePath(organizationId, branchId),
+            icon: Wallet,
+            iconBg: "bg-primary/15",
+            iconColor: "text-primary",
+          },
+          {
+            id: DASH_CARD.CAISSE,
+            title: "Versements",
+            description: "Versements de cette caisse vers la caisse centrale.",
+            href: sharedBranchRoutes.versements(organizationId, branchId),
+            icon: Banknote,
+            iconBg: "bg-primary/15",
+            iconColor: "text-primary",
+          },
           depensesCard(organizationId, branchId),
+          {
+            id: DASH_CARD.RAPPORT_TABLEAU,
+            title: "Rapports",
+            description: "Analyses du département.",
+            href: sharedBranchRoutes.rapports(organizationId, branchId),
+            icon: FileBarChart,
+            iconBg: "bg-primary/15",
+            iconColor: "text-primary",
+          },
           {
             id: DASH_CARD.BOUTIQUE_PRODUITS,
             title: "Produits",
@@ -581,15 +643,6 @@ export function menuSectionsForBranch(
             iconColor: "text-violet-400",
           },
           {
-            id: DASH_CARD.BOUTIQUE_STOCK,
-            title: "Stock principal",
-            description: "Entrepôt, ravitaillement POS, documents d’envoi / réception.",
-            href: boutiqueRoutes.stock(organizationId, branchId),
-            icon: Package,
-            iconBg: "bg-sky-500/15",
-            iconColor: "text-sky-400",
-          },
-          {
             id: DASH_CARD.SERVICE_STOCK,
             title: "Service stock",
             description: "Float vendeur POS — ouverture, réassort, clôture signée.",
@@ -598,10 +651,27 @@ export function menuSectionsForBranch(
             iconBg: "bg-amber-500/15",
             iconColor: "text-amber-500",
           },
+          {
+            id: DASH_CARD.USINE_CREDITS,
+            title: "Crédit clientèle",
+            description: "Plafonds, échéances, CA ≠ créances ≠ encaissés.",
+            href: boutiqueRoutes.credits(organizationId, branchId),
+            icon: FileText,
+            iconBg: "bg-amber-500/15",
+            iconColor: "text-amber-500",
+          },
+          {
+            id: DASH_CARD.BOUTIQUE_PRODUITS,
+            title: "Marketing",
+            description: "Promos, top produits, import catalogue.",
+            href: boutiqueRoutes.marketing(organizationId, branchId),
+            icon: Presentation,
+            iconBg: "bg-violet-500/15",
+            iconColor: "text-violet-400",
+          },
         ],
       },
       personnelPaieSection(organizationId, branchId),
-      ...rapportsSections(organizationId, branchId),
       administrationSection(organizationId, branchId),
     ];
   }
@@ -923,12 +993,23 @@ export function branchSidebarNav(
   const dashHref = branchDashboardPath(organizationId, branchId);
   const entries: BranchSidebarEntry[] = [
     {
-      title: "Accueil",
+      title: type === "BOUTIQUE" ? "Vue d'ensemble" : "Accueil",
       href: dashHref,
       icon: LayoutDashboard,
     },
   ];
   for (const section of sections) {
+    if (type === "BOUTIQUE" && section.title === "OPÉRATIONS, CATALOGUE & STOCK") {
+      for (const item of section.items) {
+        entries.push({
+          id: item.id,
+          title: item.title,
+          href: item.href,
+          icon: item.icon,
+        });
+      }
+      continue;
+    }
     if (section.items.length === 1 && section.title !== "ADMINISTRATION") {
       const item = section.items[0]!;
       entries.push({

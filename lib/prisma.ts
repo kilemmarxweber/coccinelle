@@ -6,7 +6,7 @@ const adapter = new PrismaPg({
 });
 
 /** Incrémenter après tout changement de modèle Prisma pour invalider le singleton HMR. */
-const PRISMA_SCHEMA_REV = 39;
+const PRISMA_SCHEMA_REV = 41;
 
 const globalForPrisma = global as unknown as {
   prisma: PrismaClient | undefined;
@@ -145,9 +145,23 @@ function resolvePrisma(): PrismaClient {
       !modelHasField(existing, "FactoryCredit", "deliveryAddress") ||
       !enumHasValue(existing, "FactoryOrderRequestStatus", "PENDING") ||
       !modelHasField(existing, "StaffAttendanceDay", "checkIn") ||
+      !modelHasField(existing, "Branch", "hasProduction") ||
+      !modelHasField(existing, "CashSession", "declaredCashUsd") ||
+      !modelHasField(existing, "ShopSale", "cashierName") ||
+      !enumHasValue(existing, "ShopSaleStatus", "CORRIGEE") ||
+      !enumHasValue(existing, "WarehouseProductType", "MATIERE_PREMIERE") ||
+      !enumHasValue(existing, "FactoryFinishedFamily", "CHARCUTERIE") ||
       typeof (existing as { factoryOrderRequest?: unknown })
         .factoryOrderRequest === "undefined" ||
       typeof (existing as { branchSupplier?: unknown }).branchSupplier ===
+        "undefined" ||
+      typeof (existing as { cashRemittance?: unknown }).cashRemittance ===
+        "undefined" ||
+      typeof (existing as { auditEvent?: unknown }).auditEvent ===
+        "undefined" ||
+      typeof (existing as { integrityFinding?: unknown }).integrityFinding ===
+        "undefined" ||
+      typeof (existing as { biaIncident?: unknown }).biaIncident ===
         "undefined");
 
   if (existing && (staleRev || staleDelegate || staleFields)) {

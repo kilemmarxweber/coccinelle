@@ -29,11 +29,19 @@ export type AggregateFactoryBatch = {
 export type FactoryBatchAvgAggregateOutputType = {
   multiplier: number | null
   outputQty: number | null
+  actualOutputQty: number | null
+  wasteQty: number | null
+  theoreticalCostUsd: number | null
+  actualCostUsd: number | null
 }
 
 export type FactoryBatchSumAggregateOutputType = {
   multiplier: number | null
   outputQty: number | null
+  actualOutputQty: number | null
+  wasteQty: number | null
+  theoreticalCostUsd: number | null
+  actualCostUsd: number | null
 }
 
 export type FactoryBatchMinAggregateOutputType = {
@@ -45,6 +53,10 @@ export type FactoryBatchMinAggregateOutputType = {
   multiplier: number | null
   outputProductId: string | null
   outputQty: number | null
+  actualOutputQty: number | null
+  wasteQty: number | null
+  theoreticalCostUsd: number | null
+  actualCostUsd: number | null
   notes: string | null
   producedAt: Date | null
   validatedByUserId: string | null
@@ -61,6 +73,10 @@ export type FactoryBatchMaxAggregateOutputType = {
   multiplier: number | null
   outputProductId: string | null
   outputQty: number | null
+  actualOutputQty: number | null
+  wasteQty: number | null
+  theoreticalCostUsd: number | null
+  actualCostUsd: number | null
   notes: string | null
   producedAt: Date | null
   validatedByUserId: string | null
@@ -77,6 +93,10 @@ export type FactoryBatchCountAggregateOutputType = {
   multiplier: number
   outputProductId: number
   outputQty: number
+  actualOutputQty: number
+  wasteQty: number
+  theoreticalCostUsd: number
+  actualCostUsd: number
   notes: number
   producedAt: number
   validatedByUserId: number
@@ -89,11 +109,19 @@ export type FactoryBatchCountAggregateOutputType = {
 export type FactoryBatchAvgAggregateInputType = {
   multiplier?: true
   outputQty?: true
+  actualOutputQty?: true
+  wasteQty?: true
+  theoreticalCostUsd?: true
+  actualCostUsd?: true
 }
 
 export type FactoryBatchSumAggregateInputType = {
   multiplier?: true
   outputQty?: true
+  actualOutputQty?: true
+  wasteQty?: true
+  theoreticalCostUsd?: true
+  actualCostUsd?: true
 }
 
 export type FactoryBatchMinAggregateInputType = {
@@ -105,6 +133,10 @@ export type FactoryBatchMinAggregateInputType = {
   multiplier?: true
   outputProductId?: true
   outputQty?: true
+  actualOutputQty?: true
+  wasteQty?: true
+  theoreticalCostUsd?: true
+  actualCostUsd?: true
   notes?: true
   producedAt?: true
   validatedByUserId?: true
@@ -121,6 +153,10 @@ export type FactoryBatchMaxAggregateInputType = {
   multiplier?: true
   outputProductId?: true
   outputQty?: true
+  actualOutputQty?: true
+  wasteQty?: true
+  theoreticalCostUsd?: true
+  actualCostUsd?: true
   notes?: true
   producedAt?: true
   validatedByUserId?: true
@@ -137,6 +173,10 @@ export type FactoryBatchCountAggregateInputType = {
   multiplier?: true
   outputProductId?: true
   outputQty?: true
+  actualOutputQty?: true
+  wasteQty?: true
+  theoreticalCostUsd?: true
+  actualCostUsd?: true
   notes?: true
   producedAt?: true
   validatedByUserId?: true
@@ -240,6 +280,10 @@ export type FactoryBatchGroupByOutputType = {
   multiplier: number
   outputProductId: string
   outputQty: number
+  actualOutputQty: number | null
+  wasteQty: number
+  theoreticalCostUsd: number | null
+  actualCostUsd: number | null
   notes: string | null
   producedAt: Date | null
   validatedByUserId: string | null
@@ -279,6 +323,10 @@ export type FactoryBatchWhereInput = {
   multiplier?: Prisma.FloatFilter<"FactoryBatch"> | number
   outputProductId?: Prisma.StringFilter<"FactoryBatch"> | string
   outputQty?: Prisma.IntFilter<"FactoryBatch"> | number
+  actualOutputQty?: Prisma.IntNullableFilter<"FactoryBatch"> | number | null
+  wasteQty?: Prisma.FloatFilter<"FactoryBatch"> | number
+  theoreticalCostUsd?: Prisma.FloatNullableFilter<"FactoryBatch"> | number | null
+  actualCostUsd?: Prisma.FloatNullableFilter<"FactoryBatch"> | number | null
   notes?: Prisma.StringNullableFilter<"FactoryBatch"> | string | null
   producedAt?: Prisma.DateTimeNullableFilter<"FactoryBatch"> | Date | string | null
   validatedByUserId?: Prisma.StringNullableFilter<"FactoryBatch"> | string | null
@@ -298,6 +346,10 @@ export type FactoryBatchOrderByWithRelationInput = {
   multiplier?: Prisma.SortOrder
   outputProductId?: Prisma.SortOrder
   outputQty?: Prisma.SortOrder
+  actualOutputQty?: Prisma.SortOrderInput | Prisma.SortOrder
+  wasteQty?: Prisma.SortOrder
+  theoreticalCostUsd?: Prisma.SortOrderInput | Prisma.SortOrder
+  actualCostUsd?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   producedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   validatedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -321,6 +373,10 @@ export type FactoryBatchWhereUniqueInput = Prisma.AtLeast<{
   multiplier?: Prisma.FloatFilter<"FactoryBatch"> | number
   outputProductId?: Prisma.StringFilter<"FactoryBatch"> | string
   outputQty?: Prisma.IntFilter<"FactoryBatch"> | number
+  actualOutputQty?: Prisma.IntNullableFilter<"FactoryBatch"> | number | null
+  wasteQty?: Prisma.FloatFilter<"FactoryBatch"> | number
+  theoreticalCostUsd?: Prisma.FloatNullableFilter<"FactoryBatch"> | number | null
+  actualCostUsd?: Prisma.FloatNullableFilter<"FactoryBatch"> | number | null
   notes?: Prisma.StringNullableFilter<"FactoryBatch"> | string | null
   producedAt?: Prisma.DateTimeNullableFilter<"FactoryBatch"> | Date | string | null
   validatedByUserId?: Prisma.StringNullableFilter<"FactoryBatch"> | string | null
@@ -340,6 +396,10 @@ export type FactoryBatchOrderByWithAggregationInput = {
   multiplier?: Prisma.SortOrder
   outputProductId?: Prisma.SortOrder
   outputQty?: Prisma.SortOrder
+  actualOutputQty?: Prisma.SortOrderInput | Prisma.SortOrder
+  wasteQty?: Prisma.SortOrder
+  theoreticalCostUsd?: Prisma.SortOrderInput | Prisma.SortOrder
+  actualCostUsd?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   producedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   validatedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -364,6 +424,10 @@ export type FactoryBatchScalarWhereWithAggregatesInput = {
   multiplier?: Prisma.FloatWithAggregatesFilter<"FactoryBatch"> | number
   outputProductId?: Prisma.StringWithAggregatesFilter<"FactoryBatch"> | string
   outputQty?: Prisma.IntWithAggregatesFilter<"FactoryBatch"> | number
+  actualOutputQty?: Prisma.IntNullableWithAggregatesFilter<"FactoryBatch"> | number | null
+  wasteQty?: Prisma.FloatWithAggregatesFilter<"FactoryBatch"> | number
+  theoreticalCostUsd?: Prisma.FloatNullableWithAggregatesFilter<"FactoryBatch"> | number | null
+  actualCostUsd?: Prisma.FloatNullableWithAggregatesFilter<"FactoryBatch"> | number | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"FactoryBatch"> | string | null
   producedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"FactoryBatch"> | Date | string | null
   validatedByUserId?: Prisma.StringNullableWithAggregatesFilter<"FactoryBatch"> | string | null
@@ -377,6 +441,10 @@ export type FactoryBatchCreateInput = {
   status?: $Enums.FactoryBatchStatus
   multiplier?: number
   outputQty: number
+  actualOutputQty?: number | null
+  wasteQty?: number
+  theoreticalCostUsd?: number | null
+  actualCostUsd?: number | null
   notes?: string | null
   producedAt?: Date | string | null
   validatedByUserId?: string | null
@@ -396,6 +464,10 @@ export type FactoryBatchUncheckedCreateInput = {
   multiplier?: number
   outputProductId: string
   outputQty: number
+  actualOutputQty?: number | null
+  wasteQty?: number
+  theoreticalCostUsd?: number | null
+  actualCostUsd?: number | null
   notes?: string | null
   producedAt?: Date | string | null
   validatedByUserId?: string | null
@@ -409,6 +481,10 @@ export type FactoryBatchUpdateInput = {
   status?: Prisma.EnumFactoryBatchStatusFieldUpdateOperationsInput | $Enums.FactoryBatchStatus
   multiplier?: Prisma.FloatFieldUpdateOperationsInput | number
   outputQty?: Prisma.IntFieldUpdateOperationsInput | number
+  actualOutputQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wasteQty?: Prisma.FloatFieldUpdateOperationsInput | number
+  theoreticalCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  actualCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   producedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -428,6 +504,10 @@ export type FactoryBatchUncheckedUpdateInput = {
   multiplier?: Prisma.FloatFieldUpdateOperationsInput | number
   outputProductId?: Prisma.StringFieldUpdateOperationsInput | string
   outputQty?: Prisma.IntFieldUpdateOperationsInput | number
+  actualOutputQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wasteQty?: Prisma.FloatFieldUpdateOperationsInput | number
+  theoreticalCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  actualCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   producedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -444,6 +524,10 @@ export type FactoryBatchCreateManyInput = {
   multiplier?: number
   outputProductId: string
   outputQty: number
+  actualOutputQty?: number | null
+  wasteQty?: number
+  theoreticalCostUsd?: number | null
+  actualCostUsd?: number | null
   notes?: string | null
   producedAt?: Date | string | null
   validatedByUserId?: string | null
@@ -457,6 +541,10 @@ export type FactoryBatchUpdateManyMutationInput = {
   status?: Prisma.EnumFactoryBatchStatusFieldUpdateOperationsInput | $Enums.FactoryBatchStatus
   multiplier?: Prisma.FloatFieldUpdateOperationsInput | number
   outputQty?: Prisma.IntFieldUpdateOperationsInput | number
+  actualOutputQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wasteQty?: Prisma.FloatFieldUpdateOperationsInput | number
+  theoreticalCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  actualCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   producedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -473,6 +561,10 @@ export type FactoryBatchUncheckedUpdateManyInput = {
   multiplier?: Prisma.FloatFieldUpdateOperationsInput | number
   outputProductId?: Prisma.StringFieldUpdateOperationsInput | string
   outputQty?: Prisma.IntFieldUpdateOperationsInput | number
+  actualOutputQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wasteQty?: Prisma.FloatFieldUpdateOperationsInput | number
+  theoreticalCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  actualCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   producedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -504,6 +596,10 @@ export type FactoryBatchCountOrderByAggregateInput = {
   multiplier?: Prisma.SortOrder
   outputProductId?: Prisma.SortOrder
   outputQty?: Prisma.SortOrder
+  actualOutputQty?: Prisma.SortOrder
+  wasteQty?: Prisma.SortOrder
+  theoreticalCostUsd?: Prisma.SortOrder
+  actualCostUsd?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   producedAt?: Prisma.SortOrder
   validatedByUserId?: Prisma.SortOrder
@@ -514,6 +610,10 @@ export type FactoryBatchCountOrderByAggregateInput = {
 export type FactoryBatchAvgOrderByAggregateInput = {
   multiplier?: Prisma.SortOrder
   outputQty?: Prisma.SortOrder
+  actualOutputQty?: Prisma.SortOrder
+  wasteQty?: Prisma.SortOrder
+  theoreticalCostUsd?: Prisma.SortOrder
+  actualCostUsd?: Prisma.SortOrder
 }
 
 export type FactoryBatchMaxOrderByAggregateInput = {
@@ -525,6 +625,10 @@ export type FactoryBatchMaxOrderByAggregateInput = {
   multiplier?: Prisma.SortOrder
   outputProductId?: Prisma.SortOrder
   outputQty?: Prisma.SortOrder
+  actualOutputQty?: Prisma.SortOrder
+  wasteQty?: Prisma.SortOrder
+  theoreticalCostUsd?: Prisma.SortOrder
+  actualCostUsd?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   producedAt?: Prisma.SortOrder
   validatedByUserId?: Prisma.SortOrder
@@ -541,6 +645,10 @@ export type FactoryBatchMinOrderByAggregateInput = {
   multiplier?: Prisma.SortOrder
   outputProductId?: Prisma.SortOrder
   outputQty?: Prisma.SortOrder
+  actualOutputQty?: Prisma.SortOrder
+  wasteQty?: Prisma.SortOrder
+  theoreticalCostUsd?: Prisma.SortOrder
+  actualCostUsd?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   producedAt?: Prisma.SortOrder
   validatedByUserId?: Prisma.SortOrder
@@ -551,6 +659,10 @@ export type FactoryBatchMinOrderByAggregateInput = {
 export type FactoryBatchSumOrderByAggregateInput = {
   multiplier?: Prisma.SortOrder
   outputQty?: Prisma.SortOrder
+  actualOutputQty?: Prisma.SortOrder
+  wasteQty?: Prisma.SortOrder
+  theoreticalCostUsd?: Prisma.SortOrder
+  actualCostUsd?: Prisma.SortOrder
 }
 
 export type FactoryBatchCreateNestedManyWithoutBranchInput = {
@@ -689,6 +801,10 @@ export type FactoryBatchCreateWithoutBranchInput = {
   status?: $Enums.FactoryBatchStatus
   multiplier?: number
   outputQty: number
+  actualOutputQty?: number | null
+  wasteQty?: number
+  theoreticalCostUsd?: number | null
+  actualCostUsd?: number | null
   notes?: string | null
   producedAt?: Date | string | null
   validatedByUserId?: string | null
@@ -706,6 +822,10 @@ export type FactoryBatchUncheckedCreateWithoutBranchInput = {
   multiplier?: number
   outputProductId: string
   outputQty: number
+  actualOutputQty?: number | null
+  wasteQty?: number
+  theoreticalCostUsd?: number | null
+  actualCostUsd?: number | null
   notes?: string | null
   producedAt?: Date | string | null
   validatedByUserId?: string | null
@@ -751,6 +871,10 @@ export type FactoryBatchScalarWhereInput = {
   multiplier?: Prisma.FloatFilter<"FactoryBatch"> | number
   outputProductId?: Prisma.StringFilter<"FactoryBatch"> | string
   outputQty?: Prisma.IntFilter<"FactoryBatch"> | number
+  actualOutputQty?: Prisma.IntNullableFilter<"FactoryBatch"> | number | null
+  wasteQty?: Prisma.FloatFilter<"FactoryBatch"> | number
+  theoreticalCostUsd?: Prisma.FloatNullableFilter<"FactoryBatch"> | number | null
+  actualCostUsd?: Prisma.FloatNullableFilter<"FactoryBatch"> | number | null
   notes?: Prisma.StringNullableFilter<"FactoryBatch"> | string | null
   producedAt?: Prisma.DateTimeNullableFilter<"FactoryBatch"> | Date | string | null
   validatedByUserId?: Prisma.StringNullableFilter<"FactoryBatch"> | string | null
@@ -764,6 +888,10 @@ export type FactoryBatchCreateWithoutOutputProductInput = {
   status?: $Enums.FactoryBatchStatus
   multiplier?: number
   outputQty: number
+  actualOutputQty?: number | null
+  wasteQty?: number
+  theoreticalCostUsd?: number | null
+  actualCostUsd?: number | null
   notes?: string | null
   producedAt?: Date | string | null
   validatedByUserId?: string | null
@@ -781,6 +909,10 @@ export type FactoryBatchUncheckedCreateWithoutOutputProductInput = {
   recipeId: string
   multiplier?: number
   outputQty: number
+  actualOutputQty?: number | null
+  wasteQty?: number
+  theoreticalCostUsd?: number | null
+  actualCostUsd?: number | null
   notes?: string | null
   producedAt?: Date | string | null
   validatedByUserId?: string | null
@@ -820,6 +952,10 @@ export type FactoryBatchCreateWithoutRecipeInput = {
   status?: $Enums.FactoryBatchStatus
   multiplier?: number
   outputQty: number
+  actualOutputQty?: number | null
+  wasteQty?: number
+  theoreticalCostUsd?: number | null
+  actualCostUsd?: number | null
   notes?: string | null
   producedAt?: Date | string | null
   validatedByUserId?: string | null
@@ -837,6 +973,10 @@ export type FactoryBatchUncheckedCreateWithoutRecipeInput = {
   multiplier?: number
   outputProductId: string
   outputQty: number
+  actualOutputQty?: number | null
+  wasteQty?: number
+  theoreticalCostUsd?: number | null
+  actualCostUsd?: number | null
   notes?: string | null
   producedAt?: Date | string | null
   validatedByUserId?: string | null
@@ -878,6 +1018,10 @@ export type FactoryBatchCreateManyBranchInput = {
   multiplier?: number
   outputProductId: string
   outputQty: number
+  actualOutputQty?: number | null
+  wasteQty?: number
+  theoreticalCostUsd?: number | null
+  actualCostUsd?: number | null
   notes?: string | null
   producedAt?: Date | string | null
   validatedByUserId?: string | null
@@ -891,6 +1035,10 @@ export type FactoryBatchUpdateWithoutBranchInput = {
   status?: Prisma.EnumFactoryBatchStatusFieldUpdateOperationsInput | $Enums.FactoryBatchStatus
   multiplier?: Prisma.FloatFieldUpdateOperationsInput | number
   outputQty?: Prisma.IntFieldUpdateOperationsInput | number
+  actualOutputQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wasteQty?: Prisma.FloatFieldUpdateOperationsInput | number
+  theoreticalCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  actualCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   producedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -908,6 +1056,10 @@ export type FactoryBatchUncheckedUpdateWithoutBranchInput = {
   multiplier?: Prisma.FloatFieldUpdateOperationsInput | number
   outputProductId?: Prisma.StringFieldUpdateOperationsInput | string
   outputQty?: Prisma.IntFieldUpdateOperationsInput | number
+  actualOutputQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wasteQty?: Prisma.FloatFieldUpdateOperationsInput | number
+  theoreticalCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  actualCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   producedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -923,6 +1075,10 @@ export type FactoryBatchUncheckedUpdateManyWithoutBranchInput = {
   multiplier?: Prisma.FloatFieldUpdateOperationsInput | number
   outputProductId?: Prisma.StringFieldUpdateOperationsInput | string
   outputQty?: Prisma.IntFieldUpdateOperationsInput | number
+  actualOutputQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wasteQty?: Prisma.FloatFieldUpdateOperationsInput | number
+  theoreticalCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  actualCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   producedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -938,6 +1094,10 @@ export type FactoryBatchCreateManyOutputProductInput = {
   recipeId: string
   multiplier?: number
   outputQty: number
+  actualOutputQty?: number | null
+  wasteQty?: number
+  theoreticalCostUsd?: number | null
+  actualCostUsd?: number | null
   notes?: string | null
   producedAt?: Date | string | null
   validatedByUserId?: string | null
@@ -951,6 +1111,10 @@ export type FactoryBatchUpdateWithoutOutputProductInput = {
   status?: Prisma.EnumFactoryBatchStatusFieldUpdateOperationsInput | $Enums.FactoryBatchStatus
   multiplier?: Prisma.FloatFieldUpdateOperationsInput | number
   outputQty?: Prisma.IntFieldUpdateOperationsInput | number
+  actualOutputQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wasteQty?: Prisma.FloatFieldUpdateOperationsInput | number
+  theoreticalCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  actualCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   producedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -968,6 +1132,10 @@ export type FactoryBatchUncheckedUpdateWithoutOutputProductInput = {
   recipeId?: Prisma.StringFieldUpdateOperationsInput | string
   multiplier?: Prisma.FloatFieldUpdateOperationsInput | number
   outputQty?: Prisma.IntFieldUpdateOperationsInput | number
+  actualOutputQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wasteQty?: Prisma.FloatFieldUpdateOperationsInput | number
+  theoreticalCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  actualCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   producedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -983,6 +1151,10 @@ export type FactoryBatchUncheckedUpdateManyWithoutOutputProductInput = {
   recipeId?: Prisma.StringFieldUpdateOperationsInput | string
   multiplier?: Prisma.FloatFieldUpdateOperationsInput | number
   outputQty?: Prisma.IntFieldUpdateOperationsInput | number
+  actualOutputQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wasteQty?: Prisma.FloatFieldUpdateOperationsInput | number
+  theoreticalCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  actualCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   producedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -998,6 +1170,10 @@ export type FactoryBatchCreateManyRecipeInput = {
   multiplier?: number
   outputProductId: string
   outputQty: number
+  actualOutputQty?: number | null
+  wasteQty?: number
+  theoreticalCostUsd?: number | null
+  actualCostUsd?: number | null
   notes?: string | null
   producedAt?: Date | string | null
   validatedByUserId?: string | null
@@ -1011,6 +1187,10 @@ export type FactoryBatchUpdateWithoutRecipeInput = {
   status?: Prisma.EnumFactoryBatchStatusFieldUpdateOperationsInput | $Enums.FactoryBatchStatus
   multiplier?: Prisma.FloatFieldUpdateOperationsInput | number
   outputQty?: Prisma.IntFieldUpdateOperationsInput | number
+  actualOutputQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wasteQty?: Prisma.FloatFieldUpdateOperationsInput | number
+  theoreticalCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  actualCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   producedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1028,6 +1208,10 @@ export type FactoryBatchUncheckedUpdateWithoutRecipeInput = {
   multiplier?: Prisma.FloatFieldUpdateOperationsInput | number
   outputProductId?: Prisma.StringFieldUpdateOperationsInput | string
   outputQty?: Prisma.IntFieldUpdateOperationsInput | number
+  actualOutputQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wasteQty?: Prisma.FloatFieldUpdateOperationsInput | number
+  theoreticalCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  actualCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   producedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1043,6 +1227,10 @@ export type FactoryBatchUncheckedUpdateManyWithoutRecipeInput = {
   multiplier?: Prisma.FloatFieldUpdateOperationsInput | number
   outputProductId?: Prisma.StringFieldUpdateOperationsInput | string
   outputQty?: Prisma.IntFieldUpdateOperationsInput | number
+  actualOutputQty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wasteQty?: Prisma.FloatFieldUpdateOperationsInput | number
+  theoreticalCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  actualCostUsd?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   producedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1061,6 +1249,10 @@ export type FactoryBatchSelect<ExtArgs extends runtime.Types.Extensions.Internal
   multiplier?: boolean
   outputProductId?: boolean
   outputQty?: boolean
+  actualOutputQty?: boolean
+  wasteQty?: boolean
+  theoreticalCostUsd?: boolean
+  actualCostUsd?: boolean
   notes?: boolean
   producedAt?: boolean
   validatedByUserId?: boolean
@@ -1080,6 +1272,10 @@ export type FactoryBatchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   multiplier?: boolean
   outputProductId?: boolean
   outputQty?: boolean
+  actualOutputQty?: boolean
+  wasteQty?: boolean
+  theoreticalCostUsd?: boolean
+  actualCostUsd?: boolean
   notes?: boolean
   producedAt?: boolean
   validatedByUserId?: boolean
@@ -1099,6 +1295,10 @@ export type FactoryBatchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   multiplier?: boolean
   outputProductId?: boolean
   outputQty?: boolean
+  actualOutputQty?: boolean
+  wasteQty?: boolean
+  theoreticalCostUsd?: boolean
+  actualCostUsd?: boolean
   notes?: boolean
   producedAt?: boolean
   validatedByUserId?: boolean
@@ -1118,6 +1318,10 @@ export type FactoryBatchSelectScalar = {
   multiplier?: boolean
   outputProductId?: boolean
   outputQty?: boolean
+  actualOutputQty?: boolean
+  wasteQty?: boolean
+  theoreticalCostUsd?: boolean
+  actualCostUsd?: boolean
   notes?: boolean
   producedAt?: boolean
   validatedByUserId?: boolean
@@ -1125,7 +1329,7 @@ export type FactoryBatchSelectScalar = {
   updatedAt?: boolean
 }
 
-export type FactoryBatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "number" | "status" | "recipeId" | "multiplier" | "outputProductId" | "outputQty" | "notes" | "producedAt" | "validatedByUserId" | "createdAt" | "updatedAt", ExtArgs["result"]["factoryBatch"]>
+export type FactoryBatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "number" | "status" | "recipeId" | "multiplier" | "outputProductId" | "outputQty" | "actualOutputQty" | "wasteQty" | "theoreticalCostUsd" | "actualCostUsd" | "notes" | "producedAt" | "validatedByUserId" | "createdAt" | "updatedAt", ExtArgs["result"]["factoryBatch"]>
 export type FactoryBatchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   recipe?: boolean | Prisma.FactoryRecipeDefaultArgs<ExtArgs>
@@ -1158,6 +1362,13 @@ export type $FactoryBatchPayload<ExtArgs extends runtime.Types.Extensions.Intern
     multiplier: number
     outputProductId: string
     outputQty: number
+    /**
+     * Quantité réelle déclarée (peut différer du théorique).
+     */
+    actualOutputQty: number | null
+    wasteQty: number
+    theoreticalCostUsd: number | null
+    actualCostUsd: number | null
     notes: string | null
     producedAt: Date | null
     validatedByUserId: string | null
@@ -1597,6 +1808,10 @@ export interface FactoryBatchFieldRefs {
   readonly multiplier: Prisma.FieldRef<"FactoryBatch", 'Float'>
   readonly outputProductId: Prisma.FieldRef<"FactoryBatch", 'String'>
   readonly outputQty: Prisma.FieldRef<"FactoryBatch", 'Int'>
+  readonly actualOutputQty: Prisma.FieldRef<"FactoryBatch", 'Int'>
+  readonly wasteQty: Prisma.FieldRef<"FactoryBatch", 'Float'>
+  readonly theoreticalCostUsd: Prisma.FieldRef<"FactoryBatch", 'Float'>
+  readonly actualCostUsd: Prisma.FieldRef<"FactoryBatch", 'Float'>
   readonly notes: Prisma.FieldRef<"FactoryBatch", 'String'>
   readonly producedAt: Prisma.FieldRef<"FactoryBatch", 'DateTime'>
   readonly validatedByUserId: Prisma.FieldRef<"FactoryBatch", 'String'>

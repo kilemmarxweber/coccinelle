@@ -62,6 +62,8 @@ export const sharedBranchRoutes = {
     `${branchBasePath(orgId, branchId)}/bons-commande`,
   depenses: (orgId: string, branchId: string) =>
     `${branchBasePath(orgId, branchId)}/depenses`,
+  versements: (orgId: string, branchId: string) =>
+    `${branchBasePath(orgId, branchId)}/versements`,
   /** Personnel de l’établissement (R04). */
   equipe: (orgId: string, branchId: string) =>
     `${branchBasePath(orgId, branchId)}/equipe`,
@@ -171,6 +173,12 @@ export const boutiqueRoutes = {
     `${branchModulePath(orgId, branchId, "boutique")}/paie/parametres`,
   paieBulletin: (orgId: string, branchId: string, payslipId: string) =>
     `${branchModulePath(orgId, branchId, "boutique")}/paie/bulletin/${payslipId}`,
+  ventes: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "boutique")}/ventes`,
+  credits: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "boutique")}/credits`,
+  marketing: (orgId: string, branchId: string) =>
+    `${branchModulePath(orgId, branchId, "boutique")}/marketing`,
 } as const;
 
 /** Sous-routes USINE (production eau / vins). */

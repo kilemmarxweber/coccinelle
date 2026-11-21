@@ -51,6 +51,7 @@ export type WarehouseProductMinAggregateOutputType = {
   stockQty: number | null
   minQty: number | null
   unitCostUsd: number | null
+  expiresAt: Date | null
   shopProductId: string | null
   active: boolean | null
   createdAt: Date | null
@@ -70,6 +71,7 @@ export type WarehouseProductMaxAggregateOutputType = {
   stockQty: number | null
   minQty: number | null
   unitCostUsd: number | null
+  expiresAt: Date | null
   shopProductId: string | null
   active: boolean | null
   createdAt: Date | null
@@ -89,6 +91,7 @@ export type WarehouseProductCountAggregateOutputType = {
   stockQty: number
   minQty: number
   unitCostUsd: number
+  expiresAt: number
   shopProductId: number
   active: number
   createdAt: number
@@ -122,6 +125,7 @@ export type WarehouseProductMinAggregateInputType = {
   stockQty?: true
   minQty?: true
   unitCostUsd?: true
+  expiresAt?: true
   shopProductId?: true
   active?: true
   createdAt?: true
@@ -141,6 +145,7 @@ export type WarehouseProductMaxAggregateInputType = {
   stockQty?: true
   minQty?: true
   unitCostUsd?: true
+  expiresAt?: true
   shopProductId?: true
   active?: true
   createdAt?: true
@@ -160,6 +165,7 @@ export type WarehouseProductCountAggregateInputType = {
   stockQty?: true
   minQty?: true
   unitCostUsd?: true
+  expiresAt?: true
   shopProductId?: true
   active?: true
   createdAt?: true
@@ -266,6 +272,7 @@ export type WarehouseProductGroupByOutputType = {
   stockQty: number
   minQty: number
   unitCostUsd: number
+  expiresAt: Date | null
   shopProductId: string | null
   active: boolean
   createdAt: Date
@@ -308,6 +315,7 @@ export type WarehouseProductWhereInput = {
   stockQty?: Prisma.IntFilter<"WarehouseProduct"> | number
   minQty?: Prisma.IntFilter<"WarehouseProduct"> | number
   unitCostUsd?: Prisma.FloatFilter<"WarehouseProduct"> | number
+  expiresAt?: Prisma.DateTimeNullableFilter<"WarehouseProduct"> | Date | string | null
   shopProductId?: Prisma.StringNullableFilter<"WarehouseProduct"> | string | null
   active?: Prisma.BoolFilter<"WarehouseProduct"> | boolean
   createdAt?: Prisma.DateTimeFilter<"WarehouseProduct"> | Date | string
@@ -333,6 +341,7 @@ export type WarehouseProductOrderByWithRelationInput = {
   stockQty?: Prisma.SortOrder
   minQty?: Prisma.SortOrder
   unitCostUsd?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   shopProductId?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -362,6 +371,7 @@ export type WarehouseProductWhereUniqueInput = Prisma.AtLeast<{
   stockQty?: Prisma.IntFilter<"WarehouseProduct"> | number
   minQty?: Prisma.IntFilter<"WarehouseProduct"> | number
   unitCostUsd?: Prisma.FloatFilter<"WarehouseProduct"> | number
+  expiresAt?: Prisma.DateTimeNullableFilter<"WarehouseProduct"> | Date | string | null
   shopProductId?: Prisma.StringNullableFilter<"WarehouseProduct"> | string | null
   active?: Prisma.BoolFilter<"WarehouseProduct"> | boolean
   createdAt?: Prisma.DateTimeFilter<"WarehouseProduct"> | Date | string
@@ -387,6 +397,7 @@ export type WarehouseProductOrderByWithAggregationInput = {
   stockQty?: Prisma.SortOrder
   minQty?: Prisma.SortOrder
   unitCostUsd?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   shopProductId?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -414,6 +425,7 @@ export type WarehouseProductScalarWhereWithAggregatesInput = {
   stockQty?: Prisma.IntWithAggregatesFilter<"WarehouseProduct"> | number
   minQty?: Prisma.IntWithAggregatesFilter<"WarehouseProduct"> | number
   unitCostUsd?: Prisma.FloatWithAggregatesFilter<"WarehouseProduct"> | number
+  expiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"WarehouseProduct"> | Date | string | null
   shopProductId?: Prisma.StringNullableWithAggregatesFilter<"WarehouseProduct"> | string | null
   active?: Prisma.BoolWithAggregatesFilter<"WarehouseProduct"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"WarehouseProduct"> | Date | string
@@ -429,6 +441,7 @@ export type WarehouseProductCreateInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -454,6 +467,7 @@ export type WarehouseProductUncheckedCreateInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -471,6 +485,7 @@ export type WarehouseProductUpdateInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -496,6 +511,7 @@ export type WarehouseProductUncheckedUpdateInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -517,6 +533,7 @@ export type WarehouseProductCreateManyInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -532,6 +549,7 @@ export type WarehouseProductUpdateManyMutationInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -551,6 +569,7 @@ export type WarehouseProductUncheckedUpdateManyInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -585,6 +604,7 @@ export type WarehouseProductCountOrderByAggregateInput = {
   stockQty?: Prisma.SortOrder
   minQty?: Prisma.SortOrder
   unitCostUsd?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
   shopProductId?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -610,6 +630,7 @@ export type WarehouseProductMaxOrderByAggregateInput = {
   stockQty?: Prisma.SortOrder
   minQty?: Prisma.SortOrder
   unitCostUsd?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
   shopProductId?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -629,6 +650,7 @@ export type WarehouseProductMinOrderByAggregateInput = {
   stockQty?: Prisma.SortOrder
   minQty?: Prisma.SortOrder
   unitCostUsd?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
   shopProductId?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -858,6 +880,7 @@ export type WarehouseProductCreateWithoutBranchInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -881,6 +904,7 @@ export type WarehouseProductUncheckedCreateWithoutBranchInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -931,6 +955,7 @@ export type WarehouseProductScalarWhereInput = {
   stockQty?: Prisma.IntFilter<"WarehouseProduct"> | number
   minQty?: Prisma.IntFilter<"WarehouseProduct"> | number
   unitCostUsd?: Prisma.FloatFilter<"WarehouseProduct"> | number
+  expiresAt?: Prisma.DateTimeNullableFilter<"WarehouseProduct"> | Date | string | null
   shopProductId?: Prisma.StringNullableFilter<"WarehouseProduct"> | string | null
   active?: Prisma.BoolFilter<"WarehouseProduct"> | boolean
   createdAt?: Prisma.DateTimeFilter<"WarehouseProduct"> | Date | string
@@ -946,6 +971,7 @@ export type WarehouseProductCreateWithoutCategoryInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -969,6 +995,7 @@ export type WarehouseProductUncheckedCreateWithoutCategoryInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -1012,6 +1039,7 @@ export type WarehouseProductCreateWithoutLocationInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -1035,6 +1063,7 @@ export type WarehouseProductUncheckedCreateWithoutLocationInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -1062,6 +1091,7 @@ export type WarehouseProductCreateWithoutDestLocationInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -1085,6 +1115,7 @@ export type WarehouseProductUncheckedCreateWithoutDestLocationInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -1144,6 +1175,7 @@ export type WarehouseProductCreateWithoutMovementsInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -1168,6 +1200,7 @@ export type WarehouseProductUncheckedCreateWithoutMovementsInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -1200,6 +1233,7 @@ export type WarehouseProductUpdateWithoutMovementsInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1224,6 +1258,7 @@ export type WarehouseProductUncheckedUpdateWithoutMovementsInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1240,6 +1275,7 @@ export type WarehouseProductCreateWithoutSlipItemsInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -1264,6 +1300,7 @@ export type WarehouseProductUncheckedCreateWithoutSlipItemsInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -1296,6 +1333,7 @@ export type WarehouseProductUpdateWithoutSlipItemsInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1320,6 +1358,7 @@ export type WarehouseProductUncheckedUpdateWithoutSlipItemsInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1339,6 +1378,7 @@ export type WarehouseProductCreateManyBranchInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -1354,6 +1394,7 @@ export type WarehouseProductUpdateWithoutBranchInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1377,6 +1418,7 @@ export type WarehouseProductUncheckedUpdateWithoutBranchInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1397,6 +1439,7 @@ export type WarehouseProductUncheckedUpdateManyWithoutBranchInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1415,6 +1458,7 @@ export type WarehouseProductCreateManyCategoryInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -1430,6 +1474,7 @@ export type WarehouseProductUpdateWithoutCategoryInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1453,6 +1498,7 @@ export type WarehouseProductUncheckedUpdateWithoutCategoryInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1473,6 +1519,7 @@ export type WarehouseProductUncheckedUpdateManyWithoutCategoryInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1491,6 +1538,7 @@ export type WarehouseProductCreateManyLocationInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -1509,6 +1557,7 @@ export type WarehouseProductCreateManyDestLocationInput = {
   stockQty?: number
   minQty?: number
   unitCostUsd?: number
+  expiresAt?: Date | string | null
   shopProductId?: string | null
   active?: boolean
   createdAt?: Date | string
@@ -1524,6 +1573,7 @@ export type WarehouseProductUpdateWithoutLocationInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1547,6 +1597,7 @@ export type WarehouseProductUncheckedUpdateWithoutLocationInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1567,6 +1618,7 @@ export type WarehouseProductUncheckedUpdateManyWithoutLocationInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1582,6 +1634,7 @@ export type WarehouseProductUpdateWithoutDestLocationInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1605,6 +1658,7 @@ export type WarehouseProductUncheckedUpdateWithoutDestLocationInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1625,6 +1679,7 @@ export type WarehouseProductUncheckedUpdateManyWithoutDestLocationInput = {
   stockQty?: Prisma.IntFieldUpdateOperationsInput | number
   minQty?: Prisma.IntFieldUpdateOperationsInput | number
   unitCostUsd?: Prisma.FloatFieldUpdateOperationsInput | number
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   shopProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1684,6 +1739,7 @@ export type WarehouseProductSelect<ExtArgs extends runtime.Types.Extensions.Inte
   stockQty?: boolean
   minQty?: boolean
   unitCostUsd?: boolean
+  expiresAt?: boolean
   shopProductId?: boolean
   active?: boolean
   createdAt?: boolean
@@ -1710,6 +1766,7 @@ export type WarehouseProductSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   stockQty?: boolean
   minQty?: boolean
   unitCostUsd?: boolean
+  expiresAt?: boolean
   shopProductId?: boolean
   active?: boolean
   createdAt?: boolean
@@ -1733,6 +1790,7 @@ export type WarehouseProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   stockQty?: boolean
   minQty?: boolean
   unitCostUsd?: boolean
+  expiresAt?: boolean
   shopProductId?: boolean
   active?: boolean
   createdAt?: boolean
@@ -1756,13 +1814,14 @@ export type WarehouseProductSelectScalar = {
   stockQty?: boolean
   minQty?: boolean
   unitCostUsd?: boolean
+  expiresAt?: boolean
   shopProductId?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type WarehouseProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "sku" | "name" | "type" | "categoryId" | "locationId" | "destLocationId" | "unit" | "stockQty" | "minQty" | "unitCostUsd" | "shopProductId" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["warehouseProduct"]>
+export type WarehouseProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "sku" | "name" | "type" | "categoryId" | "locationId" | "destLocationId" | "unit" | "stockQty" | "minQty" | "unitCostUsd" | "expiresAt" | "shopProductId" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["warehouseProduct"]>
 export type WarehouseProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   category?: boolean | Prisma.WarehouseProduct$categoryArgs<ExtArgs>
@@ -1814,6 +1873,10 @@ export type $WarehouseProductPayload<ExtArgs extends runtime.Types.Extensions.In
     stockQty: number
     minQty: number
     unitCostUsd: number
+    /**
+     * Date de péremption optionnelle (denrées).
+     */
+    expiresAt: Date | null
     /**
      * Lien optionnel vers catalogue POS (stock auxiliaire ShopProduct).
      */
@@ -2262,6 +2325,7 @@ export interface WarehouseProductFieldRefs {
   readonly stockQty: Prisma.FieldRef<"WarehouseProduct", 'Int'>
   readonly minQty: Prisma.FieldRef<"WarehouseProduct", 'Int'>
   readonly unitCostUsd: Prisma.FieldRef<"WarehouseProduct", 'Float'>
+  readonly expiresAt: Prisma.FieldRef<"WarehouseProduct", 'DateTime'>
   readonly shopProductId: Prisma.FieldRef<"WarehouseProduct", 'String'>
   readonly active: Prisma.FieldRef<"WarehouseProduct", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"WarehouseProduct", 'DateTime'>

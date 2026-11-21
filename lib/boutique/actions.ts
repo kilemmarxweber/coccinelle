@@ -72,7 +72,7 @@ export type ShopProductDto = {
   sku: string;
   kind: "ARTICLE" | "PLAT";
   productKind?: "FINISHED" | "CONSUMABLE";
-  finishedFamily?: "EAU" | "VIN" | null;
+  finishedFamily?: "EAU" | "VIN" | "CHARCUTERIE" | "CREME" | "AUTRE" | null;
   price: number;
   promoPrice: number | null;
   promoActive: boolean;
@@ -145,7 +145,7 @@ function toDto(
     sku: string;
     kind: "ARTICLE" | "PLAT";
     productKind?: "FINISHED" | "CONSUMABLE";
-    finishedFamily?: "EAU" | "VIN" | null;
+    finishedFamily?: "EAU" | "VIN" | "CHARCUTERIE" | "CREME" | "AUTRE" | null;
     price: number;
     promoPrice: number | null;
     promoActive: boolean;
@@ -241,7 +241,7 @@ export async function createShopProductAction(input: {
   sku: string;
   kind?: "ARTICLE" | "PLAT";
   productKind?: "FINISHED" | "CONSUMABLE";
-  finishedFamily?: "EAU" | "VIN" | null;
+  finishedFamily?: "EAU" | "VIN" | "CHARCUTERIE" | "CREME" | "AUTRE" | null;
   price: number;
   stockQty?: number;
   barcode?: string | null;
@@ -317,7 +317,7 @@ export async function updateShopProductAction(input: {
   sku?: string;
   kind?: "ARTICLE" | "PLAT";
   productKind?: "FINISHED" | "CONSUMABLE";
-  finishedFamily?: "EAU" | "VIN" | null;
+  finishedFamily?: "EAU" | "VIN" | "CHARCUTERIE" | "CREME" | "AUTRE" | null;
   price?: number;
   stockQty?: number;
   barcode?: string | null;
@@ -645,6 +645,7 @@ export async function checkoutShopSaleAction(input: {
           clientLabel,
           clientPhone,
           cashierUserId: user.id,
+          cashierName: (user.name || user.email || "Caissier").trim(),
           paidAt: new Date(),
         },
       });
@@ -662,6 +663,7 @@ export async function checkoutShopSaleAction(input: {
           clientLabel,
           clientPhone,
           cashierUserId: user.id,
+          cashierName: (user.name || user.email || "Caissier").trim(),
           paidAt: new Date(),
           items: {
             create: lines.map((l) => ({
@@ -685,6 +687,10 @@ export async function checkoutShopSaleAction(input: {
         shopSaleId: sale.id,
         receiptNumber,
         method: input.method,
+        confirmationStatus:
+          input.method === "MOBILE_MONEY" || input.method === "BANK"
+            ? "PENDING"
+            : "CONFIRMED",
         amountCdf: total,
         amountForeign: input.amountForeign ?? null,
         foreignCurrency: rate?.fromCurrency ?? "USD",
@@ -843,6 +849,101 @@ export async function notifyShopProductPromoWhatsAppAction(input: {
     productName: product.name,
     body: `${product.name} : ${product.promoPrice.toFixed(2)} $ (au lieu de ${product.price.toFixed(2)} $)`,
   });
+}
+
+export async function listTodayEncaissedSalesAction(
+  organizationId: string,
+  branchId: string,
+) {
+  await ctx(organizationId, branchId);
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  return prisma.shopSale.findMany({
+    where: {
+      branchId,
+      status: { in: ["ENCAISSEE", "CORRIGEE"] },
+      paidAt: { gte: start },
+    },
+    orderBy: { paidAt: "desc" },
+    take: 80,
+    select: {
+      id: true,
+      ticketNumber: true,
+      status: true,
+      totalAmount: true,
+      cashierName: true,
+      paidAt: true,
+      correctionReason: true,
+    },
+  });
+}
+
+export async function correctEncaissedSaleAction(input: {
+  organizationId: string;
+  branchId: string;
+  saleId: string;
+  reason: string;
+}) {
+  const { user } = await ctx(input.organizationId, input.branchId);
+  const reason = input.reason.trim();
+  if (reason.length < 4) {
+    throw new Error("Indiquez un motif d’au moins 4 caractères.");
+  }
+  const sale = await prisma.shopSale.findFirst({
+    where: { id: input.saleId, branchId: input.branchId },
+    include: { items: true },
+  });
+  if (!sale) throw new Error("Ticket introuvable.");
+  if (sale.status !== "ENCAISSEE") {
+    throw new Error("Seule une vente encaissée peut être corrigée.");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    for (const item of sale.items) {
+      if (!item.productId) continue;
+      await tx.shopProduct.update({
+        where: { id: item.productId },
+        data: { stockQty: { increment: item.quantity } },
+      });
+      await tx.shopStockMovement.create({
+        data: {
+          branchId: input.branchId,
+          productId: item.productId,
+          saleId: sale.id,
+          kind: "ENTREE",
+          quantity: item.quantity,
+          note: `Correction ${sale.ticketNumber} · ${reason}`,
+          createdByUserId: user.id,
+        },
+      });
+    }
+    await tx.shopSale.update({
+      where: { id: sale.id },
+      data: {
+        status: "CORRIGEE",
+        correctionReason: reason,
+        correctedByUserId: user.id,
+        correctedAt: new Date(),
+      },
+    });
+  });
+
+  const { writeAuditEvent } = await import("@/lib/audit/log");
+  await writeAuditEvent({
+    organizationId: input.organizationId,
+    branchId: input.branchId,
+    entityType: "SALE",
+    entityId: sale.id,
+    action: "CORRECT",
+    actorUserId: user.id,
+    actorName: user.name || user.email || "Caissier",
+    reason,
+    oldValue: { status: sale.status, totalAmount: sale.totalAmount },
+    newValue: { status: "CORRIGEE" },
+  });
+
+  revalidateBoutique(input.organizationId, input.branchId);
+  return { ok: true as const };
 }
 
 export { normalizeBarcode, generateInternalBarcode };

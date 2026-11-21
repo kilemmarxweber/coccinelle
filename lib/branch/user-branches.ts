@@ -26,6 +26,7 @@ export type AccessibleBranch = {
   hasAlimentation: boolean;
   hasEau: boolean;
   hasVin: boolean;
+  hasProduction: boolean;
   organizationId: string;
   organizationName: string;
 };
@@ -45,6 +46,7 @@ const branchSelect = {
   hasAlimentation: true,
   hasEau: true,
   hasVin: true,
+  hasProduction: true,
   organizationId: true,
   organization: { select: { name: true } },
 } as const;
@@ -64,6 +66,7 @@ function mapBranch(b: {
   hasAlimentation: boolean;
   hasEau: boolean;
   hasVin: boolean;
+  hasProduction: boolean;
   organizationId: string;
   organization: { name: string };
 }): AccessibleBranch {
@@ -82,6 +85,7 @@ function mapBranch(b: {
     hasAlimentation: b.hasAlimentation,
     hasEau: b.hasEau,
     hasVin: b.hasVin,
+    hasProduction: b.hasProduction,
     organizationId: b.organizationId,
     organizationName: b.organization.name,
   };

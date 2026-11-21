@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ChevronDown, Plane } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { ChevronDown, Leaf, LogOut } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 import {
   Sidebar,
   SidebarContent,
@@ -29,13 +30,13 @@ import { type OpsRole } from "@/lib/branch/ops-roles";
 import { cn } from "@/lib/utils";
 
 const itemClass =
-  "h-9 rounded-lg px-2.5 text-[13px] text-primary-foreground hover:bg-white hover:text-neutral-900 data-active:bg-white data-active:font-medium data-active:text-neutral-900 data-active:hover:bg-white data-active:hover:text-neutral-900";
+  "relative h-9 rounded-lg px-2.5 text-[13px] font-medium text-white/80 hover:bg-white/10 hover:text-white data-active:bg-[#1b9a4b] data-active:font-medium data-active:text-white data-active:hover:bg-[#1b9a4b] data-active:hover:text-white [&_svg]:text-white/80 hover:[&_svg]:text-white data-active:[&_svg]:text-white";
 
 const openGroupParentClass =
-  "h-9 rounded-lg px-2.5 text-[13px] text-neutral-900 hover:bg-neutral-100 hover:text-neutral-900 data-active:bg-transparent data-active:font-medium data-active:text-neutral-900 data-active:hover:bg-neutral-100 [&>svg]:text-neutral-900";
+  "relative h-9 rounded-lg px-2.5 text-[13px] font-medium text-white/90 hover:bg-white/10 hover:text-white data-active:bg-transparent data-active:font-medium data-active:text-white data-active:shadow-none data-active:hover:bg-white/10 [&_svg]:text-white";
 
 const subItemClass =
-  "h-8 rounded-md text-[12.5px] text-neutral-900 hover:bg-neutral-100 hover:text-neutral-900 data-active:bg-neutral-200 data-active:font-medium data-active:text-neutral-900 data-active:hover:bg-neutral-200 [&>svg]:text-neutral-900 hover:[&>svg]:text-neutral-900 data-active:[&>svg]:text-neutral-900";
+  "h-8 rounded-md text-[12.5px] text-white/75 hover:bg-white/10 hover:text-white data-active:bg-[#1b9a4b] data-active:font-medium data-active:text-white data-active:hover:bg-[#1b9a4b] data-active:hover:text-white [&>svg]:text-white/75! hover:[&>svg]:text-white! data-active:[&>svg]:text-white!";
 
 function isPathActive(pathname: string, href: string, exact?: boolean) {
   if (exact) return pathname === href;
@@ -63,17 +64,29 @@ export function BranchSidebar(props: {
   branchType: string;
   hasStays: boolean;
   hasRestaurant: boolean;
+  hasProduction?: boolean;
   appName: string;
   opsRole: OpsRole;
   allowedCardIds?: string[] | "ALL";
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { setOpenMobile, isMobile } = useSidebar();
+
+  async function handleSignOut() {
+    await authClient.signOut();
+    router.replace("/auth/sign-in");
+    router.refresh();
+  }
   const items = branchSidebarNav(
     props.organizationId,
     props.branchId,
     props.branchType,
-    { hasStays: props.hasStays, hasRestaurant: props.hasRestaurant },
+    {
+      hasStays: props.hasStays,
+      hasRestaurant: props.hasRestaurant,
+      hasProduction: props.hasProduction,
+    },
     props.opsRole,
     props.allowedCardIds,
   );
@@ -117,14 +130,14 @@ export function BranchSidebar(props: {
           href={dashHref}
           className="flex items-center gap-2.5 rounded-lg px-1 py-0.5"
         >
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white/15">
-            <Plane className="size-5 text-white" aria-hidden />
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/15">
+            <Leaf className="size-4 text-white" aria-hidden />
           </span>
           <span className="min-w-0 leading-tight">
-            <span className="block truncate text-base font-bold tracking-[0.14em] text-white">
+            <span className="block truncate text-sm font-semibold text-white">
               {props.appName}
             </span>
-            <span className="block truncate text-[10px] tracking-wide text-white/70 uppercase">
+            <span className="block truncate text-[11px] text-white/70">
               {props.branchName}
             </span>
           </span>
@@ -166,11 +179,7 @@ export function BranchSidebar(props: {
 
                 return (
                   <SidebarMenuItem key={entry.title}>
-                    <div
-                      className={cn(
-                        expanded && "rounded-lg bg-white p-0.5 text-neutral-900",
-                      )}
-                    >
+                    <div>
                       <SidebarMenuButton
                         isActive={expanded}
                         tooltip={entry.title}
@@ -181,10 +190,8 @@ export function BranchSidebar(props: {
                         <span>{entry.title}</span>
                         <ChevronDown
                           className={cn(
-                            "ml-auto size-3.5 opacity-80 transition-transform",
-                            expanded
-                              ? "rotate-0 text-neutral-900"
-                              : "-rotate-90",
+                            "ml-auto size-3.5 text-white/70 transition-transform",
+                            expanded ? "rotate-0 text-white" : "-rotate-90",
                           )}
                         />
                       </SidebarMenuButton>
@@ -220,10 +227,25 @@ export function BranchSidebar(props: {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="px-3 py-3">
-        <p className="truncate px-1 text-[10px] text-white/55">
-          {props.appName}
+      <SidebarFooter className="gap-2 px-3 py-3">
+        <div className="rounded-xl bg-black/15 px-3 py-2.5">
+          <p className="truncate text-sm font-semibold text-white">
+            {props.branchName}
+          </p>
+          <p className="text-[11px] text-white/70">Département</p>
+        </div>
+        <p className="flex items-center gap-2 px-1 text-[11px] text-white/80">
+          <span className="size-2 rounded-full bg-[#86efac]" />
+          Synchronisé
         </p>
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="flex h-9 items-center gap-2 rounded-lg px-2.5 text-[13px] font-medium text-white/90 hover:bg-white/10"
+        >
+          <LogOut className="size-4" />
+          Déconnexion
+        </button>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

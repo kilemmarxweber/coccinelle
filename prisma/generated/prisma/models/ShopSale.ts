@@ -47,8 +47,12 @@ export type ShopSaleMinAggregateOutputType = {
   anonymousCode: string | null
   totalAmount: number | null
   cashierUserId: string | null
+  cashierName: string | null
   heldAt: Date | null
   paidAt: Date | null
+  correctionReason: string | null
+  correctedByUserId: string | null
+  correctedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -66,8 +70,12 @@ export type ShopSaleMaxAggregateOutputType = {
   anonymousCode: string | null
   totalAmount: number | null
   cashierUserId: string | null
+  cashierName: string | null
   heldAt: Date | null
   paidAt: Date | null
+  correctionReason: string | null
+  correctedByUserId: string | null
+  correctedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -85,8 +93,12 @@ export type ShopSaleCountAggregateOutputType = {
   anonymousCode: number
   totalAmount: number
   cashierUserId: number
+  cashierName: number
   heldAt: number
   paidAt: number
+  correctionReason: number
+  correctedByUserId: number
+  correctedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -114,8 +126,12 @@ export type ShopSaleMinAggregateInputType = {
   anonymousCode?: true
   totalAmount?: true
   cashierUserId?: true
+  cashierName?: true
   heldAt?: true
   paidAt?: true
+  correctionReason?: true
+  correctedByUserId?: true
+  correctedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -133,8 +149,12 @@ export type ShopSaleMaxAggregateInputType = {
   anonymousCode?: true
   totalAmount?: true
   cashierUserId?: true
+  cashierName?: true
   heldAt?: true
   paidAt?: true
+  correctionReason?: true
+  correctedByUserId?: true
+  correctedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -152,8 +172,12 @@ export type ShopSaleCountAggregateInputType = {
   anonymousCode?: true
   totalAmount?: true
   cashierUserId?: true
+  cashierName?: true
   heldAt?: true
   paidAt?: true
+  correctionReason?: true
+  correctedByUserId?: true
+  correctedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -258,8 +282,12 @@ export type ShopSaleGroupByOutputType = {
   anonymousCode: string | null
   totalAmount: number
   cashierUserId: string | null
+  cashierName: string | null
   heldAt: Date | null
   paidAt: Date | null
+  correctionReason: string | null
+  correctedByUserId: string | null
+  correctedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: ShopSaleCountAggregateOutputType | null
@@ -300,14 +328,19 @@ export type ShopSaleWhereInput = {
   anonymousCode?: Prisma.StringNullableFilter<"ShopSale"> | string | null
   totalAmount?: Prisma.FloatFilter<"ShopSale"> | number
   cashierUserId?: Prisma.StringNullableFilter<"ShopSale"> | string | null
+  cashierName?: Prisma.StringNullableFilter<"ShopSale"> | string | null
   heldAt?: Prisma.DateTimeNullableFilter<"ShopSale"> | Date | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"ShopSale"> | Date | string | null
+  correctionReason?: Prisma.StringNullableFilter<"ShopSale"> | string | null
+  correctedByUserId?: Prisma.StringNullableFilter<"ShopSale"> | string | null
+  correctedAt?: Prisma.DateTimeNullableFilter<"ShopSale"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ShopSale"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ShopSale"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   items?: Prisma.ShopSaleItemListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
   stockMovements?: Prisma.ShopStockMovementListRelationFilter
+  deptCredits?: Prisma.DeptCreditListRelationFilter
 }
 
 export type ShopSaleOrderByWithRelationInput = {
@@ -323,14 +356,19 @@ export type ShopSaleOrderByWithRelationInput = {
   anonymousCode?: Prisma.SortOrderInput | Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   cashierUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  cashierName?: Prisma.SortOrderInput | Prisma.SortOrder
   heldAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  correctionReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  correctedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  correctedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   branch?: Prisma.BranchOrderByWithRelationInput
   items?: Prisma.ShopSaleItemOrderByRelationAggregateInput
   payments?: Prisma.PaymentOrderByRelationAggregateInput
   stockMovements?: Prisma.ShopStockMovementOrderByRelationAggregateInput
+  deptCredits?: Prisma.DeptCreditOrderByRelationAggregateInput
 }
 
 export type ShopSaleWhereUniqueInput = Prisma.AtLeast<{
@@ -350,14 +388,19 @@ export type ShopSaleWhereUniqueInput = Prisma.AtLeast<{
   anonymousCode?: Prisma.StringNullableFilter<"ShopSale"> | string | null
   totalAmount?: Prisma.FloatFilter<"ShopSale"> | number
   cashierUserId?: Prisma.StringNullableFilter<"ShopSale"> | string | null
+  cashierName?: Prisma.StringNullableFilter<"ShopSale"> | string | null
   heldAt?: Prisma.DateTimeNullableFilter<"ShopSale"> | Date | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"ShopSale"> | Date | string | null
+  correctionReason?: Prisma.StringNullableFilter<"ShopSale"> | string | null
+  correctedByUserId?: Prisma.StringNullableFilter<"ShopSale"> | string | null
+  correctedAt?: Prisma.DateTimeNullableFilter<"ShopSale"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ShopSale"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ShopSale"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   items?: Prisma.ShopSaleItemListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
   stockMovements?: Prisma.ShopStockMovementListRelationFilter
+  deptCredits?: Prisma.DeptCreditListRelationFilter
 }, "id" | "branchId_ticketNumber">
 
 export type ShopSaleOrderByWithAggregationInput = {
@@ -373,8 +416,12 @@ export type ShopSaleOrderByWithAggregationInput = {
   anonymousCode?: Prisma.SortOrderInput | Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   cashierUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  cashierName?: Prisma.SortOrderInput | Prisma.SortOrder
   heldAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  correctionReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  correctedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  correctedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ShopSaleCountOrderByAggregateInput
@@ -400,8 +447,12 @@ export type ShopSaleScalarWhereWithAggregatesInput = {
   anonymousCode?: Prisma.StringNullableWithAggregatesFilter<"ShopSale"> | string | null
   totalAmount?: Prisma.FloatWithAggregatesFilter<"ShopSale"> | number
   cashierUserId?: Prisma.StringNullableWithAggregatesFilter<"ShopSale"> | string | null
+  cashierName?: Prisma.StringNullableWithAggregatesFilter<"ShopSale"> | string | null
   heldAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ShopSale"> | Date | string | null
   paidAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ShopSale"> | Date | string | null
+  correctionReason?: Prisma.StringNullableWithAggregatesFilter<"ShopSale"> | string | null
+  correctedByUserId?: Prisma.StringNullableWithAggregatesFilter<"ShopSale"> | string | null
+  correctedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ShopSale"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ShopSale"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ShopSale"> | Date | string
 }
@@ -418,14 +469,19 @@ export type ShopSaleCreateInput = {
   anonymousCode?: string | null
   totalAmount?: number
   cashierUserId?: string | null
+  cashierName?: string | null
   heldAt?: Date | string | null
   paidAt?: Date | string | null
+  correctionReason?: string | null
+  correctedByUserId?: string | null
+  correctedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutShopSalesInput
   items?: Prisma.ShopSaleItemCreateNestedManyWithoutSaleInput
   payments?: Prisma.PaymentCreateNestedManyWithoutShopSaleInput
   stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutSaleInput
+  deptCredits?: Prisma.DeptCreditCreateNestedManyWithoutShopSaleInput
 }
 
 export type ShopSaleUncheckedCreateInput = {
@@ -441,13 +497,18 @@ export type ShopSaleUncheckedCreateInput = {
   anonymousCode?: string | null
   totalAmount?: number
   cashierUserId?: string | null
+  cashierName?: string | null
   heldAt?: Date | string | null
   paidAt?: Date | string | null
+  correctionReason?: string | null
+  correctedByUserId?: string | null
+  correctedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ShopSaleItemUncheckedCreateNestedManyWithoutSaleInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutShopSaleInput
   stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutSaleInput
+  deptCredits?: Prisma.DeptCreditUncheckedCreateNestedManyWithoutShopSaleInput
 }
 
 export type ShopSaleUpdateInput = {
@@ -462,14 +523,19 @@ export type ShopSaleUpdateInput = {
   anonymousCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   cashierUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cashierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  correctionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutShopSalesNestedInput
   items?: Prisma.ShopSaleItemUpdateManyWithoutSaleNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutShopSaleNestedInput
   stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutSaleNestedInput
+  deptCredits?: Prisma.DeptCreditUpdateManyWithoutShopSaleNestedInput
 }
 
 export type ShopSaleUncheckedUpdateInput = {
@@ -485,13 +551,18 @@ export type ShopSaleUncheckedUpdateInput = {
   anonymousCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   cashierUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cashierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  correctionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ShopSaleItemUncheckedUpdateManyWithoutSaleNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutShopSaleNestedInput
   stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutSaleNestedInput
+  deptCredits?: Prisma.DeptCreditUncheckedUpdateManyWithoutShopSaleNestedInput
 }
 
 export type ShopSaleCreateManyInput = {
@@ -507,8 +578,12 @@ export type ShopSaleCreateManyInput = {
   anonymousCode?: string | null
   totalAmount?: number
   cashierUserId?: string | null
+  cashierName?: string | null
   heldAt?: Date | string | null
   paidAt?: Date | string | null
+  correctionReason?: string | null
+  correctedByUserId?: string | null
+  correctedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -525,8 +600,12 @@ export type ShopSaleUpdateManyMutationInput = {
   anonymousCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   cashierUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cashierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  correctionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -544,8 +623,12 @@ export type ShopSaleUncheckedUpdateManyInput = {
   anonymousCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   cashierUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cashierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  correctionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -578,8 +661,12 @@ export type ShopSaleCountOrderByAggregateInput = {
   anonymousCode?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   cashierUserId?: Prisma.SortOrder
+  cashierName?: Prisma.SortOrder
   heldAt?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  correctionReason?: Prisma.SortOrder
+  correctedByUserId?: Prisma.SortOrder
+  correctedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -601,8 +688,12 @@ export type ShopSaleMaxOrderByAggregateInput = {
   anonymousCode?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   cashierUserId?: Prisma.SortOrder
+  cashierName?: Prisma.SortOrder
   heldAt?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  correctionReason?: Prisma.SortOrder
+  correctedByUserId?: Prisma.SortOrder
+  correctedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -620,8 +711,12 @@ export type ShopSaleMinOrderByAggregateInput = {
   anonymousCode?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   cashierUserId?: Prisma.SortOrder
+  cashierName?: Prisma.SortOrder
   heldAt?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  correctionReason?: Prisma.SortOrder
+  correctedByUserId?: Prisma.SortOrder
+  correctedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -732,6 +827,22 @@ export type ShopSaleUpdateOneWithoutPaymentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ShopSaleUpdateToOneWithWhereWithoutPaymentsInput, Prisma.ShopSaleUpdateWithoutPaymentsInput>, Prisma.ShopSaleUncheckedUpdateWithoutPaymentsInput>
 }
 
+export type ShopSaleCreateNestedOneWithoutDeptCreditsInput = {
+  create?: Prisma.XOR<Prisma.ShopSaleCreateWithoutDeptCreditsInput, Prisma.ShopSaleUncheckedCreateWithoutDeptCreditsInput>
+  connectOrCreate?: Prisma.ShopSaleCreateOrConnectWithoutDeptCreditsInput
+  connect?: Prisma.ShopSaleWhereUniqueInput
+}
+
+export type ShopSaleUpdateOneWithoutDeptCreditsNestedInput = {
+  create?: Prisma.XOR<Prisma.ShopSaleCreateWithoutDeptCreditsInput, Prisma.ShopSaleUncheckedCreateWithoutDeptCreditsInput>
+  connectOrCreate?: Prisma.ShopSaleCreateOrConnectWithoutDeptCreditsInput
+  upsert?: Prisma.ShopSaleUpsertWithoutDeptCreditsInput
+  disconnect?: Prisma.ShopSaleWhereInput | boolean
+  delete?: Prisma.ShopSaleWhereInput | boolean
+  connect?: Prisma.ShopSaleWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ShopSaleUpdateToOneWithWhereWithoutDeptCreditsInput, Prisma.ShopSaleUpdateWithoutDeptCreditsInput>, Prisma.ShopSaleUncheckedUpdateWithoutDeptCreditsInput>
+}
+
 export type ShopSaleCreateWithoutBranchInput = {
   id?: string
   cashSessionId?: string | null
@@ -744,13 +855,18 @@ export type ShopSaleCreateWithoutBranchInput = {
   anonymousCode?: string | null
   totalAmount?: number
   cashierUserId?: string | null
+  cashierName?: string | null
   heldAt?: Date | string | null
   paidAt?: Date | string | null
+  correctionReason?: string | null
+  correctedByUserId?: string | null
+  correctedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ShopSaleItemCreateNestedManyWithoutSaleInput
   payments?: Prisma.PaymentCreateNestedManyWithoutShopSaleInput
   stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutSaleInput
+  deptCredits?: Prisma.DeptCreditCreateNestedManyWithoutShopSaleInput
 }
 
 export type ShopSaleUncheckedCreateWithoutBranchInput = {
@@ -765,13 +881,18 @@ export type ShopSaleUncheckedCreateWithoutBranchInput = {
   anonymousCode?: string | null
   totalAmount?: number
   cashierUserId?: string | null
+  cashierName?: string | null
   heldAt?: Date | string | null
   paidAt?: Date | string | null
+  correctionReason?: string | null
+  correctedByUserId?: string | null
+  correctedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ShopSaleItemUncheckedCreateNestedManyWithoutSaleInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutShopSaleInput
   stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutSaleInput
+  deptCredits?: Prisma.DeptCreditUncheckedCreateNestedManyWithoutShopSaleInput
 }
 
 export type ShopSaleCreateOrConnectWithoutBranchInput = {
@@ -816,8 +937,12 @@ export type ShopSaleScalarWhereInput = {
   anonymousCode?: Prisma.StringNullableFilter<"ShopSale"> | string | null
   totalAmount?: Prisma.FloatFilter<"ShopSale"> | number
   cashierUserId?: Prisma.StringNullableFilter<"ShopSale"> | string | null
+  cashierName?: Prisma.StringNullableFilter<"ShopSale"> | string | null
   heldAt?: Prisma.DateTimeNullableFilter<"ShopSale"> | Date | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"ShopSale"> | Date | string | null
+  correctionReason?: Prisma.StringNullableFilter<"ShopSale"> | string | null
+  correctedByUserId?: Prisma.StringNullableFilter<"ShopSale"> | string | null
+  correctedAt?: Prisma.DateTimeNullableFilter<"ShopSale"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ShopSale"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ShopSale"> | Date | string
 }
@@ -834,13 +959,18 @@ export type ShopSaleCreateWithoutItemsInput = {
   anonymousCode?: string | null
   totalAmount?: number
   cashierUserId?: string | null
+  cashierName?: string | null
   heldAt?: Date | string | null
   paidAt?: Date | string | null
+  correctionReason?: string | null
+  correctedByUserId?: string | null
+  correctedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutShopSalesInput
   payments?: Prisma.PaymentCreateNestedManyWithoutShopSaleInput
   stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutSaleInput
+  deptCredits?: Prisma.DeptCreditCreateNestedManyWithoutShopSaleInput
 }
 
 export type ShopSaleUncheckedCreateWithoutItemsInput = {
@@ -856,12 +986,17 @@ export type ShopSaleUncheckedCreateWithoutItemsInput = {
   anonymousCode?: string | null
   totalAmount?: number
   cashierUserId?: string | null
+  cashierName?: string | null
   heldAt?: Date | string | null
   paidAt?: Date | string | null
+  correctionReason?: string | null
+  correctedByUserId?: string | null
+  correctedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutShopSaleInput
   stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutSaleInput
+  deptCredits?: Prisma.DeptCreditUncheckedCreateNestedManyWithoutShopSaleInput
 }
 
 export type ShopSaleCreateOrConnectWithoutItemsInput = {
@@ -892,13 +1027,18 @@ export type ShopSaleUpdateWithoutItemsInput = {
   anonymousCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   cashierUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cashierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  correctionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutShopSalesNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutShopSaleNestedInput
   stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutSaleNestedInput
+  deptCredits?: Prisma.DeptCreditUpdateManyWithoutShopSaleNestedInput
 }
 
 export type ShopSaleUncheckedUpdateWithoutItemsInput = {
@@ -914,12 +1054,17 @@ export type ShopSaleUncheckedUpdateWithoutItemsInput = {
   anonymousCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   cashierUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cashierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  correctionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutShopSaleNestedInput
   stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutSaleNestedInput
+  deptCredits?: Prisma.DeptCreditUncheckedUpdateManyWithoutShopSaleNestedInput
 }
 
 export type ShopSaleCreateWithoutStockMovementsInput = {
@@ -934,13 +1079,18 @@ export type ShopSaleCreateWithoutStockMovementsInput = {
   anonymousCode?: string | null
   totalAmount?: number
   cashierUserId?: string | null
+  cashierName?: string | null
   heldAt?: Date | string | null
   paidAt?: Date | string | null
+  correctionReason?: string | null
+  correctedByUserId?: string | null
+  correctedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutShopSalesInput
   items?: Prisma.ShopSaleItemCreateNestedManyWithoutSaleInput
   payments?: Prisma.PaymentCreateNestedManyWithoutShopSaleInput
+  deptCredits?: Prisma.DeptCreditCreateNestedManyWithoutShopSaleInput
 }
 
 export type ShopSaleUncheckedCreateWithoutStockMovementsInput = {
@@ -956,12 +1106,17 @@ export type ShopSaleUncheckedCreateWithoutStockMovementsInput = {
   anonymousCode?: string | null
   totalAmount?: number
   cashierUserId?: string | null
+  cashierName?: string | null
   heldAt?: Date | string | null
   paidAt?: Date | string | null
+  correctionReason?: string | null
+  correctedByUserId?: string | null
+  correctedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ShopSaleItemUncheckedCreateNestedManyWithoutSaleInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutShopSaleInput
+  deptCredits?: Prisma.DeptCreditUncheckedCreateNestedManyWithoutShopSaleInput
 }
 
 export type ShopSaleCreateOrConnectWithoutStockMovementsInput = {
@@ -992,13 +1147,18 @@ export type ShopSaleUpdateWithoutStockMovementsInput = {
   anonymousCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   cashierUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cashierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  correctionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutShopSalesNestedInput
   items?: Prisma.ShopSaleItemUpdateManyWithoutSaleNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutShopSaleNestedInput
+  deptCredits?: Prisma.DeptCreditUpdateManyWithoutShopSaleNestedInput
 }
 
 export type ShopSaleUncheckedUpdateWithoutStockMovementsInput = {
@@ -1014,12 +1174,17 @@ export type ShopSaleUncheckedUpdateWithoutStockMovementsInput = {
   anonymousCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   cashierUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cashierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  correctionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ShopSaleItemUncheckedUpdateManyWithoutSaleNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutShopSaleNestedInput
+  deptCredits?: Prisma.DeptCreditUncheckedUpdateManyWithoutShopSaleNestedInput
 }
 
 export type ShopSaleCreateWithoutPaymentsInput = {
@@ -1034,13 +1199,18 @@ export type ShopSaleCreateWithoutPaymentsInput = {
   anonymousCode?: string | null
   totalAmount?: number
   cashierUserId?: string | null
+  cashierName?: string | null
   heldAt?: Date | string | null
   paidAt?: Date | string | null
+  correctionReason?: string | null
+  correctedByUserId?: string | null
+  correctedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutShopSalesInput
   items?: Prisma.ShopSaleItemCreateNestedManyWithoutSaleInput
   stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutSaleInput
+  deptCredits?: Prisma.DeptCreditCreateNestedManyWithoutShopSaleInput
 }
 
 export type ShopSaleUncheckedCreateWithoutPaymentsInput = {
@@ -1056,12 +1226,17 @@ export type ShopSaleUncheckedCreateWithoutPaymentsInput = {
   anonymousCode?: string | null
   totalAmount?: number
   cashierUserId?: string | null
+  cashierName?: string | null
   heldAt?: Date | string | null
   paidAt?: Date | string | null
+  correctionReason?: string | null
+  correctedByUserId?: string | null
+  correctedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ShopSaleItemUncheckedCreateNestedManyWithoutSaleInput
   stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutSaleInput
+  deptCredits?: Prisma.DeptCreditUncheckedCreateNestedManyWithoutShopSaleInput
 }
 
 export type ShopSaleCreateOrConnectWithoutPaymentsInput = {
@@ -1092,13 +1267,18 @@ export type ShopSaleUpdateWithoutPaymentsInput = {
   anonymousCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   cashierUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cashierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  correctionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutShopSalesNestedInput
   items?: Prisma.ShopSaleItemUpdateManyWithoutSaleNestedInput
   stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutSaleNestedInput
+  deptCredits?: Prisma.DeptCreditUpdateManyWithoutShopSaleNestedInput
 }
 
 export type ShopSaleUncheckedUpdateWithoutPaymentsInput = {
@@ -1114,11 +1294,136 @@ export type ShopSaleUncheckedUpdateWithoutPaymentsInput = {
   anonymousCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   cashierUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cashierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  correctionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ShopSaleItemUncheckedUpdateManyWithoutSaleNestedInput
+  stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutSaleNestedInput
+  deptCredits?: Prisma.DeptCreditUncheckedUpdateManyWithoutShopSaleNestedInput
+}
+
+export type ShopSaleCreateWithoutDeptCreditsInput = {
+  id?: string
+  cashSessionId?: string | null
+  status?: $Enums.ShopSaleStatus
+  ticketNumber: string
+  holdLabel?: string | null
+  clientLabel?: string | null
+  clientPhone?: string | null
+  isAnonymous?: boolean
+  anonymousCode?: string | null
+  totalAmount?: number
+  cashierUserId?: string | null
+  cashierName?: string | null
+  heldAt?: Date | string | null
+  paidAt?: Date | string | null
+  correctionReason?: string | null
+  correctedByUserId?: string | null
+  correctedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutShopSalesInput
+  items?: Prisma.ShopSaleItemCreateNestedManyWithoutSaleInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutShopSaleInput
+  stockMovements?: Prisma.ShopStockMovementCreateNestedManyWithoutSaleInput
+}
+
+export type ShopSaleUncheckedCreateWithoutDeptCreditsInput = {
+  id?: string
+  branchId: string
+  cashSessionId?: string | null
+  status?: $Enums.ShopSaleStatus
+  ticketNumber: string
+  holdLabel?: string | null
+  clientLabel?: string | null
+  clientPhone?: string | null
+  isAnonymous?: boolean
+  anonymousCode?: string | null
+  totalAmount?: number
+  cashierUserId?: string | null
+  cashierName?: string | null
+  heldAt?: Date | string | null
+  paidAt?: Date | string | null
+  correctionReason?: string | null
+  correctedByUserId?: string | null
+  correctedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  items?: Prisma.ShopSaleItemUncheckedCreateNestedManyWithoutSaleInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutShopSaleInput
+  stockMovements?: Prisma.ShopStockMovementUncheckedCreateNestedManyWithoutSaleInput
+}
+
+export type ShopSaleCreateOrConnectWithoutDeptCreditsInput = {
+  where: Prisma.ShopSaleWhereUniqueInput
+  create: Prisma.XOR<Prisma.ShopSaleCreateWithoutDeptCreditsInput, Prisma.ShopSaleUncheckedCreateWithoutDeptCreditsInput>
+}
+
+export type ShopSaleUpsertWithoutDeptCreditsInput = {
+  update: Prisma.XOR<Prisma.ShopSaleUpdateWithoutDeptCreditsInput, Prisma.ShopSaleUncheckedUpdateWithoutDeptCreditsInput>
+  create: Prisma.XOR<Prisma.ShopSaleCreateWithoutDeptCreditsInput, Prisma.ShopSaleUncheckedCreateWithoutDeptCreditsInput>
+  where?: Prisma.ShopSaleWhereInput
+}
+
+export type ShopSaleUpdateToOneWithWhereWithoutDeptCreditsInput = {
+  where?: Prisma.ShopSaleWhereInput
+  data: Prisma.XOR<Prisma.ShopSaleUpdateWithoutDeptCreditsInput, Prisma.ShopSaleUncheckedUpdateWithoutDeptCreditsInput>
+}
+
+export type ShopSaleUpdateWithoutDeptCreditsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  cashSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumShopSaleStatusFieldUpdateOperationsInput | $Enums.ShopSaleStatus
+  ticketNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  holdLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  anonymousCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  cashierUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cashierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  heldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  correctionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutShopSalesNestedInput
+  items?: Prisma.ShopSaleItemUpdateManyWithoutSaleNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutShopSaleNestedInput
+  stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutSaleNestedInput
+}
+
+export type ShopSaleUncheckedUpdateWithoutDeptCreditsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  cashSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumShopSaleStatusFieldUpdateOperationsInput | $Enums.ShopSaleStatus
+  ticketNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  holdLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  anonymousCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  cashierUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cashierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  heldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  correctionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  items?: Prisma.ShopSaleItemUncheckedUpdateManyWithoutSaleNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutShopSaleNestedInput
   stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutSaleNestedInput
 }
 
@@ -1134,8 +1439,12 @@ export type ShopSaleCreateManyBranchInput = {
   anonymousCode?: string | null
   totalAmount?: number
   cashierUserId?: string | null
+  cashierName?: string | null
   heldAt?: Date | string | null
   paidAt?: Date | string | null
+  correctionReason?: string | null
+  correctedByUserId?: string | null
+  correctedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1152,13 +1461,18 @@ export type ShopSaleUpdateWithoutBranchInput = {
   anonymousCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   cashierUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cashierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  correctionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ShopSaleItemUpdateManyWithoutSaleNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutShopSaleNestedInput
   stockMovements?: Prisma.ShopStockMovementUpdateManyWithoutSaleNestedInput
+  deptCredits?: Prisma.DeptCreditUpdateManyWithoutShopSaleNestedInput
 }
 
 export type ShopSaleUncheckedUpdateWithoutBranchInput = {
@@ -1173,13 +1487,18 @@ export type ShopSaleUncheckedUpdateWithoutBranchInput = {
   anonymousCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   cashierUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cashierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  correctionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ShopSaleItemUncheckedUpdateManyWithoutSaleNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutShopSaleNestedInput
   stockMovements?: Prisma.ShopStockMovementUncheckedUpdateManyWithoutSaleNestedInput
+  deptCredits?: Prisma.DeptCreditUncheckedUpdateManyWithoutShopSaleNestedInput
 }
 
 export type ShopSaleUncheckedUpdateManyWithoutBranchInput = {
@@ -1194,8 +1513,12 @@ export type ShopSaleUncheckedUpdateManyWithoutBranchInput = {
   anonymousCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   cashierUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cashierName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  correctionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correctedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1209,12 +1532,14 @@ export type ShopSaleCountOutputType = {
   items: number
   payments: number
   stockMovements: number
+  deptCredits: number
 }
 
 export type ShopSaleCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | ShopSaleCountOutputTypeCountItemsArgs
   payments?: boolean | ShopSaleCountOutputTypeCountPaymentsArgs
   stockMovements?: boolean | ShopSaleCountOutputTypeCountStockMovementsArgs
+  deptCredits?: boolean | ShopSaleCountOutputTypeCountDeptCreditsArgs
 }
 
 /**
@@ -1248,6 +1573,13 @@ export type ShopSaleCountOutputTypeCountStockMovementsArgs<ExtArgs extends runti
   where?: Prisma.ShopStockMovementWhereInput
 }
 
+/**
+ * ShopSaleCountOutputType without action
+ */
+export type ShopSaleCountOutputTypeCountDeptCreditsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DeptCreditWhereInput
+}
+
 
 export type ShopSaleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1262,14 +1594,19 @@ export type ShopSaleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   anonymousCode?: boolean
   totalAmount?: boolean
   cashierUserId?: boolean
+  cashierName?: boolean
   heldAt?: boolean
   paidAt?: boolean
+  correctionReason?: boolean
+  correctedByUserId?: boolean
+  correctedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   items?: boolean | Prisma.ShopSale$itemsArgs<ExtArgs>
   payments?: boolean | Prisma.ShopSale$paymentsArgs<ExtArgs>
   stockMovements?: boolean | Prisma.ShopSale$stockMovementsArgs<ExtArgs>
+  deptCredits?: boolean | Prisma.ShopSale$deptCreditsArgs<ExtArgs>
   _count?: boolean | Prisma.ShopSaleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["shopSale"]>
 
@@ -1286,8 +1623,12 @@ export type ShopSaleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   anonymousCode?: boolean
   totalAmount?: boolean
   cashierUserId?: boolean
+  cashierName?: boolean
   heldAt?: boolean
   paidAt?: boolean
+  correctionReason?: boolean
+  correctedByUserId?: boolean
+  correctedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -1306,8 +1647,12 @@ export type ShopSaleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   anonymousCode?: boolean
   totalAmount?: boolean
   cashierUserId?: boolean
+  cashierName?: boolean
   heldAt?: boolean
   paidAt?: boolean
+  correctionReason?: boolean
+  correctedByUserId?: boolean
+  correctedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -1326,18 +1671,23 @@ export type ShopSaleSelectScalar = {
   anonymousCode?: boolean
   totalAmount?: boolean
   cashierUserId?: boolean
+  cashierName?: boolean
   heldAt?: boolean
   paidAt?: boolean
+  correctionReason?: boolean
+  correctedByUserId?: boolean
+  correctedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ShopSaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "cashSessionId" | "status" | "ticketNumber" | "holdLabel" | "clientLabel" | "clientPhone" | "isAnonymous" | "anonymousCode" | "totalAmount" | "cashierUserId" | "heldAt" | "paidAt" | "createdAt" | "updatedAt", ExtArgs["result"]["shopSale"]>
+export type ShopSaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "cashSessionId" | "status" | "ticketNumber" | "holdLabel" | "clientLabel" | "clientPhone" | "isAnonymous" | "anonymousCode" | "totalAmount" | "cashierUserId" | "cashierName" | "heldAt" | "paidAt" | "correctionReason" | "correctedByUserId" | "correctedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["shopSale"]>
 export type ShopSaleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   items?: boolean | Prisma.ShopSale$itemsArgs<ExtArgs>
   payments?: boolean | Prisma.ShopSale$paymentsArgs<ExtArgs>
   stockMovements?: boolean | Prisma.ShopSale$stockMovementsArgs<ExtArgs>
+  deptCredits?: boolean | Prisma.ShopSale$deptCreditsArgs<ExtArgs>
   _count?: boolean | Prisma.ShopSaleCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ShopSaleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1354,6 +1704,7 @@ export type $ShopSalePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     items: Prisma.$ShopSaleItemPayload<ExtArgs>[]
     payments: Prisma.$PaymentPayload<ExtArgs>[]
     stockMovements: Prisma.$ShopStockMovementPayload<ExtArgs>[]
+    deptCredits: Prisma.$DeptCreditPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1368,8 +1719,12 @@ export type $ShopSalePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     anonymousCode: string | null
     totalAmount: number
     cashierUserId: string | null
+    cashierName: string | null
     heldAt: Date | null
     paidAt: Date | null
+    correctionReason: string | null
+    correctedByUserId: string | null
+    correctedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["shopSale"]>
@@ -1770,6 +2125,7 @@ export interface Prisma__ShopSaleClient<T, Null = never, ExtArgs extends runtime
   items<T extends Prisma.ShopSale$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopSale$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ShopSaleItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payments<T extends Prisma.ShopSale$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopSale$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   stockMovements<T extends Prisma.ShopSale$stockMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopSale$stockMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ShopStockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  deptCredits<T extends Prisma.ShopSale$deptCreditsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShopSale$deptCreditsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DeptCreditPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1811,8 +2167,12 @@ export interface ShopSaleFieldRefs {
   readonly anonymousCode: Prisma.FieldRef<"ShopSale", 'String'>
   readonly totalAmount: Prisma.FieldRef<"ShopSale", 'Float'>
   readonly cashierUserId: Prisma.FieldRef<"ShopSale", 'String'>
+  readonly cashierName: Prisma.FieldRef<"ShopSale", 'String'>
   readonly heldAt: Prisma.FieldRef<"ShopSale", 'DateTime'>
   readonly paidAt: Prisma.FieldRef<"ShopSale", 'DateTime'>
+  readonly correctionReason: Prisma.FieldRef<"ShopSale", 'String'>
+  readonly correctedByUserId: Prisma.FieldRef<"ShopSale", 'String'>
+  readonly correctedAt: Prisma.FieldRef<"ShopSale", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"ShopSale", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ShopSale", 'DateTime'>
 }
@@ -2285,6 +2645,30 @@ export type ShopSale$stockMovementsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.ShopStockMovementScalarFieldEnum | Prisma.ShopStockMovementScalarFieldEnum[]
+}
+
+/**
+ * ShopSale.deptCredits
+ */
+export type ShopSale$deptCreditsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DeptCredit
+   */
+  select?: Prisma.DeptCreditSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DeptCredit
+   */
+  omit?: Prisma.DeptCreditOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DeptCreditInclude<ExtArgs> | null
+  where?: Prisma.DeptCreditWhereInput
+  orderBy?: Prisma.DeptCreditOrderByWithRelationInput | Prisma.DeptCreditOrderByWithRelationInput[]
+  cursor?: Prisma.DeptCreditWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DeptCreditScalarFieldEnum | Prisma.DeptCreditScalarFieldEnum[]
 }
 
 /**
