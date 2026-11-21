@@ -1,0 +1,1162 @@
+# PLAN DE DÉVELOPPEMENT — BIA ENTERPRISE & AUDIT INTERNE
+## Projet Coccinelle — CAFE YAYO
+
+**Version :** 1.0  
+**Date :** 21 novembre 2026  
+**Niveau :** Enterprise  
+**Statut :** Document de référence pour la conception et le développement
+
+---
+
+# 1. PRÉSENTATION GÉNÉRALE
+
+## 1.1 Objectif
+
+Le projet consiste à développer deux modules transversaux dans Coccinelle :
+
+1. **BIA Enterprise** : centre de supervision technique, de sécurité, d'intégrité et de continuité du système.
+2. **Audit interne** : centre de contrôle des opérations, de vérification des preuves, de gestion des constats et de suivi des recommandations.
+
+Ces deux modules doivent partager une identité visuelle et une infrastructure de journalisation, mais conserver des responsabilités et des autorisations distinctes.
+
+## 1.2 Architecture organisationnelle
+
+Les deux modules sont rattachés au niveau organisationnel de CAFE YAYO.
+
+Ils ne constituent :
+- ni des départements commerciaux ;
+- ni des succursales ;
+- ni des caisses opérationnelles ;
+- ni des services de vente.
+
+Ils supervisent et contrôlent les différentes activités de l'organisation.
+
+## 1.3 Technologies du projet
+
+| Composant | Technologie |
+|---|---|
+| Frontend | Next.js 16.3 App Router |
+| Backend | Next.js Server Actions / DAL |
+| ORM | Prisma 7 |
+| Base de données | PostgreSQL |
+| Authentification | Better Auth |
+| Graphiques | Recharts |
+| Journalisation | Pino |
+| Tests E2E | Playwright |
+| Surveillance | Worker Node.js indépendant |
+| Sauvegarde | pgBackRest ou PostgreSQL Base Backup + WAL |
+
+Les versions exactes des dépendances devront être vérifiées dans le projet existant avant implémentation.
+
+---
+
+# 2. MODULE BIA ENTERPRISE
+
+## 2.1 Mission
+
+BIA Enterprise doit répondre à la question :
+
+**Le système Coccinelle est-il sain, sécurisé, performant et capable de récupérer après un incident ?**
+
+Il surveille :
+- la base de données ;
+- les services applicatifs ;
+- les performances ;
+- la sécurité ;
+- l'intégrité des données ;
+- les sauvegardes ;
+- les incidents techniques ;
+- la continuité informatique.
+
+## 2.2 Architecture du menu
+
+```text
+BIA ENTERPRISE
+│
+├── Vue générale
+│
+├── Database Monitoring
+│   ├── État PostgreSQL
+│   ├── Connexions actives
+│   ├── Requêtes lentes
+│   ├── Transactions
+│   ├── Verrous
+│   └── Utilisation stockage
+│
+├── Security Center
+│   ├── Tentatives de connexion
+│   ├── Sessions utilisateurs
+│   ├── Accès refusés
+│   ├── Changements de permissions
+│   └── Incidents de sécurité
+│
+├── Integrity Control
+│   ├── Contrôle des ventes
+│   ├── Contrôle des stocks
+│   ├── Contrôle des caisses
+│   ├── Contrôle des transferts
+│   └── Anomalies de données
+│
+├── Logs & Audit
+│   ├── Journaux système
+│   ├── Journaux applicatifs
+│   ├── Événements de sécurité
+│   └── Historique technique
+│
+├── Backup & Recovery
+│   ├── Historique des sauvegardes
+│   ├── État des sauvegardes
+│   ├── Archivage WAL
+│   ├── Tests de restauration
+│   └── Plan de reprise
+│
+├── Performance Center
+│   ├── Temps de réponse
+│   ├── Requêtes SQL
+│   ├── Utilisation ressources
+│   └── Tendances
+│
+├── Alerting & Incidents
+│   ├── Centre des alertes
+│   ├── Incidents ouverts
+│   ├── Attribution
+│   ├── Historique
+│   └── Résolution
+│
+├── Rapports techniques
+│
+└── Configuration BIA
+```
+
+## 2.3 Dashboard BIA
+
+Le tableau de bord doit présenter :
+
+### Indicateurs principaux
+
+| Indicateur | Description |
+|---|---|
+| Disponibilité | État des services surveillés |
+| Santé PostgreSQL | État de la base de données |
+| Sécurité | Alertes et événements de sécurité |
+| Intégrité | Contrôles réussis et anomalies |
+| Sauvegardes | Dernières sauvegardes et vérifications |
+| Incidents | Incidents ouverts et critiques |
+| Performance | Temps de réponse et requêtes lentes |
+
+### Graphiques
+
+- Disponibilité des services.
+- Évolution des connexions PostgreSQL.
+- Volume des événements système.
+- Historique des sauvegardes.
+- Répartition des incidents par criticité.
+- Évolution des anomalies d'intégrité.
+
+Les indicateurs doivent toujours afficher leur période, leur source et leur dernière date de mise à jour.
+
+## 2.4 Database Monitoring
+
+Fonctionnalités :
+
+- Vérifier la disponibilité PostgreSQL.
+- Surveiller les connexions.
+- Identifier les requêtes lentes.
+- Surveiller les transactions longues.
+- Détecter les verrous.
+- Suivre la taille des tables.
+- Suivre l'évolution du stockage.
+- Mesurer les performances des requêtes.
+
+Sources techniques possibles :
+
+- `pg_stat_activity`
+- `pg_stat_database`
+- `pg_stat_statements`
+- `pg_locks`
+- `pg_database_size`
+
+Les collecteurs doivent utiliser des droits minimaux, de préférence en lecture seule.
+
+## 2.5 Security Center
+
+Fonctionnalités :
+
+- Suivi des connexions réussies.
+- Suivi des connexions échouées.
+- Détection des accès refusés.
+- Surveillance des changements de rôles.
+- Surveillance des permissions sensibles.
+- Historique des sessions.
+- Détection des comportements inhabituels.
+- Gestion des incidents de sécurité.
+
+Le système ne doit pas enregistrer les mots de passe, jetons d'accès ou secrets dans les journaux.
+
+## 2.6 Integrity Control
+
+Ce sous-module contrôle la cohérence des données métier.
+
+### Contrôles des ventes
+
+- Tickets sans lignes.
+- Lignes de vente incohérentes.
+- Ventes annulées sans justification.
+- Totaux de tickets incohérents.
+- Paiements sans transaction correspondante.
+
+### Contrôles des stocks
+
+- Stock négatif non autorisé.
+- Mouvement sans référence.
+- Sortie sans justification.
+- Écart entre mouvements et stock théorique.
+- Ajustement anormal.
+
+### Contrôles des caisses
+
+- Solde incohérent.
+- Mouvement sans référence.
+- Opération sans validation obligatoire.
+- Écart de clôture.
+- Transfert déséquilibré.
+
+### Contrôles des achats
+
+- Réception sans commande liée lorsque celle-ci est obligatoire.
+- Facture en doublon.
+- Montant incohérent.
+- Paiement sans justificatif.
+
+**Règle essentielle :** le moteur d'intégrité détecte et signale les anomalies. Il ne corrige jamais automatiquement les données métier.
+
+## 2.7 Backup & Recovery
+
+Fonctionnalités :
+
+- Sauvegarde complète.
+- Archivage continu des WAL.
+- Historique des sauvegardes.
+- Vérification des fichiers.
+- Contrôle de l'intégrité.
+- Tests de restauration.
+- Historique des restaurations.
+- Gestion du plan de reprise.
+
+Objectifs initiaux à valider avec l'infrastructure :
+
+| Paramètre | Proposition |
+|---|---|
+| RPO | 15 minutes |
+| RTO | 2 heures |
+| Sauvegarde complète | Quotidienne |
+| Archivage WAL | Continu |
+| Test de restauration | Mensuel |
+| Exercice de reprise | Trimestriel |
+
+Ces valeurs sont des objectifs de conception, pas des garanties. Elles devront être validées par des tests réels et en fonction des moyens disponibles.
+
+## 2.8 Alerting & Incidents
+
+Niveaux de criticité :
+
+- Information
+- Faible
+- Moyenne
+- Élevée
+- Critique
+
+Cycle d'un incident :
+
+1. Détection.
+2. Création.
+3. Classification.
+4. Attribution.
+5. Diagnostic.
+6. Intervention.
+7. Vérification.
+8. Résolution.
+9. Clôture.
+10. Historique.
+
+---
+
+# 3. MODULE AUDIT INTERNE
+
+## 3.1 Mission
+
+Audit interne doit répondre à la question :
+
+**Les opérations de CAFE YAYO sont-elles correctement exécutées, justifiées, autorisées et contrôlées ?**
+
+Le module permet :
+- de planifier les missions d'audit ;
+- de consulter les opérations ;
+- d'examiner les preuves ;
+- d'identifier les anomalies ;
+- de formaliser les constats ;
+- de produire des recommandations ;
+- de suivre les plans d'action ;
+- de générer des rapports.
+
+## 3.2 Architecture du menu
+
+```text
+AUDIT INTERNE
+│
+├── Tableau de bord
+│
+├── Plan d'audit
+│   ├── Calendrier
+│   ├── Missions planifiées
+│   └── Priorités
+│
+├── Missions d'audit
+│   ├── Missions ouvertes
+│   ├── Missions terminées
+│   └── Archives
+│
+├── Audit financier
+│   ├── Audit caisse centrale
+│   ├── Audit des caisses
+│   ├── Audit des paiements
+│   └── Audit des dépenses
+│
+├── Audit opérationnel
+│   ├── Audit des ventes
+│   ├── Audit des stocks
+│   ├── Audit des achats
+│   └── Audit des départements
+│
+├── Audit informatique
+│   ├── Audit des utilisateurs
+│   ├── Audit des permissions
+│   ├── Audit des connexions
+│   └── Audit des journaux
+│
+├── Constats & Anomalies
+│
+├── Recommandations
+│
+├── Plans d'action
+│
+├── Rapports d'audit
+│
+└── Piste d'audit
+```
+
+## 3.3 Dashboard Audit interne
+
+Indicateurs :
+
+- Missions ouvertes.
+- Missions terminées.
+- Constats critiques.
+- Constats en attente de traitement.
+- Recommandations ouvertes.
+- Recommandations clôturées.
+- Actions en retard.
+- Taux de réalisation du plan d'audit.
+
+Graphiques :
+
+- Missions par statut.
+- Constats par niveau de risque.
+- Recommandations par statut.
+- Répartition des missions par domaine.
+- Évolution des anomalies.
+
+## 3.4 Planification des missions
+
+Chaque mission doit contenir :
+
+| Champ | Description |
+|---|---|
+| Référence | Identifiant unique |
+| Intitulé | Nom de la mission |
+| Type | Financier, opérationnel, informatique, conformité |
+| Périmètre | Organisation ou domaine concerné |
+| Date de début | Date prévue |
+| Date de fin | Échéance |
+| Responsable | Auditeur responsable |
+| Objectif | Objectif du contrôle |
+| Risques | Risques ciblés |
+| Statut | État de la mission |
+
+Statuts possibles :
+
+- Brouillon
+- Planifiée
+- En cours
+- En revue
+- Terminée
+- Archivée
+
+## 3.5 Audit de caisse
+
+Contrôles :
+
+- Entrées de fonds.
+- Sorties de fonds.
+- Transferts.
+- Clôtures.
+- Écarts.
+- Justificatifs.
+- Validations.
+- Annulations.
+- Régularisations.
+
+L'auditeur doit pouvoir filtrer par période, caisse, devise, utilisateur, catégorie et statut.
+
+## 3.6 Audit des ventes
+
+Contrôles :
+
+- Ventes par département.
+- Annulations de tickets.
+- Remises.
+- Modifications.
+- Paiements.
+- Écarts.
+- Transactions inhabituelles.
+
+Départements concernés :
+
+- Mini Market
+- Boissons
+- Fast Food
+- Buffet
+- Crèmerie
+- Charcuterie
+
+## 3.7 Audit des stocks
+
+Contrôles :
+
+- Entrées de marchandises.
+- Sorties de marchandises.
+- Ajustements.
+- Pertes.
+- Avaries.
+- Inventaires.
+- Écarts théoriques et physiques.
+- Historique des modifications.
+
+## 3.8 Audit des accès
+
+Contrôles :
+
+- Comptes utilisateurs.
+- Rôles.
+- Permissions.
+- Accès sensibles.
+- Tentatives échouées.
+- Changements de privilèges.
+- Comptes inactifs.
+- Historique des connexions.
+
+## 3.9 Constats d'audit
+
+Chaque constat doit comporter :
+
+- Référence unique.
+- Mission liée.
+- Titre.
+- Domaine concerné.
+- Faits observés.
+- Critère ou règle de référence.
+- Cause identifiée ou hypothèse.
+- Conséquence.
+- Niveau de risque.
+- Preuves.
+- Recommandation associée.
+- Responsable de traitement.
+- Statut.
+
+Niveaux de risque :
+
+- Faible
+- Modéré
+- Élevé
+- Critique
+
+Un constat doit distinguer les faits vérifiés des hypothèses et interprétations de l'auditeur.
+
+## 3.10 Recommandations et plans d'action
+
+Chaque recommandation contient :
+
+- Référence.
+- Constat d'origine.
+- Description.
+- Action attendue.
+- Responsable.
+- Date limite.
+- Priorité.
+- Preuve de réalisation.
+- Statut.
+- Date de vérification.
+
+Cycle :
+
+1. Recommandation formulée.
+2. Validation.
+3. Responsable désigné.
+4. Plan d'action défini.
+5. Mise en œuvre.
+6. Dépôt des preuves.
+7. Vérification par l'audit.
+8. Clôture ou réouverture.
+
+---
+
+# 4. DESIGN UX/UI COMMUN
+
+## 4.1 Direction artistique
+
+Style : Enterprise Control Center.
+
+| Élément | Couleur |
+|---|---|
+| Bleu nuit | `#14243A` |
+| Bleu principal | `#2563EB` |
+| Vert | `#16A36A` |
+| Orange | `#F59E0B` |
+| Rouge | `#DC4545` |
+| Fond | `#F4F6FA` |
+| Texte principal | `#1E293B` |
+
+Typographie : Inter ou Geist.
+
+Composants :
+- Menu latéral.
+- Barre supérieure.
+- Cartes KPI.
+- Graphiques.
+- Tables filtrables.
+- Badges de statut.
+- Formulaires en sections.
+- Fenêtres de confirmation.
+- Historique chronologique.
+
+## 4.2 Règles UX
+
+- Afficher les informations importantes en premier.
+- Éviter la surcharge visuelle.
+- Utiliser les couleurs de statut avec parcimonie.
+- Distinguer clairement les actions autorisées et interdites.
+- Afficher les erreurs près des champs concernés.
+- Prévoir les états de chargement et d'indisponibilité.
+- Utiliser des tableaux avec filtres et pagination.
+- Conserver une interface responsive.
+- Garantir l'accessibilité clavier.
+- Ne jamais utiliser uniquement la couleur pour communiquer un statut.
+
+---
+
+# 5. RÔLES ET PERMISSIONS
+
+## 5.1 Matrice générale
+
+| Rôle | BIA | Audit interne |
+|---|---|---|
+| Direction / PCA | Consultation synthétique | Consultation synthétique |
+| Administrateur IT | Gestion technique autorisée | Pas d'administration de l'audit |
+| Responsable infrastructure | Supervision et incidents | Lecture des éléments autorisés |
+| Auditeur interne | Consultation limitée des preuves techniques | Gestion des missions et constats |
+| Responsable audit | Consultation | Gestion et supervision de l'audit |
+| Direction financière | Alertes autorisées | Consultation des rapports autorisés |
+
+## 5.2 Règles fondamentales
+
+- L'accès doit respecter le principe du moindre privilège.
+- Les permissions doivent être vérifiées côté serveur.
+- Les auditeurs ont un accès en lecture seule aux données métier sources.
+- Les auditeurs peuvent créer et gérer leurs constats et recommandations.
+- Les auditeurs ne peuvent pas modifier les ventes, les stocks ou les mouvements de caisse.
+- Les administrateurs IT ne doivent pas disposer automatiquement de droits d'approbation financière.
+- Les accès sensibles doivent être journalisés.
+
+---
+
+# 6. MODÈLES DE DONNÉES
+
+Les modèles suivants sont des propositions à adapter après inspection du schéma Prisma existant.
+
+Ne pas créer de doublons si des modèles équivalents existent déjà.
+
+## 6.1 BIA Enterprise
+
+| Modèle | Fonction |
+|---|---|
+| SystemLog | Journaux système |
+| SecurityEvent | Événements de sécurité |
+| DatabaseMetric | Mesures PostgreSQL |
+| IntegrityCheck | Définition des contrôles |
+| IntegrityRun | Exécution d'un contrôle |
+| IntegrityFinding | Anomalies détectées |
+| BiaIncident | Incident technique |
+| BiaIncidentEvent | Historique de l'incident |
+| BackupJob | Opération de sauvegarde |
+| BackupArtifact | Fichier de sauvegarde |
+| RestoreTest | Test de restauration |
+| AlertRule | Règle d'alerte |
+| BiaNotification | Notification |
+| BiaAccessLog | Historique des accès BIA |
+
+## 6.2 Audit interne
+
+| Modèle | Fonction |
+|---|---|
+| AuditPlan | Plan annuel ou périodique |
+| AuditMission | Mission d'audit |
+| AuditScope | Périmètre de mission |
+| AuditFinding | Constat |
+| AuditEvidence | Preuve |
+| AuditRecommendation | Recommandation |
+| AuditActionPlan | Plan d'action |
+| AuditFollowUp | Suivi |
+| AuditReport | Rapport |
+| AuditReview | Revue et validation |
+| AuditAccessLog | Journal d'accès à l'audit |
+
+## 6.3 Journalisation transversale
+
+Le modèle `AuditEvent` doit être réutilisé s'il existe déjà.
+
+Il doit permettre de tracer :
+
+- L'acteur.
+- L'action.
+- Le type de ressource.
+- L'identifiant de ressource.
+- La date.
+- Le contexte utile.
+- Le résultat.
+- La source de l'événement.
+
+Les secrets, mots de passe, jetons et données sensibles inutiles ne doivent jamais être enregistrés.
+
+---
+
+# 7. RAPPORTS PDF ET EXCEL
+
+Chaque module possède un centre de rapports.
+
+## 7.1 Rapports BIA
+
+- Santé technique.
+- Disponibilité.
+- Sécurité.
+- Intégrité.
+- Sauvegardes.
+- Restaurations.
+- Performance.
+- Incidents.
+- Évolution des alertes.
+
+## 7.2 Rapports Audit interne
+
+- Plan d'audit.
+- Rapport de mission.
+- Rapport de constats.
+- Rapport des risques.
+- Rapport des recommandations.
+- Rapport des actions en retard.
+- Audit de caisse.
+- Audit des ventes.
+- Audit des stocks.
+- Audit des accès.
+
+## 7.3 Export PDF
+
+Le PDF doit inclure :
+
+- Logo CAFE YAYO / Coccinelle.
+- Titre.
+- Référence unique.
+- Période.
+- Auteur.
+- Date de génération.
+- Synthèse.
+- Tableaux.
+- Graphiques pertinents.
+- Annexes.
+- Pagination.
+- Classification de confidentialité.
+
+## 7.4 Export Excel
+
+Structure possible :
+
+- Feuille Synthèse.
+- Feuille Détails.
+- Feuille Anomalies.
+- Feuille Actions.
+- Feuille Historique.
+
+Les montants doivent être numériques et les devises séparées.
+
+## 7.5 Sécurité des exports
+
+- Vérification des permissions côté serveur.
+- Journalisation de chaque génération.
+- Journalisation des téléchargements.
+- Protection des fichiers.
+- Liens temporaires ou accès authentifié.
+- Durée de conservation définie.
+- Exclusion des données non nécessaires.
+
+---
+
+# 8. ARCHITECTURE TECHNIQUE
+
+## 8.1 Structure applicative proposée
+
+```text
+src/
+├── app/
+│   ├── (dashboard)/
+│   │   ├── bia/
+│   │   │   ├── page.tsx
+│   │   │   ├── database/
+│   │   │   ├── security/
+│   │   │   ├── integrity/
+│   │   │   ├── logs/
+│   │   │   ├── backups/
+│   │   │   ├── performance/
+│   │   │   ├── incidents/
+│   │   │   └── reports/
+│   │   │
+│   │   └── audit/
+│   │       ├── page.tsx
+│   │       ├── plans/
+│   │       ├── missions/
+│   │       ├── cash/
+│   │       ├── sales/
+│   │       ├── stock/
+│   │       ├── access/
+│   │       ├── findings/
+│   │       ├── recommendations/
+│   │       └── reports/
+│   │
+│   └── api/
+│
+├── components/
+│   ├── bia/
+│   ├── audit/
+│   ├── charts/
+│   ├── tables/
+│   └── forms/
+│
+├── lib/
+│   ├── auth/
+│   ├── permissions/
+│   ├── audit/
+│   ├── logging/
+│   ├── reports/
+│   └── database/
+│
+├── services/
+│   ├── bia/
+│   └── audit/
+│
+└── workers/
+    ├── bia-monitor.worker.ts
+    ├── integrity.worker.ts
+    └── backup-monitor.worker.ts
+```
+
+Cette structure est indicative. Elle doit être adaptée à l'organisation réelle du dépôt Coccinelle.
+
+## 8.2 Architecture des services
+
+Le BIA doit disposer de services indépendants de l'interface web :
+
+- Collecteur PostgreSQL.
+- Collecteur applicatif.
+- Moteur d'intégrité.
+- Gestionnaire d'alertes.
+- Surveillance des sauvegardes.
+- Gestionnaire d'incidents.
+
+Les workers doivent être exécutés indépendamment des requêtes HTTP.
+
+L'application Next.js affiche les données collectées et permet aux utilisateurs autorisés d'interagir avec les modules.
+
+---
+
+# 9. LOTS DE DÉVELOPPEMENT
+
+# PARTIE A — BIA ENTERPRISE
+
+## BIA-01 — Fondations et sécurité
+
+Objectifs :
+- Créer les fondations du module.
+- Mettre en place les rôles.
+- Ajouter les permissions.
+- Mettre en place la journalisation.
+- Créer le dashboard initial.
+
+Livrables :
+- Menu BIA.
+- Dashboard.
+- Modèles de base.
+- Contrôle des permissions.
+- Journalisation append-only.
+- Tests des accès.
+
+Critères d'acceptation :
+- Un utilisateur non autorisé ne peut pas accéder au module.
+- Les actions sensibles sont journalisées.
+- Les rôles sont correctement appliqués côté serveur.
+
+## BIA-02 — Database Monitoring
+
+Objectifs :
+- Surveiller PostgreSQL.
+- Collecter les métriques.
+- Afficher les états techniques.
+
+Livrables :
+- Page Database Monitoring.
+- Collecteur PostgreSQL.
+- Historique des métriques.
+- Alertes de disponibilité.
+
+Critères :
+- Les métriques proviennent de la base réelle.
+- Les erreurs de collecte sont visibles.
+- Le collecteur utilise des permissions minimales.
+
+## BIA-03 — Integrity Control
+
+Objectifs :
+- Définir les contrôles métier.
+- Détecter les incohérences.
+- Conserver les résultats.
+
+Livrables :
+- Moteur de contrôles.
+- Liste des anomalies.
+- Historique des exécutions.
+- Détails des constats techniques.
+
+Critères :
+- Les contrôles sont reproductibles.
+- Les anomalies sont traçables.
+- Aucune correction métier automatique n'est exécutée.
+
+## BIA-04 — Security Center et incidents
+
+Objectifs :
+- Surveiller les événements de sécurité.
+- Gérer les incidents.
+- Mettre en place les alertes.
+
+Livrables :
+- Dashboard sécurité.
+- Centre des alertes.
+- Formulaire d'incident.
+- Historique des événements.
+
+Critères :
+- Les incidents possèdent un cycle de vie.
+- Les actions sont historisées.
+- Les secrets ne sont jamais exposés.
+
+## BIA-05 — Backup & Recovery
+
+Objectifs :
+- Superviser les sauvegardes.
+- Vérifier les fichiers.
+- Suivre les restaurations.
+
+Livrables :
+- Dashboard des sauvegardes.
+- Historique.
+- Vérification des artefacts.
+- Tests de restauration.
+- Rapport de reprise.
+
+Critères :
+- Les sauvegardes sont vérifiables.
+- Les tests de restauration sont enregistrés.
+- Les échecs génèrent des alertes.
+
+## BIA-06 — Performance et rapports
+
+Objectifs :
+- Suivre les performances.
+- Améliorer le dashboard.
+- Générer les rapports.
+
+Livrables :
+- Performance Center.
+- Graphiques.
+- Rapports PDF.
+- Rapports Excel.
+- Tests E2E.
+
+Critères :
+- Les graphiques affichent des données réelles.
+- Les rapports correspondent aux filtres.
+- Les exports sont journalisés.
+
+---
+
+# PARTIE B — AUDIT INTERNE
+
+## AUD-01 — Fondations et plan d'audit
+
+Objectifs :
+- Créer le module.
+- Mettre en place les rôles.
+- Gérer les plans.
+- Gérer les missions.
+
+Livrables :
+- Dashboard Audit.
+- Menu.
+- Modèles de mission.
+- Planification.
+- Permissions.
+
+Critères :
+- Seuls les utilisateurs autorisés gèrent les missions.
+- Les missions sont historisées.
+
+## AUD-02 — Lecture des données et piste d'audit
+
+Objectifs :
+- Consulter les données sources.
+- Mettre en place les filtres.
+- Garantir la lecture seule.
+
+Livrables :
+- Consultation des ventes.
+- Consultation des stocks.
+- Consultation des caisses.
+- Consultation des accès.
+- Historique des événements.
+
+Critères :
+- L'auditeur ne peut pas modifier les données métier.
+- Les accès sont vérifiés côté serveur.
+- Les preuves sont traçables.
+
+## AUD-03 — Constats et preuves
+
+Objectifs :
+- Créer les constats.
+- Ajouter les preuves.
+- Classifier les risques.
+
+Livrables :
+- Formulaire de constat.
+- Gestion des preuves.
+- Niveaux de criticité.
+- Historique.
+
+Critères :
+- Chaque constat est lié à une mission.
+- Les preuves sont protégées.
+- Les faits et hypothèses sont différenciés.
+
+## AUD-04 — Recommandations et actions
+
+Objectifs :
+- Gérer les recommandations.
+- Désigner les responsables.
+- Suivre les échéances.
+
+Livrables :
+- Formulaire de recommandation.
+- Plan d'action.
+- Suivi.
+- Alertes de retard.
+
+Critères :
+- Chaque recommandation possède un responsable.
+- Les actions sont historisées.
+- La clôture nécessite une vérification.
+
+## AUD-05 — Rapports et tableaux de bord
+
+Objectifs :
+- Générer les rapports.
+- Consolider les missions.
+- Suivre les risques.
+
+Livrables :
+- Rapport de mission.
+- Rapport de constats.
+- Rapport de recommandations.
+- Exports PDF.
+- Exports Excel.
+
+Critères :
+- Les rapports sont cohérents.
+- Les exports respectent les permissions.
+- Les téléchargements sont tracés.
+
+## AUD-06 — Tests et validation finale
+
+Objectifs :
+- Tester les permissions.
+- Tester les workflows.
+- Tester les exports.
+- Valider la qualité.
+
+Livrables :
+- Tests unitaires.
+- Tests d'intégration.
+- Tests Playwright.
+- Documentation utilisateur.
+- Procès-verbal de validation.
+
+Critères :
+- Aucun accès non autorisé.
+- Aucun contournement du mode lecture seule.
+- Aucun export de données non autorisées.
+- Tous les workflows critiques sont testés.
+
+---
+
+# 10. PLAN DE TESTS
+
+## 10.1 Tests BIA
+
+- Connexion à PostgreSQL.
+- Indisponibilité de la base.
+- Collecte des métriques.
+- Détection de requêtes lentes.
+- Détection d'anomalies.
+- Création d'incident.
+- Attribution.
+- Résolution.
+- Sauvegarde.
+- Vérification de sauvegarde.
+- Restauration de test.
+- Export PDF.
+- Export Excel.
+
+## 10.2 Tests Audit interne
+
+- Création de plan.
+- Création de mission.
+- Consultation des ventes.
+- Consultation des stocks.
+- Consultation de la caisse.
+- Création de constat.
+- Ajout de preuve.
+- Création de recommandation.
+- Suivi d'action.
+- Clôture de mission.
+- Export PDF.
+- Export Excel.
+- Tentative de modification d'une donnée métier par un auditeur.
+
+La dernière opération doit être refusée côté serveur.
+
+## 10.3 Tests de sécurité
+
+- Accès direct à une URL protégée.
+- Appel direct d'une Server Action interdite.
+- Tentative d'accès à une preuve d'une autre mission.
+- Tentative d'accès à un export non autorisé.
+- Tentative de modification d'un journal.
+- Tentative de suppression d'une opération source.
+- Vérification de l'absence de secrets dans les logs.
+
+---
+
+# 11. GOUVERNANCE ET RÈGLES NON NÉGOCIABLES
+
+1. Les journaux d'audit sont append-only.
+2. Le BIA ne modifie pas automatiquement les données métier.
+3. L'audit interne est en lecture seule sur les données opérationnelles.
+4. Les administrateurs techniques n'ont pas automatiquement de droits financiers.
+5. Les permissions sont contrôlées côté serveur.
+6. Les preuves sont protégées.
+7. Les sauvegardes sont indépendantes de l'application.
+8. Les restaurations sont régulièrement testées.
+9. Les incidents sont historisés.
+10. Les exports sont journalisés.
+11. Les corrections métier passent par des workflows autorisés.
+12. Les données sensibles ne sont jamais exposées dans les journaux.
+
+---
+
+# 12. ORDRE DE PRIORITÉ RECOMMANDÉ
+
+| Priorité | Module | Lot |
+|---|---|---|
+| 1 | BIA | BIA-01 |
+| 2 | Audit | AUD-01 |
+| 3 | BIA | BIA-02 |
+| 4 | Audit | AUD-02 |
+| 5 | BIA | BIA-03 |
+| 6 | Audit | AUD-03 |
+| 7 | BIA | BIA-04 |
+| 8 | Audit | AUD-04 |
+| 9 | BIA | BIA-05 |
+| 10 | BIA / Audit | BIA-06 / AUD-05 |
+| 11 | Audit | AUD-06 |
+
+L'ordre peut être ajusté en fonction des risques et des fonctionnalités déjà présentes dans Coccinelle.
+
+---
+
+# 13. CONDITIONS AVANT DÉVELOPPEMENT
+
+Avant de commencer :
+
+- Inspecter le schéma Prisma existant.
+- Identifier les modèles déjà disponibles.
+- Réutiliser `AuditEvent` s'il existe.
+- Examiner les rôles Better Auth et les permissions.
+- Identifier les caisses, ventes, stocks et achats existants.
+- Vérifier l'architecture multi-succursales.
+- Vérifier les mécanismes de sauvegarde actuels.
+- Vérifier l'infrastructure PostgreSQL.
+- Identifier les workers déjà présents.
+- Éviter toute duplication de modèles.
+- Définir les règles de rétention des journaux et des preuves.
+
+Ne pas remplacer les fonctionnalités existantes sans analyse préalable.
+
+---
+
+# 14. RÉSULTAT FINAL ATTENDU
+
+À la fin du projet, Coccinelle doit disposer de deux modules Enterprise complémentaires.
+
+## BIA Enterprise
+
+Un centre de contrôle capable de :
+- surveiller la santé du système ;
+- contrôler la base de données ;
+- suivre la sécurité ;
+- détecter les incohérences ;
+- surveiller les sauvegardes ;
+- gérer les incidents ;
+- produire des rapports techniques.
+
+## Audit interne
+
+Un centre de contrôle capable de :
+- planifier les audits ;
+- examiner les opérations ;
+- consulter les preuves ;
+- détecter les anomalies ;
+- formaliser les constats ;
+- suivre les recommandations ;
+- produire des rapports professionnels.
+
+**BIA Enterprise surveille la fiabilité technique de Coccinelle.**
+
+**Audit interne contrôle la fiabilité des opérations de CAFE YAYO.**
+
+Les deux modules doivent fonctionner ensemble sans confusion de responsabilités ni de permissions.

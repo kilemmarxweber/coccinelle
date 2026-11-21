@@ -15,7 +15,7 @@ export function PilotageFrame(props: {
   children: ReactNode;
 }) {
   return (
-    <div className="mx-auto flex h-[calc(100svh-8rem)] max-h-[calc(100svh-8rem)] w-full max-w-7xl flex-col gap-3 overflow-hidden px-4 pb-3 sm:px-6">
+    <div className="mx-auto flex h-[calc(100svh-5.5rem)] max-h-[calc(100svh-5.5rem)] w-full max-w-7xl flex-col gap-3 overflow-y-auto px-4 pb-3 sm:px-6">
       <header className="flex shrink-0 flex-wrap items-end justify-between gap-3">
         <div className="min-w-0">
           <Link
@@ -86,6 +86,7 @@ export function PilotageTable(props: {
   headers: string[];
   children: ReactNode;
   className?: string;
+  toolbar?: ReactNode;
 }) {
   return (
     <section
@@ -94,8 +95,9 @@ export function PilotageTable(props: {
         props.className,
       )}
     >
-      <div className="shrink-0 border-b border-border px-4 py-2.5">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-border px-3 py-2">
         <h2 className="text-sm font-semibold">{props.title}</h2>
+        {props.toolbar}
       </div>
       <div className="min-h-0 flex-1 overflow-auto">
         <table className="w-full min-w-[720px] border-separate border-spacing-0 text-left text-sm">

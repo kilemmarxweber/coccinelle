@@ -9,6 +9,8 @@ export async function listAuditEventsAction(input: {
   organizationId: string;
   branchId?: string;
   entityType?: string;
+  from?: string;
+  to?: string;
   take?: number;
 }) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -27,9 +29,17 @@ export async function listAuditEventsAction(input: {
       organizationId: input.organizationId,
       ...(input.branchId ? { branchId: input.branchId } : {}),
       ...(input.entityType ? { entityType: input.entityType } : {}),
+      ...(input.from || input.to
+        ? {
+            createdAt: {
+              ...(input.from ? { gte: new Date(input.from) } : {}),
+              ...(input.to ? { lte: new Date(input.to) } : {}),
+            },
+          }
+        : {}),
     },
     orderBy: { createdAt: "desc" },
-    take: input.take ?? 200,
+    take: input.take ?? (input.from ? 500 : 200),
     include: { branch: { select: { name: true, code: true } } },
   });
 

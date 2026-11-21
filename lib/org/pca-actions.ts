@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { isAppAdminRole } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { paymentAmountUsd, toIsoDate } from "@/lib/hotel/reports/period";
+import { pcaTargetPct, resolvePcaPeriod, type PcaView } from "@/lib/org/pca-period";
 
 async function assertOrg(organizationId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -24,16 +25,21 @@ function startOfDay(d = new Date()) {
   return x;
 }
 
-function startOfMonth(d = new Date()) {
-  const x = new Date(d.getFullYear(), d.getMonth(), 1);
-  x.setHours(0, 0, 0, 0);
-  return x;
-}
-
-export async function getPcaDashboardAction(organizationId: string) {
+export async function getPcaDashboardAction(
+  organizationId: string,
+  periodInput?: {
+    vue?: string | null;
+    annee?: string | null;
+    mois?: string | null;
+    jour?: string | null;
+    n?: string | null;
+  },
+) {
   await assertOrg(organizationId);
-  const dayStart = startOfDay();
-  const monthStart = startOfMonth();
+  const now = new Date();
+  const period = resolvePcaPeriod(periodInput ?? {}, now);
+  const bounds = { gte: period.from, lte: period.to };
+  const refDay = period.includesToday ? startOfDay(now) : startOfDay(period.to);
   const branches = await prisma.branch.findMany({
     where: { organizationId, status: { not: "CLOSED" } },
     select: {
@@ -52,7 +58,7 @@ export async function getPcaDashboardAction(organizationId: string) {
       prisma.payment.findMany({
         where: {
           branchId: { in: branchIds },
-          paidAt: { gte: monthStart },
+          paidAt: bounds,
           expenseId: null,
           purchaseOrderId: null,
         },
@@ -66,13 +72,19 @@ export async function getPcaDashboardAction(organizationId: string) {
         },
       }),
       prisma.cashRemittance.findMany({
-        where: { organizationId, status: { in: ["PREPARED", "DISPUTED"] } },
+        where: period.includesToday
+          ? { organizationId, status: { in: ["PREPARED", "DISPUTED"] } }
+          : {
+              organizationId,
+              status: { in: ["PREPARED", "DISPUTED"] },
+              createdAt: bounds,
+            },
         include: { fromBranch: { select: { name: true } } },
       }),
       prisma.cashSession.findMany({
         where: {
           branchId: { in: branchIds },
-          closedAt: { gte: dayStart },
+          closedAt: bounds,
           varianceUsd: { not: 0 },
         },
         select: {
@@ -84,14 +96,18 @@ export async function getPcaDashboardAction(organizationId: string) {
         },
       }),
       prisma.purchaseOrder.findMany({
-        where: { branchId: { in: branchIds }, justificationMissing: true },
+        where: {
+          branchId: { in: branchIds },
+          justificationMissing: true,
+          ...(period.includesToday ? {} : { createdAt: bounds }),
+        },
         select: { id: true, number: true, branchId: true, buyerAdvanceUsd: true },
       }),
       prisma.shopSale.findMany({
         where: {
           branchId: { in: branchIds },
           status: "CORRIGEE",
-          correctedAt: { gte: dayStart },
+          correctedAt: bounds,
         },
         select: { id: true, ticketNumber: true, branchId: true, totalAmount: true },
       }),
@@ -110,13 +126,13 @@ export async function getPcaDashboardAction(organizationId: string) {
         select: { totalUsd: true, paidUsd: true, branchId: true },
       }),
       prisma.branchExpense.findMany({
-        where: { branchId: { in: branchIds }, createdAt: { gte: monthStart } },
+        where: { branchId: { in: branchIds }, createdAt: bounds },
         select: { amountUsd: true, branchId: true, kind: true, createdAt: true },
       }),
       prisma.shopSale.findMany({
         where: {
           branchId: { in: branchIds },
-          paidAt: { gte: monthStart },
+          paidAt: bounds,
           status: "ENCAISSEE",
         },
         select: {
@@ -153,7 +169,7 @@ export async function getPcaDashboardAction(organizationId: string) {
     if (!row) continue;
     if (usd <= 0) continue;
     row.salesMonthUsd += usd;
-    if (p.paidAt >= dayStart) row.salesDayUsd += usd;
+    if (p.paidAt >= refDay && p.paidAt <= period.to) row.salesDayUsd += usd;
   }
   for (const e of expenses) {
     const row = byBranch.get(e.branchId);
@@ -207,10 +223,12 @@ export async function getPcaDashboardAction(organizationId: string) {
       cmvUsd: round2(cmv),
       marginUsd: round2(margin),
       resultUsd: round2(result),
-      vsTargetPct:
-        d.salesTargetUsd && d.salesTargetUsd > 0
-          ? Math.round((d.salesMonthUsd / d.salesTargetUsd) * 100)
-          : null,
+      vsTargetPct: pcaTargetPct(
+        d.salesMonthUsd,
+        d.salesTargetUsd,
+        period.monthsInPeriod,
+        period.span,
+      ),
     };
   });
 
@@ -254,13 +272,24 @@ export async function getPcaDashboardAction(organizationId: string) {
   const creditsOpen = round2(
     departments.reduce((s, d) => s + d.creditsOpenUsd, 0),
   );
-  const toRemit = round2(
-    remittances.reduce((s, r) => s + r.declaredUsd, 0),
+  const toRemit = round2(remittances.reduce((s, r) => s + r.declaredUsd, 0));
+  const monthlyTargetSum = departments.reduce(
+    (s, d) => s + (d.salesTargetUsd && d.salesTargetUsd > 0 ? d.salesTargetUsd : 0),
+    0,
+  );
+  const vsTargetPctTotal = pcaTargetPct(
+    salesMonth,
+    monthlyTargetSum,
+    period.monthsInPeriod,
+    period.span,
   );
 
-  const today = new Date();
   const dailyMap = new Map<string, { ventes: number; charges: number }>();
-  for (const iso of eachDayInclusive(monthStart, today)) {
+  const buckets =
+    period.seriesGrain === "mois"
+      ? eachMonthInclusive(period.from, period.to)
+      : eachDayInclusive(period.from, period.to);
+  for (const iso of buckets) {
     dailyMap.set(iso, { ventes: 0, charges: 0 });
   }
   for (const p of payments) {
@@ -273,12 +302,12 @@ export async function getPcaDashboardAction(organizationId: string) {
       p.exchangeRateUsed ?? null,
     );
     if (usd <= 0) continue;
-    const row = dailyMap.get(toIsoDate(p.paidAt));
+    const row = dailyMap.get(bucketKey(p.paidAt, period.seriesGrain));
     if (row) row.ventes += usd;
   }
   for (const e of expenses) {
     if (e.kind === "PRET_PROPRIETAIRE") continue;
-    const row = dailyMap.get(toIsoDate(e.createdAt));
+    const row = dailyMap.get(bucketKey(e.createdAt, period.seriesGrain));
     if (row) row.charges += e.amountUsd;
   }
   const series = [...dailyMap.entries()].map(([day, v]) => ({
@@ -288,9 +317,24 @@ export async function getPcaDashboardAction(organizationId: string) {
   }));
 
   return {
-    from: toIsoDate(monthStart),
-    to: toIsoDate(today),
-    periodLabel: frenchMonthYear(monthStart),
+    view: period.view satisfies PcaView,
+    year: period.year,
+    month: period.month,
+    day: period.day,
+    span: period.span,
+    reportKind: period.reportKind,
+    from: toIsoDate(period.from),
+    to: toIsoDate(period.to),
+    periodLabel: period.periodLabel,
+    rangeLabel: period.rangeLabel,
+    dayKpiLabel: period.dayKpiLabel,
+    periodKpiLabel: period.periodKpiLabel,
+    periodColumnLabel: period.periodColumnLabel,
+    seriesGrain: period.seriesGrain,
+    includesToday: period.includesToday,
+    todayYear: now.getFullYear(),
+    todayMonth: now.getMonth() + 1,
+    todayDay: now.getDate(),
     salesDay,
     salesMonth,
     cmvMonth,
@@ -299,6 +343,7 @@ export async function getPcaDashboardAction(organizationId: string) {
     resultMonth,
     creditsOpen,
     toRemit,
+    vsTargetPctTotal,
     alerts,
     departments,
     series,
@@ -316,22 +361,20 @@ function eachDayInclusive(from: Date, to: Date) {
   return days;
 }
 
-function frenchMonthYear(d: Date) {
-  const months = [
-    "janvier",
-    "février",
-    "mars",
-    "avril",
-    "mai",
-    "juin",
-    "juillet",
-    "août",
-    "septembre",
-    "octobre",
-    "novembre",
-    "décembre",
-  ];
-  return `${months[d.getMonth()]} ${d.getFullYear()}`;
+function eachMonthInclusive(from: Date, to: Date) {
+  const months: string[] = [];
+  const cur = new Date(from.getFullYear(), from.getMonth(), 1);
+  const end = new Date(to.getFullYear(), to.getMonth(), 1);
+  while (cur <= end) {
+    months.push(toIsoDate(cur));
+    cur.setMonth(cur.getMonth() + 1);
+  }
+  return months;
+}
+
+function bucketKey(date: Date, grain: "jour" | "mois") {
+  if (grain === "jour") return toIsoDate(date);
+  return toIsoDate(new Date(date.getFullYear(), date.getMonth(), 1));
 }
 
 function round2(n: number) {

@@ -86,13 +86,13 @@ export function TurnstileWidget(props: {
   const testKey = !process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim();
 
   return (
-    <div className="relative mt-4 flex w-full justify-center">
-      <div className="relative mx-auto w-full max-w-[300px]">
-        <div ref={host} data-turnstile-host className="min-h-[65px] w-full" />
+    <div className="mt-4 flex w-full justify-center">
+      <div className="relative mx-auto w-full max-w-[300px] overflow-hidden rounded-[4px] border border-[#c8cdd3] bg-white">
+        <div ref={host} data-turnstile-host className="min-h-[71px] w-full" />
         {testKey ? (
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-7 bg-white"
+            className="pointer-events-none absolute inset-x-px bottom-0 z-[2] h-7 bg-white"
           />
         ) : null}
       </div>

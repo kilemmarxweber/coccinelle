@@ -11,6 +11,7 @@ import {
   PilotageKpis,
   PilotageTable,
 } from "@/components/org/pilotage-frame";
+import { PcaPeriodPicker } from "./pca-period-picker";
 import {
   exportOrgReportExcel,
   exportOrgReportPdf,
@@ -39,9 +40,24 @@ type Props = {
   organizationId: string;
   orgName: string;
   data: {
+    view: "jour" | "jours" | "mois" | "annee";
+    year: number;
+    month: number;
+    day: number;
+    span: number;
+    reportKind: string;
     from: string;
     to: string;
     periodLabel: string;
+    rangeLabel: string;
+    dayKpiLabel: string;
+    periodKpiLabel: string;
+    periodColumnLabel: string;
+    seriesGrain: "jour" | "mois";
+    includesToday: boolean;
+    todayYear: number;
+    todayMonth: number;
+    todayDay: number;
     salesDay: number;
     salesMonth: number;
     cmvMonth: number;
@@ -50,6 +66,7 @@ type Props = {
     resultMonth: number;
     creditsOpen: number;
     toRemit: number;
+    vsTargetPctTotal: number | null;
     alerts: { kind: string; label: string }[];
     departments: Dept[];
     series: DayPoint[];
@@ -62,6 +79,33 @@ const ALERT_KIND: Record<string, string> = {
   achat: "Achat",
   correction: "Correction",
 };
+
+const MONTH_TICKS = [
+  "janv.",
+  "févr.",
+  "mars",
+  "avr.",
+  "mai",
+  "juin",
+  "juil.",
+  "août",
+  "sept.",
+  "oct.",
+  "nov.",
+  "déc.",
+];
+
+function TargetBadge({ pct }: { pct: number | null }) {
+  if (pct == null) return "—";
+  return (
+    <Badge
+      variant={pct >= 100 ? "default" : "secondary"}
+      className={cn(pct > 100 && "bg-emerald-600 text-white hover:bg-emerald-600")}
+    >
+      {pct} %
+    </Badge>
+  );
+}
 
 export function PcaClient({ organizationId, orgName, data }: Props) {
   const [trendStyle, setTrendStyle] = useState<TrendStyle>("area");
@@ -80,16 +124,21 @@ export function PcaClient({ organizationId, orgName, data }: Props) {
     [data.series],
   );
 
+  const monthTick = (iso: string) => {
+    const month = Number(iso.slice(5, 7));
+    return MONTH_TICKS[month - 1] ?? iso;
+  };
+
   function handleExport(kind: "pdf" | "excel") {
     const meta = {
       orgName,
-      reportTitle: "Tableau de bord PCA",
+      reportTitle: `Tableau de bord PCA — ${data.periodLabel}`,
       from: data.from,
       to: data.to,
       branchNames: data.departments.map((d) => d.name),
       kpis: [
-        { label: "Ventes du jour", value: formatMoney(data.salesDay) },
-        { label: "Ventes du mois", value: formatMoney(data.salesMonth) },
+        { label: data.dayKpiLabel, value: formatMoney(data.salesDay) },
+        { label: data.periodKpiLabel, value: formatMoney(data.salesMonth) },
         { label: "CMV", value: formatMoney(data.cmvMonth) },
         { label: "Marge", value: formatMoney(data.marginMonth) },
         { label: "Charges", value: formatMoney(data.expensesMonth) },
@@ -97,6 +146,11 @@ export function PcaClient({ organizationId, orgName, data }: Props) {
         { label: "À verser", value: formatMoney(data.toRemit) },
         { label: "Créances", value: formatMoney(data.creditsOpen) },
         { label: "Alertes", value: String(data.alerts.length) },
+        {
+          label: "Objectif",
+          value:
+            data.vsTargetPctTotal == null ? "—" : `${data.vsTargetPctTotal} %`,
+        },
       ],
     };
     const departmentsTable = {
@@ -105,7 +159,7 @@ export function PcaClient({ organizationId, orgName, data }: Props) {
         "Département",
         "Code",
         "Jour USD",
-        "Mois USD",
+        `${data.periodColumnLabel} USD`,
         "CMV",
         "Marge",
         "Charges",
@@ -129,7 +183,11 @@ export function PcaClient({ organizationId, orgName, data }: Props) {
     const extras = [
       {
         title: "Tendance quotidienne",
-        headers: ["Jour", "Ventes USD", "Charges USD"],
+        headers: [
+          data.seriesGrain === "mois" ? "Mois" : "Jour",
+          "Ventes USD",
+          "Charges USD",
+        ],
         rows: data.series.map((p) => [p.day, p.ventes, p.charges]),
       },
       {
@@ -156,14 +214,32 @@ export function PcaClient({ organizationId, orgName, data }: Props) {
       backHref={`/admin/organizations/${organizationId}`}
       kicker="Tableau de bord direction"
       title={orgName}
-      subtitle={`${data.periodLabel} · le PDF et l’Excel reprennent les indicateurs, la tendance et le tableau des départements.`}
+      subtitle={
+        data.periodLabel === data.rangeLabel
+          ? `${data.reportKind} · ${data.periodLabel}. Le PDF et l’Excel reprennent cette période.`
+          : `${data.periodLabel} · ${data.rangeLabel}. Le PDF et l’Excel reprennent cette période.`
+      }
       onPdf={() => handleExport("pdf")}
       onExcel={() => handleExport("excel")}
     >
+      <PcaPeriodPicker
+        view={data.view}
+        year={data.year}
+        month={data.month}
+        day={data.day}
+        span={data.span}
+        periodLabel={data.periodLabel}
+        rangeLabel={data.rangeLabel}
+        reportKind={data.reportKind}
+        todayYear={data.todayYear}
+        todayMonth={data.todayMonth}
+        todayDay={data.todayDay}
+      />
+
       <PilotageKpis
         items={[
-          { label: "Ventes du jour", value: formatMoney(data.salesDay) },
-          { label: "Ventes du mois", value: formatMoney(data.salesMonth) },
+          { label: data.dayKpiLabel, value: formatMoney(data.salesDay) },
+          { label: data.periodKpiLabel, value: formatMoney(data.salesMonth) },
           {
             label: "Résultat",
             value: formatMoney(data.resultMonth),
@@ -173,12 +249,12 @@ export function PcaClient({ organizationId, orgName, data }: Props) {
             label: "À verser",
             value: formatMoney(data.toRemit),
             hint: `${data.alerts.length} alerte${data.alerts.length > 1 ? "s" : ""}`,
-            tone: data.alerts.length > 0 ? "alert" : "green",
+            tone: data.alerts.length ? "alert" : "green",
           },
         ]}
       />
 
-      <section className="grid min-h-0 shrink-0 gap-3 lg:grid-cols-5 lg:h-[220px]">
+      <section className="grid min-h-0 shrink-0 gap-3 lg:h-[220px] lg:grid-cols-5">
         <article className="flex min-h-0 flex-col rounded-xl border border-border bg-card p-3 shadow-sm lg:col-span-3">
           <div className="mb-1 flex items-center justify-between gap-2">
             <h2 className="text-sm font-semibold">Tendance des ventes</h2>
@@ -214,11 +290,16 @@ export function PcaClient({ organizationId, orgName, data }: Props) {
               }
               color={trendStyle === "area" ? "#1b9a4b" : "#f59e0b"}
               valueLabel={trendStyle === "area" ? "Ventes" : "Charges"}
+              tickFormatter={
+                data.seriesGrain === "mois" ? monthTick : undefined
+              }
             />
           </div>
         </article>
         <article className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-card p-3 shadow-sm lg:col-span-2">
-          <h2 className="mb-2 shrink-0 text-sm font-semibold">CA par département</h2>
+          <h2 className="mb-2 shrink-0 text-sm font-semibold">
+            CA par département
+          </h2>
           <div className="min-h-0 flex-1">
             <DonutChart data={mix} compact />
           </div>
@@ -238,11 +319,12 @@ export function PcaClient({ organizationId, orgName, data }: Props) {
       ) : null}
 
       <PilotageTable
+        className="min-h-56 shrink-0"
         title="Départements"
         headers={[
           "Département",
-          "Jour",
-          "Mois",
+          data.includesToday ? "Jour" : "Dernier jour",
+          data.periodColumnLabel,
           "CMV",
           "Marge",
           "Charges",
@@ -255,7 +337,9 @@ export function PcaClient({ organizationId, orgName, data }: Props) {
           <tr key={d.id}>
             <td className="font-medium">
               {d.name}{" "}
-              <span className="font-mono text-xs text-muted-foreground">{d.code}</span>
+              <span className="font-mono text-xs text-muted-foreground">
+                {d.code}
+              </span>
             </td>
             <td className="tabular-nums">{formatMoney(d.salesDayUsd)}</td>
             <td className="tabular-nums">{formatMoney(d.salesMonthUsd)}</td>
@@ -265,13 +349,7 @@ export function PcaClient({ organizationId, orgName, data }: Props) {
             <td className="tabular-nums">{formatMoney(d.resultUsd)}</td>
             <td className="tabular-nums">{formatMoney(d.creditsOpenUsd)}</td>
             <td>
-              {d.vsTargetPct == null ? (
-                "—"
-              ) : (
-                <Badge variant={d.vsTargetPct >= 100 ? "default" : "secondary"}>
-                  {d.vsTargetPct} %
-                </Badge>
-              )}
+              <TargetBadge pct={d.vsTargetPct} />
             </td>
           </tr>
         ))}
@@ -284,7 +362,9 @@ export function PcaClient({ organizationId, orgName, data }: Props) {
           <td className="tabular-nums">{formatMoney(data.expensesMonth)}</td>
           <td className="tabular-nums">{formatMoney(data.resultMonth)}</td>
           <td className="tabular-nums">{formatMoney(data.creditsOpen)}</td>
-          <td>—</td>
+          <td>
+            <TargetBadge pct={data.vsTargetPctTotal} />
+          </td>
         </tr>
       </PilotageTable>
     </PilotageFrame>

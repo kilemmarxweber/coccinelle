@@ -20,26 +20,51 @@ export function TrendAreaChart(props: {
   data: { day: string; value: number }[];
   color?: string;
   valueLabel?: string;
+  tickFormatter?: (iso: string) => string;
 }) {
   const color = props.color ?? "#0ea5e9";
+  const formatTick = props.tickFormatter ?? shortDay;
+  const axis = (
+    <>
+      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+      <XAxis
+        dataKey="day"
+        tickFormatter={(value) => formatTick(String(value))}
+        tick={{ fontSize: 11 }}
+        minTickGap={24}
+      />
+      <YAxis tick={{ fontSize: 11 }} width={48} />
+      <Tooltip
+        labelFormatter={(l) => formatTick(String(l))}
+        formatter={(v) => [
+          typeof v === "number" ? v.toLocaleString("fr-FR") : String(v ?? ""),
+          props.valueLabel ?? "Valeur",
+        ]}
+      />
+    </>
+  );
+
+  if (props.data.length <= 2) {
+    return (
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={props.data} barCategoryGap="35%">
+          {axis}
+          <Bar
+            dataKey="value"
+            name={props.valueLabel ?? "Valeur"}
+            fill={color}
+            radius={6}
+            maxBarSize={72}
+          />
+        </BarChart>
+      </ResponsiveContainer>
+    );
+  }
+
   return (
     <ResponsiveContainer width="100%" height="100%">
       <AreaChart data={props.data}>
-        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-        <XAxis
-          dataKey="day"
-          tickFormatter={shortDay}
-          tick={{ fontSize: 11 }}
-          minTickGap={24}
-        />
-        <YAxis tick={{ fontSize: 11 }} width={48} />
-        <Tooltip
-          labelFormatter={(l) => shortDay(String(l))}
-          formatter={(v) => [
-            typeof v === "number" ? v.toLocaleString("fr-FR") : String(v ?? ""),
-            props.valueLabel ?? "Valeur",
-          ]}
-        />
+        {axis}
         <Area
           type="monotone"
           dataKey="value"
@@ -47,6 +72,21 @@ export function TrendAreaChart(props: {
           fill={color}
           fillOpacity={0.15}
           strokeWidth={2}
+          dot={(dot) => {
+            const point = dot as { cx?: number; cy?: number; payload?: { value?: number } };
+            if (!point.payload?.value || point.cx == null || point.cy == null) {
+              return <g key={`${point.cx}-${point.cy}`} />;
+            }
+            return (
+              <circle
+                key={`${point.cx}-${point.cy}`}
+                cx={point.cx}
+                cy={point.cy}
+                r={4}
+                fill={color}
+              />
+            );
+          }}
         />
       </AreaChart>
     </ResponsiveContainer>
