@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { isAppAdminRole } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
+import { loadControlBoards } from "@/lib/bia/boards";
 
 export async function listAuditEventsAction(input: {
   organizationId: string;
@@ -55,4 +56,17 @@ export async function listAuditEventsAction(input: {
     oldValue: r.oldValue,
     newValue: r.newValue,
   }));
+}
+
+export async function getAuditBoardsAction(organizationId: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) throw new Error("Non authentifié.");
+  if (!isAppAdminRole(session.user.role)) {
+    const member = await prisma.member.findFirst({
+      where: { organizationId, userId: session.user.id },
+      select: { id: true },
+    });
+    if (!member) throw new Error("Organisation inaccessible.");
+  }
+  return loadControlBoards(organizationId);
 }

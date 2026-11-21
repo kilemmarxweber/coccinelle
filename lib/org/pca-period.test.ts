@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { pcaTargetPct, resolvePcaPeriod } from "./pca-period";
+import { pcaTargetPct, resolvePcaPeriod, startOfDay } from "./pca-period";
 
 const now = new Date(2026, 10, 21, 15, 30, 0);
 
@@ -74,6 +74,10 @@ describe("période PCA", () => {
     );
     assert.equal(across.rangeLabel, "25 octobre – 3 novembre 2026");
     assert.equal(across.from.getMonth(), 9);
+    assert.equal(
+      across.monthsInPeriod,
+      Math.round((7 / 31 + 3 / 30) * 1000) / 1000,
+    );
     const huge = resolvePcaPeriod(
       { vue: "jours", annee: "2026", mois: "11", jour: "21", n: "900" },
       now,
@@ -102,5 +106,14 @@ describe("période PCA", () => {
     assert.equal(pcaTargetPct(4.5, 245, 1 / 30, 1), 55);
     assert.equal(pcaTargetPct(0, 200, two.monthsInPeriod, 2), 0);
     assert.equal(pcaTargetPct(250, 200, 1, 7), 125);
+  });
+
+  it("garde le dernier jour calendaire pour un timestamp de fin de journée", () => {
+    const period = resolvePcaPeriod({ vue: "mois", annee: "2025", mois: "2" }, now);
+    const ref = startOfDay(period.to);
+    assert.equal(period.to.getDate(), 28);
+    assert.equal(period.to.getHours(), 23);
+    assert.equal(ref.getDate(), 28);
+    assert.equal(ref.getHours(), 0);
   });
 });

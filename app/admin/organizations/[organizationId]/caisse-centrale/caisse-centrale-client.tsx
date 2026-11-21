@@ -206,7 +206,7 @@ export function CaisseCentraleClient({ organizationId, orgName, data }: Props) {
       rows: data.journal.map((row) => [
         row.number,
         KIND[row.kind] ?? row.kind,
-        row.branchName ?? "—",
+        journalLabel(row),
         row.amountUsd,
         row.justification,
         new Date(row.createdAt).toLocaleString("fr-FR"),
@@ -414,7 +414,7 @@ export function CaisseCentraleClient({ organizationId, orgName, data }: Props) {
                       <td className="font-medium">{row.number}</td>
                       <td>{KIND[row.kind] ?? row.kind}</td>
                       <td className="max-w-[220px] truncate">
-                        {row.branchName ?? row.justification}
+                        {journalLabel(row)}
                       </td>
                       <td
                         className={
@@ -579,7 +579,7 @@ export function CaisseCentraleClient({ organizationId, orgName, data }: Props) {
                 <li key={row.id} className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">
-                      {row.branchName ?? row.justification}
+                      {journalLabel(row)}
                     </p>
                     <p className="truncate text-xs text-muted-foreground">
                       {KIND[row.kind] ?? row.kind} · {row.number}
@@ -707,6 +707,10 @@ const STATUS: Record<string, string> = {
   RECEIVED: "Reçu",
   DISPUTED: "En écart",
 };
+
+function journalLabel(row: { branchName: string | null; justification: string }) {
+  return row.branchName?.trim() || row.justification?.trim() || "Coffre";
+}
 
 const KIND: Record<string, string> = {
   ENTRY: "Entrée",

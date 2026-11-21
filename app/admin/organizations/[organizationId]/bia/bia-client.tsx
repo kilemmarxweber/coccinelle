@@ -13,11 +13,8 @@ import {
   exportOrgReportExcel,
   exportOrgReportPdf,
 } from "@/lib/org/report-exports";
-import {
-  advanceBiaIncidentAction,
-  openBiaIncidentAction,
-  runIntegrityChecksAction,
-} from "@/lib/bia/actions";
+import { ControlBoardsView } from "@/components/org/control-boards";
+import type { ControlBoards } from "@/lib/bia/boards";
 
 type Finding = {
   id: string;
@@ -47,9 +44,11 @@ export function BiaClient(props: {
   orgName: string;
   health: { ok: boolean; connections: number | null };
   overview: { findings: Finding[]; incidents: Incident[]; auditCount: number };
+  boards: ControlBoards;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
+  const [view, setView] = useState<"supervision" | "caisse" | "stocks" | "acces">("supervision");
   const [notes, setNotes] = useState<Record<string, string>>({});
   const openFindings = props.overview.findings.filter(
     (row) => row.status === "OUVERT" || row.status === "QUALIFIE",
@@ -157,6 +156,33 @@ export function BiaClient(props: {
       onPdf={() => handleExport("pdf")}
       onExcel={() => handleExport("excel")}
     >
+      <div className="flex shrink-0 flex-wrap gap-1 rounded-full bg-muted p-0.5 text-xs">
+        {(
+          [
+            ["supervision", "Supervision"],
+            ["caisse", "Caisse"],
+            ["stocks", "Stocks"],
+            ["acces", "Accès"],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            className={
+              view === id
+                ? "rounded-full bg-[#1b9a4b] px-3 py-1 font-medium text-white"
+                : "rounded-full px-3 py-1 font-medium text-muted-foreground"
+            }
+            onClick={() => setView(id)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {view !== "supervision" ? (
+        <ControlBoardsView board={view} data={props.boards} />
+      ) : (
+      <>
       <PilotageKpis
         items={[
           {
@@ -269,6 +295,8 @@ export function BiaClient(props: {
           )}
         </PilotageTable>
       </div>
+      </>
+      )}
     </PilotageFrame>
   );
 }

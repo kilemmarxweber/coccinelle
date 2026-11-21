@@ -12,7 +12,7 @@ import {
   receiveRemittance,
 } from "@/lib/central-cash/service";
 import { toIsoDate } from "@/lib/hotel/reports/period";
-import { resolvePcaPeriod, type PcaView } from "@/lib/org/pca-period";
+import { endOfDay, resolvePcaPeriod, startOfDay, type PcaView } from "@/lib/org/pca-period";
 
 async function assertOrgStaff(organizationId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -207,8 +207,11 @@ export async function getCentralCashDashboardAction(
 }
 
 function previousWindow(from: Date, span: number) {
-  const to = new Date(from.getTime() - 1);
-  const start = new Date(to.getFullYear(), to.getMonth(), to.getDate() - (span - 1), 0, 0, 0, 0);
+  const last = new Date(from.getFullYear(), from.getMonth(), from.getDate() - 1);
+  const to = endOfDay(last);
+  const start = startOfDay(
+    new Date(last.getFullYear(), last.getMonth(), last.getDate() - (span - 1)),
+  );
   return { from: start, to };
 }
 

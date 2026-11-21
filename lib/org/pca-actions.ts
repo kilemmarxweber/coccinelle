@@ -5,7 +5,12 @@ import { auth } from "@/lib/auth";
 import { isAppAdminRole } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { paymentAmountUsd, toIsoDate } from "@/lib/hotel/reports/period";
-import { pcaTargetPct, resolvePcaPeriod, type PcaView } from "@/lib/org/pca-period";
+import {
+  pcaTargetPct,
+  resolvePcaPeriod,
+  startOfDay,
+  type PcaView,
+} from "@/lib/org/pca-period";
 
 async function assertOrg(organizationId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -17,12 +22,6 @@ async function assertOrg(organizationId: string) {
     });
     if (!m) throw new Error("Organisation inaccessible.");
   }
-}
-
-function startOfDay(d = new Date()) {
-  const x = new Date(d);
-  x.setHours(0, 0, 0, 0);
-  return x;
 }
 
 export async function getPcaDashboardAction(
@@ -39,6 +38,7 @@ export async function getPcaDashboardAction(
   const now = new Date();
   const period = resolvePcaPeriod(periodInput ?? {}, now);
   const bounds = { gte: period.from, lte: period.to };
+  // Dernier jour calendaire de la fenêtre (period.to est déjà 23:59:59.999).
   const refDay = period.includesToday ? startOfDay(now) : startOfDay(period.to);
   const branches = await prisma.branch.findMany({
     where: { organizationId, status: { not: "CLOSED" } },

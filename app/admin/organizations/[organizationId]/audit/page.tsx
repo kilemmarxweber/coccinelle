@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
-import { listAuditEventsAction } from "@/lib/audit/actions";
+import { getAuditBoardsAction, listAuditEventsAction } from "@/lib/audit/actions";
 import { resolvePcaPeriod } from "@/lib/org/pca-period";
 import { toIsoDate } from "@/lib/hotel/reports/period";
 import { AuditClient } from "./audit-client";
@@ -26,16 +26,20 @@ export default async function AuditPage({ params, searchParams }: PageProps) {
   if (!org) notFound();
   const now = new Date();
   const period = resolvePcaPeriod(query, now);
-  const events = await listAuditEventsAction({
-    organizationId,
-    from: period.from.toISOString(),
-    to: period.to.toISOString(),
-  });
+  const [events, boards] = await Promise.all([
+    listAuditEventsAction({
+      organizationId,
+      from: period.from.toISOString(),
+      to: period.to.toISOString(),
+    }),
+    getAuditBoardsAction(organizationId),
+  ]);
   return (
     <AuditClient
       organizationId={organizationId}
       orgName={org.name}
       events={events}
+      boards={boards}
       period={{
         view: period.view,
         year: period.year,

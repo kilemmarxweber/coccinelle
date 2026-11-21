@@ -9,6 +9,8 @@ import {
   PilotageTable,
 } from "@/components/org/pilotage-frame";
 import { PcaPeriodPicker } from "../pca/pca-period-picker";
+import { ControlBoardsView } from "@/components/org/control-boards";
+import type { ControlBoards } from "@/lib/bia/boards";
 import {
   exportOrgReportExcel,
   exportOrgReportPdf,
@@ -57,15 +59,18 @@ export function AuditClient({
   organizationId,
   orgName,
   events,
+  boards,
   period,
 }: {
   organizationId: string;
   orgName: string;
   events: Event[];
+  boards: ControlBoards;
   period: Period;
 }) {
   const [query, setQuery] = useState("");
   const [family, setFamily] = useState<Family>("tout");
+  const [lens, setLens] = useState<"journal" | "caisse" | "stocks" | "acces">("journal");
 
   const rows = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -90,8 +95,8 @@ export function AuditClient({
     moyen: events.filter((event) => levelOf(event) === "moyen").length,
     info: events.filter((event) => levelOf(event) === "info").length,
   };
-  const sensitive = events.filter((event) => levelOf(event) !== "info").slice(0, 4);
-  const spotlight = (sensitive.length > 0 ? sensitive : events.slice(0, 4));
+  const sensitive = events.filter((event) => levelOf(event) !== "info");
+  const spotlight = sensitive.length > 0 ? sensitive : events.slice(0, 4);
   const timeline = [...events].slice(0, 6).reverse();
   const maxType = Math.max(1, ...byType.map((row) => row.count));
 
@@ -174,6 +179,33 @@ export function AuditClient({
       onPdf={() => handleExport("pdf")}
       onExcel={() => handleExport("excel")}
     >
+      <div className="flex shrink-0 flex-wrap gap-1 rounded-full bg-muted p-0.5 text-xs">
+        {(
+          [
+            ["journal", "Journal"],
+            ["caisse", "Caisse"],
+            ["stocks", "Stocks"],
+            ["acces", "Accès"],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            className={
+              lens === id
+                ? "rounded-full bg-[#1b9a4b] px-3 py-1 font-medium text-white"
+                : "rounded-full px-3 py-1 font-medium text-muted-foreground"
+            }
+            onClick={() => setLens(id)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {lens !== "journal" ? (
+        <ControlBoardsView board={lens} data={boards} />
+      ) : (
+      <>
       <PcaPeriodPicker
         view={period.view}
         year={period.year}
@@ -228,7 +260,7 @@ export function AuditClient({
             <p className="text-xs font-medium text-muted-foreground">À regarder</p>
             <span className="text-[11px] text-muted-foreground">{spotlight.length}</span>
           </div>
-          <ul className="mt-2 space-y-2">
+          <ul className="mt-2 max-h-48 space-y-2 overflow-y-auto">
             {spotlight.length === 0 ? (
               <li className="text-xs text-muted-foreground">Rien à signaler.</li>
             ) : (
@@ -353,6 +385,8 @@ export function AuditClient({
           ))
         )}
       </PilotageTable>
+      </>
+      )}
     </PilotageFrame>
   );
 }

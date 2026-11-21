@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import {
   getDatabaseHealthAction,
+  getBiaBoardsAction,
   listBiaOverviewAction,
 } from "@/lib/bia/actions";
 import { BiaClient } from "./bia-client";
@@ -15,9 +16,10 @@ export default async function BiaPage({ params }: PageProps) {
     select: { id: true, name: true },
   });
   if (!org) notFound();
-  const [health, overview] = await Promise.all([
+  const [health, overview, boards] = await Promise.all([
     getDatabaseHealthAction(organizationId),
     listBiaOverviewAction(organizationId),
+    getBiaBoardsAction(organizationId),
   ]);
   return (
     <BiaClient
@@ -25,6 +27,7 @@ export default async function BiaPage({ params }: PageProps) {
       orgName={org.name}
       health={health}
       overview={overview}
+      boards={boards}
     />
   );
 }

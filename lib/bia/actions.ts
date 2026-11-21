@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { isAppAdminRole, normalizeOrgRole, ORG_ROLE } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { findingFingerprint, saleWithoutStockDrafts, type IntegrityDraft } from "@/lib/bia/integrity";
+import { loadControlBoards } from "@/lib/bia/boards";
 
 async function requireBiaReader(organizationId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -22,6 +23,11 @@ async function requireBiaReader(organizationId: string) {
     throw new Error("Le BIA est réservé au PCA et à l'admin IT.");
   }
   return { user: session.user, technical: role === ORG_ROLE.ADMIN };
+}
+
+export async function getBiaBoardsAction(organizationId: string) {
+  await requireBiaReader(organizationId);
+  return loadControlBoards(organizationId);
 }
 
 export async function getDatabaseHealthAction(organizationId: string) {

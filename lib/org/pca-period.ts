@@ -37,12 +37,17 @@ const MONTHS = [
 const MIN_YEAR = 2020;
 const MAX_SPAN = 366;
 
-function startOfDay(d: Date) {
+export function startOfDay(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
 }
 
-function endOfDay(d: Date) {
+export function endOfDay(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+}
+
+/** Nombre de jours du mois de `d` (`Date(y, m+1, 0)` = dernier jour du mois courant). */
+function daysInMonth(d: Date) {
+  return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
 }
 
 function capitalize(value: string) {
@@ -191,8 +196,7 @@ function proratedMonths(from: Date, to: Date) {
   const cur = startOfDay(from);
   const end = startOfDay(to);
   while (cur <= end) {
-    const days = new Date(cur.getFullYear(), cur.getMonth() + 1, 0).getDate();
-    factor += 1 / days;
+    factor += 1 / daysInMonth(cur);
     cur.setDate(cur.getDate() + 1);
   }
   return factor;
