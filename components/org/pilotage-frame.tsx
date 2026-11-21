@@ -87,24 +87,45 @@ export function PilotageTable(props: {
   children: ReactNode;
   className?: string;
   toolbar?: ReactNode;
+  /** Le tableau grandit avec ses lignes : un seul défilement, celui de la page. */
+  flow?: boolean;
+  /** Largeurs de colonnes, en %. Le tableau reste dans la carte, sans défilement horizontal. */
+  widths?: string[];
 }) {
+  const fitted = Boolean(props.widths?.length);
   return (
     <section
       className={cn(
-        "flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm",
+        "flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm",
+        props.flow ? "shrink-0" : "min-h-0 flex-1",
         props.className,
       )}
     >
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-border px-3 py-2">
-        <h2 className="text-sm font-semibold">{props.title}</h2>
+        {props.title ? <h2 className="text-sm font-semibold">{props.title}</h2> : null}
         {props.toolbar}
       </div>
-      <div className="min-h-0 flex-1 overflow-auto">
-        <table className="w-full min-w-[720px] border-separate border-spacing-0 text-left text-sm">
+      <div
+        className={cn(
+          props.flow
+            ? "overflow-x-hidden"
+            : cn("min-h-0 flex-1", fitted ? "overflow-y-auto overflow-x-hidden" : "overflow-auto"),
+        )}
+      >
+        <table
+          className={cn(
+            "w-full border-separate border-spacing-0 text-left text-sm",
+            fitted ? "table-fixed" : "min-w-[720px]",
+          )}
+        >
           <thead className="sticky top-0 z-10 bg-[#f3fbf6] text-[11px] tracking-wide text-[#157a3c] uppercase">
             <tr>
-              {props.headers.map((header) => (
-                <th key={header} className="px-3 py-2 font-semibold whitespace-nowrap">
+              {props.headers.map((header, index) => (
+                <th
+                  key={header}
+                  style={fitted ? { width: props.widths?.[index] } : undefined}
+                  className={cn("px-3 py-2 font-semibold", fitted ? "truncate" : "whitespace-nowrap")}
+                >
                   {header}
                 </th>
               ))}
